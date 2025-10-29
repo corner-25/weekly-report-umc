@@ -249,24 +249,33 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                             )}
                             <div className="mt-2 space-y-2 text-sm text-gray-700">
                               <div>
-                                <span className="font-semibold">Kết quả:</span> {task.result}
+                                <span className="font-semibold">Kết quả:</span>
+                                <p className="whitespace-pre-wrap mt-1">{task.result}</p>
                               </div>
                               <div>
                                 <span className="font-semibold">Thời gian:</span> {task.timePeriod}
                               </div>
-                              <div>
-                                <span className="font-semibold">Tiến độ:</span>
-                                <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className="bg-blue-600 h-2 rounded-full"
-                                    style={{ width: `${task.progress}%` }}
-                                  ></div>
+                              {task.progress !== null && task.progress !== undefined && (
+                                <div>
+                                  <span className="font-semibold">Tiến độ:</span>
+                                  <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-blue-600 h-2 rounded-full"
+                                      style={{ width: `${task.progress}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-xs">{task.progress}%</span>
                                 </div>
-                                <span className="text-xs">{task.progress}%</span>
-                              </div>
+                              )}
+                              {(task.progress === null || task.progress === undefined) && (
+                                <div>
+                                  <span className="font-semibold">Tiến độ:</span>
+                                  <span className="text-gray-500 italic ml-2">Không có tiến độ định lượng</span>
+                                </div>
+                              )}
                               <div>
-                                <span className="font-semibold">Kế hoạch tuần sau:</span>{' '}
-                                {task.nextWeekPlan}
+                                <span className="font-semibold">Kế hoạch tuần sau:</span>
+                                <p className="whitespace-pre-wrap mt-1">{task.nextWeekPlan}</p>
                               </div>
                             </div>
                           </div>

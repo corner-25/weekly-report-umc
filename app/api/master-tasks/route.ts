@@ -88,7 +88,7 @@ export async function GET(request: Request) {
 
       const baseData = {
         ...task,
-        latestProgress: latestWeekProgress?.progress || 0,
+        latestProgress: latestWeekProgress?.progress ?? 0, // Use 0 if null or undefined
         isCompleted: latestWeekProgress?.completedAt !== null && latestWeekProgress !== undefined,
         weekCount: task._count.weekProgress,
       };
@@ -99,7 +99,7 @@ export async function GET(request: Request) {
           .map((wp: any) => ({
             weekNumber: wp.week.weekNumber,
             year: wp.week.year,
-            progress: wp.progress,
+            progress: wp.progress ?? 0, // Handle null progress
             result: wp.result,
             startDate: wp.week.startDate,
           }))

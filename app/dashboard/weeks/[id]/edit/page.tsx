@@ -690,17 +690,19 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Tiến độ (%) *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Tiến độ (%) <span className="text-gray-400 text-xs font-normal">(Tùy chọn)</span>
+                          </label>
                           <input
                             type="number"
                             min="0"
                             max="100"
-                            value={tp.progress}
+                            value={tp.progress ?? ''}
                             onChange={(e) =>
-                              updateTaskProgress(deptData.departmentId, index, 'progress', parseInt(e.target.value) || 0)
+                              updateTaskProgress(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
                             }
+                            placeholder="Bỏ trống nếu không có tiến độ"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            required
                           />
                         </div>
                       </div>
@@ -813,17 +815,19 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tiến độ (%) *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tiến độ (%) <span className="text-gray-400 text-xs font-normal">(Tùy chọn)</span>
+                        </label>
                         <input
                           type="number"
                           min="0"
                           max="100"
-                          value={task.progress}
+                          value={task.progress ?? ''}
                           onChange={(e) =>
-                            updateAdHocTask(deptData.departmentId, index, 'progress', parseInt(e.target.value) || 0)
+                            updateAdHocTask(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
                           }
+                          placeholder="Bỏ trống nếu không có tiến độ"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          required
                         />
                       </div>
                     </div>

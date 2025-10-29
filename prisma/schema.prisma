@@ -89,7 +89,7 @@ model WeekTaskProgress {
   orderNumber    Int       // Thứ tự hiển thị trong tuần
   result         String    @db.Text // Kết quả tuần này
   timePeriod     String    // Thời gian thực hiện
-  progress       Int       @default(0) // 0-100
+  progress       Int?      // 0-100, null nếu nhiệm vụ không có tiến độ
   nextWeekPlan   String    @db.Text
   isImportant    Boolean   @default(false)
   completedAt    DateTime? // Ngày hoàn thành (nếu progress = 100)
@@ -115,7 +115,7 @@ model Task {
   taskName       String   @db.Text
   result         String   @db.Text
   timePeriod     String
-  progress       Int      @default(0)
+  progress       Int?     // 0-100, null nếu nhiệm vụ không có tiến độ
   nextWeekPlan   String   @db.Text
   isImportant    Boolean  @default(false)
   createdAt      DateTime @default(now())
