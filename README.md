@@ -2,6 +2,14 @@
 
 Hệ thống quản lý báo cáo tuần cho các phòng ban, được xây dựng bằng Next.js, TypeScript, Prisma và PostgreSQL.
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template)
+
+## 🚀 Quick Deploy
+
+**Deploy lên Railway trong 5 phút:** Xem hướng dẫn chi tiết tại [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md)
+
+**GitHub Repository:** [corner-25/weekly-report-umc](https://github.com/corner-25/weekly-report-umc)
+
 ## Tính năng chính
 
 ### Module 1: Đăng nhập & Đăng ký
