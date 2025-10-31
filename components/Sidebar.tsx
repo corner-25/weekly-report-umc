@@ -29,7 +29,7 @@ export function Sidebar() {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
             </svg>
-            Weekly Reports
+            Báo cáo tuần
           </Link>
         )}
         <button
@@ -48,6 +48,29 @@ export function Sidebar() {
           )}
         </button>
       </div>
+
+      {/* Logo Section */}
+      {!isCollapsed && (
+        <div className="px-4 py-6 border-b border-gray-200 bg-white">
+          <div className="flex items-center justify-center">
+            {/* Placeholder for logo.png - Replace src with your actual logo path */}
+            <img
+              src="/logo.png"
+              alt="Logo"
+              className="h-16 w-auto object-contain"
+              onError={(e) => {
+                // Fallback if logo not found
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden text-center text-gray-500 text-sm">
+              <p>Đặt file logo.png vào</p>
+              <p className="text-xs">/public/logo.png</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
