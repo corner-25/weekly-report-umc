@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime @default(now())
+
+  weeks         Week[]
+
+  @@map("users")
+}
+
+// Week model - represents a weekly report
+model Week {
+  id              String   @id @default(cuid())
+  weekNumber      Int
+  year            Int
+  startDate       DateTime
+  endDate         DateTime
+  reportFileUrl   String?
+  status          Status   @default(DRAFT)
+  createdById     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  createdBy       User               @relation(fields: [createdById], references: [id])
+  tasks           Task[]             // DEPRECATED
+  taskProgress    WeekTaskProgress[] // NEW
+  metricValues    WeekMetricValue[]  // NEW - Số liệu định lượng
+
+  @@unique([weekNumber, year])
+  @@index([createdById])
+  @@map("weeks")
+}
+
+// Department model - represents departments/phòng ban
+model Department {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
+  masterTasks       MasterTask[]
+  tasks             Task[]
+  metricDefinitions MetricDefinition[]
+
+  @@map("departments")
+}
+
+// MasterTask - Danh sách nhiệm vụ chung của mỗi phòng
+model MasterTask {
+  id                String    @id @default(cuid())
+  departmentId      String
+  name              String    @db.Text
+  description       String?   @db.Text
+  estimatedDuration Int?      // Số tuần dự kiến hoàn thành (DEPRECATED - dùng startDate/endDate)
+  startDate         DateTime? // Ngày bắt đầu nhiệm vụ
+  endDate           DateTime? // Ngày kết thúc nhiệm vụ
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  department        Department         @relation(fields: [departmentId], references: [id])
+  weekProgress      WeekTaskProgress[]
+
+  @@index([departmentId])
+  @@map("master_tasks")
+}
+
+// WeekTaskProgress - Tiến độ nhiệm vụ từng tuần
+model WeekTaskProgress {
+  id             String    @id @default(cuid())
+  masterTaskId   String
+  weekId         String
+  orderNumber    Int       // Thứ tự hiển thị trong tuần
+  result         String    @db.Text // Kết quả tuần này
+  timePeriod     String    // Thời gian thực hiện
+  progress       Int?      // 0-100, null nếu nhiệm vụ không có tiến độ
+  nextWeekPlan   String    @db.Text
+  isImportant    Boolean   @default(false)
+  completedAt    DateTime? // Ngày hoàn thành (nếu progress = 100)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  masterTask     MasterTask @relation(fields: [masterTaskId], references: [id], onDelete: Cascade)
+  week           Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@unique([masterTaskId, weekId]) // Mỗi nhiệm vụ chỉ xuất hiện 1 lần/tuần
+  @@index([weekId])
+  @@index([masterTaskId])
+  @@map("week_task_progress")
+}
+
+// Task model - DEPRECATED - giữ lại để backward compatible
+// Sẽ migrate dần sang WeekTaskProgress
+model Task {
+  id             String   @id @default(cuid())
+  weekId         String
+  departmentId   String
+  orderNumber    Int
+  taskName       String   @db.Text
+  result         String   @db.Text
+  timePeriod     String
+  progress       Int?     // 0-100, null nếu nhiệm vụ không có tiến độ
+  nextWeekPlan   String   @db.Text
+  isImportant    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  week           Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  department     Department @relation(fields: [departmentId], references: [id])
+
+  @@index([weekId])
+  @@index([departmentId])
+  @@map("tasks")
+}
+
+// MetricDefinition - Định nghĩa các chỉ số của phòng ban
+model MetricDefinition {
+  id           String   @id @default(cuid())
+  departmentId String
+  name         String   @db.Text // Tên chỉ số (VD: "Số ca ghép tim", "Nghiên cứu khoa học")
+  unit         String?  // Đơn vị (VD: "ca", "bài", "nghiên cứu")
+  description  String?  @db.Text
+  orderNumber  Int      @default(0) // Thứ tự hiển thị
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department   Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  weekValues   WeekMetricValue[]
+
+  @@index([departmentId])
+  @@map("metric_definitions")
+}
+
+// WeekMetricValue - Giá trị số liệu theo tuần
+model WeekMetricValue {
+  id               String   @id @default(cuid())
+  metricId         String
+  weekId           String
+  value            Float    // Giá trị số liệu
+  note             String?  @db.Text // Ghi chú (nếu có)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  metric           MetricDefinition @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  week             Week             @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@unique([metricId, weekId]) // Mỗi chỉ số chỉ có 1 giá trị/tuần
+  @@index([weekId])
+  @@index([metricId])
+  @@map("week_metric_values")
+}
+
+// Event - Lịch làm việc
+model Event {
+  id              String    @id @default(cuid())
+  date            DateTime  // Ngày diễn ra
+  time            String?   // Giờ diễn ra (VD: "13g30", "08g00")
+  location        String?   @db.Text // Địa điểm
+  content         String    @db.Text // Nội dung sự kiện
+  chair           String?   @db.Text // Người chủ trì
+  participants    String?   @db.Text // Đơn vị chuẩn bị/tham dự
+  note            String?   @db.Text // Ghi chú
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([date])
+  @@map("events")
+}
+
+enum Status {
+  DRAFT
+  COMPLETED
+}
