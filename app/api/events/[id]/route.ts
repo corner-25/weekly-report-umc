@@ -38,7 +38,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { date, time, location, content, chair, participants, note } = body;
+    const { date, time, location, content, chair, participants, note, status } = body;
 
     const updateData: any = {};
 
@@ -49,6 +49,7 @@ export async function PATCH(
     if (chair !== undefined) updateData.chair = chair;
     if (participants !== undefined) updateData.participants = participants;
     if (note !== undefined) updateData.note = note;
+    if (status !== undefined) updateData.status = status;
 
     const event = await prisma.event.update({
       where: { id },

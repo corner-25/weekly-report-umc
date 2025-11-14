@@ -12,6 +12,7 @@ interface Event {
   chair: string | null;
   participants: string | null;
   note: string | null;
+  status: 'CONFIRMED' | 'UNCONFIRMED';
 }
 
 type ViewMode = 'table' | 'calendar';
@@ -98,8 +99,14 @@ export default function CalendarPage() {
       );
     }
 
-    // Sort by time (HH:mm format)
+    // Sort by status (CONFIRMED first), then by time
     return filtered.sort((a, b) => {
+      // First, sort by status (CONFIRMED comes first)
+      if (a.status !== b.status) {
+        return a.status === 'CONFIRMED' ? -1 : 1;
+      }
+
+      // Then sort by time (HH:mm format)
       if (!a.time && !b.time) return 0;
       if (!a.time) return 1;
       if (!b.time) return -1;
@@ -270,7 +277,11 @@ export default function CalendarPage() {
                       dayEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="group relative bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg p-2.5 transition-colors cursor-pointer"
+                          className={`group relative rounded-lg p-2.5 transition-colors cursor-pointer border ${
+                            event.status === 'UNCONFIRMED'
+                              ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-300'
+                              : 'bg-cyan-50 hover:bg-cyan-100 border-cyan-200'
+                          }`}
                           onClick={() => setSelectedEvent(event)}
                         >
                           <div className="flex items-start justify-between gap-2 mb-1">
@@ -367,9 +378,9 @@ export default function CalendarPage() {
                   const dayEvents = getEventsForDate(date);
 
                   return (
-                    <>
+                    <React.Fragment key={`day-${dayIndex}`}>
                       {/* Day Header Row */}
-                      <tr key={`header-${dayIndex}`}>
+                      <tr>
                         <td colSpan={7} className="border-0 p-0">
                           <div className="bg-gradient-to-r from-cyan-100 to-blue-100 border-t-2 border-cyan-300 px-4 py-2.5 font-bold text-cyan-800">
                             {weekDayNames[dayIndex]} - {formatDate(date)}
@@ -380,7 +391,11 @@ export default function CalendarPage() {
                       {/* Event Rows */}
                       {dayEvents.length > 0 ? (
                         dayEvents.map((event, eventIndex) => (
-                          <tr key={event.id} className={`hover:bg-cyan-50 transition-colors ${eventIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                          <tr key={event.id} className={`transition-colors ${
+                            event.status === 'UNCONFIRMED'
+                              ? 'bg-yellow-50 hover:bg-yellow-100'
+                              : eventIndex % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
+                          }`}>
                             <td className="border border-gray-300 px-4 py-3 w-20 font-medium text-cyan-700">{formatTime(event.time) || '-'}</td>
                             <td className="border border-gray-300 px-4 py-3 w-40">{event.location || '-'}</td>
                             <td className="border border-gray-300 px-4 py-3 whitespace-pre-wrap">{event.content}</td>
@@ -433,7 +448,7 @@ export default function CalendarPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -461,6 +476,32 @@ export default function CalendarPage() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-4">
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Trạng thái</label>
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                  selectedEvent.status === 'CONFIRMED'
+                    ? 'bg-green-100 text-green-800 border border-green-300'
+                    : 'bg-orange-100 text-orange-800 border border-orange-300'
+                }`}>
+                  {selectedEvent.status === 'CONFIRMED' ? (
+                    <>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Đã xác nhận
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      </svg>
+                      Chưa xác nhận
+                    </>
+                  )}
+                </div>
+              </div>
+
               {/* Date and Time */}
               <div className="flex gap-4">
                 <div className="flex-1">
