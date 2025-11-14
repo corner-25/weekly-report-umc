@@ -19,6 +19,14 @@ export default function NewEventPage() {
     note: '',
   });
 
+  const [chairMode, setChairMode] = useState<'select' | 'custom'>('select');
+  const chairOptions = [
+    'GĐ Nguyễn Hoàng Bắc',
+    'PGĐ Nguyễn Hoàng Định',
+    'PGĐ Lê Khắc Bảo',
+    'PGĐ Nguyễn Minh Anh',
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -131,16 +139,64 @@ export default function NewEventPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Người chủ trì
             </label>
-            <textarea
-              rows={2}
-              placeholder="VD: PGĐ Nguyễn Hoàng Định"
-              value={formData.chair}
-              onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-            />
+
+            {/* Toggle between select and custom input */}
+            <div className="flex gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setChairMode('select');
+                  setFormData({ ...formData, chair: '' });
+                }}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  chairMode === 'select'
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Chọn từ danh sách
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setChairMode('custom');
+                  setFormData({ ...formData, chair: '' });
+                }}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  chairMode === 'custom'
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Tự nhập
+              </button>
+            </div>
+
+            {chairMode === 'select' ? (
+              <select
+                value={formData.chair}
+                onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+              >
+                <option value="">-- Chọn người chủ trì --</option>
+                {chairOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <textarea
+                rows={2}
+                placeholder="Nhập tên người chủ trì (có thể nhiều người)"
+                value={formData.chair}
+                onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+              />
+            )}
           </div>
 
           <div className="mb-4">

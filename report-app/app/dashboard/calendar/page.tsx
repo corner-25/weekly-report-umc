@@ -23,6 +23,7 @@ export default function CalendarPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [filterByDirector, setFilterByDirector] = useState(true); // Mặc định bật filter
 
   const loadEvents = async () => {
     try {
@@ -88,7 +89,14 @@ export default function CalendarPage() {
 
   const getEventsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const filtered = events.filter(e => e.date.split('T')[0] === dateStr);
+    let filtered = events.filter(e => e.date.split('T')[0] === dateStr);
+
+    // Apply director filter if enabled
+    if (filterByDirector) {
+      filtered = filtered.filter(e =>
+        e.chair && e.chair.includes('GĐ Nguyễn Hoàng Bắc')
+      );
+    }
 
     // Sort by time (HH:mm format)
     return filtered.sort((a, b) => {
@@ -132,14 +140,15 @@ export default function CalendarPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Lịch làm việc</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Tuần {weekDates[0].getDate()}/{weekDates[0].getMonth() + 1} - {weekDates[6].getDate()}/{weekDates[6].getMonth() + 1}/{weekDates[6].getFullYear()}
-          </p>
-        </div>
-        <div className="flex gap-2">
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Lịch làm việc</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Tuần {weekDates[0].getDate()}/{weekDates[0].getMonth() + 1} - {weekDates[6].getDate()}/{weekDates[6].getMonth() + 1}/{weekDates[6].getFullYear()}
+            </p>
+          </div>
+          <div className="flex gap-2">
           {/* View Mode Toggle */}
           <div className="flex bg-gray-100 rounded-lg p-1">
             <button
@@ -194,6 +203,24 @@ export default function CalendarPage() {
           >
             + Thêm sự kiện
           </Link>
+        </div>
+        </div>
+
+        {/* Filter Checkbox */}
+        <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5">
+          <input
+            type="checkbox"
+            id="filterDirector"
+            checked={filterByDirector}
+            onChange={(e) => setFilterByDirector(e.target.checked)}
+            className="w-4 h-4 text-cyan-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-cyan-500"
+          />
+          <label htmlFor="filterDirector" className="text-sm font-medium text-gray-700 cursor-pointer select-none flex items-center gap-2">
+            <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Chỉ xem các hoạt động của <span className="font-bold text-cyan-700">GĐ Nguyễn Hoàng Bắc</span>
+          </label>
         </div>
       </div>
 
