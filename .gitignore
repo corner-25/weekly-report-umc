@@ -1,51 +1,41 @@
 # Dependencies
-node_modules/
-report-app/node_modules/
-.pnp
+/node_modules
+/.pnp
 .pnp.js
 
 # Testing
-coverage/
+/coverage
 
 # Next.js
-.next/
-out/
-build/
-dist/
+/.next/
+/out/
 
 # Production
-build/
+/build
 
 # Misc
 .DS_Store
 *.pem
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Local env files
+.env
+.env*.local
 
-# OS
-.DS_Store
-Thumbs.db
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Prisma
-report-app/prisma/*.db
-report-app/prisma/*.db-journal
+prisma/migrations/
 
-# Claude
-.claude/
-.claude.json
-.claude.json.backup
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
