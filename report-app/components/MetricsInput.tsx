@@ -88,17 +88,25 @@ export default function MetricsInput({ weekId, departmentId, onChange }: Props) 
     }
   };
 
-  const handleValueChange = (metricId: string, value: number) => {
-    const newValues = {
-      ...values,
-      [metricId]: {
-        metricId,
-        value,
-        note: values[metricId]?.note,
-      },
-    };
-    setValues(newValues);
-    onChange(Object.values(newValues).filter(v => v.value !== undefined && v.value !== null));
+  const handleValueChange = (metricId: string, value: number | null) => {
+    if (value === null || value === undefined || isNaN(value)) {
+      // Remove metric if value is cleared
+      const newValues = { ...values };
+      delete newValues[metricId];
+      setValues(newValues);
+      onChange(Object.values(newValues).filter(v => v.value !== undefined && v.value !== null));
+    } else {
+      const newValues = {
+        ...values,
+        [metricId]: {
+          metricId,
+          value,
+          note: values[metricId]?.note,
+        },
+      };
+      setValues(newValues);
+      onChange(Object.values(newValues).filter(v => v.value !== undefined && v.value !== null));
+    }
   };
 
   const handleNoteChange = (metricId: string, note: string) => {
@@ -218,8 +226,11 @@ export default function MetricsInput({ weekId, departmentId, onChange }: Props) 
                       <input
                         type="number"
                         step="0.01"
-                        value={values[metric.id]?.value || ''}
-                        onChange={(e) => handleValueChange(metric.id, parseFloat(e.target.value) || 0)}
+                        value={values[metric.id]?.value ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          handleValueChange(metric.id, val === '' ? null : parseFloat(val));
+                        }}
                         placeholder="Nhập giá trị"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />

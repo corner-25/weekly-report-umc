@@ -171,16 +171,18 @@ model WeekMetricValue {
 
 // Event - Lịch làm việc
 model Event {
-  id              String    @id @default(cuid())
-  date            DateTime  // Ngày diễn ra
-  time            String?   // Giờ diễn ra (VD: "13g30", "08g00")
-  location        String?   @db.Text // Địa điểm
-  content         String    @db.Text // Nội dung sự kiện
-  chair           String?   @db.Text // Người chủ trì
-  participants    String?   @db.Text // Đơn vị chuẩn bị/tham dự
-  note            String?   @db.Text // Ghi chú
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id              String         @id @default(cuid())
+  date            DateTime       // Ngày diễn ra
+  time            String?        // Giờ diễn ra (VD: "13g30", "08g00")
+  location        String?        @db.Text // Địa điểm
+  content         String         @db.Text // Nội dung sự kiện
+  chair           String?        @db.Text // Người chủ trì
+  participants    String?        @db.Text // Đơn vị chuẩn bị/tham dự
+  note            String?        @db.Text // Ghi chú
+  status          EventStatus    @default(UNCONFIRMED) // Trạng thái xác nhận
+  isEdited        Boolean        @default(false) // Đã chỉnh sửa sau khi tạo
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@index([date])
   @@map("events")
@@ -189,4 +191,9 @@ model Event {
 enum Status {
   DRAFT
   COMPLETED
+}
+
+enum EventStatus {
+  CONFIRMED     // Đã xác nhận
+  UNCONFIRMED   // Chưa xác nhận
 }

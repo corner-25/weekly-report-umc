@@ -19,6 +19,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
     chair: '',
     participants: '',
     note: '',
+    status: 'UNCONFIRMED',
   });
 
   const [chairMode, setChairMode] = useState<'select' | 'custom'>('select');
@@ -51,6 +52,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
             chair: chairValue,
             participants: event.participants || '',
             note: event.note || '',
+            status: event.status || 'UNCONFIRMED',
           });
 
           // Set chair mode based on whether the value is in the preset options
@@ -94,6 +96,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
           chair: formData.chair || null,
           participants: formData.participants || null,
           note: formData.note || null,
+          status: formData.status,
         }),
       });
 
@@ -265,7 +268,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Ghi chú
             </label>
@@ -276,6 +279,24 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
               onChange={(e) => setFormData({ ...formData, note: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Trạng thái <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+            >
+              <option value="UNCONFIRMED">Chưa xác nhận</option>
+              <option value="CONFIRMED">Đã xác nhận</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Sự kiện "Đã xác nhận" sẽ được hiển thị nổi bật hơn trên lịch
+            </p>
           </div>
 
           <div className="flex gap-3">

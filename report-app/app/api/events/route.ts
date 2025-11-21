@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { date, time, location, content, chair, participants, note } = body;
+    const { date, time, location, content, chair, participants, note, status } = body;
 
     if (!date || !content) {
       return NextResponse.json(
@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
         chair,
         participants,
         note,
+        status: status || 'UNCONFIRMED',
       },
     });
 

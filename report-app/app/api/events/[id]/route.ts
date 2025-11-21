@@ -38,7 +38,19 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { date, time, location, content, chair, participants, note } = body;
+    const { date, time, location, content, chair, participants, note, status } = body;
+
+    // Get original event to check if it was edited
+    const originalEvent = await prisma.event.findUnique({
+      where: { id },
+    });
+
+    if (!originalEvent) {
+      return NextResponse.json(
+        { error: 'Event not found' },
+        { status: 404 }
+      );
+    }
 
     const updateData: any = {};
 
@@ -49,6 +61,20 @@ export async function PATCH(
     if (chair !== undefined) updateData.chair = chair;
     if (participants !== undefined) updateData.participants = participants;
     if (note !== undefined) updateData.note = note;
+    if (status !== undefined) updateData.status = status;
+
+    // Mark as edited if any field changed (except status)
+    const isEdited =
+      (chair !== undefined && chair !== originalEvent.chair) ||
+      (content !== undefined && content !== originalEvent.content) ||
+      (location !== undefined && location !== originalEvent.location) ||
+      (participants !== undefined && participants !== originalEvent.participants) ||
+      (time !== undefined && time !== originalEvent.time) ||
+      (date !== undefined && new Date(date).getTime() !== new Date(originalEvent.date).getTime());
+
+    if (isEdited) {
+      updateData.isEdited = true;
+    }
 
     const event = await prisma.event.update({
       where: { id },

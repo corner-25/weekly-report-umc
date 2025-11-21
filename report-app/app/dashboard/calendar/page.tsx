@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface Event {
@@ -12,6 +12,8 @@ interface Event {
   chair: string | null;
   participants: string | null;
   note: string | null;
+  status: 'CONFIRMED' | 'UNCONFIRMED';
+  isEdited: boolean;
 }
 
 type ViewMode = 'table' | 'calendar';
@@ -98,8 +100,14 @@ export default function CalendarPage() {
       );
     }
 
-    // Sort by time (HH:mm format)
+    // Sort by status (CONFIRMED first), then by time
     return filtered.sort((a, b) => {
+      // First, sort by status (CONFIRMED comes first)
+      if (a.status !== b.status) {
+        return a.status === 'CONFIRMED' ? -1 : 1;
+      }
+
+      // Then sort by time (HH:mm format)
       if (!a.time && !b.time) return 0;
       if (!a.time) return 1;
       if (!b.time) return -1;
@@ -111,6 +119,39 @@ export default function CalendarPage() {
     if (!time) return '';
     // Convert HH:mm to HHgmm format (e.g., "13:30" -> "13g30")
     return time.replace(':', 'g');
+  };
+
+  // Determine if event is in morning (7:00-11:30) or afternoon (13:30+)
+  const getTimeSlot = (time: string | null): 'morning' | 'afternoon' | 'unknown' => {
+    if (!time) return 'unknown';
+    const [hours, minutes] = time.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes;
+
+    // Morning: 7:00 (420) to 11:30 (690)
+    if (totalMinutes >= 420 && totalMinutes <= 690) {
+      return 'morning';
+    }
+    // Afternoon: 13:30 (810) onwards
+    if (totalMinutes >= 810) {
+      return 'afternoon';
+    }
+    return 'unknown';
+  };
+
+  // Get events for a specific date and time slot
+  const getEventsForDateAndSlot = (date: Date, slot: 'morning' | 'afternoon') => {
+    return getEventsForDate(date).filter(e => getTimeSlot(e.time) === slot);
+  };
+
+  // Get color class based on event status
+  const getEventColorClass = (event: Event) => {
+    if (event.isEdited) {
+      return 'bg-orange-100 border-orange-300 text-orange-900';
+    }
+    if (event.status === 'UNCONFIRMED') {
+      return 'bg-yellow-100 border-yellow-300 text-yellow-900';
+    }
+    return 'bg-green-100 border-green-300 text-green-900';
   };
 
   const goToPreviousWeek = () => {
@@ -222,6 +263,23 @@ export default function CalendarPage() {
             Chỉ xem các hoạt động của <span className="font-bold text-cyan-700">GĐ Nguyễn Hoàng Bắc</span>
           </label>
         </div>
+
+        {/* Status Legend */}
+        <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+          <span className="text-sm font-medium text-gray-700">Trạng thái:</span>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-green-100 border-l-4 border-green-300 rounded"></div>
+            <span className="text-xs text-gray-600">Đã xác nhận</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-yellow-100 border-l-4 border-yellow-300 rounded"></div>
+            <span className="text-xs text-gray-600">Chưa xác nhận</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-orange-100 border-l-4 border-orange-300 rounded"></div>
+            <span className="text-xs text-gray-600">Có thay đổi</span>
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -230,124 +288,199 @@ export default function CalendarPage() {
           <p className="text-gray-600 mt-2">Đang tải...</p>
         </div>
       ) : viewMode === 'calendar' ? (
-        // Calendar Grid View
+        // Calendar View - NEW LAYOUT: Rows = Days, Columns = Morning/Afternoon
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="grid grid-cols-7 gap-px bg-gray-200">
-            {/* Day Headers */}
-            {weekDayNames.map((dayName, index) => (
-              <div key={index} className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-3 text-center font-semibold">
-                <div>{dayName}</div>
-                <div className="text-sm font-normal mt-1">
-                  {formatDate(weekDates[index])}
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse table-fixed">
+              <thead>
+                <tr className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
+                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-32">Ngày</th>
+                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                    <div className="text-base">Sáng</div>
+                    <div className="text-xs font-normal mt-1 opacity-90">(7h00 - 11h30)</div>
+                  </th>
+                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                    <div className="text-base">Chiều</div>
+                    <div className="text-xs font-normal mt-1 opacity-90">(13h30 - hết)</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {weekDates.map((date, dayIndex) => {
+                  const morningEvents = getEventsForDateAndSlot(date, 'morning');
+                  const afternoonEvents = getEventsForDateAndSlot(date, 'afternoon');
+                  const isCurrentDay = isToday(date);
 
-            {/* Day Cells */}
-            {weekDates.map((date, dayIndex) => {
-              const dayEvents = getEventsForDate(date);
-              const today = isToday(date);
+                  return (
+                    <tr key={`day-${dayIndex}`} className={isCurrentDay ? 'bg-blue-50' : ''}>
+                      {/* Day Column */}
+                      <td className={`border border-gray-300 px-3 py-4 text-center font-bold ${
+                        isCurrentDay ? 'bg-cyan-100 text-cyan-900' : 'bg-gray-50 text-gray-700'
+                      }`}>
+                        <div className="text-sm">{weekDayNames[dayIndex]}</div>
+                        <div className="text-xs mt-1">{formatDate(date)}</div>
+                      </td>
 
-              return (
-                <div
-                  key={dayIndex}
-                  className={`bg-white min-h-[300px] p-3 ${
-                    today ? 'ring-2 ring-cyan-500 ring-inset' : ''
-                  }`}
-                >
-                  {today && (
-                    <div className="mb-2 px-2 py-1 bg-cyan-500 text-white text-xs rounded-full text-center font-medium">
-                      Hôm nay
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    {dayEvents.length === 0 ? (
-                      <div className="text-gray-400 text-sm italic text-center py-8">
-                        Không có sự kiện
-                      </div>
-                    ) : (
-                      dayEvents.map((event) => (
-                        <div
-                          key={event.id}
-                          className="group relative bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg p-2.5 transition-colors cursor-pointer"
-                          onClick={() => setSelectedEvent(event)}
-                        >
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            {event.time && (
-                              <div className="flex-shrink-0 text-xs font-semibold text-cyan-700 bg-cyan-200 px-2 py-0.5 rounded">
-                                {formatTime(event.time)}
-                              </div>
-                            )}
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                              <Link
-                                href={`/dashboard/calendar/${event.id}/edit`}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                title="Chỉnh sửa"
+                      {/* Morning Events */}
+                      <td className="border border-gray-300 px-3 py-2 align-top">
+                        {morningEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {morningEvents.map((event) => (
+                              <div
+                                key={event.id}
+                                className={`p-3 rounded-lg border-l-4 ${getEventColorClass(event)} relative group cursor-pointer`}
+                                onClick={() => setSelectedEvent(event)}
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </Link>
-                              {deleteConfirm === event.id ? (
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => handleDelete(event.id)}
-                                    className="text-[10px] px-1.5 py-0.5 bg-red-600 text-white rounded hover:bg-red-700"
-                                  >
-                                    OK
-                                  </button>
-                                  <button
-                                    onClick={() => setDeleteConfirm(null)}
-                                    className="text-[10px] px-1.5 py-0.5 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                                  >
-                                    X
-                                  </button>
+                                <div className="flex justify-between items-start gap-2 mb-2">
+                                  <div className="font-semibold text-sm">{formatTime(event.time)}</div>
+                                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                                    <Link
+                                      href={`/dashboard/calendar/${event.id}/edit`}
+                                      className="p-1 hover:bg-white/50 rounded"
+                                      title="Sửa"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                      </svg>
+                                    </Link>
+                                    {deleteConfirm === event.id ? (
+                                      <div className="flex gap-1 bg-white rounded px-1">
+                                        <button
+                                          onClick={() => handleDelete(event.id)}
+                                          className="text-xs px-1.5 py-0.5 bg-red-600 text-white rounded hover:bg-red-700"
+                                          title="Xác nhận xóa"
+                                        >
+                                          OK
+                                        </button>
+                                        <button
+                                          onClick={() => setDeleteConfirm(null)}
+                                          className="text-xs px-1.5 py-0.5 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                          title="Hủy"
+                                        >
+                                          X
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setDeleteConfirm(event.id)}
+                                        className="p-1 hover:bg-white/50 rounded"
+                                        title="Xóa"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
-                              ) : (
-                                <button
-                                  onClick={() => setDeleteConfirm(event.id)}
-                                  className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                  title="Xóa"
-                                >
-                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              )}
-                            </div>
+                                <div className="text-sm font-medium mb-1">{event.content}</div>
+                                {event.location && (
+                                  <div className="text-xs opacity-80 mb-1">
+                                    📍 {event.location}
+                                  </div>
+                                )}
+                                {event.chair && (
+                                  <div className="text-xs opacity-80 mb-1">
+                                    <span className="font-semibold">Chủ trì:</span> {event.chair}
+                                  </div>
+                                )}
+                                {event.participants && (
+                                  <div className="text-xs opacity-80">
+                                    <span className="font-semibold">Tham dự:</span> {event.participants}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </div>
+                        ) : (
+                          <div className="text-center text-gray-400 text-sm py-4">-</div>
+                        )}
+                      </td>
 
-                          <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
-                            {event.content}
+                      {/* Afternoon Events */}
+                      <td className="border border-gray-300 px-3 py-2 align-top">
+                        {afternoonEvents.length > 0 ? (
+                          <div className="space-y-2">
+                            {afternoonEvents.map((event) => (
+                              <div
+                                key={event.id}
+                                className={`p-3 rounded-lg border-l-4 ${getEventColorClass(event)} relative group cursor-pointer`}
+                                onClick={() => setSelectedEvent(event)}
+                              >
+                                <div className="flex justify-between items-start gap-2 mb-2">
+                                  <div className="font-semibold text-sm">{formatTime(event.time)}</div>
+                                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                                    <Link
+                                      href={`/dashboard/calendar/${event.id}/edit`}
+                                      className="p-1 hover:bg-white/50 rounded"
+                                      title="Sửa"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                      </svg>
+                                    </Link>
+                                    {deleteConfirm === event.id ? (
+                                      <div className="flex gap-1 bg-white rounded px-1">
+                                        <button
+                                          onClick={() => handleDelete(event.id)}
+                                          className="text-xs px-1.5 py-0.5 bg-red-600 text-white rounded hover:bg-red-700"
+                                          title="Xác nhận xóa"
+                                        >
+                                          OK
+                                        </button>
+                                        <button
+                                          onClick={() => setDeleteConfirm(null)}
+                                          className="text-xs px-1.5 py-0.5 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                          title="Hủy"
+                                        >
+                                          X
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setDeleteConfirm(event.id)}
+                                        className="p-1 hover:bg-white/50 rounded"
+                                        title="Xóa"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-sm font-medium mb-1">{event.content}</div>
+                                {event.location && (
+                                  <div className="text-xs opacity-80 mb-1">
+                                    📍 {event.location}
+                                  </div>
+                                )}
+                                {event.chair && (
+                                  <div className="text-xs opacity-80 mb-1">
+                                    <span className="font-semibold">Chủ trì:</span> {event.chair}
+                                  </div>
+                                )}
+                                {event.participants && (
+                                  <div className="text-xs opacity-80">
+                                    <span className="font-semibold">Tham dự:</span> {event.participants}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </div>
-
-                          {event.location && (
-                            <div className="text-xs text-gray-600 flex items-center gap-1 mb-1">
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                              <span className="line-clamp-1">{event.location}</span>
-                            </div>
-                          )}
-
-                          {event.chair && (
-                            <div className="text-xs text-gray-500 line-clamp-1">
-                              <span className="font-semibold">Chủ trì:</span> {event.chair}
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                        ) : (
+                          <div className="text-center text-gray-400 text-sm py-4">-</div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       ) : (
-        // Table View
+        // Table View - OLD LAYOUT (Restored)
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -367,9 +500,9 @@ export default function CalendarPage() {
                   const dayEvents = getEventsForDate(date);
 
                   return (
-                    <>
+                    <React.Fragment key={`day-${dayIndex}`}>
                       {/* Day Header Row */}
-                      <tr key={`header-${dayIndex}`}>
+                      <tr>
                         <td colSpan={7} className="border-0 p-0">
                           <div className="bg-gradient-to-r from-cyan-100 to-blue-100 border-t-2 border-cyan-300 px-4 py-2.5 font-bold text-cyan-800">
                             {weekDayNames[dayIndex]} - {formatDate(date)}
@@ -380,7 +513,7 @@ export default function CalendarPage() {
                       {/* Event Rows */}
                       {dayEvents.length > 0 ? (
                         dayEvents.map((event, eventIndex) => (
-                          <tr key={event.id} className={`hover:bg-cyan-50 transition-colors ${eventIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                          <tr key={event.id} className={`transition-colors border-l-4 ${getEventColorClass(event)}`}>
                             <td className="border border-gray-300 px-4 py-3 w-20 font-medium text-cyan-700">{formatTime(event.time) || '-'}</td>
                             <td className="border border-gray-300 px-4 py-3 w-40">{event.location || '-'}</td>
                             <td className="border border-gray-300 px-4 py-3 whitespace-pre-wrap">{event.content}</td>
@@ -433,7 +566,7 @@ export default function CalendarPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -461,6 +594,32 @@ export default function CalendarPage() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-4">
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Trạng thái</label>
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                  selectedEvent.status === 'CONFIRMED'
+                    ? 'bg-green-100 text-green-800 border border-green-300'
+                    : 'bg-orange-100 text-orange-800 border border-orange-300'
+                }`}>
+                  {selectedEvent.status === 'CONFIRMED' ? (
+                    <>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Đã xác nhận
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      </svg>
+                      Chưa xác nhận
+                    </>
+                  )}
+                </div>
+              </div>
+
               {/* Date and Time */}
               <div className="flex gap-4">
                 <div className="flex-1">
