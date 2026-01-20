@@ -60,6 +60,9 @@ model Department {
   masterTasks       MasterTask[]
   tasks             Task[]
   metricDefinitions MetricDefinition[]
+  secretaries       Secretary[]
+  transfersFrom     SecretaryTransferLog[] @relation("TransferFrom")
+  transfersTo       SecretaryTransferLog[] @relation("TransferTo")
 
   @@map("departments")
 }
@@ -196,4 +199,211 @@ enum Status {
 enum EventStatus {
   CONFIRMED     // Đã xác nhận
   UNCONFIRMED   // Chưa xác nhận
+}
+
+// Meeting Room - Phòng họp
+model MeetingRoom {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  location        String?   @db.Text
+  capacity        Int
+  description     String?   @db.Text
+
+  // Thiết bị âm thanh
+  hasMicrophone   Boolean   @default(false)
+  hasSpeaker      Boolean   @default(false)
+  audioSystemType String?   @db.Text
+
+  // Thiết bị hình ảnh
+  hasProjector    Boolean   @default(false)
+  hasScreen       Boolean   @default(false)
+  hasTV           Boolean   @default(false)
+  hasSmartBoard   Boolean   @default(false)
+  visualEquipment String?   @db.Text
+
+  // Tiện ích khác
+  hasWifi         Boolean   @default(false)
+  hasAircon       Boolean   @default(false)
+  hasWhiteboard   Boolean   @default(false)
+  furnitureType   String?   @db.Text
+  otherAmenities  String?   @db.Text
+
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  hospitalEvents  HospitalEvent[]
+
+  @@map("meeting_rooms")
+}
+
+// Hospital Event - Sự kiện bệnh viện
+model HospitalEvent {
+  id              String            @id @default(cuid())
+  name            String            @db.Text
+  date            DateTime
+  time            String?
+  description     String?           @db.Text
+
+  meetingRoomId   String?
+  meetingRoom     MeetingRoom?      @relation(fields: [meetingRoomId], references: [id])
+
+  eventType       HospitalEventType @default(ORGANIZED)
+
+  chair           String?           @db.Text
+  participants    String?           @db.Text
+  note            String?           @db.Text
+
+  status          EventStatus       @default(UNCONFIRMED)
+  isEdited        Boolean           @default(false)
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+
+  checklistItems  EventChecklistItem[]
+
+  @@index([date])
+  @@index([meetingRoomId])
+  @@map("hospital_events")
+}
+
+// Checklist Template - Master checklist
+model ChecklistTemplate {
+  id          String    @id @default(cuid())
+  title       String    @db.Text
+  description String?   @db.Text
+  orderNumber Int       @default(0)
+  isDefault   Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("checklist_templates")
+}
+
+// Event Checklist Item - Instance per event
+model EventChecklistItem {
+  id              String        @id @default(cuid())
+  hospitalEventId String
+  hospitalEvent   HospitalEvent @relation(fields: [hospitalEventId], references: [id], onDelete: Cascade)
+
+  title           String        @db.Text
+  description     String?       @db.Text
+  orderNumber     Int           @default(0)
+  isCompleted     Boolean       @default(false)
+  completedAt     DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([hospitalEventId])
+  @@map("event_checklist_items")
+}
+
+enum HospitalEventType {
+  ORGANIZED     // Tổ chức
+  COLLABORATED  // Phối hợp
+}
+
+// ==================== SECRETARY MANAGEMENT ====================
+
+// SecretaryType - Loại thư ký
+model SecretaryType {
+  id          String    @id @default(cuid())
+  name        String    @unique // VD: "Thư ký y khoa", "Thư ký hành chính"
+  description String?   @db.Text
+  color       String?   // Màu hiển thị (hex code)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  secretaries Secretary[]
+
+  @@map("secretary_types")
+}
+
+// Secretary - Thư ký
+model Secretary {
+  id                  String          @id @default(cuid())
+  fullName            String          // Họ và tên
+  dateOfBirth         DateTime?       // Ngày sinh
+  phone               String?
+  email               String?
+  avatar              String?         // URL ảnh đại diện
+
+  secretaryTypeId     String?
+  secretaryType       SecretaryType?  @relation(fields: [secretaryTypeId], references: [id])
+
+  currentDepartmentId String?
+  currentDepartment   Department?     @relation(fields: [currentDepartmentId], references: [id])
+
+  status              SecretaryStatus @default(ACTIVE)
+  startDate           DateTime?       // Ngày bắt đầu làm thư ký
+  notes               String?         @db.Text
+
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  deletedAt           DateTime?
+
+  certificates        SecretaryCertificate[]
+  transferLogs        SecretaryTransferLog[]
+
+  @@index([secretaryTypeId])
+  @@index([currentDepartmentId])
+  @@index([dateOfBirth])
+  @@map("secretaries")
+}
+
+// SecretaryCertificate - Bằng cấp của thư ký
+model SecretaryCertificate {
+  id            String    @id @default(cuid())
+  secretaryId   String
+  secretary     Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+
+  name          String    // Tên bằng cấp
+  issuedYear    Int?      // Năm cấp bằng
+  issuedBy      String?   // Nơi cấp
+  attachmentUrl String?   // File đính kèm (scan bằng)
+  notes         String?   @db.Text
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([secretaryId])
+  @@map("secretary_certificates")
+}
+
+// SecretaryTransferLog - Lịch sử luân chuyển
+model SecretaryTransferLog {
+  id               String     @id @default(cuid())
+  secretaryId      String
+  secretary        Secretary  @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+
+  fromDepartmentId String?
+  fromDepartment   Department? @relation("TransferFrom", fields: [fromDepartmentId], references: [id])
+
+  toDepartmentId   String
+  toDepartment     Department  @relation("TransferTo", fields: [toDepartmentId], references: [id])
+
+  transferDate     DateTime    // Ngày luân chuyển
+  decisionNumber   String?     // Số quyết định
+  reason           String?     @db.Text // Lý do luân chuyển
+  notes            String?     @db.Text
+
+  createdAt        DateTime    @default(now())
+  createdBy        String?     // User ID tạo record
+
+  @@index([secretaryId])
+  @@index([fromDepartmentId])
+  @@index([toDepartmentId])
+  @@index([transferDate])
+  @@map("secretary_transfer_logs")
+}
+
+enum SecretaryStatus {
+  ACTIVE      // Đang hoạt động
+  INACTIVE    // Nghỉ việc
+  ON_LEAVE    // Đang nghỉ phép dài hạn
 }
