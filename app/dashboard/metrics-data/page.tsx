@@ -90,8 +90,8 @@ export default function MetricsDataPage() {
         });
 
         const sortedWeeks = Array.from(weekMap.values()).sort((a, b) => {
-          if (a.year !== b.year) return a.year - b.year;
-          return a.weekNumber - b.weekNumber;
+          if (a.year !== b.year) return b.year - a.year;
+          return b.weekNumber - a.weekNumber;
         });
 
         setWeeks(sortedWeeks);
@@ -221,20 +221,13 @@ export default function MetricsDataPage() {
           className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-auto flex-1"
           style={{ maxHeight: 'calc(100vh - 260px)' }}
         >
-          <table className="border-collapse text-sm" style={{ minWidth: `${320 + weeks.length * 80}px` }}>
+          <table className="border-collapse text-sm" style={{ minWidth: `${200 + weeks.length * 80}px` }}>
             {/* Sticky header */}
             <thead className="sticky top-0 z-20">
               <tr>
-                {/* Frozen: Dept + Metric */}
                 <th
-                  className="sticky left-0 z-30 bg-gray-800 text-white text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-wide border-r border-gray-600 whitespace-nowrap"
-                  style={{ minWidth: 140, maxWidth: 160 }}
-                >
-                  Phòng ban
-                </th>
-                <th
-                  className="sticky bg-gray-800 text-white text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-wide border-r-2 border-gray-500 whitespace-nowrap"
-                  style={{ left: 140, minWidth: 180, maxWidth: 220 }}
+                  className="sticky left-0 z-30 bg-gray-800 text-white text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-wide border-r-2 border-gray-500"
+                  style={{ width: '20%', minWidth: 160, maxWidth: 220 }}
                 >
                   Chỉ số
                 </th>
@@ -247,7 +240,7 @@ export default function MetricsDataPage() {
                   <th
                     key={week.id}
                     className={`bg-gray-700 text-center px-2 py-2.5 text-xs border-r border-gray-600 w-20 whitespace-nowrap ${
-                      i === weeks.length - 1 ? 'text-blue-300 font-bold' : 'text-gray-300 font-medium'
+                      i === 0 ? 'text-blue-300 font-bold' : 'text-gray-300 font-medium'
                     }`}
                   >
                     <div className="font-semibold">T{week.weekNumber}</div>
@@ -273,33 +266,19 @@ export default function MetricsDataPage() {
                       key={metric.id}
                       className="group hover:brightness-95 transition-all"
                     >
-                      {/* Dept cell — only show on first row, span all rows */}
+                      {/* Metric name — frozen left */}
                       <td
-                        className={`sticky left-0 z-10 px-3 text-xs font-bold border-r border-gray-200 align-middle border-b border-gray-100
-                          ${color.bg} ${color.text}
-                          ${isFirst ? `border-t-2 ${color.border}` : ''}
-                        `}
-                        style={{ minWidth: 140, maxWidth: 160 }}
-                      >
-                        {isFirst && (
-                          <div className="flex items-center gap-1.5 py-2">
-                            <span className={`inline-block w-2 h-2 rounded-full ${color.badge} flex-shrink-0`} />
-                            <span className="leading-tight">{department.name}</span>
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Metric name */}
-                      <td
-                        className={`sticky px-3 py-2 text-gray-800 font-medium border-r-2 border-gray-300 border-b border-gray-100 align-middle bg-white
+                        className={`sticky left-0 z-10 px-3 py-2 text-gray-800 font-medium border-r-2 border-gray-300 border-b border-gray-100 align-middle bg-white
                           ${isFirst ? `border-t-2 ${color.border}` : ''}
                           group-hover:bg-gray-50
                         `}
-                        style={{ left: 140, minWidth: 180, maxWidth: 220 }}
+                        style={{ width: '20%', minWidth: 160, maxWidth: 220 }}
                       >
-                        <span className="block truncate text-xs leading-snug" title={metric.name}>
-                          {metric.name}
-                        </span>
+                        <div className="flex items-start gap-1.5">
+                          {isFirst && <span className={`inline-block w-1.5 h-1.5 rounded-full ${color.badge} flex-shrink-0 mt-1`} />}
+                          {!isFirst && <span className="inline-block w-1.5 flex-shrink-0" />}
+                          <span className="text-xs leading-snug break-words">{metric.name}</span>
+                        </div>
                       </td>
 
                       {/* Unit */}
@@ -314,7 +293,7 @@ export default function MetricsDataPage() {
                       {/* Week values */}
                       {weeks.map((week, wIdx) => {
                         const value = getValueForWeek(metric, week.id);
-                        const isLatest = wIdx === weeks.length - 1;
+                        const isLatest = wIdx === 0;
 
                         return (
                           <td
