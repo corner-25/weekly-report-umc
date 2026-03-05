@@ -39,3 +39,7 @@ prisma/migrations/
 # Uploads
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Scripts and local data tools
+/scripts/
+/data-push-railway/
