@@ -244,7 +244,7 @@ export default function MetricsDataPage() {
                 {/* Frozen: Chỉ số */}
                 <th
                   className="sticky left-0 z-30 bg-gray-800 text-white text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-wide border-r-2 border-gray-500"
-                  style={{ width: '20%', minWidth: 160, maxWidth: 220 }}
+                  style={{ width: '30%', minWidth: 200, maxWidth: 320 }}
                 >
                   Chỉ số
                 </th>
@@ -285,7 +285,7 @@ export default function MetricsDataPage() {
                         className={`sticky left-0 z-10 px-3 py-2 text-gray-800 font-medium border-r-2 border-gray-300 border-b border-gray-100 align-middle bg-white group-hover:bg-gray-50
                           ${isFirst ? `border-t-2 ${color.border}` : ''}
                         `}
-                        style={{ width: '20%', minWidth: 160, maxWidth: 220 }}
+                        style={{ width: '30%', minWidth: 200, maxWidth: 320 }}
                       >
                         <div className="flex items-start gap-1.5">
                           {isFirst
