@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const application = await prisma.secretaryApplication.findFirst({
-      where: { id: params.id, deletedAt: null },
+      where: { id, deletedAt: null },
       include: {
         appliedType: true,
         desiredDepartment: true,
@@ -19,8 +20,9 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       fullName, dateOfBirth, phone, email, cvUrl,
@@ -33,7 +35,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     const application = await prisma.secretaryApplication.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         fullName: fullName.trim(),
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
@@ -58,10 +60,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await prisma.secretaryApplication.update({
-      where: { id: params.id },
+      where: { id },
       data: { deletedAt: new Date() },
     });
     return NextResponse.json({ success: true });

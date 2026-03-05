@@ -3,13 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 // POST /api/secretary-applications/[id]/advance
 // action: "INTERVIEW" | "ACCEPTED" | "REJECTED"
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { action, interviewDate, interviewScore, interviewNotes, departmentId, startDate, rejectionNotes } = body;
 
     const application = await prisma.secretaryApplication.findFirst({
-      where: { id: params.id, deletedAt: null },
+      where: { id, deletedAt: null },
     });
     if (!application) return NextResponse.json({ error: 'Không tìm thấy hồ sơ' }, { status: 404 });
 
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // SCREENING → INTERVIEW
     if (action === 'INTERVIEW') {
       const updated = await prisma.secretaryApplication.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           status: 'INTERVIEW',
           interviewDate: interviewDate ? new Date(interviewDate) : null,
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // → REJECTED
     if (action === 'REJECTED') {
       const updated = await prisma.secretaryApplication.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           status: 'REJECTED',
           notes: rejectionNotes
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
       // Cập nhật application
       const updated = await prisma.secretaryApplication.update({
-        where: { id: params.id },
+        where: { id },
         data: { status: 'ACCEPTED', convertedSecretaryId: secretary.id },
         include: {
           appliedType: true,
