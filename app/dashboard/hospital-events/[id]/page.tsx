@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { ChecklistManager } from '@/components/hospital-events/ChecklistManager';
 import { ChecklistProgress } from '@/components/hospital-events/ChecklistProgress';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface MeetingRoom {
   id: string;
@@ -49,6 +50,7 @@ export default function HospitalEventDetailPage({
   const router = useRouter();
   const [event, setEvent] = useState<HospitalEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchEvent();
@@ -68,8 +70,6 @@ export default function HospitalEventDetailPage({
   };
 
   const handleDelete = async () => {
-    if (!confirm(`Bạn có chắc muốn xóa sự kiện "${event?.name}"?`)) return;
-
     try {
       const res = await fetch(`/api/hospital-events/${id}`, {
         method: 'DELETE',
@@ -79,6 +79,8 @@ export default function HospitalEventDetailPage({
       router.push('/dashboard/hospital-events');
     } catch (error) {
       alert('Có lỗi xảy ra khi xóa sự kiện');
+    } finally {
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -109,6 +111,13 @@ export default function HospitalEventDetailPage({
 
   return (
     <div className="max-w-5xl mx-auto">
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc muốn xóa sự kiện "${event?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-start justify-between mb-4">
@@ -132,7 +141,7 @@ export default function HospitalEventDetailPage({
               Sửa
             </Link>
             <button
-              onClick={handleDelete}
+              onClick={() => setShowDeleteConfirm(true)}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
             >
               Xóa

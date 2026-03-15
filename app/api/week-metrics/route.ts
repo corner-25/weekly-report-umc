@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { prisma } from '@/lib/prisma';
+import { authOptions } from '@/lib/auth';
 
 const metricValueSchema = z.object({
   metricId: z.string(),
@@ -12,11 +14,16 @@ const metricValueSchema = z.object({
 // GET /api/week-metrics - Get metric values (filter by weekId)
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const weekId = searchParams.get('weekId');
     const metricId = searchParams.get('metricId');
 
-    const where: any = {};
+    const where: { weekId?: string; metricId?: string } = {};
     if (weekId) where.weekId = weekId;
     if (metricId) where.metricId = metricId;
 
@@ -58,6 +65,11 @@ export async function GET(request: Request) {
 // POST /api/week-metrics - Create or update metric value
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const validatedData = metricValueSchema.parse(body);
 

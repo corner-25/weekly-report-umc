@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface SecretaryType {
   id: string;
@@ -17,6 +18,7 @@ export default function SecretaryTypesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingType, setEditingType] = useState<SecretaryType | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '', color: '#0891b2' });
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const fetchTypes = async () => {
     try {
@@ -77,11 +79,11 @@ export default function SecretaryTypesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc muốn xóa loại thư ký này?')) return;
+  const handleDelete = async () => {
+    if (!deleteTargetId) return;
 
     try {
-      const res = await fetch(`/api/secretary-types/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/secretary-types/${deleteTargetId}`, { method: 'DELETE' });
       if (res.ok) {
         fetchTypes();
       } else {
@@ -90,6 +92,8 @@ export default function SecretaryTypesPage() {
       }
     } catch (error) {
       console.error('Error deleting type:', error);
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -99,6 +103,13 @@ export default function SecretaryTypesPage() {
 
   return (
     <div className="p-6">
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        title="Xác nhận xóa"
+        message="Bạn có chắc muốn xóa loại thư ký này?"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
@@ -160,7 +171,7 @@ export default function SecretaryTypesPage() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(type.id)}
+                    onClick={() => setDeleteTargetId(type.id)}
                     className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

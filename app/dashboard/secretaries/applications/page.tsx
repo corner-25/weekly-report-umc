@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ApplicationForm } from '@/components/secretaries/ApplicationForm';
 import { AdvanceModal } from '@/components/secretaries/AdvanceModal';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Application {
   id: string;
@@ -50,6 +51,7 @@ export default function ApplicationsPage() {
   const [editingApp, setEditingApp] = useState<Application | null>(null);
   const [advanceTarget, setAdvanceTarget] = useState<{ app: Application; action: 'INTERVIEW' | 'ACCEPTED' | 'REJECTED' } | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const fetchApplications = async () => {
     try {
@@ -81,9 +83,10 @@ export default function ApplicationsPage() {
     fetchApplications();
   }, [activeTab, search]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc muốn xóa hồ sơ này?')) return;
-    await fetch(`/api/secretary-applications/${id}`, { method: 'DELETE' });
+  const handleDelete = async () => {
+    if (!deleteTargetId) return;
+    await fetch(`/api/secretary-applications/${deleteTargetId}`, { method: 'DELETE' });
+    setDeleteTargetId(null);
     fetchApplications();
   };
 
@@ -113,6 +116,13 @@ export default function ApplicationsPage() {
 
   return (
     <div className="p-6">
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        title="Xác nhận xóa"
+        message="Bạn có chắc muốn xóa hồ sơ này?"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -273,7 +283,7 @@ export default function ApplicationsPage() {
                           </button>
                           {app.status !== 'ACCEPTED' && (
                             <button
-                              onClick={() => handleDelete(app.id)}
+                              onClick={() => setDeleteTargetId(app.id)}
                               className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
                               title="Xóa"
                             >

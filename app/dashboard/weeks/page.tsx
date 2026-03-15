@@ -20,6 +20,7 @@ interface Week {
 export default function WeeksListPage() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,21 +30,17 @@ export default function WeeksListPage() {
 
   const fetchWeeks = async () => {
     try {
+      setError('');
       const params = new URLSearchParams();
-      if (selectedYear) {
-        params.append('year', selectedYear.toString());
-      }
-      if (searchTerm) {
-        params.append('search', searchTerm);
-      }
+      if (selectedYear) params.append('year', selectedYear.toString());
+      if (searchTerm) params.append('search', searchTerm);
 
       const response = await fetch(`/api/weeks?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setWeeks(data);
-      }
-    } catch (error) {
-      console.error('Error fetching weeks:', error);
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data = await response.json();
+      setWeeks(data);
+    } catch {
+      setError('Không thể tải danh sách báo cáo. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -108,6 +105,13 @@ export default function WeeksListPage() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex justify-between items-center">
+          {error}
+          <button onClick={fetchWeeks} className="underline hover:no-underline ml-4">Thử lại</button>
+        </div>
+      )}
 
       {/* Weeks Grid */}
       {loading ? (

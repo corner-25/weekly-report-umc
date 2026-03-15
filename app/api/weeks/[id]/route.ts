@@ -93,7 +93,7 @@ export async function GET(
         department: tp.masterTask.department,
       });
       return acc;
-    }, {} as any);
+    }, {} as Record<string, { department: { id: string; name: string }; tasks: unknown[] }>);
 
     // Also include old tasks for backward compatibility
     week.tasks.forEach((task) => {

@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     const year = searchParams.get('year');
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: { year?: number; OR?: { weekNumber: { equals: number } }[] } = {};
 
     if (year) {
       where.year = parseInt(year);

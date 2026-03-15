@@ -32,6 +32,7 @@ interface DashboardStats {
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const today = new Date();
 
   useEffect(() => {
@@ -95,19 +96,35 @@ export default function Dashboard() {
         birthdaySecretaries: birthdays.slice(0, 5),
         recentTransfers: transfers.slice(0, 3),
       });
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+    } catch {
+      setError('Không thể tải dữ liệu tổng quan. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading || !stats) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error || 'Không thể tải dữ liệu'}</p>
+          <button
+            onClick={fetchDashboardData}
+            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+          >
+            Thử lại
+          </button>
         </div>
       </div>
     );

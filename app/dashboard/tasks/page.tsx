@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Department {
   id: string;
@@ -39,6 +40,7 @@ export default function MasterTasksPage() {
     endDate: '',
   });
   const [error, setError] = useState('');
+  const [deleteTargetTask, setDeleteTargetTask] = useState<MasterTask | null>(null);
 
   useEffect(() => {
     fetchDepartments();
@@ -154,17 +156,11 @@ export default function MasterTasksPage() {
     }
   };
 
-  const handleDelete = async (task: MasterTask) => {
-    if (
-      !confirm(
-        `Bạn có chắc muốn xóa nhiệm vụ "${task.name}"?\n\nLưu ý: Chỉ xóa được nếu chưa có tiến độ nào.`
-      )
-    ) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!deleteTargetTask) return;
 
     try {
-      const response = await fetch(`/api/master-tasks/${task.id}`, {
+      const response = await fetch(`/api/master-tasks/${deleteTargetTask.id}`, {
         method: 'DELETE',
       });
 
@@ -177,6 +173,8 @@ export default function MasterTasksPage() {
       }
     } catch (error) {
       alert('Có lỗi xảy ra');
+    } finally {
+      setDeleteTargetTask(null);
     }
   };
 
@@ -199,6 +197,13 @@ export default function MasterTasksPage() {
 
   return (
     <div>
+      <ConfirmDialog
+        open={!!deleteTargetTask}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc muốn xóa nhiệm vụ "${deleteTargetTask?.name}"? Lưu ý: Chỉ xóa được nếu chưa có tiến độ nào.`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetTask(null)}
+      />
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -370,7 +375,7 @@ export default function MasterTasksPage() {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(task)}
+                        onClick={() => setDeleteTargetTask(task)}
                         className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                         title="Xóa"
                       >

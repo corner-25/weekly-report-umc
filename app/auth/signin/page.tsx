@@ -9,6 +9,7 @@ export default function SignIn() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,6 +25,8 @@ export default function SignIn() {
         email,
         password,
         redirect: false,
+        // Nếu remember=true → dùng maxAge 30 ngày, ngược lại session cookie (đóng tab là hết)
+        ...(remember ? {} : { maxAge: 0 }),
       });
 
       if (result?.error) {
@@ -85,6 +88,19 @@ export default function SignIn() {
                 placeholder="Mật khẩu"
               />
             </div>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              id="remember"
+              type="checkbox"
+              checked={remember}
+              onChange={e => setRemember(e.target.checked)}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded cursor-pointer"
+            />
+            <label htmlFor="remember" className="ml-2 text-sm text-gray-600 cursor-pointer select-none">
+              Ghi nhớ đăng nhập (30 ngày)
+            </label>
           </div>
 
           <div>

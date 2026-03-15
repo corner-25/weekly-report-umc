@@ -75,7 +75,7 @@ export async function PATCH(
     }
 
     // Set isEdited flag if not explicitly provided
-    const updateData: any = { ...data };
+    const updateData: Record<string, unknown> = { ...data };
     if (data.date) {
       updateData.date = new Date(data.date);
     }

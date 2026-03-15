@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getWeek, getYear, startOfWeek, endOfWeek, format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import MetricsInput from '@/components/MetricsInput';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Department {
   id: string;
@@ -56,6 +57,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [masterTasks, setMasterTasks] = useState<MasterTask[]>([]);
   const [allMetrics, setAllMetrics] = useState<any[]>([]); // For filtering metric values by department
@@ -252,8 +254,9 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   };
 
   const removeDepartment = (departmentId: string) => {
-    if (!confirm('Bạn có chắc muốn xóa phòng này?')) return;
-    setDepartmentData(departmentData.filter((d) => d.departmentId !== departmentId));
+    setPendingAction(() => () => {
+      setDepartmentData(departmentData.filter((d) => d.departmentId !== departmentId));
+    });
   };
 
   // Master Task Progress functions
@@ -309,16 +312,17 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   };
 
   const removeTaskProgress = (departmentId: string, index: number) => {
-    if (!confirm('Bạn có chắc muốn xóa?')) return;
-    setDepartmentData(
-      departmentData.map((d) => {
-        if (d.departmentId === departmentId) {
-          const newTaskProgress = d.taskProgress.filter((_, i) => i !== index);
-          return { ...d, taskProgress: newTaskProgress };
-        }
-        return d;
-      })
-    );
+    setPendingAction(() => () => {
+      setDepartmentData(
+        departmentData.map((d) => {
+          if (d.departmentId === departmentId) {
+            const newTaskProgress = d.taskProgress.filter((_, i) => i !== index);
+            return { ...d, taskProgress: newTaskProgress };
+          }
+          return d;
+        })
+      );
+    });
   };
 
   // Ad-hoc Task functions
@@ -368,16 +372,17 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   };
 
   const removeAdHocTask = (departmentId: string, index: number) => {
-    if (!confirm('Bạn có chắc muốn xóa?')) return;
-    setDepartmentData(
-      departmentData.map((d) => {
-        if (d.departmentId === departmentId) {
-          const newAdHocTasks = d.adHocTasks.filter((_, i) => i !== index);
-          return { ...d, adHocTasks: newAdHocTasks };
-        }
-        return d;
-      })
-    );
+    setPendingAction(() => () => {
+      setDepartmentData(
+        departmentData.map((d) => {
+          if (d.departmentId === departmentId) {
+            const newAdHocTasks = d.adHocTasks.filter((_, i) => i !== index);
+            return { ...d, adHocTasks: newAdHocTasks };
+          }
+          return d;
+        })
+      );
+    });
   };
 
   const handleSubmit = async (submitStatus: 'DRAFT' | 'COMPLETED') => {
@@ -461,6 +466,13 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="max-w-5xl mx-auto">
+      <ConfirmDialog
+        open={!!pendingAction}
+        title="Xác nhận xóa"
+        message="Bạn có chắc muốn xóa?"
+        onConfirm={() => { pendingAction?.(); setPendingAction(null); }}
+        onCancel={() => setPendingAction(null)}
+      />
       <div className="mb-6">
         <button
           onClick={() => router.back()}

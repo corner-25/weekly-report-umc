@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Department {
   id: string;
@@ -20,6 +21,7 @@ export default function DepartmentsPage() {
   const [formData, setFormData] = useState({ name: '', description: '' });
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<Department | null>(null);
 
   useEffect(() => {
     fetchDepartments();
@@ -82,25 +84,20 @@ export default function DepartmentsPage() {
     }
   };
 
-  const handleDelete = async (dept: Department) => {
-    if (!confirm(`Bạn có chắc muốn xóa phòng "${dept.name}"?`)) {
-      return;
-    }
-
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const response = await fetch(`/api/departments/${dept.id}`, {
-        method: 'DELETE',
-      });
-
+      const response = await fetch(`/api/departments/${deleteTarget.id}`, { method: 'DELETE' });
       const data = await response.json();
-
       if (!response.ok) {
-        alert(data.error || 'Có lỗi xảy ra');
+        setError(data.error || 'Có lỗi xảy ra');
       } else {
+        setDeleteTarget(null);
         fetchDepartments();
       }
-    } catch (error) {
-      alert('Có lỗi xảy ra');
+    } catch {
+      setError('Có lỗi xảy ra khi xóa phòng.');
+      setDeleteTarget(null);
     }
   };
 
@@ -110,6 +107,14 @@ export default function DepartmentsPage() {
 
   return (
     <div>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Xóa phòng ban"
+        message={`Bạn có chắc muốn xóa phòng "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
       <div className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Quản lý Phòng ban</h1>
         <button
@@ -187,7 +192,7 @@ export default function DepartmentsPage() {
                       Sửa
                     </button>
                     <button
-                      onClick={() => handleDelete(dept)}
+                      onClick={() => setDeleteTarget(dept)}
                       className="inline-flex items-center gap-1.5 text-red-600 hover:text-red-900 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

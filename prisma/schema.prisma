@@ -108,6 +108,7 @@ model WeekTaskProgress {
   @@unique([masterTaskId, weekId]) // Mỗi nhiệm vụ chỉ xuất hiện 1 lần/tuần
   @@index([weekId])
   @@index([masterTaskId])
+  @@index([weekId, masterTaskId])
   @@map("week_task_progress")
 }
 
@@ -170,6 +171,7 @@ model WeekMetricValue {
   @@unique([metricId, weekId]) // Mỗi chỉ số chỉ có 1 giá trị/tuần
   @@index([weekId])
   @@index([metricId])
+  @@index([weekId, metricId])
   @@map("week_metric_values")
 }
 
@@ -189,6 +191,7 @@ model Event {
   updatedAt       DateTime       @updatedAt
 
   @@index([date])
+  @@index([date, status])
   @@map("events")
 }
 
@@ -267,6 +270,7 @@ model HospitalEvent {
 
   @@index([date])
   @@index([meetingRoomId])
+  @@index([date, meetingRoomId])
   @@map("hospital_events")
 }
 

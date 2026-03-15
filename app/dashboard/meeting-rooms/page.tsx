@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { EquipmentBadges } from '@/components/hospital-events/EquipmentBadges';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface MeetingRoom {
   id: string;
@@ -33,6 +34,7 @@ export default function MeetingRoomsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState<any>({});
   const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     fetchRooms();
@@ -112,19 +114,16 @@ export default function MeetingRoomsPage() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa phòng "${name}"?`)) return;
-
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const res = await fetch(`/api/meeting-rooms/${id}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`/api/meeting-rooms/${deleteTarget.id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Không thể xóa phòng họp');
-
+      setDeleteTarget(null);
       await fetchRooms();
-    } catch (err) {
-      alert('Có lỗi xảy ra khi xóa phòng họp');
+    } catch {
+      setError('Có lỗi xảy ra khi xóa phòng họp.');
+      setDeleteTarget(null);
     }
   };
 
@@ -139,6 +138,14 @@ export default function MeetingRoomsPage() {
 
   return (
     <div>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Xóa phòng họp"
+        message={`Bạn có chắc muốn xóa phòng "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Quản lý Phòng họp</h1>
         <p className="mt-2 text-gray-600">Quản lý thông tin phòng họp và thiết bị</p>
@@ -204,7 +211,7 @@ export default function MeetingRoomsPage() {
                       Sửa
                     </button>
                     <button
-                      onClick={() => handleDelete(room.id, room.name)}
+                      onClick={() => setDeleteTarget({ id: room.id, name: room.name })}
                       className="text-red-600 hover:text-red-900"
                     >
                       Xóa

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { SecretaryList } from '@/components/secretaries/SecretaryList';
 import { SecretaryForm } from '@/components/secretaries/SecretaryForm';
 import { SecretaryDetail } from '@/components/secretaries/SecretaryDetail';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Secretary {
   id: string;
@@ -46,6 +47,7 @@ export default function SecretariesPage() {
     typeId: '',
     status: '',
   });
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const fetchSecretaries = async () => {
     try {
@@ -123,16 +125,16 @@ export default function SecretariesPage() {
     setSelectedSecretary(secretary);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc muốn xóa thư ký này?')) return;
-
+  const handleDelete = async () => {
+    if (!deleteTargetId) return;
     try {
-      const res = await fetch(`/api/secretaries/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/secretaries/${deleteTargetId}`, { method: 'DELETE' });
       if (res.ok) {
+        setDeleteTargetId(null);
         fetchSecretaries();
       }
-    } catch (error) {
-      console.error('Error deleting secretary:', error);
+    } catch {
+      setDeleteTargetId(null);
     }
   };
 
@@ -144,6 +146,14 @@ export default function SecretariesPage() {
 
   return (
     <div className="p-6">
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        title="Xóa thư ký"
+        message="Bạn có chắc muốn xóa thư ký này?"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
+
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
@@ -247,7 +257,7 @@ export default function SecretariesPage() {
           secretaries={secretaries}
           onEdit={handleEdit}
           onView={handleView}
-          onDelete={handleDelete}
+          onDelete={(id: string) => setDeleteTargetId(id)}
         />
       )}
 

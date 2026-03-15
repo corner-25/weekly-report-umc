@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { ChecklistProgress } from '@/components/hospital-events/ChecklistProgress';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface MeetingRoom {
   id: string;
@@ -33,9 +34,11 @@ interface HospitalEvent {
 export default function HospitalEventsPage() {
   const [events, setEvents] = useState<HospitalEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -43,29 +46,28 @@ export default function HospitalEventsPage() {
 
   const fetchEvents = async () => {
     try {
+      setError('');
       const res = await fetch('/api/hospital-events');
       if (!res.ok) throw new Error('Failed to fetch events');
       const data = await res.json();
       setEvents(data);
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      setError('Không thể tải danh sách sự kiện. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa sự kiện "${name}"?`)) return;
-
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const res = await fetch(`/api/hospital-events/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) throw new Error('Failed to delete event');
+      const res = await fetch(`/api/hospital-events/${deleteTarget.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      setDeleteTarget(null);
       await fetchEvents();
-    } catch (error) {
-      alert('Có lỗi xảy ra khi xóa sự kiện');
+    } catch {
+      setError('Có lỗi xảy ra khi xóa sự kiện.');
+      setDeleteTarget(null);
     }
   };
 
@@ -89,16 +91,29 @@ export default function HospitalEventsPage() {
       : 'bg-yellow-100 border-yellow-300 text-yellow-900';
   };
 
-  if (loading) {
-    return <div className="text-center py-12">Đang tải...</div>;
-  }
+  if (loading) return <div className="text-center py-12">Đang tải...</div>;
 
   return (
     <div>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Xóa sự kiện"
+        message={`Bạn có chắc muốn xóa sự kiện "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Sự kiện Bệnh viện</h1>
         <p className="mt-2 text-gray-600">Quản lý sự kiện và theo dõi tiến độ checklist</p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex justify-between items-center">
+          {error}
+          <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">✕</button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -212,7 +227,7 @@ export default function HospitalEventsPage() {
                       Sửa
                     </Link>
                     <button
-                      onClick={() => handleDelete(event.id, event.name)}
+                      onClick={() => setDeleteTarget({ id: event.id, name: event.name })}
                       className="px-3 py-1 text-sm text-red-600 hover:text-red-800 font-medium"
                     >
                       Xóa

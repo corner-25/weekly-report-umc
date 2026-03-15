@@ -41,9 +41,9 @@ export async function GET(request: Request) {
             lte: new Date(endDate)
           }
         }),
-        ...(eventType && { eventType: eventType as any }),
+        ...(eventType && { eventType: eventType as 'ORGANIZED' | 'COLLABORATED' }),
         ...(meetingRoomId && { meetingRoomId }),
-        ...(status && { status: status as any }),
+        ...(status && { status: status as 'CONFIRMED' | 'UNCONFIRMED' }),
       },
       include: {
         meetingRoom: true,
@@ -71,42 +71,37 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = hospitalEventSchema.parse(body);
 
-    // 1. Create event
-    const event = await prisma.hospitalEvent.create({
-      data: {
-        ...data,
-        date: new Date(data.date),
-      }
-    });
-
-    // 2. Get default checklist templates
+    // Fetch templates trước transaction (read-only, không cần atomic)
     const templates = await prisma.checklistTemplate.findMany({
       where: { isDefault: true, isActive: true },
       orderBy: { orderNumber: 'asc' }
     });
 
-    // 3. Create checklist items from templates
-    if (templates.length > 0) {
-      await prisma.eventChecklistItem.createMany({
-        data: templates.map((t) => ({
-          hospitalEventId: event.id,
-          title: t.title,
-          description: t.description,
-          orderNumber: t.orderNumber,
-          isCompleted: false,
-        }))
+    // Wrap tạo event + checklist trong transaction — all-or-nothing
+    const fullEvent = await prisma.$transaction(async (tx) => {
+      const event = await tx.hospitalEvent.create({
+        data: { ...data, date: new Date(data.date) }
       });
-    }
 
-    // 4. Return event with relations
-    const fullEvent = await prisma.hospitalEvent.findUnique({
-      where: { id: event.id },
-      include: {
-        meetingRoom: true,
-        checklistItems: {
-          orderBy: { orderNumber: 'asc' }
-        }
+      if (templates.length > 0) {
+        await tx.eventChecklistItem.createMany({
+          data: templates.map((t) => ({
+            hospitalEventId: event.id,
+            title: t.title,
+            description: t.description,
+            orderNumber: t.orderNumber,
+            isCompleted: false,
+          }))
+        });
       }
+
+      return tx.hospitalEvent.findUnique({
+        where: { id: event.id },
+        include: {
+          meetingRoom: true,
+          checklistItems: { orderBy: { orderNumber: 'asc' } }
+        }
+      });
     });
 
     return NextResponse.json(fullEvent, { status: 201 });

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface Department {
   id: string;
@@ -38,6 +39,7 @@ export default function DepartmentMetricsPage() {
     orderNumber: 0,
   });
   const [error, setError] = useState('');
+  const [deleteTargetMetric, setDeleteTargetMetric] = useState<Metric | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -123,13 +125,11 @@ export default function DepartmentMetricsPage() {
     }
   };
 
-  const handleDelete = async (metric: Metric) => {
-    if (!confirm(`Bạn có chắc muốn xóa chỉ số "${metric.name}"?`)) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!deleteTargetMetric) return;
 
     try {
-      const response = await fetch(`/api/metrics/${metric.id}`, {
+      const response = await fetch(`/api/metrics/${deleteTargetMetric.id}`, {
         method: 'DELETE',
       });
 
@@ -142,6 +142,8 @@ export default function DepartmentMetricsPage() {
       }
     } catch (error) {
       alert('Có lỗi xảy ra');
+    } finally {
+      setDeleteTargetMetric(null);
     }
   };
 
@@ -155,6 +157,13 @@ export default function DepartmentMetricsPage() {
 
   return (
     <div>
+      <ConfirmDialog
+        open={!!deleteTargetMetric}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc muốn xóa chỉ số "${deleteTargetMetric?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetMetric(null)}
+      />
       {/* Breadcrumb */}
       <div className="mb-4">
         <Link href="/dashboard/departments" className="text-blue-600 hover:text-blue-800">
@@ -253,7 +262,7 @@ export default function DepartmentMetricsPage() {
                       Sửa
                     </button>
                     <button
-                      onClick={() => handleDelete(metric)}
+                      onClick={() => setDeleteTargetMetric(metric)}
                       className="inline-flex items-center gap-1.5 text-red-600 hover:text-red-900 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
