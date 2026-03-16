@@ -10,7 +10,12 @@ type MenuSection = 'reports' | 'management' | 'events' | 'statistics' | 'secreta
 export function Sidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('sidebar-collapsed') === 'true';
+    }
+    return false;
+  });
   const [openSections, setOpenSections] = useState<MenuSection[]>([]);
 
   // Auto-expand section based on current path
@@ -73,7 +78,14 @@ export function Sidebar() {
     const isOpen = openSections.includes(id);
 
     if (isCollapsed) {
-      return <>{children}</>;
+      // When collapsed: show only the section icon as a divider, hide children
+      return (
+        <div className="py-1">
+          <div className="flex justify-center px-1 py-2 text-gray-400">
+            {icon}
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -125,7 +137,11 @@ export function Sidebar() {
           </Link>
         )}
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => {
+            const next = !isCollapsed;
+            setIsCollapsed(next);
+            localStorage.setItem('sidebar-collapsed', String(next));
+          }}
           className="p-1.5 rounded-lg text-white hover:bg-white/20 transition-colors"
           title={isCollapsed ? 'Mở rộng' : 'Thu gọn'}
         >
