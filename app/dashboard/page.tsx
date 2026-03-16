@@ -41,60 +41,24 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [
-        deptRes,
-        tasksRes,
-        weeksRes,
-        eventsRes,
-        roomsRes,
-        secretariesRes,
-        birthdaysRes,
-        transfersRes,
-      ] = await Promise.all([
-        fetch('/api/departments'),
-        fetch('/api/master-tasks'),
-        fetch('/api/weeks'),
-        fetch('/api/hospital-events'),
-        fetch('/api/meeting-rooms'),
-        fetch('/api/secretaries'),
-        fetch('/api/secretaries/birthdays?period=week'),
-        fetch('/api/secretary-transfers'),
-      ]);
-
-      const departments = deptRes.ok ? await deptRes.json() : [];
-      const masterTasks = tasksRes.ok ? await tasksRes.json() : [];
-      const weeks = weeksRes.ok ? await weeksRes.json() : [];
-      const events = eventsRes.ok ? await eventsRes.json() : [];
-      const rooms = roomsRes.ok ? await roomsRes.json() : [];
-      const secretaries = secretariesRes.ok ? await secretariesRes.json() : [];
-      const birthdays = birthdaysRes.ok ? await birthdaysRes.json() : [];
-      const transfers = transfersRes.ok ? await transfersRes.json() : [];
-
-      // Filter events
-      const todayStr = format(today, 'yyyy-MM-dd');
-      const todayEvents = events.filter((e: any) =>
-        format(new Date(e.date), 'yyyy-MM-dd') === todayStr
-      );
-      const upcomingEvents = events
-        .filter((e: any) => new Date(e.date) >= today)
-        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .slice(0, 5);
-
+      const res = await fetch('/api/dashboard-stats');
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
       setStats({
-        totalWeeks: weeks.length,
-        totalDepartments: departments.length,
-        totalMasterTasks: masterTasks.length,
-        tasksInProgress: masterTasks.filter((t: any) => !t.isCompleted && t.weekCount > 0).length,
-        tasksCompleted: masterTasks.filter((t: any) => t.isCompleted).length,
-        recentWeeks: weeks.slice(0, 3),
-        totalEvents: events.length,
-        upcomingEvents,
-        todayEvents,
-        totalMeetingRooms: rooms.length,
-        totalSecretaries: secretaries.length,
-        activeSecretaries: secretaries.filter((s: any) => s.status === 'ACTIVE').length,
-        birthdaySecretaries: birthdays.slice(0, 5),
-        recentTransfers: transfers.slice(0, 3),
+        totalWeeks: data.totalWeeks,
+        totalDepartments: 0,
+        totalMasterTasks: data.totalMasterTasks,
+        tasksInProgress: data.tasksInProgress,
+        tasksCompleted: data.tasksCompleted,
+        recentWeeks: data.recentWeeks,
+        totalEvents: data.upcomingEvents.length,
+        upcomingEvents: data.upcomingEvents,
+        todayEvents: data.todayEvents,
+        totalMeetingRooms: data.totalMeetingRooms,
+        totalSecretaries: data.totalSecretaries,
+        activeSecretaries: data.activeSecretaries,
+        birthdaySecretaries: data.birthdaySecretaries,
+        recentTransfers: data.recentTransfers,
       });
     } catch {
       setError('Không thể tải dữ liệu tổng quan. Vui lòng thử lại.');
