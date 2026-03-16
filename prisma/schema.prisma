@@ -64,6 +64,7 @@ model Department {
   transfersFrom          SecretaryTransferLog[] @relation("TransferFrom")
   transfersTo            SecretaryTransferLog[] @relation("TransferTo")
   secretaryApplications  SecretaryApplication[] @relation("ApplicationDesiredDept")
+  licenses               License[]
 
   @@map("departments")
 }
@@ -460,4 +461,64 @@ model SecretaryApplication {
   @@index([appliedTypeId])
   @@index([desiredDepartmentId])
   @@map("secretary_applications")
+}
+
+// ==================== LICENSE / PERMIT MANAGEMENT ====================
+
+enum LicenseCategory {
+  HOSPITAL    // Giấy phép hoạt động bệnh viện
+  DEPARTMENT  // Giấy phép khoa/đơn vị
+  VEHICLE     // Giấy phép xe cứu thương
+  EQUIPMENT   // Giấy phép trang thiết bị y tế
+  OTHER       // Loại khác
+}
+
+// License - Giấy phép / chứng chỉ
+model License {
+  id            String          @id @default(cuid())
+  name          String          @db.Text
+  licenseNumber String?
+  category      LicenseCategory
+  issuedBy      String?         @db.Text
+  issuedDate    DateTime?
+  expiryDate    DateTime?
+  scope         String?         @db.Text
+  fileUrl       String?
+  notes         String?         @db.Text
+
+  departmentId  String?
+  department    Department?     @relation(fields: [departmentId], references: [id])
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  renewals      LicenseRenewal[]
+
+  @@index([category])
+  @@index([departmentId])
+  @@index([expiryDate])
+  @@index([category, expiryDate])
+  @@map("licenses")
+}
+
+// LicenseRenewal - Lịch sử gia hạn giấy phép
+model LicenseRenewal {
+  id              String    @id @default(cuid())
+  licenseId       String
+  license         License   @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  renewedDate     DateTime
+  newExpiryDate   DateTime?
+  previousExpiry  DateTime?
+  renewedBy       String?
+  decisionNumber  String?
+  fileUrl         String?
+  notes           String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+
+  @@index([licenseId])
+  @@index([renewedDate])
+  @@map("license_renewals")
 }

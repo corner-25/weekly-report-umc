@@ -27,11 +27,15 @@ export async function POST(request: Request) {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'File type not allowed. Only PDF, Excel, and Word files are supported.' },
+        { error: 'File type not allowed. Only PDF, Excel, Word, and image files are supported.' },
         { status: 400 }
       );
     }
