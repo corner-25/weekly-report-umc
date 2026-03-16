@@ -13,7 +13,9 @@ interface License {
   expiryDate: string | null;
   scope: string | null;
   fileUrl: string | null;
+  notes: string | null;
   department: Department | null;
+  renewals: any[];
   _count: { renewals: number };
 }
 
