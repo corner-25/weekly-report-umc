@@ -22,6 +22,7 @@ export async function GET() {
       totalMasterTasks,
       tasksInProgress,
       tasksCompleted,
+      totalWeeks,
       recentWeeks,
       upcomingEvents,
       todayEvents,
@@ -30,10 +31,8 @@ export async function GET() {
       birthdaySecretaries,
       recentTransfers,
     ] = await Promise.all([
-      // Total master tasks
       prisma.masterTask.count(),
 
-      // Tasks in progress (has weekProgress but not completed)
       prisma.masterTask.count({
         where: {
           weekProgress: { some: {} },
@@ -41,12 +40,12 @@ export async function GET() {
         },
       }),
 
-      // Tasks completed
       prisma.masterTask.count({
         where: { weekProgress: { some: { completedAt: { not: null } } } },
       }),
 
-      // Recent weeks (last 3)
+      prisma.week.count(),
+
       prisma.week.findMany({
         take: 3,
         orderBy: [{ year: 'desc' }, { weekNumber: 'desc' }],
@@ -61,9 +60,8 @@ export async function GET() {
         },
       }),
 
-      // Upcoming events (next 5)
       prisma.hospitalEvent.findMany({
-        where: { date: { gte: startOfToday } },
+        where: { deletedAt: null, date: { gte: startOfToday } },
         take: 5,
         orderBy: { date: 'asc' },
         select: {
@@ -76,9 +74,8 @@ export async function GET() {
         },
       }),
 
-      // Today's events
       prisma.hospitalEvent.findMany({
-        where: { date: { gte: startOfToday, lte: endOfToday } },
+        where: { deletedAt: null, date: { gte: startOfToday, lte: endOfToday } },
         orderBy: { time: 'asc' },
         select: {
           id: true,
@@ -90,31 +87,25 @@ export async function GET() {
         },
       }),
 
-      // Total meeting rooms
       prisma.meetingRoom.count({ where: { deletedAt: null } }),
 
-      // Secretary counts
       prisma.secretary.groupBy({
         by: ['status'],
         where: { deletedAt: null },
         _count: true,
       }),
 
-      // Birthdays this week
-      prisma.secretary.findMany({
-        where: {
-          deletedAt: null,
-          status: 'ACTIVE',
-          dateOfBirth: { not: null },
-        },
-        select: {
-          id: true,
-          fullName: true,
-          dateOfBirth: true,
-        },
-      }),
+      // Filter birthdays by month/day in DB — no full table scan in JS
+      prisma.$queryRaw<{ id: string; fullName: string; dateOfBirth: Date }[]>`
+        SELECT id, "fullName", "dateOfBirth"
+        FROM secretaries
+        WHERE "deletedAt" IS NULL
+          AND status = 'ACTIVE'
+          AND "dateOfBirth" IS NOT NULL
+          AND EXTRACT(MONTH FROM "dateOfBirth") = ANY(ARRAY[${startOfWeek.getMonth() + 1}::int, ${endOfWeek.getMonth() + 1}::int])
+        LIMIT 20
+      `,
 
-      // Recent transfers (last 3)
       prisma.secretaryTransferLog.findMany({
         take: 3,
         orderBy: { transferDate: 'desc' },
@@ -128,7 +119,7 @@ export async function GET() {
       }),
     ]);
 
-    // Filter birthdays in this week
+    // Final birthday filter in-memory (only ~20 rows at most)
     const weekBirthdays = birthdaySecretaries
       .filter((s) => {
         if (!s.dateOfBirth) return false;
@@ -157,7 +148,7 @@ export async function GET() {
       totalMasterTasks,
       tasksInProgress,
       tasksCompleted,
-      totalWeeks: await prisma.week.count(),
+      totalWeeks,
       recentWeeks: recentWeeks.map((w) => ({ ...w, taskCount: w._count.taskProgress })),
       upcomingEvents,
       todayEvents,

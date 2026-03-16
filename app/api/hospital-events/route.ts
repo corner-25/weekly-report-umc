@@ -46,10 +46,8 @@ export async function GET(request: Request) {
         ...(status && { status: status as 'CONFIRMED' | 'UNCONFIRMED' }),
       },
       include: {
-        meetingRoom: true,
-        checklistItems: {
-          orderBy: { orderNumber: 'asc' }
-        },
+        meetingRoom: { select: { id: true, name: true } },
+        _count: { select: { checklistItems: true } },
       },
       orderBy: { date: 'desc' },
     });

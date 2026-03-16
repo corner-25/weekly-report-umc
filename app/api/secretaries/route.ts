@@ -50,11 +50,8 @@ export async function GET(request: NextRequest) {
       include: {
         secretaryType: true,
         currentDepartment: true,
-        certificates: {
-          orderBy: { issuedYear: 'desc' }
-        },
         _count: {
-          select: { transferLogs: true }
+          select: { transferLogs: true, certificates: true }
         }
       },
       orderBy: { fullName: 'asc' }
