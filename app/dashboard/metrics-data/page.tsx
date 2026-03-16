@@ -19,10 +19,13 @@ interface Metric {
   name: string;
   unit?: string;
   department: Department;
-  weekValues: {
-    value: number;
-    week: Week;
-  }[];
+}
+
+interface MetricValue {
+  id: string;
+  value: number;
+  metricId: string;
+  week: Week;
 }
 
 function formatValue(value: number): string {
@@ -37,6 +40,7 @@ export default function MetricsDataPage() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [weeks, setWeeks] = useState<Week[]>([]);
+  const [valueMap, setValueMap] = useState<Map<string, number>>(new Map()); // key: `${metricId}:${weekId}`
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedDept, setSelectedDept] = useState<string>('all');
@@ -48,29 +52,38 @@ export default function MetricsDataPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [metricsRes, deptsRes] = await Promise.all([
+      const [metricsRes, deptsRes, valuesRes] = await Promise.all([
         fetch('/api/metrics'),
         fetch('/api/departments'),
+        fetch(`/api/weeks?year=${selectedYear}`),
       ]);
 
-      if (metricsRes.ok && deptsRes.ok) {
-        const metricsData = await metricsRes.json();
-        const deptsData = await deptsRes.json();
-        setMetrics(metricsData);
-        setDepartments(deptsData);
+      const metricsData: Metric[] = metricsRes.ok ? await metricsRes.json() : [];
+      const deptsData: Department[] = deptsRes.ok ? await deptsRes.json() : [];
+      const weeksData: Week[] = valuesRes.ok ? await valuesRes.json() : [];
 
-        const weekMap = new Map<string, Week>();
-        metricsData.forEach((metric: Metric) => {
-          metric.weekValues?.forEach((wv: any) => {
-            if (wv.week.year === selectedYear) weekMap.set(wv.week.id, wv.week);
-          });
-        });
+      setMetrics(metricsData);
+      setDepartments(deptsData);
+      setWeeks(weeksData.sort((a, b) => b.weekNumber - a.weekNumber));
 
-        setWeeks(
-          Array.from(weekMap.values()).sort((a, b) =>
-            a.year !== b.year ? b.year - a.year : b.weekNumber - a.weekNumber
-          )
+      // Load week-metric values for this year's weeks only
+      if (weeksData.length > 0) {
+        const weekIds = weeksData.map((w) => w.id);
+        // Fetch values for all weeks in parallel (batched by weekId)
+        const valueResponses = await Promise.all(
+          weekIds.map((wId) => fetch(`/api/week-metrics?weekId=${wId}`))
         );
+        const allValues: MetricValue[] = (
+          await Promise.all(valueResponses.map((r) => (r.ok ? r.json() : [])))
+        ).flat();
+
+        const map = new Map<string, number>();
+        allValues.forEach((mv) => {
+          map.set(`${mv.metricId}:${mv.week.id}`, mv.value);
+        });
+        setValueMap(map);
+      } else {
+        setValueMap(new Map());
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -79,15 +92,16 @@ export default function MetricsDataPage() {
     }
   };
 
-  const filteredMetrics = metrics.filter((m) => {
-    if (selectedDept !== 'all' && m.department.id !== selectedDept) return false;
-    return m.weekValues?.some((wv: any) => wv.week.year === selectedYear);
-  });
+  const filteredMetrics = selectedDept === 'all'
+    ? metrics
+    : metrics.filter((m) => m.department.id === selectedDept);
 
-  // Group by department
+  // Group by department — only show depts that have at least 1 value in this year
   const deptOrder: string[] = [];
   const groupedMetrics: Record<string, { dept: Department; metrics: Metric[] }> = {};
   filteredMetrics.forEach((metric) => {
+    const hasValue = weeks.some((w) => valueMap.has(`${metric.id}:${w.id}`));
+    if (!hasValue) return;
     const deptId = metric.department.id;
     if (!groupedMetrics[deptId]) {
       deptOrder.push(deptId);
@@ -95,11 +109,6 @@ export default function MetricsDataPage() {
     }
     groupedMetrics[deptId].metrics.push(metric);
   });
-
-  const getValueForWeek = (metric: Metric, weekId: string): number | null => {
-    const wv = metric.weekValues?.find((wv: any) => wv.week.id === weekId);
-    return wv != null ? wv.value : null;
-  };
 
   if (loading) {
     return (
@@ -118,7 +127,7 @@ export default function MetricsDataPage() {
           <p className="text-gray-600 mt-1">Xem số liệu định lượng theo tuần của các phòng ban</p>
         </div>
         <div className="text-sm text-gray-500">
-          {filteredMetrics.length} chỉ số · {weeks.length} tuần
+          {deptOrder.reduce((s, d) => s + groupedMetrics[d].metrics.length, 0)} chỉ số · {weeks.length} tuần
         </div>
       </div>
 
@@ -160,11 +169,7 @@ export default function MetricsDataPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có dữ liệu</h3>
-          <p className="text-gray-500">
-            {weeks.length === 0
-              ? `Chưa có số liệu nào được nhập trong năm ${selectedYear}`
-              : 'Thêm chỉ số cho các phòng ban và nhập số liệu hàng tuần'}
-          </p>
+          <p className="text-gray-500">Chưa có số liệu nào được nhập trong năm {selectedYear}</p>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-x-auto">
@@ -220,14 +225,14 @@ export default function MetricsDataPage() {
                           {metric.unit || '—'}
                         </td>
                         {weeks.map((week, wIdx) => {
-                          const value = getValueForWeek(metric, week.id);
+                          const value = valueMap.get(`${metric.id}:${week.id}`);
                           const isLatest = wIdx === 0;
                           return (
                             <td
                               key={week.id}
                               className={`px-3 py-3 text-center text-sm border-r border-gray-200 ${isLatest ? 'bg-blue-50' : ''}`}
                             >
-                              {value !== null ? (
+                              {value !== undefined ? (
                                 <span className={`font-semibold tabular-nums ${isLatest ? 'text-blue-700' : 'text-gray-800'}`}>
                                   {formatValue(value)}
                                 </span>

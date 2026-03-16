@@ -62,7 +62,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/week-metrics - Create or update metric value
+// POST /api/week-metrics - Create or update metric value (single or batch)
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -71,9 +71,29 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+
+    // Batch mode: array of metric values
+    if (Array.isArray(body)) {
+      const validated = z.array(metricValueSchema).parse(body);
+
+      // Use transaction to upsert all at once
+      const results = await prisma.$transaction(
+        validated.map((item) =>
+          prisma.weekMetricValue.upsert({
+            where: { metricId_weekId: { metricId: item.metricId, weekId: item.weekId } },
+            update: { value: item.value, note: item.note },
+            create: item,
+            select: { id: true, metricId: true, weekId: true, value: true },
+          })
+        )
+      );
+
+      return NextResponse.json({ count: results.length, results }, { status: 201 });
+    }
+
+    // Single mode
     const validatedData = metricValueSchema.parse(body);
 
-    // Upsert - tạo mới hoặc cập nhật nếu đã tồn tại
     const value = await prisma.weekMetricValue.upsert({
       where: {
         metricId_weekId: {
@@ -87,11 +107,7 @@ export async function POST(request: Request) {
       },
       create: validatedData,
       include: {
-        metric: {
-          include: {
-            department: true,
-          },
-        },
+        metric: { include: { department: true } },
         week: true,
       },
     });

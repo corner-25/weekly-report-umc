@@ -58,30 +58,20 @@ export default function WeekMetricsPage() {
     setSaving(true);
 
     try {
-      // Save all metric values
-      const promises = metricValues.map((value) =>
-        fetch('/api/week-metrics', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...value,
-            weekId,
-          }),
-        })
-      );
+      // Batch save all metric values in a single request
+      const res = await fetch('/api/week-metrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(metricValues.map((v) => ({ ...v, weekId }))),
+      });
 
-      const results = await Promise.all(promises);
-      const allSuccess = results.every((r) => r.ok);
-
-      if (allSuccess) {
+      if (res.ok) {
         setSuccess(`Đã lưu ${metricValues.length} chỉ số thành công!`);
         setTimeout(() => {
           router.push('/dashboard/weeks');
         }, 1500);
       } else {
-        setError('Có lỗi khi lưu một số chỉ số');
+        setError('Có lỗi khi lưu số liệu');
       }
     } catch (error) {
       console.error('Error saving metrics:', error);

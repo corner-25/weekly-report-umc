@@ -23,19 +23,23 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const departmentId = searchParams.get('departmentId');
 
+    const where: any = { isActive: true };
+    if (departmentId) where.departmentId = departmentId;
+
     const metrics = await prisma.metricDefinition.findMany({
-      where: departmentId ? { departmentId, isActive: true } : { isActive: true },
-      include: {
+      where,
+      select: {
+        id: true,
+        name: true,
+        unit: true,
+        description: true,
+        orderNumber: true,
+        departmentId: true,
         department: {
-          select: {
-            id: true,
-            name: true,
-          },
+          select: { id: true, name: true },
         },
         _count: {
-          select: {
-            weekValues: true,
-          },
+          select: { weekValues: true },
         },
       },
       orderBy: [
