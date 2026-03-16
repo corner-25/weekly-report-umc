@@ -122,7 +122,7 @@ export function Sidebar() {
 
   return (
     <div
-      className={`flex flex-col bg-white border-r border-gray-200 min-h-screen transition-all duration-300 ${
+      className={`flex flex-col bg-white border-r border-gray-200 h-screen sticky top-0 transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
     >
@@ -163,7 +163,7 @@ export function Sidebar() {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto min-h-0">
         {/* Tổng quan - standalone */}
         <Link href="/dashboard" className={linkClass('/dashboard')} title="Tổng quan">
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
