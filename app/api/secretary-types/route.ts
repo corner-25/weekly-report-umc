@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { getCachedSecretaryTypes, CACHE_TAGS } from '@/lib/cache';
 
 // GET - Lấy danh sách loại thư ký
 export async function GET() {
   try {
-    const types = await prisma.secretaryType.findMany({
-      where: { isActive: true },
-      orderBy: { name: 'asc' },
-      include: {
-        _count: {
-          select: { secretaries: true }
-        }
-      }
-    });
-
+    const types = await getCachedSecretaryTypes();
     return NextResponse.json(types);
   } catch (error) {
     console.error('Error fetching secretary types:', error);
@@ -56,6 +49,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    revalidateTag(CACHE_TAGS.secretaryTypes);
     return NextResponse.json(newType, { status: 201 });
   } catch (error) {
     console.error('Error creating secretary type:', error);

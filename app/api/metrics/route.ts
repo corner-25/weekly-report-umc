@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { getCachedMetrics, CACHE_TAGS } from '@/lib/cache';
 
 const metricSchema = z.object({
   departmentId: z.string(),
@@ -23,32 +25,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const departmentId = searchParams.get('departmentId');
 
-    const where: any = { isActive: true };
-    if (departmentId) where.departmentId = departmentId;
-
-    const metrics = await prisma.metricDefinition.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        unit: true,
-        description: true,
-        orderNumber: true,
-        departmentId: true,
-        department: {
-          select: { id: true, name: true },
-        },
-        _count: {
-          select: { weekValues: true },
-        },
-      },
-      orderBy: [
-        { departmentId: 'asc' },
-        { orderNumber: 'asc' },
-        { createdAt: 'asc' },
-      ],
-    });
-
+    const metrics = await getCachedMetrics(departmentId ?? undefined);
     return NextResponse.json(metrics);
   } catch (error) {
     console.error('Error fetching metrics:', error);
@@ -79,6 +56,7 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidateTag(CACHE_TAGS.metrics);
     return NextResponse.json(metric, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {

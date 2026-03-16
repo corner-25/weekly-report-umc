@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { getCachedMeetingRooms, CACHE_TAGS } from '@/lib/cache';
 import { z } from 'zod';
 
 const meetingRoomSchema = z.object({
@@ -32,11 +34,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rooms = await prisma.meetingRoom.findMany({
-      where: { deletedAt: null },
-      orderBy: { name: 'asc' },
-    });
-
+    const rooms = await getCachedMeetingRooms();
     return NextResponse.json(rooms);
   } catch (error) {
     return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 });
@@ -67,6 +65,7 @@ export async function POST(request: Request) {
     }
 
     const room = await prisma.meetingRoom.create({ data });
+    revalidateTag(CACHE_TAGS.meetingRooms);
     return NextResponse.json(room, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {

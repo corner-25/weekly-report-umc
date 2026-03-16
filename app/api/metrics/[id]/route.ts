@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { CACHE_TAGS } from '@/lib/cache';
 
 const metricSchema = z.object({
   name: z.string().min(1).optional(),
@@ -79,6 +81,7 @@ export async function PUT(
       },
     });
 
+    revalidateTag(CACHE_TAGS.metrics);
     return NextResponse.json(metric);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -103,6 +106,7 @@ export async function DELETE(
       data: { isActive: false },
     });
 
+    revalidateTag(CACHE_TAGS.metrics);
     return NextResponse.json({ message: 'Đã xóa chỉ số' });
   } catch (error) {
     console.error('Error deleting metric:', error);

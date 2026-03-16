@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { CACHE_TAGS } from '@/lib/cache';
 import { z } from 'zod';
 
 const departmentSchema = z.object({
@@ -82,12 +84,10 @@ export async function PUT(
 
     const department = await prisma.department.update({
       where: { id },
-      data: {
-        name,
-        description,
-      },
+      data: { name, description },
     });
 
+    revalidateTag(CACHE_TAGS.departments);
     return NextResponse.json(department);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -127,12 +127,12 @@ export async function DELETE(
       );
     }
 
-    // Soft delete
     await prisma.department.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
 
+    revalidateTag(CACHE_TAGS.departments);
     return NextResponse.json({ message: 'Đã xóa phòng' });
   } catch (error) {
     return NextResponse.json(

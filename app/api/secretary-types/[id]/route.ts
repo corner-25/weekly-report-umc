@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { CACHE_TAGS } from '@/lib/cache';
 
 // GET - Lấy chi tiết loại thư ký
 export async function GET(
@@ -78,6 +80,7 @@ export async function PUT(
       }
     });
 
+    revalidateTag(CACHE_TAGS.secretaryTypes);
     return NextResponse.json(updatedType);
   } catch (error) {
     console.error('Error updating secretary type:', error);
@@ -125,6 +128,7 @@ export async function DELETE(
       data: { isActive: false }
     });
 
+    revalidateTag(CACHE_TAGS.secretaryTypes);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting secretary type:', error);

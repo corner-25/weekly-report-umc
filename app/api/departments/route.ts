@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { getCachedDepartments, CACHE_TAGS } from '@/lib/cache';
 import { z } from 'zod';
 
 const departmentSchema = z.object({
@@ -18,15 +20,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const departments = await prisma.department.findMany({
-      where: {
-        deletedAt: null,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
-
+    const departments = await getCachedDepartments();
     return NextResponse.json(departments);
   } catch (error) {
     return NextResponse.json(
@@ -61,12 +55,10 @@ export async function POST(request: Request) {
     }
 
     const department = await prisma.department.create({
-      data: {
-        name,
-        description,
-      },
+      data: { name, description },
     });
 
+    revalidateTag(CACHE_TAGS.departments);
     return NextResponse.json(department, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {

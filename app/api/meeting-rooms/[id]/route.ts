@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { CACHE_TAGS } from '@/lib/cache';
 import { z } from 'zod';
 
 const meetingRoomSchema = z.object({
@@ -97,11 +99,8 @@ export async function PATCH(
       }
     }
 
-    const room = await prisma.meetingRoom.update({
-      where: { id },
-      data,
-    });
-
+    const room = await prisma.meetingRoom.update({ where: { id }, data });
+    revalidateTag(CACHE_TAGS.meetingRooms);
     return NextResponse.json(room);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -133,12 +132,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Không tìm thấy phòng họp' }, { status: 404 });
     }
 
-    // Soft delete
-    await prisma.meetingRoom.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-
+    await prisma.meetingRoom.update({ where: { id }, data: { deletedAt: new Date() } });
+    revalidateTag(CACHE_TAGS.meetingRooms);
     return NextResponse.json({ message: 'Đã xóa phòng họp thành công' });
   } catch (error) {
     return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 });
