@@ -347,7 +347,7 @@ export function Sidebar() {
             </svg>
             <span className="ml-3">Bảng số liệu</span>
           </Link>
-          <Link href="/dashboard/reports/phong-hc" className={subLinkClass('/dashboard/reports/phong-hc')} title="Dashboard Phòng HC">
+          <Link href="/dashboard/reports/phong-hc-native" className={subLinkClass('/dashboard/reports/phong-hc-native')} title="Dashboard Phòng HC">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2h-5l-4 4v-4H6a2 2 0 01-2-2V5z" />
             </svg>
