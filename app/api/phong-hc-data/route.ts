@@ -21,25 +21,41 @@ export async function GET() {
   }
 
   try {
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-    const response = await fetch(url, {
+    // Step 1: Get file metadata (sha) via Contents API
+    const metaUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+    const metaRes = await fetch(metaUrl, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
         Accept: 'application/vnd.github.v3+json',
       },
-      next: { revalidate: 300 }, // Cache 5 minutes
+      next: { revalidate: 300 },
     });
 
-    if (!response.ok) {
+    if (!metaRes.ok) {
       return NextResponse.json(
-        { error: `GitHub API error: ${response.status}` },
-        { status: response.status }
+        { error: `GitHub API error: ${metaRes.status}` },
+        { status: metaRes.status }
       );
     }
 
-    const fileData = await response.json();
-    const content = Buffer.from(fileData.content, 'base64').toString('utf-8');
-    const dataPackage = JSON.parse(content);
+    const metaData = await metaRes.json();
+
+    // Step 2: Use raw download URL to get full content (no base64 truncation)
+    const rawRes = await fetch(metaData.download_url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+      },
+      next: { revalidate: 300 },
+    });
+
+    if (!rawRes.ok) {
+      return NextResponse.json(
+        { error: `GitHub raw download error: ${rawRes.status}` },
+        { status: rawRes.status }
+      );
+    }
+
+    const dataPackage = await rawRes.json();
 
     return NextResponse.json(dataPackage);
   } catch (error) {
