@@ -87,7 +87,7 @@ export default function PhongHcNativePage() {
   }, [yearFilteredData, timeFilter, selectedCategories]);
 
   // Aggregated & pivot
-  const { pivotRows, timeColumns } = useMemo(() => {
+  const { rows: pivotRows, timeColumns } = useMemo(() => {
     const aggregated = aggregateByReportType(filteredData, reportType);
     return buildPivotTable(aggregated);
   }, [filteredData, reportType]);
