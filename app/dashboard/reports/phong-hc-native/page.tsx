@@ -139,7 +139,7 @@ export default function PhongHcNativePage() {
     );
   }
 
-  const tabs: { key: Tab; label: string; icon: JSX.Element }[] = [
+  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     {
       key: 'table',
       label: 'Bảng số liệu',
