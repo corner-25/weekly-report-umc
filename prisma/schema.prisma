@@ -65,6 +65,7 @@ model Department {
   transfersTo            SecretaryTransferLog[] @relation("TransferTo")
   secretaryApplications  SecretaryApplication[] @relation("ApplicationDesiredDept")
   licenses               License[]
+  mous                   MOU[]
 
   @@map("departments")
 }
@@ -521,4 +522,118 @@ model LicenseRenewal {
   @@index([licenseId])
   @@index([renewedDate])
   @@map("license_renewals")
+}
+
+// ==================== MOU MANAGEMENT ====================
+
+enum MOUStatus {
+  DRAFT       // Đang soạn thảo
+  ACTIVE      // Đang hiệu lực
+  EXPIRING    // Sắp hết hạn
+  EXPIRED     // Đã hết hạn
+  TERMINATED  // Đã chấm dứt
+}
+
+enum MOUCategory {
+  DOMESTIC          // Hợp tác trong nước
+  INTERNATIONAL     // Hợp tác quốc tế
+  ACADEMIC          // Đào tạo - Nghiên cứu
+  CLINICAL          // Lâm sàng - Chuyên môn
+  TECHNOLOGY        // Công nghệ - Chuyển giao
+  OTHER             // Khác
+}
+
+// MOU - Biên bản ghi nhớ / Thỏa thuận hợp tác
+model MOU {
+  id                String      @id @default(cuid())
+  title             String      @db.Text    // Tên MOU
+  mouNumber         String?                 // Số hiệu MOU
+  category          MOUCategory
+  status            MOUStatus   @default(DRAFT)
+
+  // Đối tác
+  partnerName       String      @db.Text    // Tên đối tác
+  partnerCountry    String?                 // Quốc gia đối tác
+  partnerContact    String?     @db.Text    // Thông tin liên hệ đối tác
+  partnerLogo       String?                 // URL logo đối tác
+
+  // Thời hạn
+  signedDate        DateTime?               // Ngày ký kết
+  effectiveDate     DateTime?               // Ngày có hiệu lực
+  expiryDate        DateTime?               // Ngày hết hạn
+  autoRenew         Boolean     @default(false) // Tự động gia hạn
+
+  // Nội dung
+  purpose           String?     @db.Text    // Mục đích hợp tác
+  scope             String?     @db.Text    // Phạm vi hợp tác
+  keyTerms          String?     @db.Text    // Điều khoản chính (tóm tắt)
+  fileUrl           String?                 // File MOU đính kèm
+  notes             String?     @db.Text
+
+  // Phòng đầu mối
+  departmentId      String?
+  department        Department? @relation(fields: [departmentId], references: [id])
+
+  // Người phụ trách
+  contactPerson     String?                 // Người phụ trách phía BV
+  contactEmail      String?
+  contactPhone      String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  deletedAt         DateTime?
+
+  clauses           MOUClause[]
+  progressLogs      MOUProgress[]
+
+  @@index([category])
+  @@index([status])
+  @@index([departmentId])
+  @@index([expiryDate])
+  @@index([status, expiryDate])
+  @@map("mous")
+}
+
+// MOUClause - Điều khoản chi tiết của MOU
+model MOUClause {
+  id              String    @id @default(cuid())
+  mouId           String
+  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+
+  orderNumber     Int                     // Thứ tự điều khoản
+  title           String    @db.Text      // Tiêu đề điều khoản
+  content         String?   @db.Text      // Nội dung chi tiết
+  responsible     String?                 // Bên chịu trách nhiệm
+  deadline        DateTime?               // Hạn thực hiện
+  progress        Int       @default(0)   // 0-100%
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  notes           String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([mouId])
+  @@index([mouId, orderNumber])
+  @@map("mou_clauses")
+}
+
+// MOUProgress - Nhật ký tiến độ thực hiện MOU
+model MOUProgress {
+  id              String    @id @default(cuid())
+  mouId           String
+  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+
+  date            DateTime  @default(now()) // Ngày cập nhật
+  content         String    @db.Text        // Nội dung cập nhật
+  achievement     String?   @db.Text        // Kết quả đạt được
+  issues          String?   @db.Text        // Vấn đề phát sinh
+  nextSteps       String?   @db.Text        // Kế hoạch tiếp theo
+  updatedBy       String?                   // Người cập nhật
+
+  createdAt       DateTime  @default(now())
+
+  @@index([mouId])
+  @@index([date])
+  @@map("mou_progress")
 }
