@@ -66,7 +66,10 @@ export async function GET() {
       );
     }
 
-    const dataPackage = await rawRes.json();
+    // Python exports NaN/Infinity which are not valid JSON — replace with null
+    const rawText = await rawRes.text();
+    const sanitized = rawText.replace(/\bNaN\b/g, 'null').replace(/\bInfinity\b/g, 'null');
+    const dataPackage = JSON.parse(sanitized);
 
     return NextResponse.json(dataPackage);
   } catch (error) {
