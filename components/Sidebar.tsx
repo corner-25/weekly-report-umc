@@ -20,7 +20,7 @@ export function Sidebar() {
 
   // Auto-expand section based on current path
   useEffect(() => {
-    if (pathname?.startsWith('/dashboard/weeks') || pathname?.startsWith('/dashboard/calendar')) {
+    if (pathname?.startsWith('/dashboard/weeks') || pathname?.startsWith('/dashboard/calendar') || pathname?.startsWith('/dashboard/import')) {
       if (!openSections.includes('reports')) setOpenSections(prev => [...prev, 'reports']);
     }
     if (pathname?.startsWith('/dashboard/departments') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/meeting-rooms')) {
@@ -196,6 +196,12 @@ export function Sidebar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span className="ml-3">Lịch làm việc</span>
+          </Link>
+          <Link href="/dashboard/import" className={subLinkClass('/dashboard/import')} title="Import tuần">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            <span className="ml-3">Import tuần</span>
           </Link>
         </MenuGroup>
 

@@ -18,7 +18,7 @@ export const prisma =
     },
   });
 
-// In production, Prisma is re-created on each cold start — keep singleton in dev only
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+// Keep singleton to prevent connection pool exhaustion on both dev and production
+globalForPrisma.prisma = prisma;
 
 export default prisma;
