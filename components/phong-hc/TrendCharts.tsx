@@ -14,9 +14,8 @@ interface TrendChartsProps {
 }
 
 export function TrendCharts({ rows, timeColumns }: TrendChartsProps) {
-  const [numCols, setNumCols] = useState(2);
+  const [numCols, setNumCols] = useState(3);
 
-  // Group rows by category
   const categoryGroups = new Map<string, PivotRow[]>();
   for (const row of rows) {
     if (!categoryGroups.has(row.category)) categoryGroups.set(row.category, []);
@@ -27,32 +26,28 @@ export function TrendCharts({ rows, timeColumns }: TrendChartsProps) {
     (a, b) => (CATEGORY_PRIORITY[a] ?? 999) - (CATEGORY_PRIORITY[b] ?? 999)
   );
 
-  // Reverse timeColumns for charts (oldest first = left to right)
   const chronoColumns = [...timeColumns].reverse();
 
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="flex items-center gap-4 bg-white rounded-lg border border-gray-200 p-4">
-        <label className="text-sm font-medium text-gray-600">Số cột:</label>
-        <div className="flex gap-1">
-          {[1, 2, 3].map((n) => (
-            <button
-              key={n}
-              onClick={() => setNumCols(n)}
-              className={`px-3 py-1 text-sm rounded-md transition-all ${
-                numCols === n
-                  ? 'bg-cyan-500 text-white shadow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
+    <div className="space-y-4">
+      {/* Layout controls */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400">Bố cục:</span>
+        {[2, 3, 4].map((n) => (
+          <button
+            key={n}
+            onClick={() => setNumCols(n)}
+            className={`w-7 h-7 text-xs font-medium rounded-md transition-all ${
+              numCols === n
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            }`}
+          >
+            {n}
+          </button>
+        ))}
       </div>
 
-      {/* Category sections */}
       {sortedCategories.map((category) => {
         const catRows = categoryGroups.get(category)!;
         const icon = CATEGORY_ICONS[category] ?? '📁';
@@ -62,15 +57,15 @@ export function TrendCharts({ rows, timeColumns }: TrendChartsProps) {
             key={category}
             className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
           >
-            <div className="px-5 py-3 bg-gradient-to-r from-slate-50 to-white border-b border-gray-100">
-              <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
-                <span>{icon}</span>
+            <div className="px-5 py-3 border-b border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                <span className="text-lg">{icon}</span>
                 {category}
               </h3>
             </div>
 
             <div
-              className="p-4 gap-4"
+              className="p-3 gap-3"
               style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${numCols}, 1fr)`,
@@ -105,54 +100,48 @@ function MiniChart({
     ? nonZeroValues.reduce((s, v) => s + v, 0) / nonZeroValues.length
     : 0;
 
-  // Find max/min indices
-  const maxIdx = values.indexOf(Math.max(...values));
-  const minIdx = values.indexOf(Math.min(...values.filter((v) => v > 0)));
-
-  // Trend direction
-  const lastTwo = values.filter((v) => v > 0).slice(-2);
+  const lastTwo = nonZeroValues.slice(-2);
   const trend = lastTwo.length === 2 ? (lastTwo[1] >= lastTwo[0] ? 'up' : 'down') : 'flat';
 
+  const barWidth = Math.max(4, Math.min(12, Math.floor(200 / values.length)));
+  const gap = Math.max(1, Math.floor(barWidth * 0.25));
+  const svgWidth = values.length * (barWidth + gap);
+
   return (
-    <div className="border border-gray-100 rounded-lg p-3 hover:border-cyan-200 hover:shadow-sm transition-all">
-      {/* Title */}
+    <div className="border border-gray-100 rounded-lg p-3 hover:border-gray-200 hover:shadow-sm transition-all group">
+      {/* Title row */}
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-gray-700 truncate flex-1" title={row.content}>
+        <h4 className="text-[11px] font-medium text-gray-700 truncate flex-1 leading-tight" title={row.content}>
           {row.content}
         </h4>
         <span
-          className={`text-xs font-bold ml-2 ${
-            trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-red-500' : 'text-gray-400'
+          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ml-1.5 ${
+            trend === 'up'
+              ? 'bg-emerald-50 text-emerald-500'
+              : trend === 'down'
+              ? 'bg-red-50 text-red-500'
+              : 'bg-gray-50 text-gray-400'
           }`}
         >
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
         </span>
       </div>
 
-      {/* SVG Bar chart */}
-      <div className="relative h-14">
-        <svg viewBox={`0 0 ${values.length * 20} 50`} className="w-full h-full" preserveAspectRatio="none">
+      {/* Chart */}
+      <div className="relative h-10 mb-2">
+        <svg viewBox={`0 0 ${svgWidth} 40`} className="w-full h-full" preserveAspectRatio="none">
           {values.map((val, i) => {
-            const barHeight = max > 0 ? (val / max) * 40 : 0;
-            const isMax = i === maxIdx && val > 0;
-            const isMin = i === minIdx && val > 0;
-
+            const barHeight = max > 0 ? (val / max) * 32 : 0;
             return (
               <rect
                 key={i}
-                x={i * 20 + 2}
-                y={50 - barHeight - 5}
-                width={16}
-                height={barHeight}
-                rx={2}
-                className={
-                  isMax
-                    ? 'fill-emerald-400'
-                    : isMin
-                    ? 'fill-red-400'
-                    : 'fill-cyan-300'
-                }
-                opacity={val === 0 ? 0.15 : 0.7}
+                x={i * (barWidth + gap)}
+                y={40 - barHeight - 2}
+                width={barWidth}
+                height={Math.max(barHeight, 0.5)}
+                rx={1.5}
+                className={val === 0 ? 'fill-gray-100' : 'fill-gray-300 group-hover:fill-cyan-400'}
+                style={{ transition: 'fill 0.2s' }}
               />
             );
           })}
@@ -162,24 +151,26 @@ function MiniChart({
               points={values
                 .map(
                   (val, i) =>
-                    `${i * 20 + 10},${50 - (max > 0 ? (val / max) * 40 : 0) - 5}`
+                    `${i * (barWidth + gap) + barWidth / 2},${40 - (max > 0 ? (val / max) * 32 : 0) - 2}`
                 )
                 .join(' ')}
               fill="none"
-              stroke="#0891b2"
-              strokeWidth="1.5"
+              stroke="#0e7490"
+              strokeWidth="1"
               strokeLinecap="round"
               strokeLinejoin="round"
-              opacity="0.6"
+              opacity="0.4"
+              className="group-hover:opacity-70"
+              style={{ transition: 'opacity 0.2s' }}
             />
           )}
         </svg>
       </div>
 
       {/* Stats */}
-      <div className="flex items-center justify-between mt-1.5 text-[10px] text-gray-400">
-        <span>Tổng: <span className="font-semibold text-gray-600">{formatNumberFull(row.total)}</span></span>
-        <span>TB: <span className="font-semibold text-gray-600">{formatNumberFull(avg)}</span></span>
+      <div className="flex items-center justify-between text-[10px] text-gray-400">
+        <span>Tổng <span className="font-semibold text-gray-600 tabular-nums">{formatNumberFull(row.total)}</span></span>
+        <span>TB <span className="font-semibold text-gray-600 tabular-nums">{formatNumberFull(avg)}</span></span>
       </div>
     </div>
   );

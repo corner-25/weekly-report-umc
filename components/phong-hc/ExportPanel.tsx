@@ -73,54 +73,55 @@ export function ExportPanel({ pivotRows, timeColumns, rawData }: ExportPanelProp
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-6">Xuất báo cáo</h2>
+      <h2 className="text-sm font-semibold text-gray-900 mb-1">Xuất báo cáo</h2>
+      <p className="text-xs text-gray-400 mb-6">Tải dữ liệu dưới dạng CSV để sử dụng trong Excel</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Pivot table CSV */}
-        <div className="border border-gray-100 rounded-lg p-5 hover:border-cyan-200 transition-all">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center text-cyan-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        {/* Pivot CSV */}
+        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 hover:shadow-sm transition-all">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 0v1.5c0 .621-.504 1.125-1.125 1.125" />
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-800">Pivot Table CSV</h3>
-              <p className="text-xs text-gray-500">Bảng tổng hợp theo thời gian</p>
+              <h3 className="text-sm font-semibold text-gray-900">Bảng tổng hợp</h3>
+              <p className="text-[11px] text-gray-400">Pivot table theo thời gian</p>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
-            {pivotRows.length} nội dung × {timeColumns.length} cột thời gian
+          <p className="text-xs text-gray-500 mb-4 tabular-nums">
+            {pivotRows.length} nội dung × {timeColumns.length} cột
           </p>
           <button
             onClick={exportCSV}
             disabled={exporting}
-            className="w-full px-4 py-2 bg-cyan-500 text-white text-sm font-medium rounded-lg hover:bg-cyan-600 transition-colors disabled:opacity-50"
+            className="w-full px-4 py-2.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
             {exporting ? 'Đang xuất...' : 'Tải Pivot CSV'}
           </button>
         </div>
 
-        {/* Raw data CSV */}
-        <div className="border border-gray-100 rounded-lg p-5 hover:border-cyan-200 transition-all">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        {/* Raw CSV */}
+        <div className="border border-gray-100 rounded-xl p-5 hover:border-gray-200 hover:shadow-sm transition-all">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-800">Dữ liệu gốc CSV</h3>
-              <p className="text-xs text-gray-500">Dữ liệu chi tiết từng tuần</p>
+              <h3 className="text-sm font-semibold text-gray-900">Dữ liệu gốc</h3>
+              <p className="text-[11px] text-gray-400">Chi tiết từng tuần</p>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
-            {rawData.length.toLocaleString('vi-VN')} dòng dữ liệu
+          <p className="text-xs text-gray-500 mb-4 tabular-nums">
+            {rawData.length.toLocaleString('vi-VN')} dòng
           </p>
           <button
             onClick={exportRawCSV}
             disabled={exporting}
-            className="w-full px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+            className="w-full px-4 py-2.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
             {exporting ? 'Đang xuất...' : 'Tải dữ liệu gốc'}
           </button>
