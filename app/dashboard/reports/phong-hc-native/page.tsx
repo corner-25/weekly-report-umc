@@ -280,19 +280,20 @@ export default function PhongHcNativePage() {
           <div className="w-px h-5 bg-gray-200" />
 
           {/* Show ratio toggle */}
-          <label className="flex items-center gap-1.5 cursor-pointer select-none">
-            <div className="relative">
-              <input
-                type="checkbox"
-                checked={showRatio}
-                onChange={(e) => setShowRatio(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-8 h-4.5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors" />
-              <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-3.5" />
-            </div>
-            <span className="text-xs text-gray-500">Biến động %</span>
-          </label>
+          <button
+            type="button"
+            onClick={() => setShowRatio(!showRatio)}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+              showRatio
+                ? 'bg-gray-900 text-white border-gray-900'
+                : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Biến động %
+          </button>
 
           <div className="w-px h-5 bg-gray-200" />
 

@@ -7,7 +7,6 @@ import {
   formatNumberFull,
   getChangeArrow,
   getChangeColor,
-  getChangeBg,
 } from '@/lib/phong-hc/data-processing';
 import { useState } from 'react';
 
@@ -84,79 +83,100 @@ function CategorySection({
       {/* Table */}
       {isExpanded && (
         <div className="overflow-x-auto border-t border-gray-100">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-gray-50/80">
-                <th className="sticky left-0 z-20 bg-gray-50 px-4 py-2 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider min-w-[240px] border-r border-gray-200">
+              <tr>
+                <th
+                  className="sticky left-0 z-30 bg-gray-50 px-4 py-2.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider min-w-[260px] max-w-[260px] w-[260px] border-r-2 border-gray-200"
+                  style={{ boxShadow: '4px 0 6px -2px rgba(0,0,0,0.06)' }}
+                >
                   Nội dung
                 </th>
                 {timeColumns.map((col) => (
                   <th
                     key={col}
-                    className="px-3 py-2 text-center text-[11px] font-semibold text-gray-500 tracking-wider min-w-[100px] whitespace-nowrap"
+                    className="bg-gray-50 px-3 py-2.5 text-center text-[11px] font-semibold text-gray-500 tracking-wider whitespace-nowrap"
+                    style={{ minWidth: showRatio ? '120px' : '90px' }}
                   >
                     {formatTimeColumn(col)}
                   </th>
                 ))}
-                <th className="sticky right-0 z-20 bg-gray-100 px-3 py-2 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider min-w-[90px] border-l border-gray-200">
+                <th
+                  className="sticky right-0 z-30 bg-gray-100 px-3 py-2.5 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider min-w-[90px] border-l-2 border-gray-200"
+                  style={{ boxShadow: '-4px 0 6px -2px rgba(0,0,0,0.06)' }}
+                >
                   Tổng
                 </th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
-                <tr
-                  key={row.content}
-                  className={`border-t border-gray-50 hover:bg-cyan-50/30 transition-colors ${
-                    idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'
-                  }`}
-                >
-                  {/* Content name */}
-                  <td className="sticky left-0 z-10 px-4 py-2 text-gray-800 border-r border-gray-100 bg-inherit min-w-[240px]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-medium">{row.content}</span>
-                      {row.aggregationMethod !== 'sum' && (
-                        <span className="text-[9px] text-gray-400 bg-gray-100 px-1 py-px rounded font-medium">
-                          {row.aggregationMethod === 'mean' ? 'TB' : 'MN'}
-                        </span>
-                      )}
-                    </div>
-                  </td>
+              {rows.map((row, idx) => {
+                const stripeBg = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40';
+                const stickyBg = idx % 2 === 0 ? '#ffffff' : '#fafafa';
 
-                  {/* Value cells */}
-                  {timeColumns.map((col) => {
-                    const cell = row.cells[col];
-                    if (!cell) {
-                      return (
-                        <td key={col} className="px-3 py-2 text-center text-gray-300 text-xs">
-                          —
-                        </td>
-                      );
-                    }
-
-                    return (
-                      <td key={col} className="px-3 py-2 text-right whitespace-nowrap">
-                        <span className="font-mono text-xs font-semibold text-gray-800">
-                          {formatNumberFull(cell.value)}
-                        </span>
-                        {showRatio && cell.ratio !== null && cell.ratio !== 0 && (
-                          <span
-                            className={`ml-1 text-[10px] font-medium ${getChangeColor(cell.ratio)} ${getChangeBg(cell.ratio)} px-1 py-px rounded`}
-                          >
-                            {getChangeArrow(cell.ratio)}
-                            {cell.ratio === 999 ? '∞' : `${Math.abs(cell.ratio).toFixed(0)}%`}
+                return (
+                  <tr
+                    key={row.content}
+                    className={`border-t border-gray-100 hover:bg-cyan-50/40 transition-colors ${stripeBg}`}
+                  >
+                    {/* Content name — solid bg to prevent overlap */}
+                    <td
+                      className="sticky left-0 z-20 px-4 py-2 border-r-2 border-gray-200 min-w-[260px] max-w-[260px] w-[260px]"
+                      style={{
+                        backgroundColor: stickyBg,
+                        boxShadow: '4px 0 6px -2px rgba(0,0,0,0.06)',
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-medium text-gray-800 truncate">{row.content}</span>
+                        {row.aggregationMethod !== 'sum' && (
+                          <span className="flex-shrink-0 text-[9px] text-gray-400 bg-gray-100 px-1 py-px rounded font-medium">
+                            {row.aggregationMethod === 'mean' ? 'TB' : 'MN'}
                           </span>
                         )}
-                      </td>
-                    );
-                  })}
+                      </div>
+                    </td>
 
-                  {/* Total */}
-                  <td className="sticky right-0 z-10 px-3 py-2 text-right font-mono text-xs font-bold text-gray-900 bg-gray-50 border-l border-gray-200">
-                    {formatNumberFull(row.total)}
-                  </td>
-                </tr>
-              ))}
+                    {/* Value cells */}
+                    {timeColumns.map((col) => {
+                      const cell = row.cells[col];
+                      if (!cell) {
+                        return (
+                          <td key={col} className="px-3 py-2 text-center text-gray-300 text-xs">
+                            —
+                          </td>
+                        );
+                      }
+
+                      return (
+                        <td key={col} className="px-3 py-2 text-right whitespace-nowrap">
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className="font-mono text-xs font-semibold text-gray-800 tabular-nums">
+                              {formatNumberFull(cell.value)}
+                            </span>
+                            {showRatio && cell.ratio !== null && cell.ratio !== 0 && (
+                              <span
+                                className={`inline-flex items-center gap-0.5 text-[10px] font-medium ${getChangeColor(cell.ratio)} tabular-nums`}
+                              >
+                                {getChangeArrow(cell.ratio)}
+                                {cell.ratio === 999 ? '∞' : `${Math.abs(cell.ratio).toFixed(0)}%`}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+
+                    {/* Total */}
+                    <td
+                      className="sticky right-0 z-20 px-3 py-2 text-right font-mono text-xs font-bold text-gray-900 bg-gray-50 border-l-2 border-gray-200"
+                      style={{ boxShadow: '-4px 0 6px -2px rgba(0,0,0,0.06)' }}
+                    >
+                      {formatNumberFull(row.total)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
