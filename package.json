@@ -20,6 +20,7 @@
   "description": "",
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@jridgewell/resolve-uri": "^3.1.2",
     "@prisma/client": "^6.17.1",
     "@types/react-dom": "^19.2.2",
     "bcryptjs": "^3.0.2",
@@ -30,8 +31,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.65.0",
-    "typescript": "^5.9.3",
     "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {

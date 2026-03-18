@@ -374,11 +374,20 @@ export function Sidebar() {
             </svg>
             <span className="ml-3">Bảng số liệu</span>
           </Link>
+          {/* Dashboard section divider */}
+          <div className="mx-4 my-1.5 border-t border-gray-100" />
+          <span className="px-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Dashboards</span>
           <Link href="/dashboard/reports/phong-hc-native" className={subLinkClass('/dashboard/reports/phong-hc-native')} title="Dashboard Phòng HC">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2h-5l-4 4v-4H6a2 2 0 01-2-2V5z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <span className="ml-3">Dashboard Phòng HC</span>
+          </Link>
+          <Link href="/dashboard/reports/phong-hc" className={subLinkClass('/dashboard/reports/phong-hc')} title="Dashboards Streamlit">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+            </svg>
+            <span className="ml-3">Dashboards Streamlit</span>
           </Link>
         </MenuGroup>
 
