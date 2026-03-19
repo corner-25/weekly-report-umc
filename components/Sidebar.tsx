@@ -383,6 +383,12 @@ export function Sidebar() {
             </svg>
             <span className="ml-3">Dashboard Phòng HC</span>
           </Link>
+          <Link href="/dashboard/reports/to-xe-native" className={subLinkClass('/dashboard/reports/to-xe-native')} title="Dashboard Tổ Xe">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            <span className="ml-3">Dashboard Tổ Xe</span>
+          </Link>
           <Link href="/dashboard/reports/phong-hc" className={subLinkClass('/dashboard/reports/phong-hc')} title="Dashboards Streamlit">
             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
