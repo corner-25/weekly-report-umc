@@ -41,12 +41,10 @@ export async function GET(
               },
             },
           },
-          orderBy: {
-            week: {
-              year: 'desc',
-              weekNumber: 'desc',
-            },
-          },
+          orderBy: [
+            { week: { year: 'desc' } },
+            { week: { weekNumber: 'desc' } },
+          ],
         },
       },
     });
