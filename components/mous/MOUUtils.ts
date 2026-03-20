@@ -34,6 +34,29 @@ export const STATUS_COLORS: Record<string, string> = {
   TERMINATED: 'bg-gray-200 text-gray-500',
 };
 
+export const CLAUSE_STATUS_LABELS: Record<string, string> = {
+  NOT_STARTED: 'Chưa triển khai',
+  IN_PROGRESS: 'Đang triển khai',
+  COMPLETED: 'Hoàn thành',
+  ON_HOLD: 'Tạm dừng',
+  CANCELLED: 'Đã hủy',
+};
+
+export const CLAUSE_STATUS_COLORS: Record<string, string> = {
+  NOT_STARTED: 'bg-gray-100 text-gray-600',
+  IN_PROGRESS: 'bg-blue-100 text-blue-700',
+  COMPLETED: 'bg-green-100 text-green-700',
+  ON_HOLD: 'bg-yellow-100 text-yellow-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+};
+
+export const QUALITY_OPTIONS = [
+  { value: '', label: 'Chưa đánh giá' },
+  { value: 'Tốt', label: 'Tốt' },
+  { value: 'Đạt', label: 'Đạt' },
+  { value: 'Chưa đạt', label: 'Chưa đạt' },
+];
+
 export function getMOUDisplayStatus(mou: { status: string; expiryDate: string | null }): string {
   if (mou.status === 'TERMINATED') return 'TERMINATED';
   if (mou.status === 'DRAFT') return 'DRAFT';

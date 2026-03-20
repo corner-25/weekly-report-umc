@@ -594,31 +594,69 @@ model MOU {
   @@map("mous")
 }
 
-// MOUClause - Điều khoản chi tiết của MOU
+enum ClauseStatus {
+  NOT_STARTED     // Chưa triển khai
+  IN_PROGRESS     // Đang triển khai
+  COMPLETED       // Hoàn thành
+  ON_HOLD         // Tạm dừng
+  CANCELLED       // Đã hủy
+}
+
+// MOUClause - Điều khoản / Hạng mục chi tiết của MOU
 model MOUClause {
-  id              String    @id @default(cuid())
+  id              String        @id @default(cuid())
   mouId           String
-  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  mou             MOU           @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  orderNumber     Int                     // Thứ tự điều khoản
-  title           String    @db.Text      // Tiêu đề điều khoản
-  content         String?   @db.Text      // Nội dung chi tiết
-  responsible     String?                 // Bên chịu trách nhiệm
-  deadline        DateTime?               // Hạn thực hiện
-  progress        Int       @default(0)   // 0-100%
-  isCompleted     Boolean   @default(false)
+  orderNumber     Int                       // Thứ tự điều khoản
+  title           String        @db.Text    // Tiêu đề hạng mục
+  content         String?       @db.Text    // Nội dung chi tiết
+  responsible     String?                   // Bên chịu trách nhiệm
+  deadline        DateTime?                 // Hạn thực hiện
+  progress        Int           @default(0) // 0-100%
+  clauseStatus    ClauseStatus  @default(NOT_STARTED) // Trạng thái triển khai
+  isCompleted     Boolean       @default(false)
   completedAt     DateTime?
-  notes           String?   @db.Text
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  // Kết quả & đánh giá
+  result          String?       @db.Text    // Kết quả đạt được
+  quality         String?                   // Đánh giá chất lượng (tốt/đạt/chưa đạt)
+  budget          String?                   // Ngân sách / chi phí
+  notes           String?       @db.Text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  clauseProgress  ClauseProgress[]
 
   @@index([mouId])
   @@index([mouId, orderNumber])
   @@map("mou_clauses")
 }
 
-// MOUProgress - Nhật ký tiến độ thực hiện MOU
+// ClauseProgress - Nhật ký tiến độ của TỪNG điều khoản/hạng mục
+model ClauseProgress {
+  id              String    @id @default(cuid())
+  clauseId        String
+  clause          MOUClause @relation(fields: [clauseId], references: [id], onDelete: Cascade)
+
+  date            DateTime  @default(now())
+  content         String    @db.Text        // Nội dung cập nhật
+  achievement     String?   @db.Text        // Kết quả đạt được
+  issues          String?   @db.Text        // Vấn đề phát sinh
+  nextSteps       String?   @db.Text        // Kế hoạch tiếp theo
+  progressBefore  Int?                      // Tiến độ trước cập nhật
+  progressAfter   Int?                      // Tiến độ sau cập nhật
+  updatedBy       String?                   // Người cập nhật
+
+  createdAt       DateTime  @default(now())
+
+  @@index([clauseId])
+  @@index([date])
+  @@map("clause_progress")
+}
+
+// MOUProgress - Nhật ký tiến độ chung của MOU
 model MOUProgress {
   id              String    @id @default(cuid())
   mouId           String

@@ -19,7 +19,13 @@ export async function GET(
       where: { id },
       include: {
         department: { select: { id: true, name: true } },
-        clauses: { orderBy: { orderNumber: 'asc' } },
+        clauses: {
+          orderBy: { orderNumber: 'asc' },
+          include: {
+            clauseProgress: { orderBy: { date: 'desc' }, take: 5 },
+            _count: { select: { clauseProgress: true } },
+          },
+        },
         progressLogs: { orderBy: { date: 'desc' } },
       },
     });

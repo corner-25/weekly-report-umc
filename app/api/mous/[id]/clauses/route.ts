@@ -36,6 +36,10 @@ export async function POST(
         responsible: body.responsible || null,
         deadline: body.deadline ? new Date(body.deadline) : null,
         progress: body.progress ?? 0,
+        clauseStatus: body.clauseStatus || 'NOT_STARTED',
+        result: body.result || null,
+        quality: body.quality || null,
+        budget: body.budget || null,
         notes: body.notes || null,
       },
     });
@@ -73,8 +77,12 @@ export async function PUT(
         responsible: body.responsible ?? undefined,
         deadline: body.deadline ? new Date(body.deadline) : body.deadline === null ? null : undefined,
         progress: body.progress ?? undefined,
+        clauseStatus: body.clauseStatus ?? undefined,
         isCompleted: body.isCompleted ?? undefined,
         completedAt: body.isCompleted ? new Date() : body.isCompleted === false ? null : undefined,
+        result: body.result ?? undefined,
+        quality: body.quality ?? undefined,
+        budget: body.budget ?? undefined,
         notes: body.notes ?? undefined,
       },
     });
