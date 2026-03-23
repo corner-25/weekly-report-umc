@@ -54,4 +54,4 @@ USER nextjs
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+CMD ["sh", "-c", "for i in 1 2 3 4 5; do npx prisma migrate deploy && break || echo \"DB not ready, retry $i/5...\" && sleep 5; done && node server.js"]
