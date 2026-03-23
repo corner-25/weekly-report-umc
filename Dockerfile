@@ -19,6 +19,16 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+# --- Production deps ---
+FROM base AS proddeps
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+
+RUN npm ci --omit=dev
+RUN npx prisma generate
+
 # --- Runner ---
 FROM base AS runner
 WORKDIR /app
@@ -30,15 +40,15 @@ ENV HOSTNAME="0.0.0.0"
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy standalone output
+# Copy standalone Next.js output
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder /app/package.json ./package.json
+
+# Copy production node_modules (includes Prisma CLI + client with WASM)
+COPY --from=proddeps /app/node_modules ./node_modules
 
 USER nextjs
 
