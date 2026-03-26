@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { Table2 } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Department {
   id: string;
@@ -120,7 +122,7 @@ export default function MetricsDataPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
@@ -128,25 +130,27 @@ export default function MetricsDataPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Báo cáo Số liệu - Dạng Bảng</h1>
-          <p className="text-gray-600 mt-1">Xem dữ liệu định lượng theo tuần và chỉ số</p>
-        </div>
-        <div className="text-sm text-gray-500">
-          {metricIds.length} chỉ số · {weekIds.length} tuần
-        </div>
-      </div>
+      <PageHeader
+        icon={Table2}
+        title="Báo cáo Số liệu - Dạng Bảng"
+        description="Xem dữ liệu định lượng theo tuần và chỉ số"
+        className="mb-6"
+        actions={
+          <span className="text-sm text-slate-500">
+            {metricIds.length} chỉ số · {weekIds.length} tuần
+          </span>
+        }
+      />
 
       {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow">
+      <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200/80">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Năm</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Năm</label>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
                 <option key={year} value={year}>{year}</option>
@@ -154,11 +158,11 @@ export default function MetricsDataPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phòng ban</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Phòng ban</label>
             <select
               value={selectedDept}
               onChange={(e) => { setSelectedDept(e.target.value); setSelectedMetric('all'); }}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả phòng</option>
               {departments.map((d) => (
@@ -167,11 +171,11 @@ export default function MetricsDataPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Chỉ số</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Chỉ số</label>
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả chỉ số</option>
               {availableMetrics.map((m) => (
@@ -185,11 +189,11 @@ export default function MetricsDataPage() {
       {/* Table */}
       {metricIds.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có dữ liệu</h3>
-          <p className="text-gray-500">Chưa có số liệu nào được nhập cho {selectedYear}</p>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">Chưa có dữ liệu</h3>
+          <p className="text-slate-500">Chưa có số liệu nào được nhập cho {selectedYear}</p>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-x-auto">
@@ -197,12 +201,12 @@ export default function MetricsDataPage() {
             <thead>
               <tr>
                 <th
-                  className="sticky left-0 z-20 bg-gray-50 text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r-2 border-gray-300"
+                  className="sticky left-0 z-20 bg-slate-50 text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-r-2 border-slate-300"
                   style={{ minWidth: 240, maxWidth: 320 }}
                 >
                   Chỉ số
                 </th>
-                <th className="bg-gray-50 text-center px-3 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 whitespace-nowrap w-16">
+                <th className="bg-slate-50 text-center px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-r border-slate-200 whitespace-nowrap w-16">
                   ĐV
                 </th>
                 {weekIds.map((weekId, i) => {
@@ -210,14 +214,14 @@ export default function MetricsDataPage() {
                   return (
                     <th
                       key={weekId}
-                      className={`text-center px-3 py-3 text-xs font-medium uppercase tracking-wider border-b border-r border-gray-200 whitespace-nowrap w-24 ${
+                      className={`text-center px-3 py-3 text-xs font-medium uppercase tracking-wider border-b border-r border-slate-200 whitespace-nowrap w-24 ${
                         i === 0
                           ? 'bg-blue-50 text-blue-700'
-                          : 'bg-gray-50 text-gray-500'
+                          : 'bg-slate-50 text-slate-500'
                       }`}
                     >
                       <div>Tuần {week?.weekNumber}</div>
-                      <div className="font-normal text-gray-400">
+                      <div className="font-normal text-slate-400">
                         {week?.startDate && format(new Date(week.startDate), 'dd/MM', { locale: vi })}
                       </div>
                     </th>
@@ -225,7 +229,7 @@ export default function MetricsDataPage() {
                 })}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-200">
               {deptOrder.map((deptId) => {
                 const { dept, rows } = groupedRows[deptId];
                 return (
@@ -240,14 +244,14 @@ export default function MetricsDataPage() {
                       </td>
                     </tr>
                     {rows.map(({ metricId, metric, values }, rowIdx) => (
-                      <tr key={metricId} className={rowIdx % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'}>
+                      <tr key={metricId} className={rowIdx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50 hover:bg-slate-100'}>
                         <td
-                          className="sticky left-0 z-10 px-4 py-3 text-sm font-medium text-gray-900 border-r-2 border-gray-300 bg-inherit"
+                          className="sticky left-0 z-10 px-4 py-3 text-sm font-medium text-slate-900 border-r-2 border-slate-300 bg-inherit"
                           style={{ minWidth: 240, maxWidth: 320 }}
                         >
                           <span className="leading-snug">{metric.name}</span>
                         </td>
-                        <td className="px-3 py-3 text-center text-xs text-gray-400 border-r border-gray-200 whitespace-nowrap">
+                        <td className="px-3 py-3 text-center text-xs text-slate-400 border-r border-slate-200 whitespace-nowrap">
                           {metric.unit || '—'}
                         </td>
                         {weekIds.map((weekId, wIdx) => {
@@ -256,21 +260,21 @@ export default function MetricsDataPage() {
                           return (
                             <td
                               key={weekId}
-                              className={`px-3 py-3 text-center text-sm border-r border-gray-200 ${isLatest ? 'bg-blue-50' : ''}`}
+                              className={`px-3 py-3 text-center text-sm border-r border-slate-200 ${isLatest ? 'bg-blue-50' : ''}`}
                             >
                               {mv != null ? (
                                 <div>
-                                  <span className={`font-semibold tabular-nums ${isLatest ? 'text-blue-700' : 'text-gray-800'}`}>
+                                  <span className={`font-semibold tabular-nums ${isLatest ? 'text-blue-700' : 'text-slate-800'}`}>
                                     {formatValue(mv.value)}
                                   </span>
                                   {mv.note && (
-                                    <div className="text-xs text-gray-400 truncate max-w-[80px]" title={mv.note}>
+                                    <div className="text-xs text-slate-400 truncate max-w-[80px]" title={mv.note}>
                                       {mv.note}
                                     </div>
                                   )}
                                 </div>
                               ) : (
-                                <span className="text-gray-300">—</span>
+                                <span className="text-slate-300">—</span>
                               )}
                             </td>
                           );

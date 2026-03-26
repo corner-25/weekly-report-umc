@@ -6,6 +6,9 @@ import {
   CLAUSE_STATUS_LABELS, CLAUSE_STATUS_COLORS, QUALITY_OPTIONS,
   getMOUDisplayStatus, formatDate, getOverallProgress,
 } from './MOUUtils';
+import { MOUActivities } from './MOUActivities';
+import { MOUDocuments } from './MOUDocuments';
+import { AlertTriangle, X as XIcon, Pencil } from 'lucide-react';
 
 interface ClauseProgressLog {
   id: string;
@@ -72,6 +75,9 @@ interface MOUDetailData {
   contactPhone: string | null;
   clauses: Clause[];
   progressLogs: ProgressLog[];
+  activities?: any[];
+  documents?: any[];
+  _count?: { activities: number; documents: number; clauses: number };
 }
 
 interface Props {
@@ -81,7 +87,7 @@ interface Props {
   onRefresh: () => void;
 }
 
-type Tab = 'info' | 'clauses' | 'progress';
+type Tab = 'info' | 'clauses' | 'activities' | 'documents' | 'progress';
 
 export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('clauses');
@@ -105,7 +111,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-start justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[mou.category]}`}>
@@ -115,33 +121,56 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 {STATUS_LABELS[displayStatus]}
               </span>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 line-clamp-2">{mou.title}</h2>
-            {mou.mouNumber && <p className="text-sm text-gray-400">{mou.mouNumber}</p>}
+            <h2 className="text-lg font-bold text-slate-900 line-clamp-2">{mou.title}</h2>
+            {mou.mouNumber && <p className="text-sm text-slate-400">{mou.mouNumber}</p>}
           </div>
           <div className="flex items-center space-x-2 ml-4">
-            <button onClick={onEdit} className="px-3 py-1.5 text-sm text-yellow-700 bg-yellow-50 rounded-lg hover:bg-yellow-100">
+            <button onClick={onEdit} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors">
+              <Pencil className="w-3.5 h-3.5" />
               Sửa
             </button>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+              <XIcon className="w-5 h-5 text-slate-400" />
             </button>
           </div>
         </div>
 
+        {/* Expiry Alert */}
+        {mou.expiryDate && (() => {
+          const daysUntilExpiry = Math.ceil((new Date(mou.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+          if (daysUntilExpiry <= 0) {
+            return (
+              <div className="mx-6 mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-sm text-red-700">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <span><strong>Đã hết hạn</strong> {Math.abs(daysUntilExpiry)} ngày trước ({formatDate(mou.expiryDate)})</span>
+              </div>
+            );
+          }
+          if (daysUntilExpiry <= 90) {
+            return (
+              <div className="mx-6 mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2 text-sm text-amber-700">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <span><strong>Sắp hết hạn</strong> trong {daysUntilExpiry} ngày ({formatDate(mou.expiryDate)})</span>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* Tabs */}
-        <div className="flex space-x-1 px-6 pt-3 bg-gray-50 border-b border-gray-200">
+        <div className="flex space-x-1 px-6 pt-3 bg-slate-50 border-b border-slate-200 overflow-x-auto">
           {([
             ['info', 'Thông tin'],
             ['clauses', `Hạng mục (${mou.clauses.length})`],
-            ['progress', `Nhật ký chung (${mou.progressLogs.length})`],
+            ['activities', `Hoạt động (${mou.activities?.length || 0})`],
+            ['documents', `Văn bản (${mou.documents?.length || 0})`],
+            ['progress', `Nhật ký (${mou.progressLogs.length})`],
           ] as [Tab, string][]).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-                activeTab === key ? 'bg-white text-cyan-700 border border-gray-200 border-b-white -mb-px' : 'text-gray-500 hover:text-gray-700'
+              className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                activeTab === key ? 'bg-white text-cyan-700 border border-slate-200 border-b-white -mb-px' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               {label}
@@ -209,18 +238,41 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
             <div>
               {/* Summary bar */}
               {mou.clauses.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
-                  <MiniStat label="Tổng hạng mục" value={statusCounts.total} color="text-gray-700" />
-                  <MiniStat label="Hoàn thành" value={statusCounts.completed} color="text-green-600" />
-                  <MiniStat label="Đang triển khai" value={statusCounts.inProgress} color="text-blue-600" />
-                  <MiniStat label="Chưa triển khai" value={statusCounts.notStarted} color="text-gray-500" />
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Tiến độ chung</p>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${overallProgress === 100 ? 'bg-green-500' : 'bg-cyan-500'}`} style={{ width: `${overallProgress}%` }} />
+                <div className="space-y-4 mb-5">
+                  {/* Progress bar visualization */}
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold text-slate-700">Tiến độ tổng thể</span>
+                      <span className={`text-2xl font-bold ${overallProgress === 100 ? 'text-emerald-600' : 'text-cyan-600'}`}>{overallProgress}%</span>
+                    </div>
+                    <div className="h-3 bg-slate-200 rounded-full overflow-hidden mb-3">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${overallProgress === 100 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-cyan-400 to-blue-500'}`}
+                        style={{ width: `${overallProgress}%` }}
+                      />
+                    </div>
+                    {/* Status breakdown bar */}
+                    {statusCounts.total > 0 && (
+                      <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
+                        {statusCounts.completed > 0 && (
+                          <div className="bg-emerald-400 rounded-full" style={{ width: `${(statusCounts.completed / statusCounts.total) * 100}%` }} title={`Hoàn thành: ${statusCounts.completed}`} />
+                        )}
+                        {statusCounts.inProgress > 0 && (
+                          <div className="bg-blue-400 rounded-full" style={{ width: `${(statusCounts.inProgress / statusCounts.total) * 100}%` }} title={`Đang triển khai: ${statusCounts.inProgress}`} />
+                        )}
+                        {statusCounts.notStarted > 0 && (
+                          <div className="bg-slate-300 rounded-full" style={{ width: `${(statusCounts.notStarted / statusCounts.total) * 100}%` }} title={`Chưa triển khai: ${statusCounts.notStarted}`} />
+                        )}
+                        {statusCounts.onHold > 0 && (
+                          <div className="bg-amber-300 rounded-full" style={{ width: `${(statusCounts.onHold / statusCounts.total) * 100}%` }} title={`Tạm dừng/Hủy: ${statusCounts.onHold}`} />
+                        )}
                       </div>
-                      <span className="text-sm font-bold text-gray-700">{overallProgress}%</span>
+                    )}
+                    <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                      <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Hoàn thành ({statusCounts.completed})</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Đang triển khai ({statusCounts.inProgress})</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-300" /> Chưa triển khai ({statusCounts.notStarted})</span>
+                      {statusCounts.onHold > 0 && <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-300" /> Tạm dừng ({statusCounts.onHold})</span>}
                     </div>
                   </div>
                 </div>
@@ -263,6 +315,24 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 />
               )}
             </div>
+          )}
+
+          {/* Activities Tab */}
+          {activeTab === 'activities' && (
+            <MOUActivities
+              mouId={mou.id}
+              activities={mou.activities || []}
+              onRefresh={onRefresh}
+            />
+          )}
+
+          {/* Documents Tab */}
+          {activeTab === 'documents' && (
+            <MOUDocuments
+              mouId={mou.id}
+              documents={mou.documents || []}
+              onRefresh={onRefresh}
+            />
           )}
 
           {/* Progress Tab (general MOU progress) */}

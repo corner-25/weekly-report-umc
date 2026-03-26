@@ -2,6 +2,8 @@
 
 import React, { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CalendarDays } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Event {
   id: string;
@@ -149,9 +151,9 @@ export default function CalendarPage() {
       return 'bg-orange-100 border-orange-300 text-orange-900';
     }
     if (event.status === 'UNCONFIRMED') {
-      return 'bg-yellow-100 border-yellow-300 text-yellow-900';
+      return 'bg-amber-100 border-yellow-300 text-yellow-900';
     }
-    return 'bg-green-100 border-green-300 text-green-900';
+    return 'bg-emerald-100 border-green-300 text-green-900';
   };
 
   const goToPreviousWeek = () => {
@@ -181,23 +183,25 @@ export default function CalendarPage() {
 
   return (
     <div className="p-6">
+      <PageHeader
+        icon={CalendarDays}
+        title="Lịch làm việc"
+        description={`Tuần ${weekDates[0].getDate()}/${weekDates[0].getMonth() + 1} - ${weekDates[6].getDate()}/${weekDates[6].getMonth() + 1}/${weekDates[6].getFullYear()}`}
+        className="mb-6"
+      />
+
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Lịch làm việc</h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Tuần {weekDates[0].getDate()}/{weekDates[0].getMonth() + 1} - {weekDates[6].getDate()}/{weekDates[6].getMonth() + 1}/{weekDates[6].getFullYear()}
-            </p>
-          </div>
+          <div />
           <div className="flex gap-2">
           {/* View Mode Toggle */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-slate-100 rounded-lg p-1">
             <button
               onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-sm rounded-xl transition-colors ${
                 viewMode === 'calendar'
                   ? 'bg-white text-cyan-600 shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,10 +211,10 @@ export default function CalendarPage() {
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-sm rounded-xl transition-colors ${
                 viewMode === 'table'
                   ? 'bg-white text-cyan-600 shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,19 +226,19 @@ export default function CalendarPage() {
 
           <button
             onClick={goToPreviousWeek}
-            className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
           >
             ← Tuần trước
           </button>
           <button
             onClick={goToCurrentWeek}
-            className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
           >
             Tuần hiện tại
           </button>
           <button
             onClick={goToNextWeek}
-            className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
           >
             Tuần sau →
           </button>
@@ -254,9 +258,9 @@ export default function CalendarPage() {
             id="filterDirector"
             checked={filterByDirector}
             onChange={(e) => setFilterByDirector(e.target.checked)}
-            className="w-4 h-4 text-cyan-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-cyan-500"
+            className="w-4 h-4 text-cyan-600 bg-white border-slate-300 rounded focus:ring-2 focus:ring-cyan-500"
           />
-          <label htmlFor="filterDirector" className="text-sm font-medium text-gray-700 cursor-pointer select-none flex items-center gap-2">
+          <label htmlFor="filterDirector" className="text-sm font-medium text-slate-700 cursor-pointer select-none flex items-center gap-2">
             <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
@@ -265,19 +269,19 @@ export default function CalendarPage() {
         </div>
 
         {/* Status Legend */}
-        <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
-          <span className="text-sm font-medium text-gray-700">Trạng thái:</span>
+        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5">
+          <span className="text-sm font-medium text-slate-700">Trạng thái:</span>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 bg-green-100 border-l-4 border-green-300 rounded"></div>
-            <span className="text-xs text-gray-600">Đã xác nhận</span>
+            <div className="w-4 h-4 bg-emerald-100 border-l-4 border-green-300 rounded"></div>
+            <span className="text-xs text-slate-600">Đã xác nhận</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 bg-yellow-100 border-l-4 border-yellow-300 rounded"></div>
-            <span className="text-xs text-gray-600">Chưa xác nhận</span>
+            <div className="w-4 h-4 bg-amber-100 border-l-4 border-yellow-300 rounded"></div>
+            <span className="text-xs text-slate-600">Chưa xác nhận</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 bg-orange-100 border-l-4 border-orange-300 rounded"></div>
-            <span className="text-xs text-gray-600">Có thay đổi</span>
+            <span className="text-xs text-slate-600">Có thay đổi</span>
           </div>
         </div>
       </div>
@@ -285,7 +289,7 @@ export default function CalendarPage() {
       {loading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-          <p className="text-gray-600 mt-2">Đang tải...</p>
+          <p className="text-slate-600 mt-2">Đang tải...</p>
         </div>
       ) : viewMode === 'calendar' ? (
         // Calendar View - NEW LAYOUT: Rows = Days, Columns = Morning/Afternoon
@@ -294,12 +298,12 @@ export default function CalendarPage() {
             <table className="w-full border-collapse table-fixed">
               <thead>
                 <tr className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-32">Ngày</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-32">Ngày</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold">
                     <div className="text-base">Sáng</div>
                     <div className="text-xs font-normal mt-1 opacity-90">(7h00 - 11h30)</div>
                   </th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold">
                     <div className="text-base">Chiều</div>
                     <div className="text-xs font-normal mt-1 opacity-90">(13h30 - hết)</div>
                   </th>
@@ -314,15 +318,15 @@ export default function CalendarPage() {
                   return (
                     <tr key={`day-${dayIndex}`} className={isCurrentDay ? 'bg-blue-50' : ''}>
                       {/* Day Column */}
-                      <td className={`border border-gray-300 px-3 py-4 text-center font-bold ${
-                        isCurrentDay ? 'bg-cyan-100 text-cyan-900' : 'bg-gray-50 text-gray-700'
+                      <td className={`border border-slate-300 px-3 py-4 text-center font-bold ${
+                        isCurrentDay ? 'bg-cyan-100 text-cyan-900' : 'bg-slate-50 text-slate-700'
                       }`}>
                         <div className="text-sm">{weekDayNames[dayIndex]}</div>
                         <div className="text-xs mt-1">{formatDate(date)}</div>
                       </td>
 
                       {/* Morning Events */}
-                      <td className="border border-gray-300 px-3 py-2 align-top">
+                      <td className="border border-slate-300 px-3 py-2 align-top">
                         {morningEvents.length > 0 ? (
                           <div className="space-y-2">
                             {morningEvents.map((event) => (
@@ -354,7 +358,7 @@ export default function CalendarPage() {
                                         </button>
                                         <button
                                           onClick={() => setDeleteConfirm(null)}
-                                          className="text-xs px-1.5 py-0.5 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                          className="text-xs px-1.5 py-0.5 bg-slate-300 text-slate-700 rounded hover:bg-gray-400"
                                           title="Hủy"
                                         >
                                           X
@@ -393,12 +397,12 @@ export default function CalendarPage() {
                             ))}
                           </div>
                         ) : (
-                          <div className="text-center text-gray-400 text-sm py-4">-</div>
+                          <div className="text-center text-slate-400 text-sm py-4">-</div>
                         )}
                       </td>
 
                       {/* Afternoon Events */}
-                      <td className="border border-gray-300 px-3 py-2 align-top">
+                      <td className="border border-slate-300 px-3 py-2 align-top">
                         {afternoonEvents.length > 0 ? (
                           <div className="space-y-2">
                             {afternoonEvents.map((event) => (
@@ -430,7 +434,7 @@ export default function CalendarPage() {
                                         </button>
                                         <button
                                           onClick={() => setDeleteConfirm(null)}
-                                          className="text-xs px-1.5 py-0.5 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                          className="text-xs px-1.5 py-0.5 bg-slate-300 text-slate-700 rounded hover:bg-gray-400"
                                           title="Hủy"
                                         >
                                           X
@@ -469,7 +473,7 @@ export default function CalendarPage() {
                             ))}
                           </div>
                         ) : (
-                          <div className="text-center text-gray-400 text-sm py-4">-</div>
+                          <div className="text-center text-slate-400 text-sm py-4">-</div>
                         )}
                       </td>
                     </tr>
@@ -486,13 +490,13 @@ export default function CalendarPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-20">Giờ</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-40">Địa điểm</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold">Nội dung</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-48">Chủ trì</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-48">Đơn vị chuẩn bị/tham dự</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-32">Ghi chú</th>
-                  <th className="border border-gray-300 px-4 py-3 text-center font-semibold w-24">Thao tác</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-20">Giờ</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-40">Địa điểm</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold">Nội dung</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-48">Chủ trì</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-48">Đơn vị chuẩn bị/tham dự</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-32">Ghi chú</th>
+                  <th className="border border-slate-300 px-4 py-3 text-center font-semibold w-24">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -514,13 +518,13 @@ export default function CalendarPage() {
                       {dayEvents.length > 0 ? (
                         dayEvents.map((event, eventIndex) => (
                           <tr key={event.id} className={`transition-colors border-l-4 ${getEventColorClass(event)}`}>
-                            <td className="border border-gray-300 px-4 py-3 w-20 font-medium text-cyan-700">{formatTime(event.time) || '-'}</td>
-                            <td className="border border-gray-300 px-4 py-3 w-40">{event.location || '-'}</td>
-                            <td className="border border-gray-300 px-4 py-3 whitespace-pre-wrap">{event.content}</td>
-                            <td className="border border-gray-300 px-4 py-3 w-48 whitespace-pre-wrap">{event.chair || '-'}</td>
-                            <td className="border border-gray-300 px-4 py-3 w-48 whitespace-pre-wrap">{event.participants || '-'}</td>
-                            <td className="border border-gray-300 px-4 py-3 w-32 whitespace-pre-wrap">{event.note || '-'}</td>
-                            <td className="border border-gray-300 px-4 py-3 text-center w-24">
+                            <td className="border border-slate-300 px-4 py-3 w-20 font-medium text-cyan-700">{formatTime(event.time) || '-'}</td>
+                            <td className="border border-slate-300 px-4 py-3 w-40">{event.location || '-'}</td>
+                            <td className="border border-slate-300 px-4 py-3 whitespace-pre-wrap">{event.content}</td>
+                            <td className="border border-slate-300 px-4 py-3 w-48 whitespace-pre-wrap">{event.chair || '-'}</td>
+                            <td className="border border-slate-300 px-4 py-3 w-48 whitespace-pre-wrap">{event.participants || '-'}</td>
+                            <td className="border border-slate-300 px-4 py-3 w-32 whitespace-pre-wrap">{event.note || '-'}</td>
+                            <td className="border border-slate-300 px-4 py-3 text-center w-24">
                               <div className="flex items-center justify-center gap-2">
                                 <Link
                                   href={`/dashboard/calendar/${event.id}/edit`}
@@ -540,7 +544,7 @@ export default function CalendarPage() {
                                     </button>
                                     <button
                                       onClick={() => setDeleteConfirm(null)}
-                                      className="text-xs px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                                      className="text-xs px-2 py-1 bg-slate-300 text-slate-700 rounded hover:bg-gray-400"
                                     >
                                       Hủy
                                     </button>
@@ -561,7 +565,7 @@ export default function CalendarPage() {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={7} className="px-4 py-6 text-center text-gray-400 italic border-b border-gray-200">
+                          <td colSpan={7} className="px-4 py-6 text-center text-slate-400 italic border-b border-slate-200">
                             Không có sự kiện
                           </td>
                         </tr>
@@ -577,7 +581,7 @@ export default function CalendarPage() {
 
       {/* Event Detail Modal */}
       {selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedEvent(null)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedEvent(null)}>
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="sticky top-0 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-4 flex items-center justify-between">
@@ -596,10 +600,10 @@ export default function CalendarPage() {
             <div className="p-6 space-y-4">
               {/* Status */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Trạng thái</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Trạng thái</label>
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
                   selectedEvent.status === 'CONFIRMED'
-                    ? 'bg-green-100 text-green-800 border border-green-300'
+                    ? 'bg-emerald-100 text-emerald-700 border border-green-300'
                     : 'bg-orange-100 text-orange-800 border border-orange-300'
                 }`}>
                   {selectedEvent.status === 'CONFIRMED' ? (
@@ -623,8 +627,8 @@ export default function CalendarPage() {
               {/* Date and Time */}
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Ngày</label>
-                  <div className="flex items-center gap-2 text-gray-900">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Ngày</label>
+                  <div className="flex items-center gap-2 text-slate-900">
                     <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -633,8 +637,8 @@ export default function CalendarPage() {
                 </div>
                 {selectedEvent.time && (
                   <div className="flex-1">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Giờ</label>
-                    <div className="flex items-center gap-2 text-gray-900">
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Giờ</label>
+                    <div className="flex items-center gap-2 text-slate-900">
                       <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -647,8 +651,8 @@ export default function CalendarPage() {
               {/* Location */}
               {selectedEvent.location && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Địa điểm</label>
-                  <div className="flex items-start gap-2 text-gray-900">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Địa điểm</label>
+                  <div className="flex items-start gap-2 text-slate-900">
                     <svg className="w-5 h-5 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -660,20 +664,20 @@ export default function CalendarPage() {
 
               {/* Content */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Nội dung</label>
-                <div className="flex items-start gap-2 text-gray-900">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Nội dung</label>
+                <div className="flex items-start gap-2 text-slate-900">
                   <svg className="w-5 h-5 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p className="whitespace-pre-wrap bg-gray-50 p-3 rounded-lg flex-1">{selectedEvent.content}</p>
+                  <p className="whitespace-pre-wrap bg-slate-50 p-3 rounded-lg flex-1">{selectedEvent.content}</p>
                 </div>
               </div>
 
               {/* Chair */}
               {selectedEvent.chair && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Người chủ trì</label>
-                  <div className="flex items-start gap-2 text-gray-900">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Người chủ trì</label>
+                  <div className="flex items-start gap-2 text-slate-900">
                     <svg className="w-5 h-5 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -685,8 +689,8 @@ export default function CalendarPage() {
               {/* Participants */}
               {selectedEvent.participants && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Đơn vị chuẩn bị/tham dự</label>
-                  <div className="flex items-start gap-2 text-gray-900">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Đơn vị chuẩn bị/tham dự</label>
+                  <div className="flex items-start gap-2 text-slate-900">
                     <svg className="w-5 h-5 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -698,8 +702,8 @@ export default function CalendarPage() {
               {/* Note */}
               {selectedEvent.note && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Ghi chú</label>
-                  <div className="flex items-start gap-2 text-gray-900">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Ghi chú</label>
+                  <div className="flex items-start gap-2 text-slate-900">
                     <svg className="w-5 h-5 text-cyan-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                     </svg>
@@ -710,7 +714,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex gap-3 justify-end border-t">
+            <div className="sticky bottom-0 bg-slate-50 px-6 py-4 flex gap-3 justify-end border-t">
               <Link
                 href={`/dashboard/calendar/${selectedEvent.id}/edit`}
                 className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 font-medium flex items-center gap-2"
@@ -722,7 +726,7 @@ export default function CalendarPage() {
               </Link>
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
               >
                 Đóng
               </button>

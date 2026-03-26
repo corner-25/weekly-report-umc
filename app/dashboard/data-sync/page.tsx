@@ -15,8 +15,8 @@ export default function DataSyncPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Quản lý Đồng bộ Dữ liệu</h1>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <h1 className="text-xl font-bold text-slate-900">Quản lý Đồng bộ Dữ liệu</h1>
+        <p className="text-xs text-slate-400 mt-0.5">
           Upload file Excel / Kiểm tra dữ liệu GitHub cho các dashboard native
         </p>
       </div>
@@ -89,7 +89,7 @@ function HcUploadPanel() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-4">
         <div className="flex items-center gap-2 text-white">
@@ -124,28 +124,28 @@ function HcUploadPanel() {
 
         {/* File input */}
         <div>
-          <label className="text-xs font-medium text-gray-700 block mb-1.5">Chọn file Excel (.xlsx, .xls)</label>
+          <label className="text-xs font-medium text-slate-700 block mb-1.5">Chọn file Excel (.xlsx, .xls)</label>
           <input
             ref={fileInputRef}
             type="file"
             accept=".xlsx,.xls"
             multiple
             onChange={handleFileChange}
-            className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+            className="w-full text-sm text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
           />
         </div>
 
         {/* Selected files */}
         {files.length > 0 && (
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-gray-700">File đã chọn ({files.length}):</p>
+            <p className="text-xs font-medium text-slate-700">File đã chọn ({files.length}):</p>
             {files.map((file, i) => (
-              <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+              <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
                 <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="text-sm text-gray-700 flex-1 truncate">{file.name}</span>
-                <span className="text-xs text-gray-400">{(file.size / 1024).toFixed(0)} KB</span>
+                <span className="text-sm text-slate-700 flex-1 truncate">{file.name}</span>
+                <span className="text-xs text-slate-400">{(file.size / 1024).toFixed(0)} KB</span>
                 <button onClick={() => removeFile(i)} className="text-red-400 hover:text-red-600">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -160,14 +160,14 @@ function HcUploadPanel() {
         <button onClick={handleUpload} disabled={uploading || files.length === 0}
           className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
             uploading
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
               : files.length === 0
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
               : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-sm'
           }`}>
           {uploading ? (
             <>
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
               Đang xử lý &amp; upload...
             </>
           ) : (
@@ -194,19 +194,19 @@ function HcUploadPanel() {
             <p className="font-semibold text-sm text-emerald-700 mb-2">Upload thành công!</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-gray-500">Tổng dòng dữ liệu</p>
+                <p className="text-slate-500">Tổng dòng dữ liệu</p>
                 <p className="font-bold text-emerald-700 text-lg">{result.totalRows.toLocaleString()}</p>
               </div>
               <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-gray-500">Danh mục</p>
+                <p className="text-slate-500">Danh mục</p>
                 <p className="font-bold text-emerald-700 text-lg">{result.categories}</p>
               </div>
               <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-gray-500">Năm dữ liệu</p>
+                <p className="text-slate-500">Năm dữ liệu</p>
                 <p className="font-bold text-emerald-700">{result.years.join(', ')}</p>
               </div>
               <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-gray-500">Tuần mới nhất</p>
+                <p className="text-slate-500">Tuần mới nhất</p>
                 <p className="font-bold text-emerald-700">{result.latestWeek}</p>
               </div>
             </div>
@@ -217,21 +217,21 @@ function HcUploadPanel() {
                   <div key={i} className="flex items-center gap-2 text-xs text-emerald-600">
                     <span>✅</span>
                     <span className="font-medium">{f.name}</span>
-                    <span className="text-gray-400">
+                    <span className="text-slate-400">
                       {f.rows} dòng | Năm: {f.years.join(', ')}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-slate-400 mt-2">
               Uploaded: {new Date(result.uploadedAt).toLocaleString('vi-VN')}
             </p>
           </div>
         )}
 
         {/* Target info */}
-        <div className="text-xs text-gray-400 bg-gray-50 rounded-lg p-3">
+        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
           <p><span className="font-medium">Format:</span> Excel (.xlsx/.xls) với cột: Danh mục, Nội dung, Năm, Tháng, Tuần, Số liệu</p>
           <p><span className="font-medium">GitHub:</span> corner-25/dashboard-storage → current_dashboard_data.json</p>
           <p><span className="font-medium">Dashboard:</span> /dashboard/reports/phong-hc-native</p>
@@ -275,7 +275,7 @@ function FleetSyncPanel() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-4">
         <div className="flex items-center gap-2 text-white">
@@ -291,8 +291,8 @@ function FleetSyncPanel() {
 
       {/* Content */}
       <div className="p-5 space-y-4">
-        <div className="text-xs text-gray-500 space-y-0.5">
-          <p className="font-medium text-gray-700 mb-1">Dữ liệu Fleet:</p>
+        <div className="text-xs text-slate-500 space-y-0.5">
+          <p className="font-medium text-slate-700 mb-1">Dữ liệu Fleet:</p>
           <div className="space-y-0.5">
             <span className="block">🚗 Dữ liệu chuyến xe (từ Google Sheets → GitHub)</span>
             <span className="block">📊 Bao gồm: xe HC, xe cứu thương, tài xế, doanh thu</span>
@@ -314,12 +314,12 @@ function FleetSyncPanel() {
         <button onClick={handleRefresh} disabled={refreshing}
           className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
             refreshing
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
               : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-sm'
           }`}>
           {refreshing ? (
             <>
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
               Đang kiểm tra...
             </>
           ) : (
@@ -339,14 +339,14 @@ function FleetSyncPanel() {
             <p className="font-semibold">{refreshResult.ok ? '✅ Kết nối OK' : '❌ Lỗi'}</p>
             <p className="text-xs mt-1">{refreshResult.message}</p>
             {refreshResult.fetchedAt && (
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Fetched: {new Date(refreshResult.fetchedAt).toLocaleString('vi-VN')}
               </p>
             )}
           </div>
         )}
 
-        <div className="text-xs text-gray-400 bg-gray-50 rounded-lg p-3">
+        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
           <p><span className="font-medium">GitHub:</span> corner-25/vehicle-storage</p>
           <p><span className="font-medium">File:</span> data/latest/fleet_data_latest.json</p>
           <p><span className="font-medium">Dashboard:</span> /dashboard/reports/to-xe-native</p>

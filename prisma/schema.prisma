@@ -585,6 +585,8 @@ model MOU {
 
   clauses           MOUClause[]
   progressLogs      MOUProgress[]
+  activities        MOUActivity[]
+  documents         MOUDocument[]
 
   @@index([category])
   @@index([status])
@@ -674,4 +676,64 @@ model MOUProgress {
   @@index([mouId])
   @@index([date])
   @@map("mou_progress")
+}
+
+// Loại hoạt động MOU
+enum ActivityStatus {
+  PLANNED       // Đã lên kế hoạch
+  IN_PROGRESS   // Đang thực hiện
+  COMPLETED     // Hoàn thành
+  CANCELLED     // Đã hủy
+}
+
+// MOUActivity - Hoạt động cụ thể trong khuôn khổ MOU
+model MOUActivity {
+  id              String          @id @default(cuid())
+  mouId           String
+  mou             MOU             @relation(fields: [mouId], references: [id], onDelete: Cascade)
+
+  title           String          @db.Text    // Tên hoạt động
+  description     String?         @db.Text    // Mô tả chi tiết
+  activityType    String?                     // Loại hoạt động (đào tạo, nghiên cứu, trao đổi, hội thảo...)
+  status          ActivityStatus  @default(PLANNED)
+
+  startDate       DateTime?                   // Ngày bắt đầu
+  endDate         DateTime?                   // Ngày kết thúc
+  location        String?                     // Địa điểm
+  participants    String?         @db.Text    // Người tham gia
+  responsible     String?                     // Người phụ trách
+  budget          String?                     // Ngân sách dự kiến
+
+  result          String?         @db.Text    // Kết quả thực hiện
+  notes           String?         @db.Text
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([mouId])
+  @@index([status])
+  @@index([startDate])
+  @@map("mou_activities")
+}
+
+// MOUDocument - Văn bản / tài liệu đính kèm MOU
+model MOUDocument {
+  id              String    @id @default(cuid())
+  mouId           String
+  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+
+  title           String                      // Tên văn bản
+  description     String?   @db.Text          // Mô tả
+  documentType    String?                     // Loại (hợp đồng, phụ lục, biên bản, công văn...)
+  fileUrl         String?                     // URL file
+  fileName        String?                     // Tên file gốc
+  fileSize        Int?                        // Kích thước file (bytes)
+  uploadedBy      String?                     // Người upload
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([mouId])
+  @@index([documentType])
+  @@map("mou_documents")
 }

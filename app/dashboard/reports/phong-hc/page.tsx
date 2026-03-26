@@ -52,14 +52,14 @@ export default function PhongHcDashboardPage() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard Số Liệu</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard Số Liệu</h1>
+        <p className="mt-1 text-sm text-slate-500">
           Hệ thống dashboard phân tích số liệu Phòng Hành Chính - UMC
         </p>
       </div>
 
       {/* Tab selector */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2 border-b border-slate-200">
         {DASHBOARDS.map(d => (
           <button
             key={d.key}
@@ -67,7 +67,7 @@ export default function PhongHcDashboardPage() {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px ${
               activeTab === d.key
                 ? 'border-cyan-500 text-cyan-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
             }`}
           >
             <span>{d.icon}</span>
@@ -78,7 +78,7 @@ export default function PhongHcDashboardPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+        <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
           Đang tải cấu hình...
         </div>
       ) : !activeUrl ? (
@@ -91,14 +91,14 @@ export default function PhongHcDashboardPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           {/* Toolbar */}
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-slate-900">
                 {activeDashboard.icon} {activeDashboard.label}
               </p>
-              <p className="text-xs text-gray-400">{activeDashboard.description}</p>
+              <p className="text-xs text-slate-400">{activeDashboard.description}</p>
             </div>
             <a
               href={activeUrl}

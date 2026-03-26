@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { CalendarRange } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ChecklistProgress } from '@/components/hospital-events/ChecklistProgress';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
@@ -81,14 +83,14 @@ export default function HospitalEventsPage() {
   const getEventTypeColor = (type: string) => {
     return type === 'ORGANIZED'
       ? 'bg-blue-100 border-blue-300 text-blue-900'
-      : 'bg-green-100 border-green-300 text-green-900';
+      : 'bg-emerald-100 border-green-300 text-green-900';
   };
 
   const getStatusColor = (status: string, isEdited: boolean) => {
     if (isEdited) return 'bg-orange-100 border-orange-300 text-orange-900';
     return status === 'CONFIRMED'
-      ? 'bg-green-100 border-green-300 text-green-900'
-      : 'bg-yellow-100 border-yellow-300 text-yellow-900';
+      ? 'bg-emerald-100 border-green-300 text-green-900'
+      : 'bg-amber-100 border-yellow-300 text-yellow-900';
   };
 
   if (loading) return <div className="text-center py-12">Đang tải...</div>;
@@ -103,10 +105,12 @@ export default function HospitalEventsPage() {
         onCancel={() => setDeleteTarget(null)}
       />
 
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Sự kiện Bệnh viện</h1>
-        <p className="mt-2 text-gray-600">Quản lý sự kiện và theo dõi tiến độ checklist</p>
-      </div>
+      <PageHeader
+        icon={CalendarRange}
+        title="Sự kiện Bệnh viện"
+        description="Quản lý sự kiện và theo dõi tiến độ checklist"
+        className="mb-6"
+      />
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex justify-between items-center">
@@ -122,13 +126,13 @@ export default function HospitalEventsPage() {
           placeholder="Tìm kiếm sự kiện..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
         />
 
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
         >
           <option value="">Tất cả loại sự kiện</option>
           <option value="ORGANIZED">Tổ chức</option>
@@ -138,7 +142,7 @@ export default function HospitalEventsPage() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
         >
           <option value="">Tất cả trạng thái</option>
           <option value="CONFIRMED">Đã xác nhận</option>
@@ -147,7 +151,7 @@ export default function HospitalEventsPage() {
 
         <Link
           href="/dashboard/hospital-events/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-center"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 text-center"
         >
           + Tạo sự kiện mới
         </Link>
@@ -155,8 +159,8 @@ export default function HospitalEventsPage() {
 
       {/* Events Grid */}
       {filteredEvents.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <p className="text-gray-500">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-12 text-center">
+          <p className="text-slate-500">
             {searchTerm || filterType || filterStatus
               ? 'Không tìm thấy sự kiện nào'
               : 'Chưa có sự kiện nào. Hãy tạo sự kiện đầu tiên!'}
@@ -171,12 +175,12 @@ export default function HospitalEventsPage() {
             return (
               <div
                 key={event.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
+                className="bg-white rounded-xl shadow-sm border border-slate-200/80 hover:shadow-lg transition-shadow overflow-hidden"
               >
                 {/* Header */}
                 <div className="p-4 border-b">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-lg text-gray-900 flex-1">
+                    <h3 className="font-semibold text-lg text-slate-900 flex-1">
                       {event.name}
                     </h3>
                     <span className={`px-2 py-1 rounded text-xs font-medium border ${getEventTypeColor(event.eventType)}`}>
@@ -184,7 +188,7 @@ export default function HospitalEventsPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center text-sm text-gray-600 mb-1">
+                  <div className="flex items-center text-sm text-slate-600 mb-1">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -193,7 +197,7 @@ export default function HospitalEventsPage() {
                   </div>
 
                   {event.meetingRoom && (
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-slate-600">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
@@ -203,7 +207,7 @@ export default function HospitalEventsPage() {
                 </div>
 
                 {/* Checklist Progress */}
-                <div className="p-4 bg-gray-50">
+                <div className="p-4 bg-slate-50">
                   <ChecklistProgress completed={completedCount} total={totalCount} showPercentage />
                 </div>
 
@@ -222,7 +226,7 @@ export default function HospitalEventsPage() {
                     </Link>
                     <Link
                       href={`/dashboard/hospital-events/${event.id}/edit`}
-                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 font-medium"
+                      className="px-3 py-1 text-sm text-slate-600 hover:text-slate-800 font-medium"
                     >
                       Sửa
                     </Link>

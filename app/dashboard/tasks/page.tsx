@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { ClipboardCheck, Plus } from 'lucide-react';
 
 interface Department {
   id: string;
@@ -204,28 +206,26 @@ export default function MasterTasksPage() {
         onConfirm={handleDelete}
         onCancel={() => setDeleteTargetTask(null)}
       />
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Danh sách Nhiệm vụ Thường kỳ
-          </h1>
-          <p className="text-gray-600 mt-2 text-sm">
-            Quản lý các nhiệm vụ định kỳ, lặp lại hàng tuần của từng phòng ban
-          </p>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-        >
-          + Thêm nhiệm vụ thường kỳ
-        </button>
-      </div>
+      <PageHeader
+        icon={ClipboardCheck}
+        title="Danh sách Nhiệm vụ Thường kỳ"
+        description="Quản lý các nhiệm vụ định kỳ, lặp lại hàng tuần của từng phòng ban"
+        actions={
+          <button
+            onClick={handleAdd}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+          >
+            <Plus className="w-4 h-4" />
+            Thêm nhiệm vụ thường kỳ
+          </button>
+        }
+      />
 
       {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow">
+      <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200/80">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Tìm kiếm
             </label>
             <input
@@ -233,17 +233,17 @@ export default function MasterTasksPage() {
               placeholder="Tên nhiệm vụ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Lọc theo phòng
             </label>
             <select
               value={filterDept}
               onChange={(e) => setFilterDept(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="">Tất cả phòng</option>
               {departments.map((dept) => (
@@ -259,73 +259,73 @@ export default function MasterTasksPage() {
       {/* Table */}
       {loading ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">Đang tải...</p>
+          <p className="text-slate-500">Đang tải...</p>
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-500 mb-4">Chưa có nhiệm vụ thường kỳ nào</p>
+        <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-slate-200/80">
+          <p className="text-slate-500 mb-4">Chưa có nhiệm vụ thường kỳ nào</p>
           <button
             onClick={handleAdd}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             Tạo nhiệm vụ thường kỳ đầu tiên
           </button>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tên nhiệm vụ
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Phòng ban
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tiến độ
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Số tuần
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Trạng thái
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Hành động
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {filteredTasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50">
+                <tr key={task.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-slate-900">
                       {task.name}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">
+                    <span className="text-sm text-slate-900">
                       {task.department.name}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-full bg-gray-200 rounded-full h-2 mr-2" style={{ width: '100px' }}>
+                      <div className="w-full bg-slate-200 rounded-full h-2 mr-2" style={{ width: '100px' }}>
                         <div
-                          className="bg-blue-600 h-2 rounded-full"
+                          className="bg-cyan-500 h-2 rounded-full"
                           style={{ width: `${task.latestProgress}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-slate-700">
                         {task.latestProgress}%
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                     {task.weekCount} tuần
                     {task.startDate && task.endDate && (
-                      <span className="text-gray-400">
+                      <span className="text-slate-400">
                         {' '}
                         / {Math.ceil(
                           (new Date(task.endDate).getTime() - new Date(task.startDate).getTime()) /
@@ -334,14 +334,14 @@ export default function MasterTasksPage() {
                       </span>
                     )}
                     {task.startDate && task.endDate && (
-                      <div className="text-xs text-gray-400 mt-1">
+                      <div className="text-xs text-slate-400 mt-1">
                         {new Date(task.startDate).toLocaleDateString('vi-VN')} - {new Date(task.endDate).toLocaleDateString('vi-VN')}
                       </div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {task.isCompleted ? (
-                      <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded">
+                      <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded">
                         Hoàn thành
                       </span>
                     ) : task.weekCount > 0 ? (
@@ -349,7 +349,7 @@ export default function MasterTasksPage() {
                         Đang làm
                       </span>
                     ) : (
-                      <span className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded">
+                      <span className="px-2 py-1 text-xs font-semibold text-slate-800 bg-slate-100 rounded">
                         Chưa bắt đầu
                       </span>
                     )}
@@ -394,7 +394,7 @@ export default function MasterTasksPage() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">
@@ -402,7 +402,7 @@ export default function MasterTasksPage() {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 p-1"
+                className="text-slate-500 hover:text-slate-700 p-1"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -419,7 +419,7 @@ export default function MasterTasksPage() {
             <form onSubmit={handleSubmit}>
               {!editingTask && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Phòng ban *
                   </label>
                   <select
@@ -428,7 +428,7 @@ export default function MasterTasksPage() {
                       setFormData({ ...formData, departmentId: e.target.value })
                     }
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   >
                     <option value="">-- Chọn phòng --</option>
                     {departments.map((dept) => (
@@ -441,7 +441,7 @@ export default function MasterTasksPage() {
               )}
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Tên nhiệm vụ *
                 </label>
                 <input
@@ -451,13 +451,13 @@ export default function MasterTasksPage() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   placeholder="VD: Xây dựng tiêu chuẩn chất lượng lâm sàng"
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Mô tả
                 </label>
                 <textarea
@@ -466,14 +466,14 @@ export default function MasterTasksPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   placeholder="Mô tả chi tiết nhiệm vụ..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Ngày bắt đầu
                   </label>
                   <input
@@ -485,11 +485,11 @@ export default function MasterTasksPage() {
                         startDate: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Ngày kết thúc
                   </label>
                   <input
@@ -501,13 +501,13 @@ export default function MasterTasksPage() {
                         endDate: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   />
                 </div>
               </div>
 
               {formData.startDate && formData.endDate && (
-                <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                   <p className="text-sm text-blue-800">
                     <strong>Số tuần dự kiến:</strong>{' '}
                     {Math.ceil(
@@ -523,13 +523,13 @@ export default function MasterTasksPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
                 >
                   Lưu
                 </button>
@@ -541,7 +541,7 @@ export default function MasterTasksPage() {
 
       {/* History Modal */}
       {showHistoryModal && selectedTaskHistory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">
@@ -549,7 +549,7 @@ export default function MasterTasksPage() {
               </h2>
               <button
                 onClick={() => setShowHistoryModal(false)}
-                className="text-gray-500 hover:text-gray-700 p-1"
+                className="text-slate-500 hover:text-slate-700 p-1"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -557,12 +557,12 @@ export default function MasterTasksPage() {
               </button>
             </div>
 
-            <div className="mb-4 p-4 bg-gray-50 rounded-md">
-              <p className="text-sm text-gray-700">
+            <div className="mb-4 p-4 bg-slate-50 rounded-xl">
+              <p className="text-sm text-slate-700">
                 <strong>Phòng:</strong> {selectedTaskHistory.department.name}
               </p>
               {selectedTaskHistory.description && (
-                <p className="text-sm text-gray-700 mt-1">
+                <p className="text-sm text-slate-700 mt-1">
                   <strong>Mô tả:</strong> {selectedTaskHistory.description}
                 </p>
               )}
@@ -571,7 +571,7 @@ export default function MasterTasksPage() {
             <h3 className="font-bold mb-3">Tiến độ theo tuần:</h3>
 
             {selectedTaskHistory.weekProgress.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
+              <p className="text-slate-500 text-center py-8">
                 Chưa có tiến độ nào được ghi nhận
               </p>
             ) : (
@@ -579,30 +579,30 @@ export default function MasterTasksPage() {
                 {selectedTaskHistory.weekProgress.map((progress: any) => (
                   <div
                     key={progress.id}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-slate-200 rounded-lg p-4"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <span className="font-semibold">
                           Tuần {progress.week.weekNumber}/{progress.week.year}
                         </span>
-                        <span className="text-sm text-gray-500 ml-2">
+                        <span className="text-sm text-slate-500 ml-2">
                           ({new Date(progress.week.startDate).toLocaleDateString('vi-VN')} -{' '}
                           {new Date(progress.week.endDate).toLocaleDateString('vi-VN')})
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         {progress.isImportant && (
-                          <span className="px-2 py-0.5 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded">
+                          <span className="px-2 py-0.5 text-xs font-semibold text-amber-700 bg-amber-100 rounded">
                             Quan trọng
                           </span>
                         )}
                         <div className="flex items-center">
                           <div
-                            className="w-24 bg-gray-200 rounded-full h-2 mr-2"
+                            className="w-24 bg-slate-200 rounded-full h-2 mr-2"
                           >
                             <div
-                              className="bg-blue-600 h-2 rounded-full"
+                              className="bg-cyan-500 h-2 rounded-full"
                               style={{ width: `${progress.progress}%` }}
                             ></div>
                           </div>
@@ -612,7 +612,7 @@ export default function MasterTasksPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-sm text-gray-700 space-y-1">
+                    <div className="text-sm text-slate-700 space-y-1">
                       <p>
                         <strong>Kết quả:</strong> {progress.result}
                       </p>
@@ -623,7 +623,7 @@ export default function MasterTasksPage() {
                         <strong>Kế hoạch tuần sau:</strong> {progress.nextWeekPlan}
                       </p>
                       {progress.completedAt && (
-                        <p className="text-green-600">
+                        <p className="text-emerald-600">
                           <strong>✓ Hoàn thành:</strong>{' '}
                           {new Date(progress.completedAt).toLocaleDateString('vi-VN')}
                         </p>

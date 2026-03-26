@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Cake } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface BirthdaySecretary {
   id: string;
@@ -53,50 +55,50 @@ export default function SecretaryBirthdaysPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Sinh nhật thư ký</h1>
-            <p className="text-gray-500 mt-1">
-              {period === 'today' && 'Sinh nhật hôm nay'}
-              {period === 'week' && 'Sinh nhật trong 7 ngày tới'}
-              {period === 'month' && `Sinh nhật ${monthNames[currentMonth]}`}
-            </p>
-          </div>
-          <div className="flex bg-gray-100 rounded-lg p-1">
+      <PageHeader
+        icon={Cake}
+        title="Sinh nhật thư ký"
+        description={
+          period === 'today' ? 'Sinh nhật hôm nay' :
+          period === 'week' ? 'Sinh nhật trong 7 ngày tới' :
+          `Sinh nhật ${monthNames[currentMonth]}`
+        }
+        className="mb-6"
+        actions={
+          <div className="flex bg-slate-100 rounded-lg p-1">
             <button
               onClick={() => setPeriod('today')}
-              className={`px-4 py-2 text-sm rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm rounded-xl transition-colors ${
                 period === 'today'
                   ? 'bg-white text-cyan-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Hôm nay
             </button>
             <button
               onClick={() => setPeriod('week')}
-              className={`px-4 py-2 text-sm rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm rounded-xl transition-colors ${
                 period === 'week'
                   ? 'bg-white text-cyan-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Tuần này
             </button>
             <button
               onClick={() => setPeriod('month')}
-              className={`px-4 py-2 text-sm rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm rounded-xl transition-colors ${
                 period === 'month'
                   ? 'bg-white text-cyan-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Tháng này
             </button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -118,7 +120,7 @@ export default function SecretaryBirthdaysPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,15 +128,15 @@ export default function SecretaryBirthdaysPage() {
               </svg>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-slate-900">
                 {secretaries.filter(s => s.isToday).length}
               </div>
-              <div className="text-sm text-gray-500">Sinh nhật hôm nay</div>
+              <div className="text-sm text-slate-500">Sinh nhật hôm nay</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,8 +144,8 @@ export default function SecretaryBirthdaysPage() {
               </svg>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{monthNames[currentMonth]}</div>
-              <div className="text-sm text-gray-500">Tháng hiện tại</div>
+              <div className="text-2xl font-bold text-slate-900">{monthNames[currentMonth]}</div>
+              <div className="text-sm text-slate-500">Tháng hiện tại</div>
             </div>
           </div>
         </div>
@@ -152,11 +154,11 @@ export default function SecretaryBirthdaysPage() {
       {loading ? (
         <div className="text-center py-10">Đang tải...</div>
       ) : secretaries.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-          <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-10 text-center">
+          <svg className="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
           </svg>
-          <p className="text-gray-500">
+          <p className="text-slate-500">
             {period === 'today' && 'Không có ai sinh nhật hôm nay'}
             {period === 'week' && 'Không có sinh nhật trong tuần này'}
             {period === 'month' && 'Không có sinh nhật trong tháng này'}
@@ -168,7 +170,7 @@ export default function SecretaryBirthdaysPage() {
             <div
               key={secretary.id}
               className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-all hover:shadow-md ${
-                secretary.isToday ? 'border-pink-300 ring-2 ring-pink-100' : 'border-gray-200'
+                secretary.isToday ? 'border-pink-300 ring-2 ring-pink-100' : 'border-slate-200'
               }`}
             >
               {secretary.isToday && (
@@ -193,8 +195,8 @@ export default function SecretaryBirthdaysPage() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{secretary.fullName}</h3>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="font-semibold text-slate-900">{secretary.fullName}</h3>
+                    <p className="text-sm text-slate-500">
                       {secretary.currentDepartment?.name || 'Chưa phân công'}
                     </p>
                     {secretary.secretaryType && (
@@ -211,17 +213,17 @@ export default function SecretaryBirthdaysPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div>
-                    <div className="text-lg font-bold text-gray-900">
+                    <div className="text-lg font-bold text-slate-900">
                       {secretary.birthdayDay}/{secretary.birthdayMonth}
                     </div>
-                    <div className="text-sm text-gray-500">Tròn {secretary.age} tuổi</div>
+                    <div className="text-sm text-slate-500">Tròn {secretary.age} tuổi</div>
                   </div>
                   {(secretary.phone || secretary.email) && (
                     <div className="text-right text-sm">
-                      {secretary.phone && <div className="text-gray-600">{secretary.phone}</div>}
-                      {secretary.email && <div className="text-gray-500 text-xs">{secretary.email}</div>}
+                      {secretary.phone && <div className="text-slate-600">{secretary.phone}</div>}
+                      {secretary.email && <div className="text-slate-500 text-xs">{secretary.email}</div>}
                     </div>
                   )}
                 </div>

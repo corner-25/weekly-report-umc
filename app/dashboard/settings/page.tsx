@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { Settings } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -64,12 +66,12 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Cài đặt</h1>
+      <PageHeader icon={Settings} title="Cài đặt" description="Quản lý tài khoản và mật khẩu" className="mb-8" />
 
       {/* User Info */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-bold mb-4">Thông tin tài khoản</h2>
-        <div className="space-y-2 text-gray-700">
+        <div className="space-y-2 text-slate-700">
           <p>
             <span className="font-semibold">Email:</span> {session?.user?.email}
           </p>
@@ -90,14 +92,14 @@ export default function SettingsPage() {
         )}
 
         {success && (
-          <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          <div className="mb-4 bg-green-50 border border-green-200 text-emerald-700 px-4 py-3 rounded">
             {success}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Mật khẩu hiện tại *
             </label>
             <input
@@ -107,13 +109,13 @@ export default function SettingsPage() {
                 setFormData({ ...formData, currentPassword: e.target.value })
               }
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               placeholder="Nhập mật khẩu hiện tại"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Mật khẩu mới *
             </label>
             <input
@@ -124,13 +126,13 @@ export default function SettingsPage() {
               }
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               placeholder="Tối thiểu 6 ký tự"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Xác nhận mật khẩu mới *
             </label>
             <input
@@ -141,7 +143,7 @@ export default function SettingsPage() {
               }
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               placeholder="Nhập lại mật khẩu mới"
             />
           </div>
@@ -150,7 +152,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50 font-medium"
             >
               {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
             </button>

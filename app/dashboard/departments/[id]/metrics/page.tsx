@@ -150,7 +150,7 @@ export default function DepartmentMetricsPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
@@ -174,16 +174,16 @@ export default function DepartmentMetricsPage() {
       {/* Header */}
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-slate-900">
             Quản lý Chỉ số - {department?.name}
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-slate-600 mt-2">
             Thiết lập các chỉ số báo cáo hàng tuần cho phòng ban
           </p>
         </div>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
         >
           + Thêm chỉ số
         </button>
@@ -192,58 +192,58 @@ export default function DepartmentMetricsPage() {
       {/* Table */}
       {metrics.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có chỉ số nào</h3>
-          <p className="text-gray-500 mb-4">
+          <h3 className="text-lg font-medium text-slate-900 mb-2">Chưa có chỉ số nào</h3>
+          <p className="text-slate-500 mb-4">
             Thêm các chỉ số cần báo cáo hàng tuần cho phòng ban này
           </p>
           <button
             onClick={handleAdd}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
           >
             + Thêm chỉ số đầu tiên
           </button>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-16">
                   STT
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tên chỉ số
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-32">
                   Đơn vị
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Mô tả
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider w-32">
                   Số tuần
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-40">
                   Hành động
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {metrics.map((metric, index) => (
-                <tr key={metric.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr key={metric.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                     {metric.orderNumber || index + 1}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{metric.name}</div>
+                    <div className="text-sm font-medium text-slate-900">{metric.name}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                     {metric.unit || '-'}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-slate-500">
                     {metric.description || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -280,7 +280,7 @@ export default function DepartmentMetricsPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">
@@ -288,7 +288,7 @@ export default function DepartmentMetricsPage() {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 p-1"
+                className="text-slate-500 hover:text-slate-700 p-1"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -304,7 +304,7 @@ export default function DepartmentMetricsPage() {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Tên chỉ số *
                 </label>
                 <input
@@ -313,12 +313,12 @@ export default function DepartmentMetricsPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="VD: Số ca ghép tim"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Đơn vị
                 </label>
                 <input
@@ -326,12 +326,12 @@ export default function DepartmentMetricsPage() {
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                   placeholder="VD: ca, bài, nghiên cứu"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Mô tả
                 </label>
                 <textarea
@@ -339,12 +339,12 @@ export default function DepartmentMetricsPage() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
                   placeholder="Mô tả chi tiết về chỉ số này"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Thứ tự hiển thị
                 </label>
                 <input
@@ -352,7 +352,7 @@ export default function DepartmentMetricsPage() {
                   value={formData.orderNumber}
                   onChange={(e) => setFormData({ ...formData, orderNumber: parseInt(e.target.value) })}
                   min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
 
@@ -360,13 +360,13 @@ export default function DepartmentMetricsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
                 >
                   Lưu
                 </button>

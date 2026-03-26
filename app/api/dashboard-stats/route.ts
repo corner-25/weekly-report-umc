@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { CACHE_TAGS } from '@/lib/cache';
 
-export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+// Server-side cache: revalidate every 2 minutes
+const getCachedDashboardStats = unstable_cache(
+  async () => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
@@ -95,7 +93,6 @@ export async function GET() {
         _count: true,
       }),
 
-      // Filter birthdays by month/day in DB — no full table scan in JS
       prisma.$queryRaw<{ id: string; fullName: string; dateOfBirth: Date }[]>`
         SELECT id, "fullName", "dateOfBirth"
         FROM secretaries
@@ -119,7 +116,6 @@ export async function GET() {
       }),
     ]);
 
-    // Final birthday filter in-memory (only ~20 rows at most)
     const weekBirthdays = birthdaySecretaries
       .filter((s) => {
         if (!s.dateOfBirth) return false;
@@ -144,7 +140,7 @@ export async function GET() {
     const totalSecretaries = secretaryCounts.reduce((sum, g) => sum + g._count, 0);
     const activeSecretaries = secretaryCounts.find((g) => g.status === 'ACTIVE')?._count ?? 0;
 
-    return NextResponse.json({
+    return {
       totalMasterTasks,
       tasksInProgress,
       tasksCompleted,
@@ -157,6 +153,25 @@ export async function GET() {
       activeSecretaries,
       birthdaySecretaries: weekBirthdays,
       recentTransfers,
+    };
+  },
+  [CACHE_TAGS.dashboardStats],
+  { revalidate: 120, tags: [CACHE_TAGS.dashboardStats] } // Cache 2 minutes
+);
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const data = await getCachedDashboardStats();
+
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=120, stale-while-revalidate=300',
+      },
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);

@@ -124,7 +124,7 @@ export default function FleetDashboardPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Đang tải dữ liệu tổ xe...</p>
+          <p className="text-slate-500 text-sm">Đang tải dữ liệu tổ xe...</p>
         </div>
       </div>
     );
@@ -148,8 +148,8 @@ export default function FleetDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Dashboard Quản lý Tổ Xe</h1>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <h1 className="text-xl font-bold text-slate-900">Dashboard Quản lý Tổ Xe</h1>
+          <p className="text-xs text-slate-400 mt-0.5">
             {filteredData.length.toLocaleString()} chuyến
             {fetchedAt && ` — cập nhật ${new Date(fetchedAt).toLocaleString('vi-VN')}`}
           </p>
@@ -164,17 +164,17 @@ export default function FleetDashboardPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+      <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-slate-100">
         {/* Date range */}
         <div className="flex items-center gap-1.5 text-xs">
-          <span className="text-gray-500">Từ</span>
+          <span className="text-slate-500">Từ</span>
           <input type="date" value={startDate} min={dateRange.min} max={dateRange.max}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border border-gray-200 rounded px-2 py-1 text-xs" />
-          <span className="text-gray-500">đến</span>
+            className="border border-slate-200 rounded px-2 py-1 text-xs" />
+          <span className="text-slate-500">đến</span>
           <input type="date" value={endDate} min={dateRange.min} max={dateRange.max}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border border-gray-200 rounded px-2 py-1 text-xs" />
+            className="border border-slate-200 rounded px-2 py-1 text-xs" />
         </div>
 
         {/* Quick filters */}
@@ -186,7 +186,7 @@ export default function FleetDashboardPage() {
             { key: 'all', label: 'Tất cả' },
           ].map((f) => (
             <button key={f.key} onClick={() => setQuickFilter(f.key)}
-              className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-cyan-100 text-gray-600 hover:text-cyan-700 transition-colors">
+              className="px-2 py-1 text-xs rounded bg-slate-100 hover:bg-cyan-100 text-slate-600 hover:text-cyan-700 transition-colors">
               {f.label}
             </button>
           ))}
@@ -194,7 +194,7 @@ export default function FleetDashboardPage() {
 
         {/* Vehicle type */}
         <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value as VehicleTypeFilter)}
-          className="border border-gray-200 rounded px-2 py-1 text-xs ml-auto">
+          className="border border-slate-200 rounded px-2 py-1 text-xs ml-auto">
           <option value="all">Tất cả xe</option>
           <option value="Hành chính">Hành chính</option>
           <option value="Cứu thương">Cứu thương</option>
@@ -202,13 +202,13 @@ export default function FleetDashboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5 overflow-x-auto">
+      <div className="flex gap-0.5 bg-slate-100 rounded-lg p-0.5 overflow-x-auto">
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
               activeTab === tab.key
                 ? 'bg-white text-cyan-700 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-slate-500 hover:text-slate-700'
             }`}>
             <span>{tab.icon}</span>
             <span>{tab.label}</span>
@@ -289,14 +289,14 @@ function OverviewTab({ overview, vehicleStats, driverStats, dailyStats, data }: 
 
       {/* Charts row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <TrendLine
             data={dailyStats.slice(-30).map((d) => ({ label: d.date, value: d.totalTrips }))}
             title="Số chuyến theo ngày (30 ngày gần nhất)"
             color="#06b6d4"
           />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <BarChart
             data={vehicleStats.slice(0, 10).map((v) => ({
               label: v.vehicle_id, value: v.totalRevenue
@@ -308,7 +308,7 @@ function OverviewTab({ overview, vehicleStats, driverStats, dailyStats, data }: 
       </div>
 
       {/* Vehicle performance table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           title="Hiệu suất chi tiết từng xe"
           columns={[
@@ -327,7 +327,7 @@ function OverviewTab({ overview, vehicleStats, driverStats, dailyStats, data }: 
       </div>
 
       {/* Driver table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           title="Hiệu suất tài xế"
           columns={[
@@ -400,7 +400,7 @@ function RevenueTab({ data, dailyStats, vehicleStats, driverStats }: {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <BarChart
             data={vehicleStats.filter((v) => v.totalRevenue > 0).slice(0, 10).map((v) => ({
               label: v.vehicle_id, value: v.totalRevenue,
@@ -410,7 +410,7 @@ function RevenueTab({ data, dailyStats, vehicleStats, driverStats }: {
             formatValue={(v) => formatVND(v)}
           />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <TrendLine
             data={dailyRevenue.slice(-30).map((d) => ({ label: d.date, value: d.totalRevenue }))}
             title="Xu hướng doanh thu (30 ngày gần nhất)"
@@ -421,7 +421,7 @@ function RevenueTab({ data, dailyStats, vehicleStats, driverStats }: {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <BarChart
             data={driverStats.filter((d) => d.totalRevenue > 0).slice(0, 10).map((d) => ({
               label: d.driver_name, value: d.totalRevenue
@@ -430,8 +430,8 @@ function RevenueTab({ data, dailyStats, vehicleStats, driverStats }: {
             formatValue={(v) => formatVND(v)}
           />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3">Doanh thu theo loại xe</h4>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+          <h4 className="text-sm font-semibold text-slate-700 mb-3">Doanh thu theo loại xe</h4>
           {Object.entries(revenueByType).map(([type, stats]) => (
             <div key={type} className="mb-3">
               <ProgressBar
@@ -441,20 +441,20 @@ function RevenueTab({ data, dailyStats, vehicleStats, driverStats }: {
                 color={type === 'Cứu thương' ? '#ef4444' : '#06b6d4'}
                 showPercent
               />
-              <p className="text-xs text-gray-400 ml-1">{formatVNDFull(stats.total)} đ — {stats.count} chuyến</p>
+              <p className="text-xs text-slate-400 ml-1">{formatVNDFull(stats.total)} đ — {stats.count} chuyến</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Stats summary */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">Thống kê tổng hợp</h4>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+        <h4 className="text-sm font-semibold text-slate-700 mb-3">Thống kê tổng hợp</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-          <div><span className="text-gray-500">Tổng doanh thu:</span> <span className="font-semibold">{formatVNDFull(totalRevenue)} đ</span></div>
-          <div><span className="text-gray-500">DT TB/chuyến:</span> <span className="font-semibold">{formatVNDFull(avgPerTrip)} đ</span></div>
-          <div><span className="text-gray-500">DT cao nhất:</span> <span className="font-semibold">{formatVNDFull(maxRevenue)} đ</span></div>
-          <div><span className="text-gray-500">Trung vị DT:</span> <span className="font-semibold">{formatVNDFull(medianRevenue)} đ</span></div>
+          <div><span className="text-slate-500">Tổng doanh thu:</span> <span className="font-semibold">{formatVNDFull(totalRevenue)} đ</span></div>
+          <div><span className="text-slate-500">DT TB/chuyến:</span> <span className="font-semibold">{formatVNDFull(avgPerTrip)} đ</span></div>
+          <div><span className="text-slate-500">DT cao nhất:</span> <span className="font-semibold">{formatVNDFull(maxRevenue)} đ</span></div>
+          <div><span className="text-slate-500">Trung vị DT:</span> <span className="font-semibold">{formatVNDFull(medianRevenue)} đ</span></div>
         </div>
       </div>
     </>
@@ -493,7 +493,7 @@ function VehiclesTab({ vehicleStats, dailyStats, data }: {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <BarChart
             data={vehicleStats.sort((a, b) => b.tripsPerDay - a.tripsPerDay).slice(0, 15).map((v) => ({
               label: v.vehicle_id, value: v.tripsPerDay,
@@ -503,7 +503,7 @@ function VehiclesTab({ vehicleStats, dailyStats, data }: {
             formatValue={(v) => v.toFixed(1)}
           />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <TrendLine
             data={dailyStats.slice(-30).map((d) => ({ label: d.date, value: d.activeVehicles }))}
             title="Xe hoạt động/ngày (30 ngày gần nhất)"
@@ -513,8 +513,8 @@ function VehiclesTab({ vehicleStats, dailyStats, data }: {
       </div>
 
       {/* Utilization by type */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">Tỷ lệ sử dụng xe</h4>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+        <h4 className="text-sm font-semibold text-slate-700 mb-3">Tỷ lệ sử dụng xe</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h5 className="text-xs font-semibold text-blue-600 mb-2">🏢 XE HÀNH CHÍNH</h5>
@@ -528,7 +528,7 @@ function VehiclesTab({ vehicleStats, dailyStats, data }: {
       </div>
 
       {/* Full vehicle table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           title="Chi tiết hiệu suất xe"
           columns={[
@@ -582,7 +582,7 @@ function DistanceTab({ data, vehicleStats, dailyStats }: {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <BarChart
             data={vehicleStats.filter((v) => v.totalDistance > 0)
               .sort((a, b) => b.totalDistance - a.totalDistance).slice(0, 15)
@@ -591,7 +591,7 @@ function DistanceTab({ data, vehicleStats, dailyStats }: {
             formatValue={(v) => `${formatKm(v)} km`}
           />
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <TrendLine
             data={dailyStats.filter((d) => d.totalDistance > 0).slice(-30).map((d) => ({
               label: d.date, value: d.totalDistance
@@ -604,8 +604,8 @@ function DistanceTab({ data, vehicleStats, dailyStats }: {
       </div>
 
       {/* By area */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <h4 className="text-sm font-semibold text-gray-700 mb-3">Phân tích theo khu vực</h4>
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+        <h4 className="text-sm font-semibold text-slate-700 mb-3">Phân tích theo khu vực</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Object.entries(byArea).map(([area, stats]) => (
             <div key={area}>
@@ -615,14 +615,14 @@ function DistanceTab({ data, vehicleStats, dailyStats }: {
                 max={totalDist}
                 color={area === 'Nội thành' ? '#06b6d4' : '#f59e0b'}
               />
-              <p className="text-xs text-gray-400 ml-1">{formatKm(stats.total)} km — {stats.count} chuyến — TB {(stats.total / stats.count).toFixed(1)} km/chuyến</p>
+              <p className="text-xs text-slate-400 ml-1">{formatKm(stats.total)} km — {stats.count} chuyến — TB {(stats.total / stats.count).toFixed(1)} km/chuyến</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Distance table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           title="Quãng đường chi tiết theo xe"
           columns={[
@@ -687,14 +687,14 @@ function FuelTab({ vehicleStats }: {
 
       {/* Comparison chart */}
       {withStandard.length > 0 && (
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3">So sánh tiêu thụ vs định mức</h4>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+          <h4 className="text-sm font-semibold text-slate-700 mb-3">So sánh tiêu thụ vs định mức</h4>
           <div className="space-y-2">
             {withStandard.map((v) => (
               <div key={v.vehicle_id} className="flex items-center gap-2 text-xs">
-                <span className="w-28 text-gray-600 truncate">{v.vehicle_id}</span>
+                <span className="w-28 text-slate-600 truncate">{v.vehicle_id}</span>
                 <div className="flex-1 flex items-center gap-1">
-                  <div className="flex-1 h-4 bg-gray-100 rounded relative overflow-hidden">
+                  <div className="flex-1 h-4 bg-slate-100 rounded relative overflow-hidden">
                     {/* Standard bar */}
                     <div className="absolute h-full bg-blue-200 rounded"
                       style={{ width: `${Math.min((v.fuelStandard! / 35) * 100, 100)}%` }} />
@@ -716,7 +716,7 @@ function FuelTab({ vehicleStats }: {
               </div>
             ))}
           </div>
-          <div className="flex gap-4 mt-3 text-xs text-gray-400">
+          <div className="flex gap-4 mt-3 text-xs text-slate-400">
             <span>🔵 Định mức</span>
             <span>🔴 Vượt (&gt;+2L)</span>
             <span>🟡 Trong mức</span>
@@ -727,7 +727,7 @@ function FuelTab({ vehicleStats }: {
 
       {/* Alert vehicles */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <h4 className="text-sm font-semibold text-red-600 mb-2">🔴 Xe vượt định mức</h4>
           {vehicleStats.filter((v) => v.fuelStatus === 'over').length === 0 ? (
             <p className="text-xs text-emerald-600">Không có xe nào vượt định mức</p>
@@ -742,10 +742,10 @@ function FuelTab({ vehicleStats }: {
               ))
           )}
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
           <h4 className="text-sm font-semibold text-emerald-600 mb-2">🟢 Xe tiết kiệm</h4>
           {vehicleStats.filter((v) => v.fuelStatus === 'efficient').length === 0 ? (
-            <p className="text-xs text-gray-400">Không có xe nào tiết kiệm nổi bật</p>
+            <p className="text-xs text-slate-400">Không có xe nào tiết kiệm nổi bật</p>
           ) : (
             vehicleStats.filter((v) => v.fuelStatus === 'efficient')
               .sort((a, b) => a.fuelDeviation - b.fuelDeviation)
@@ -760,7 +760,7 @@ function FuelTab({ vehicleStats }: {
       </div>
 
       {/* Full fuel table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           title="Chi tiết nhiên liệu tất cả xe"
           columns={[
@@ -841,8 +841,8 @@ function ReportTab({ data, startDate, endDate }: {
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700">Báo cáo theo từng xe</h3>
-          <p className="text-xs text-gray-400">{startDate} — {endDate}</p>
+          <h3 className="text-sm font-semibold text-slate-700">Báo cáo theo từng xe</h3>
+          <p className="text-xs text-slate-400">{startDate} — {endDate}</p>
         </div>
         <button onClick={exportCSV}
           className="px-3 py-1.5 text-xs bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1.5">
@@ -862,7 +862,7 @@ function ReportTab({ data, startDate, endDate }: {
       </div>
 
       {/* Report table */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
         <DataTable
           columns={[
             { key: 'bsx', label: 'BSX' },
@@ -883,16 +883,16 @@ function ReportTab({ data, startDate, endDate }: {
 
       {/* Area breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">🏙️ Thống kê nội thành</h4>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+          <h4 className="text-sm font-semibold text-slate-700 mb-2">🏙️ Thống kê nội thành</h4>
           <div className="text-xs space-y-1">
             <p>Chuyến ko thu tiền: <span className="font-semibold">{report.reduce((s, r) => s + r.noiThanhKoThu, 0).toLocaleString()}</span></p>
             <p>Chuyến có thu tiền: <span className="font-semibold">{report.reduce((s, r) => s + r.noiThanhCoThu, 0).toLocaleString()}</span></p>
             <p>Tổng doanh thu: <span className="font-semibold">{formatVNDFull(report.reduce((s, r) => s + r.tienNoiThanh, 0))} đ</span></p>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">🌆 Thống kê ngoại thành</h4>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+          <h4 className="text-sm font-semibold text-slate-700 mb-2">🌆 Thống kê ngoại thành</h4>
           <div className="text-xs space-y-1">
             <p>Chuyến ko thu tiền: <span className="font-semibold">{report.reduce((s, r) => s + r.ngoaiThanhKoThu, 0).toLocaleString()}</span></p>
             <p>Chuyến có thu tiền: <span className="font-semibold">{report.reduce((s, r) => s + r.ngoaiThanhCoThu, 0).toLocaleString()}</span></p>

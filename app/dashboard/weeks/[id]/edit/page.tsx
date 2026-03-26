@@ -459,7 +459,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   if (pageLoading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
@@ -480,7 +480,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
         >
           &larr; Quay lại
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">Chỉnh sửa Báo cáo Tuần {weekNumber}/{year}</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Chỉnh sửa Báo cáo Tuần {weekNumber}/{year}</h1>
       </div>
 
       {error && (
@@ -494,24 +494,24 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
         <h2 className="text-xl font-bold mb-4">Thông tin tuần</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Chọn ngày trong tuần
             </label>
             <input
               type="date"
               value={format(selectedDate, 'yyyy-MM-dd')}
               onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
           <div className="space-y-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               <strong>Tuần:</strong> {weekNumber} / {year}
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               <strong>Từ ngày:</strong> {format(startDate, 'dd/MM/yyyy', { locale: vi })}
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               <strong>Đến ngày:</strong> {format(endDate, 'dd/MM/yyyy', { locale: vi })}
             </p>
           </div>
@@ -521,7 +521,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
       {/* File Upload */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-bold mb-4">File biên bản (Tùy chọn)</h2>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
           <input
             type="file"
             id="file-upload"
@@ -531,7 +531,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
           />
           {reportFileUrl || reportFile ? (
             <div className="space-y-2">
-              <div className="text-green-600">
+              <div className="text-emerald-600">
                 {reportFile?.name || reportFileUrl?.split('/').pop()}
               </div>
               <button
@@ -543,7 +543,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
             </div>
           ) : (
             <label htmlFor="file-upload" className="cursor-pointer">
-              <div className="text-gray-500">
+              <div className="text-slate-500">
                 <p>Kéo thả file vào đây hoặc click để chọn</p>
                 <p className="text-sm mt-2">Hỗ trợ: PDF, Excel, Word</p>
               </div>
@@ -559,7 +559,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
           <select
             value={currentDeptId}
             onChange={(e) => setCurrentDeptId(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
           >
             <option value="">-- Chọn phòng --</option>
             {departments
@@ -573,7 +573,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
           <button
             onClick={addDepartment}
             disabled={!currentDeptId}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             + Thêm phòng
           </button>
@@ -604,14 +604,14 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-base">Nhiệm vụ thường kỳ</h4>
-                  <p className="text-xs text-gray-500 mt-0.5">Công việc định kỳ, lặp lại hàng tuần</p>
+                  <h4 className="font-semibold text-slate-900 text-base">Nhiệm vụ thường kỳ</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Công việc định kỳ, lặp lại hàng tuần</p>
                 </div>
               </div>
 
               {availableTasks.length > 0 && (
                 <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Chọn nhiệm vụ thường kỳ từ danh sách:
                   </label>
                   <select
@@ -621,7 +621,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                         e.target.value = '';
                       }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                   >
                     <option value="">-- Chọn nhiệm vụ --</option>
                     {availableTasks.map((mt) => (
@@ -641,7 +641,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                       <div className="flex-1">
                         <h5 className="font-bold text-blue-900">#{tp.orderNumber}. {masterTask?.name}</h5>
                         {masterTask?.description && (
-                          <p className="text-xs text-gray-600 mt-1">{masterTask.description}</p>
+                          <p className="text-xs text-slate-600 mt-1">{masterTask.description}</p>
                         )}
                       </div>
                       <div className="flex gap-2">
@@ -651,8 +651,8 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                           }
                           className={`p-1.5 rounded transition-colors ${
                             tp.isImportant
-                              ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                              : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                              ? 'bg-amber-100 text-amber-700 hover:bg-yellow-200'
+                              : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
                           }`}
                           title="Đánh dấu quan trọng"
                         >
@@ -674,7 +674,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
 
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
                           Kết quả thực hiện tuần này *
                         </label>
                         <textarea
@@ -683,27 +683,27 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                             updateTaskProgress(deptData.departmentId, index, 'result', e.target.value)
                           }
                           rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           required
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian *</label>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Thời gian *</label>
                           <input
                             type="text"
                             value={tp.timePeriod}
                             onChange={(e) =>
                               updateTaskProgress(deptData.departmentId, index, 'timePeriod', e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                             required
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Tiến độ (%) <span className="text-gray-400 text-xs font-normal">(Tùy chọn)</span>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
                           </label>
                           <input
                             type="number"
@@ -714,13 +714,13 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                               updateTaskProgress(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
                             }
                             placeholder="Bỏ trống nếu không có tiến độ"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
                           Kế hoạch tuần sau *
                         </label>
                         <textarea
@@ -729,7 +729,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                             updateTaskProgress(deptData.departmentId, index, 'nextWeekPlan', e.target.value)
                           }
                           rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           required
                         />
                       </div>
@@ -743,12 +743,12 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
             <div className="mb-4">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-base">Nhiệm vụ phát sinh</h4>
-                  <p className="text-xs text-gray-500 mt-0.5">Công việc đột xuất, không định kỳ</p>
+                  <h4 className="font-semibold text-slate-900 text-base">Nhiệm vụ phát sinh</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Công việc đột xuất, không định kỳ</p>
                 </div>
                 <button
                   onClick={() => addAdHocTask(deptData.departmentId)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+                  className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm font-medium"
                 >
                   + Thêm nhiệm vụ
                 </button>
@@ -765,8 +765,8 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                         }
                         className={`p-1.5 rounded transition-colors ${
                           task.isImportant
-                            ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                            ? 'bg-amber-100 text-amber-700 hover:bg-yellow-200'
+                            : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
                         }`}
                         title="Đánh dấu quan trọng"
                       >
@@ -788,47 +788,47 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
 
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tên nhiệm vụ *</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Tên nhiệm vụ *</label>
                       <textarea
                         value={task.taskName}
                         onChange={(e) =>
                           updateAdHocTask(deptData.departmentId, index, 'taskName', e.target.value)
                         }
                         rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Kết quả *</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Kết quả *</label>
                       <textarea
                         value={task.result}
                         onChange={(e) =>
                           updateAdHocTask(deptData.departmentId, index, 'result', e.target.value)
                         }
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         required
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian *</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Thời gian *</label>
                         <input
                           type="text"
                           value={task.timePeriod}
                           onChange={(e) =>
                             updateAdHocTask(deptData.departmentId, index, 'timePeriod', e.target.value)
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Tiến độ (%) <span className="text-gray-400 text-xs font-normal">(Tùy chọn)</span>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                          Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
                         </label>
                         <input
                           type="number"
@@ -839,13 +839,13 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                             updateAdHocTask(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
                           }
                           placeholder="Bỏ trống nếu không có tiến độ"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
                         Kế hoạch tuần sau *
                       </label>
                       <textarea
@@ -854,7 +854,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                           updateAdHocTask(deptData.departmentId, index, 'nextWeekPlan', e.target.value)
                         }
                         rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         required
                       />
                     </div>
@@ -864,7 +864,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Metrics Input for this department */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="mt-6 pt-6 border-t border-slate-200">
               <MetricsInput
                 weekId={weekId}
                 departmentId={deptData.departmentId}
@@ -891,14 +891,14 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
         <button
           onClick={() => handleSubmit('DRAFT')}
           disabled={loading}
-          className="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
+          className="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 disabled:opacity-50"
         >
           Lưu nháp
         </button>
         <button
           onClick={() => handleSubmit('COMPLETED')}
           disabled={loading}
-          className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+          className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50"
         >
           Hoàn thành & Lưu
         </button>

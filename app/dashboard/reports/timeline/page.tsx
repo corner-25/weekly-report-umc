@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { format, startOfYear, endOfYear, eachWeekOfInterval, getWeek, getYear } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { TrendingUp } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Department {
   id: string;
@@ -136,29 +138,26 @@ export default function TimelinePage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-full mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Timeline Nhiệm vụ</h1>
-        <p className="text-gray-600 mt-2">Xem tiến độ nhiệm vụ theo thời gian</p>
-      </div>
+      <PageHeader icon={TrendingUp} title="Timeline Nhiệm vụ" description="Xem tiến độ nhiệm vụ theo thời gian" className="mb-6" />
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Năm
             </label>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
                 <option key={year} value={year}>
@@ -169,13 +168,13 @@ export default function TimelinePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Phòng ban
             </label>
             <select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả phòng</option>
               {departments.map((dept) => (
@@ -187,26 +186,26 @@ export default function TimelinePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Chế độ xem
             </label>
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode('quarters')}
-                className={`flex-1 px-4 py-2 rounded-md ${
+                className={`flex-1 px-4 py-2 rounded-xl ${
                   viewMode === 'quarters'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-cyan-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                 }`}
               >
                 Theo quý
               </button>
               <button
                 onClick={() => setViewMode('all')}
-                className={`flex-1 px-4 py-2 rounded-md ${
+                className={`flex-1 px-4 py-2 rounded-xl ${
                   viewMode === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-cyan-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                 }`}
               >
                 Tất cả tuần
@@ -241,7 +240,7 @@ export default function TimelinePage() {
             <span>0-24%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gray-200 rounded border border-gray-300"></div>
+            <div className="w-4 h-4 bg-slate-200 rounded border border-slate-300"></div>
             <span>Chưa có dữ liệu</span>
           </div>
         </div>
@@ -251,17 +250,17 @@ export default function TimelinePage() {
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <div className="min-w-max">
           {/* Header - Week numbers */}
-          <div className="flex border-b border-gray-300 bg-gray-50 sticky top-0 z-10">
-            <div className="w-80 flex-shrink-0 p-4 font-bold border-r border-gray-300">
+          <div className="flex border-b border-slate-300 bg-slate-50 sticky top-0 z-10">
+            <div className="w-80 flex-shrink-0 p-4 font-bold border-r border-slate-300">
               Nhiệm vụ / Tuần
             </div>
             {displayWeeks.map((week, weekIndex) => (
               <div
                 key={`header-${week.weekNumber}-${weekIndex}`}
-                className="w-16 flex-shrink-0 p-2 text-center text-xs font-semibold border-r border-gray-200"
+                className="w-16 flex-shrink-0 p-2 text-center text-xs font-semibold border-r border-slate-200"
               >
                 <div>T{week.weekNumber}</div>
-                <div className="text-gray-500">
+                <div className="text-slate-500">
                   {format(week.date, 'd/M')}
                 </div>
               </div>
@@ -272,23 +271,23 @@ export default function TimelinePage() {
           {Object.values(groupedByDepartment).length === 0 ? (
             <div className="p-12 text-center">
               <div className="max-w-md mx-auto">
-                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có dữ liệu timeline</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-medium text-slate-900 mb-2">Chưa có dữ liệu timeline</h3>
+                <p className="text-slate-500 mb-4">
                   Tạo nhiệm vụ thường kỳ và cập nhật tiến độ qua các tuần để xem timeline
                 </p>
                 <div className="flex gap-3 justify-center">
                   <Link
                     href="/dashboard/tasks"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
                   >
                     Tạo nhiệm vụ thường kỳ
                   </Link>
                   <Link
                     href="/dashboard/weeks/new"
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium"
+                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 font-medium"
                   >
                     Tạo báo cáo tuần
                   </Link>
@@ -297,10 +296,10 @@ export default function TimelinePage() {
             </div>
           ) : (
             Object.values(groupedByDepartment).map(({ department, tasks }) => (
-              <div key={department.id} className="border-b border-gray-200">
+              <div key={department.id} className="border-b border-slate-200">
                 {/* Department Header */}
                 <div className="flex bg-blue-50 border-t-2 border-blue-300">
-                  <div className="w-80 flex-shrink-0 p-3 font-bold text-blue-900 border-r border-gray-300">
+                  <div className="w-80 flex-shrink-0 p-3 font-bold text-blue-900 border-r border-slate-300">
                     {department.name}
                   </div>
                   <div className="flex-1"></div>
@@ -308,18 +307,18 @@ export default function TimelinePage() {
 
                 {/* Tasks in this department */}
                 {tasks.map((task) => (
-                  <div key={task.id} className="flex hover:bg-gray-50 border-b border-gray-100">
+                  <div key={task.id} className="flex hover:bg-slate-50 border-b border-slate-100">
                     {/* Task Name */}
-                    <div className="w-80 flex-shrink-0 p-3 border-r border-gray-300">
+                    <div className="w-80 flex-shrink-0 p-3 border-r border-slate-300">
                       <div className="flex items-center gap-2">
                         <div className="font-medium text-sm">{task.name}</div>
                         {task.isCompleted && (
-                          <span className="px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded">
+                          <span className="px-2 py-0.5 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded">
                             Hoàn thành
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-slate-500 mt-1">
                         Tiến độ: {task.latestProgress}%
                       </div>
                     </div>
@@ -331,7 +330,7 @@ export default function TimelinePage() {
                       return (
                         <div
                           key={`${task.id}-week-${week.weekNumber}-${weekIndex}`}
-                          className="w-16 flex-shrink-0 p-1 border-r border-gray-200 relative group"
+                          className="w-16 flex-shrink-0 p-1 border-r border-slate-200 relative group"
                           title={progress ? `Tuần ${week.weekNumber}: ${progress.progress}% - ${progress.result}` : ''}
                         >
                           {progress ? (
@@ -352,7 +351,7 @@ export default function TimelinePage() {
                               </div>
                             </div>
                           ) : (
-                            <div className="w-12 h-8 bg-gray-100 rounded"></div>
+                            <div className="w-12 h-8 bg-slate-100 rounded"></div>
                           )}
                         </div>
                       );
@@ -394,11 +393,11 @@ export default function TimelinePage() {
             return (
               <div key={quarter.name} className="bg-white rounded-lg shadow p-4">
                 <h3 className="font-bold text-lg mb-2">{quarter.name}</h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-600">
                   Tuần {quarter.weeks[0]?.weekNumber} - {quarter.weeks[quarter.weeks.length - 1]?.weekNumber}
                 </p>
                 <p className="text-2xl font-bold text-blue-600 mt-2">{avgProgress}%</p>
-                <p className="text-xs text-gray-500 mt-1">{quarterTasks.length} nhiệm vụ</p>
+                <p className="text-xs text-slate-500 mt-1">{quarterTasks.length} nhiệm vụ</p>
               </div>
             );
           })}

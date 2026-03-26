@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ShieldCheck } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import LicenseList from '@/components/licenses/LicenseList';
 import LicenseForm from '@/components/licenses/LicenseForm';
 import LicenseDetail from '@/components/licenses/LicenseDetail';
@@ -115,64 +117,66 @@ export default function LicensesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý Giấy phép</h1>
-          <p className="text-gray-600 mt-1">Giấy phép hoạt động, thiết bị, phương tiện của bệnh viện</p>
-        </div>
-        <button
-          onClick={() => { setEditingLicense(null); setShowForm(true); }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-        >
-          + Thêm giấy phép
-        </button>
-      </div>
+      <PageHeader
+        icon={ShieldCheck}
+        title="Quản lý Giấy phép"
+        description="Giấy phép hoạt động, thiết bị, phương tiện của bệnh viện"
+        className="mb-6"
+        actions={
+          <button
+            onClick={() => { setEditingLicense(null); setShowForm(true); }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+          >
+            + Thêm giấy phép
+          </button>
+        }
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-          <div className="text-sm text-gray-500 mt-1">Tổng giấy phép</div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4">
+          <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+          <div className="text-sm text-slate-500 mt-1">Tổng giấy phép</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-          <div className="text-2xl font-bold text-green-600">{activeCount}</div>
-          <div className="text-sm text-gray-500 mt-1">Còn hiệu lực</div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-green-500">
+          <div className="text-2xl font-bold text-emerald-600">{activeCount}</div>
+          <div className="text-sm text-slate-500 mt-1">Còn hiệu lực</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-orange-500">
           <div className="text-2xl font-bold text-orange-600">{stats.expiringSoon}</div>
-          <div className="text-sm text-gray-500 mt-1">Sắp hết hạn (&lt;90 ngày)</div>
+          <div className="text-sm text-slate-500 mt-1">Sắp hết hạn (&lt;90 ngày)</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-red-500">
           <div className="text-2xl font-bold text-red-600">{stats.expired}</div>
-          <div className="text-sm text-gray-500 mt-1">Đã hết hạn</div>
+          <div className="text-sm text-slate-500 mt-1">Đã hết hạn</div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow">
+      <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200/80">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="text" placeholder="Tìm tên, số giấy phép..." value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           />
           <select
             value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="">Tất cả loại</option>
             {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
           <select
             value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="">Tất cả khoa/phòng</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
           <select
             value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="">Tất cả trạng thái</option>
             <option value="ACTIVE">Còn hiệu lực</option>
@@ -184,8 +188,8 @@ export default function LicensesPage() {
 
       {/* List */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <p className="text-gray-500">Đang tải...</p>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-12 text-center">
+          <p className="text-slate-500">Đang tải...</p>
         </div>
       ) : (
         <LicenseList

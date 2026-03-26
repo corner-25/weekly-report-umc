@@ -98,15 +98,15 @@ export default function HospitalEventDetailPage({
   const getEventTypeColor = (type: string) => {
     return type === 'ORGANIZED'
       ? 'bg-blue-100 border-blue-300 text-blue-900'
-      : 'bg-green-100 border-green-300 text-green-900'
+      : 'bg-emerald-100 border-green-300 text-green-900'
 ;
   };
 
   const getStatusColor = (status: string, isEdited: boolean) => {
     if (isEdited) return 'bg-orange-100 border-orange-300 text-orange-900';
     return status === 'CONFIRMED'
-      ? 'bg-green-100 border-green-300 text-green-900'
-      : 'bg-yellow-100 border-yellow-300 text-yellow-900';
+      ? 'bg-emerald-100 border-green-300 text-green-900'
+      : 'bg-amber-100 border-yellow-300 text-yellow-900';
   };
 
   return (
@@ -122,7 +122,7 @@ export default function HospitalEventDetailPage({
       <div className="mb-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{event.name}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">{event.name}</h1>
             <div className="flex gap-2">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getEventTypeColor(event.eventType)}`}>
                 {event.eventType === 'ORGANIZED' ? '🏢 Tổ chức' : '🤝 Phối hợp'}
@@ -136,13 +136,13 @@ export default function HospitalEventDetailPage({
           <div className="flex gap-2">
             <Link
               href={`/dashboard/hospital-events/${id}/edit`}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50"
             >
               Sửa
             </Link>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
             >
               Xóa
             </button>
@@ -159,12 +159,12 @@ export default function HospitalEventDetailPage({
 
       {/* Event Details */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Thông tin sự kiện</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4">Thông tin sự kiện</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <div className="text-sm text-gray-500 mb-1">Ngày giờ</div>
-            <div className="font-medium text-gray-900">
+            <div className="text-sm text-slate-500 mb-1">Ngày giờ</div>
+            <div className="font-medium text-slate-900">
               📅 {format(new Date(event.date), 'dd/MM/yyyy (EEEE)', { locale: vi })}
               {event.time && ` - 🕐 ${event.time}`}
             </div>
@@ -172,12 +172,12 @@ export default function HospitalEventDetailPage({
 
           {event.meetingRoom && (
             <div>
-              <div className="text-sm text-gray-500 mb-1">Phòng họp</div>
-              <div className="font-medium text-gray-900">
+              <div className="text-sm text-slate-500 mb-1">Phòng họp</div>
+              <div className="font-medium text-slate-900">
                 🏢 {event.meetingRoom.name}
                 {event.meetingRoom.location && ` (${event.meetingRoom.location})`}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-slate-600">
                 👥 Sức chứa: {event.meetingRoom.capacity} người
               </div>
             </div>
@@ -185,29 +185,29 @@ export default function HospitalEventDetailPage({
 
           {event.description && (
             <div className="md:col-span-2">
-              <div className="text-sm text-gray-500 mb-1">Mô tả</div>
-              <div className="text-gray-900 whitespace-pre-wrap">{event.description}</div>
+              <div className="text-sm text-slate-500 mb-1">Mô tả</div>
+              <div className="text-slate-900 whitespace-pre-wrap">{event.description}</div>
             </div>
           )}
 
           {event.chair && (
             <div>
-              <div className="text-sm text-gray-500 mb-1">Người chủ trì</div>
-              <div className="text-gray-900 whitespace-pre-wrap">{event.chair}</div>
+              <div className="text-sm text-slate-500 mb-1">Người chủ trì</div>
+              <div className="text-slate-900 whitespace-pre-wrap">{event.chair}</div>
             </div>
           )}
 
           {event.participants && (
             <div>
-              <div className="text-sm text-gray-500 mb-1">Người/Đơn vị tham dự</div>
-              <div className="text-gray-900 whitespace-pre-wrap">{event.participants}</div>
+              <div className="text-sm text-slate-500 mb-1">Người/Đơn vị tham dự</div>
+              <div className="text-slate-900 whitespace-pre-wrap">{event.participants}</div>
             </div>
           )}
 
           {event.note && (
             <div className="md:col-span-2">
-              <div className="text-sm text-gray-500 mb-1">Ghi chú</div>
-              <div className="text-gray-900 whitespace-pre-wrap">{event.note}</div>
+              <div className="text-sm text-slate-500 mb-1">Ghi chú</div>
+              <div className="text-slate-900 whitespace-pre-wrap">{event.note}</div>
             </div>
           )}
         </div>
@@ -216,8 +216,8 @@ export default function HospitalEventDetailPage({
       {/* Checklist Section */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Danh sách công việc</h2>
-          <div className="text-sm font-medium text-gray-600">
+          <h2 className="text-xl font-semibold text-slate-900">Danh sách công việc</h2>
+          <div className="text-sm font-medium text-slate-600">
             {completedCount}/{totalCount} hoàn thành
           </div>
         </div>

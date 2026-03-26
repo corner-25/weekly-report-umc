@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { LineChart } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Department {
   id: string;
@@ -204,29 +206,26 @@ export default function MetricsPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Báo cáo Số liệu</h1>
-        <p className="text-gray-600 mt-2">Thống kê và phân tích hiệu suất</p>
-      </div>
+      <PageHeader icon={LineChart} title="Báo cáo Số liệu" description="Thống kê và phân tích hiệu suất" className="mb-6" />
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Năm
             </label>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
                 <option key={year} value={year}>
@@ -237,13 +236,13 @@ export default function MetricsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Phòng ban
             </label>
             <select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả phòng</option>
               {departments.map((dept) => (
@@ -261,36 +260,36 @@ export default function MetricsPage() {
         <h2 className="text-xl font-bold mb-4">Tổng quan năm {selectedYear}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Tổng NV</p>
+            <p className="text-sm text-slate-600">Tổng NV</p>
             <p className="text-2xl font-bold text-blue-600">{overallMetrics.totalTasks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Hoàn thành</p>
-            <p className="text-2xl font-bold text-green-600">{overallMetrics.completedTasks}</p>
+            <p className="text-sm text-slate-600">Hoàn thành</p>
+            <p className="text-2xl font-bold text-emerald-600">{overallMetrics.completedTasks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Đang làm</p>
+            <p className="text-sm text-slate-600">Đang làm</p>
             <p className="text-2xl font-bold text-orange-600">{overallMetrics.inProgressTasks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Chưa bắt đầu</p>
-            <p className="text-2xl font-bold text-gray-600">{overallMetrics.notStartedTasks}</p>
+            <p className="text-sm text-slate-600">Chưa bắt đầu</p>
+            <p className="text-2xl font-bold text-slate-600">{overallMetrics.notStartedTasks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">TB Tiến độ</p>
+            <p className="text-sm text-slate-600">TB Tiến độ</p>
             <p className="text-2xl font-bold text-blue-600">{overallMetrics.avgProgress}%</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Tổng tuần</p>
+            <p className="text-sm text-slate-600">Tổng tuần</p>
             <p className="text-2xl font-bold text-purple-600">{overallMetrics.totalWeeks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">TB/NV</p>
+            <p className="text-sm text-slate-600">TB/NV</p>
             <p className="text-2xl font-bold text-indigo-600">{overallMetrics.avgWeeksPerTask} tuần</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600">Tỉ lệ HT</p>
-            <p className="text-2xl font-bold text-green-600">{overallMetrics.completionRate}%</p>
+            <p className="text-sm text-slate-600">Tỉ lệ HT</p>
+            <p className="text-2xl font-bold text-emerald-600">{overallMetrics.completionRate}%</p>
           </div>
         </div>
       </div>
@@ -299,51 +298,51 @@ export default function MetricsPage() {
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-4">Chi tiết theo phòng ban</h2>
         <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Phòng ban
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tổng NV
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Hoàn thành
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Đang làm
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Chưa bắt đầu
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   TB Tiến độ
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tổng tuần
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tỉ lệ HT
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {displayMetrics.map((metric) => (
-                <tr key={metric.department.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                <tr key={metric.department.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">
                     {metric.department.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-slate-700">
                     {metric.totalTasks}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-green-600 font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-emerald-600 font-semibold">
                     {metric.completedTasks}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-orange-600 font-semibold">
                     {metric.inProgressTasks}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-slate-600">
                     {metric.notStartedTasks}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
@@ -354,13 +353,13 @@ export default function MetricsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                      <div className="w-16 bg-slate-200 rounded-full h-2">
                         <div
                           className="bg-green-500 h-2 rounded-full"
                           style={{ width: `${metric.completionRate}%` }}
                         ></div>
                       </div>
-                      <span className="font-bold text-green-600">{metric.completionRate}%</span>
+                      <span className="font-bold text-emerald-600">{metric.completionRate}%</span>
                     </div>
                   </td>
                 </tr>
@@ -369,7 +368,7 @@ export default function MetricsPage() {
           </table>
 
           {displayMetrics.length === 0 && (
-            <div className="p-12 text-center text-gray-500">
+            <div className="p-12 text-center text-slate-500">
               Không có dữ liệu
             </div>
           )}
@@ -380,36 +379,36 @@ export default function MetricsPage() {
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-4">Phân tích theo tháng</h2>
         <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tháng
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   NV có hoạt động
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Hoàn thành
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   TB Tiến độ
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Biểu đồ
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {monthlyMetrics.map((metric) => (
-                <tr key={metric.month} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                <tr key={metric.month} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">
                     {metric.month}/{selectedYear}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-slate-700">
                     {metric.tasksStarted}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-green-600 font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-emerald-600 font-semibold">
                     {metric.tasksCompleted}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-blue-600">
@@ -417,7 +416,7 @@ export default function MetricsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <div className="w-48 bg-gray-200 rounded-full h-3">
+                      <div className="w-48 bg-slate-200 rounded-full h-3">
                         <div
                           className="bg-blue-500 h-3 rounded-full transition-all"
                           style={{ width: `${metric.avgProgress}%` }}
@@ -450,18 +449,18 @@ export default function MetricsPage() {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">{dept.department.name}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-slate-600">
                     {dept.completedTasks}/{dept.totalTasks} nhiệm vụ
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-green-600">{dept.completionRate}%</p>
-                  <p className="text-xs text-gray-500">hoàn thành</p>
+                  <p className="text-2xl font-bold text-emerald-600">{dept.completionRate}%</p>
+                  <p className="text-xs text-slate-500">hoàn thành</p>
                 </div>
               </div>
             ))}
             {topPerformingDepts.length === 0 && (
-              <p className="text-center text-gray-500 py-4">Chưa có dữ liệu</p>
+              <p className="text-center text-slate-500 py-4">Chưa có dữ liệu</p>
             )}
           </div>
         </div>
@@ -482,16 +481,16 @@ export default function MetricsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{task.name}</p>
-                  <p className="text-sm text-gray-600">{task.department.name}</p>
+                  <p className="text-sm text-slate-600">{task.department.name}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-blue-600">{task.latestProgress}%</p>
-                  <p className="text-xs text-gray-500">{task.weekCount} tuần</p>
+                  <p className="text-xs text-slate-500">{task.weekCount} tuần</p>
                 </div>
               </div>
             ))}
             {topTasksByProgress.length === 0 && (
-              <p className="text-center text-gray-500 py-4">Chưa có dữ liệu</p>
+              <p className="text-center text-slate-500 py-4">Chưa có dữ liệu</p>
             )}
           </div>
         </div>

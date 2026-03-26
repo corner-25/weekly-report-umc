@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { FileUser } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ApplicationForm } from '@/components/secretaries/ApplicationForm';
 import { AdvanceModal } from '@/components/secretaries/AdvanceModal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -25,9 +27,9 @@ interface Application {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  SCREENING: { label: 'Sơ tuyển', color: 'text-yellow-700', bg: 'bg-yellow-100' },
+  SCREENING: { label: 'Sơ tuyển', color: 'text-amber-700', bg: 'bg-amber-100' },
   INTERVIEW: { label: 'Phỏng vấn', color: 'text-blue-700', bg: 'bg-blue-100' },
-  ACCEPTED: { label: 'Nhận việc', color: 'text-green-700', bg: 'bg-green-100' },
+  ACCEPTED: { label: 'Nhận việc', color: 'text-emerald-700', bg: 'bg-emerald-100' },
   REJECTED: { label: 'Từ chối', color: 'text-red-700', bg: 'bg-red-100' },
 };
 
@@ -124,41 +126,43 @@ export default function ApplicationsPage() {
         onCancel={() => setDeleteTargetId(null)}
       />
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Hồ sơ ứng tuyển</h1>
-          <p className="text-gray-500 mt-1">Quản lý pipeline tuyển dụng thư ký</p>
-        </div>
-        <button
-          onClick={() => { setEditingApp(null); setShowForm(true); }}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Thêm hồ sơ
-        </button>
-      </div>
+      <PageHeader
+        icon={FileUser}
+        title="Hồ sơ ứng tuyển"
+        description="Quản lý pipeline tuyển dụng thư ký"
+        className="mb-6"
+        actions={
+          <button
+            onClick={() => { setEditingApp(null); setShowForm(true); }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm hồ sơ
+          </button>
+        }
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {[
-          { key: 'total', label: 'Tổng cộng', color: 'text-gray-700', val: allStats.total },
+          { key: 'total', label: 'Tổng cộng', color: 'text-slate-700', val: allStats.total },
           { key: 'SCREENING', label: 'Sơ tuyển', color: 'text-yellow-600', val: allStats.SCREENING },
           { key: 'INTERVIEW', label: 'Phỏng vấn', color: 'text-blue-600', val: allStats.INTERVIEW },
-          { key: 'ACCEPTED', label: 'Nhận việc', color: 'text-green-600', val: allStats.ACCEPTED },
+          { key: 'ACCEPTED', label: 'Nhận việc', color: 'text-emerald-600', val: allStats.ACCEPTED },
           { key: 'REJECTED', label: 'Từ chối', color: 'text-red-600', val: allStats.REJECTED },
         ].map((s) => (
-          <div key={s.key} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div key={s.key} className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
             <div className={`text-2xl font-bold ${s.color}`}>{s.val}</div>
-            <div className="text-sm text-gray-500">{s.label}</div>
+            <div className="text-sm text-slate-500">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Tabs + Search */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-        <div className="flex items-center gap-1 px-4 pt-3 border-b border-gray-200 overflow-x-auto">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
+        <div className="flex items-center gap-1 px-4 pt-3 border-b border-slate-200 overflow-x-auto">
           {ALL_TABS.map((tab) => (
             <button
               key={tab}
@@ -166,7 +170,7 @@ export default function ApplicationsPage() {
               className={`px-4 py-2 text-sm font-medium rounded-t-lg whitespace-nowrap transition-colors ${
                 activeTab === tab
                   ? 'bg-cyan-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               {TAB_LABEL[tab]}
@@ -179,55 +183,55 @@ export default function ApplicationsPage() {
             placeholder="Tìm theo tên, email, SĐT..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+            className="w-full max-w-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
           />
         </div>
       </div>
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-10 text-gray-500">Đang tải...</div>
+        <div className="text-center py-10 text-slate-500">Đang tải...</div>
       ) : applications.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
-          <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 bg-white rounded-lg border border-slate-200">
+          <svg className="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p className="text-gray-500">Không có hồ sơ nào</p>
+          <p className="text-slate-500">Không có hồ sơ nào</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Ứng viên</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Loại TK</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Phòng mong muốn</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Nguồn</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Trạng thái</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Ngày nộp</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Hành động</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Ứng viên</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Loại TK</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Phòng mong muốn</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Nguồn</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Trạng thái</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Ngày nộp</th>
+                <th className="text-right px-4 py-3 font-medium text-slate-600">Hành động</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-100">
               {applications.map((app) => {
                 const st = STATUS_CONFIG[app.status];
                 const isExpanded = expandedId === app.id;
                 return (
                   <>
-                    <tr key={app.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : app.id)}>
+                    <tr key={app.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : app.id)}>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{app.fullName}</div>
-                        <div className="text-xs text-gray-500">{app.email || app.phone || '—'}</div>
+                        <div className="font-medium text-slate-900">{app.fullName}</div>
+                        <div className="text-xs text-slate-500">{app.email || app.phone || '—'}</div>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{app.appliedType?.name || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{app.desiredDepartment?.name || '—'}</td>
-                      <td className="px-4 py-3 text-gray-600">{app.source || '—'}</td>
+                      <td className="px-4 py-3 text-slate-600">{app.appliedType?.name || '—'}</td>
+                      <td className="px-4 py-3 text-slate-600">{app.desiredDepartment?.name || '—'}</td>
+                      <td className="px-4 py-3 text-slate-600">{app.source || '—'}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${st.bg} ${st.color}`}>
                           {st.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-slate-500">
                         {new Date(app.createdAt).toLocaleDateString('vi-VN')}
                       </td>
                       <td className="px-4 py-3">
@@ -255,7 +259,7 @@ export default function ApplicationsPage() {
                             <>
                               <button
                                 onClick={() => setAdvanceTarget({ app, action: 'ACCEPTED' })}
-                                className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded hover:bg-green-100"
+                                className="px-2 py-1 text-xs bg-green-50 text-emerald-700 rounded hover:bg-emerald-100"
                                 title="Nhận việc"
                               >
                                 Nhận việc
@@ -270,11 +274,11 @@ export default function ApplicationsPage() {
                             </>
                           )}
                           {app.status === 'ACCEPTED' && app.convertedSecretary && (
-                            <span className="text-xs text-green-600">✓ Đã tạo TK</span>
+                            <span className="text-xs text-emerald-600">✓ Đã tạo TK</span>
                           )}
                           <button
                             onClick={() => { setEditingApp(app); setShowForm(true); }}
-                            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded"
                             title="Chỉnh sửa"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +288,7 @@ export default function ApplicationsPage() {
                           {app.status !== 'ACCEPTED' && (
                             <button
                               onClick={() => setDeleteTargetId(app.id)}
-                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
                               title="Xóa"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,13 +302,13 @@ export default function ApplicationsPage() {
 
                     {/* Expanded detail row */}
                     {isExpanded && (
-                      <tr key={`${app.id}-detail`} className="bg-gray-50">
+                      <tr key={`${app.id}-detail`} className="bg-slate-50">
                         <td colSpan={7} className="px-6 py-4">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
-                              <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Liên hệ</p>
-                              <p className="text-gray-700">📞 {app.phone || '—'}</p>
-                              <p className="text-gray-700">✉️ {app.email || '—'}</p>
+                              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Liên hệ</p>
+                              <p className="text-slate-700">📞 {app.phone || '—'}</p>
+                              <p className="text-slate-700">✉️ {app.email || '—'}</p>
                               {app.cvUrl && (
                                 <a href={app.cvUrl} target="_blank" rel="noopener noreferrer"
                                   className="text-cyan-600 hover:underline">📄 Xem CV</a>
@@ -312,21 +316,21 @@ export default function ApplicationsPage() {
                             </div>
                             {app.status === 'INTERVIEW' || app.status === 'ACCEPTED' ? (
                               <div>
-                                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Phỏng vấn</p>
-                                <p className="text-gray-700">📅 {app.interviewDate ? new Date(app.interviewDate).toLocaleDateString('vi-VN') : '—'}</p>
-                                <p className="text-gray-700">⭐ Điểm: {app.interviewScore != null ? app.interviewScore : '—'}</p>
-                                {app.interviewNotes && <p className="text-gray-600 mt-1 italic">{app.interviewNotes}</p>}
+                                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Phỏng vấn</p>
+                                <p className="text-slate-700">📅 {app.interviewDate ? new Date(app.interviewDate).toLocaleDateString('vi-VN') : '—'}</p>
+                                <p className="text-slate-700">⭐ Điểm: {app.interviewScore != null ? app.interviewScore : '—'}</p>
+                                {app.interviewNotes && <p className="text-slate-600 mt-1 italic">{app.interviewNotes}</p>}
                               </div>
                             ) : <div />}
                             <div>
                               {app.notes && (
                                 <>
-                                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Ghi chú</p>
-                                  <p className="text-gray-600 italic">{app.notes}</p>
+                                  <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Ghi chú</p>
+                                  <p className="text-slate-600 italic">{app.notes}</p>
                                 </>
                               )}
                               {app.status === 'ACCEPTED' && app.convertedSecretary && (
-                                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-green-800 text-xs">
+                                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-emerald-700 text-xs">
                                   ✓ Đã tạo thư ký: <strong>{app.convertedSecretary.fullName}</strong>
                                 </div>
                               )}

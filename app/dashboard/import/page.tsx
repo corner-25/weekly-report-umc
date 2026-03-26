@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Upload } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { parseExcelFile, type ParsedWeekData } from '@/lib/excel-parser';
 import { matchTasksToMaster, type MatchResult, type MasterTaskRef, type MatchedTask } from '@/lib/task-matcher';
 import { extractMetrics, type MetricDefinitionRef, type ExtractedMetric } from '@/lib/metric-extractor';
@@ -210,7 +212,7 @@ export default function ImportPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Import Dữ Liệu Tuần</h1>
+      <PageHeader icon={Upload} title="Import Dữ Liệu Tuần" description="Nhập dữ liệu từ file Excel" className="mb-6" />
 
       {/* Steps indicator */}
       <div className="flex items-center mb-8">
@@ -219,16 +221,16 @@ export default function ImportPage() {
             <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
               step === s ? 'bg-cyan-500 text-white' :
               (['upload', 'preview', 'submit'].indexOf(step) > i) ? 'bg-green-500 text-white' :
-              'bg-gray-200 text-gray-500'
+              'bg-slate-200 text-slate-500'
             }`}>
               {(['upload', 'preview', 'submit'].indexOf(step) > i) ? (
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
               ) : i + 1}
             </div>
-            <span className={`ml-2 text-sm ${step === s ? 'text-cyan-700 font-medium' : 'text-gray-500'}`}>
+            <span className={`ml-2 text-sm ${step === s ? 'text-cyan-700 font-medium' : 'text-slate-500'}`}>
               {s === 'upload' ? 'Tải file' : s === 'preview' ? 'Xem trước' : 'Hoàn tất'}
             </span>
-            {i < 2 && <div className="w-12 h-px bg-gray-300 mx-3" />}
+            {i < 2 && <div className="w-12 h-px bg-slate-300 mx-3" />}
           </div>
         ))}
       </div>
@@ -241,66 +243,66 @@ export default function ImportPage() {
 
       {/* STEP 1: Upload */}
       {step === 'upload' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h2 className="text-lg font-semibold mb-4">Thông tin tuần</h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tuần</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Tuần</label>
               <input
                 type="number"
                 min={1}
                 max={53}
                 value={weekNumber || ''}
                 onChange={e => setWeekNumber(parseInt(e.target.value) || 0)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
                 placeholder="VD: 10"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Năm</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Năm</label>
               <input
                 type="number"
                 min={2000}
                 value={year}
                 onChange={e => setYear(parseInt(e.target.value) || 2026)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Từ ngày</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Đến ngày</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
           </div>
 
           <h2 className="text-lg font-semibold mb-4">Tải file báo cáo</h2>
 
-          <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50/30 transition-all">
-            <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50/30 transition-all">
+            <svg className="w-12 h-12 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               {fileName ? (
                 <span className="text-cyan-600 font-medium">{fileName}</span>
               ) : (
                 <>Kéo thả hoặc <span className="text-cyan-600 font-medium">chọn file Excel</span></>
               )}
             </p>
-            <p className="text-xs text-gray-400 mt-1">Hỗ trợ .xlsx, .xls</p>
+            <p className="text-xs text-slate-400 mt-1">Hỗ trợ .xlsx, .xls</p>
             <input
               type="file"
               accept=".xlsx,.xls"
@@ -310,7 +312,7 @@ export default function ImportPage() {
           </label>
 
           {!refData && (
-            <p className="text-sm text-gray-500 mt-3 flex items-center">
+            <p className="text-sm text-slate-500 mt-3 flex items-center">
               <svg className="animate-spin w-4 h-4 mr-2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.25" /><path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" /></svg>
               Đang tải dữ liệu tham chiếu...
             </p>
@@ -331,41 +333,41 @@ export default function ImportPage() {
           </div>
 
           {/* Week info edit */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Tuần</label>
-                <input type="number" min={1} max={53} value={weekNumber || ''} onChange={e => setWeekNumber(parseInt(e.target.value) || 0)} className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-slate-500 mb-1">Tuần</label>
+                <input type="number" min={1} max={53} value={weekNumber || ''} onChange={e => setWeekNumber(parseInt(e.target.value) || 0)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Năm</label>
-                <input type="number" value={year} onChange={e => setYear(parseInt(e.target.value) || 2026)} className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-slate-500 mb-1">Năm</label>
+                <input type="number" value={year} onChange={e => setYear(parseInt(e.target.value) || 2026)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Từ ngày</label>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-slate-500 mb-1">Từ ngày</label>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Đến ngày</label>
-                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-slate-500 mb-1">Đến ngày</label>
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 w-fit">
+          <div className="flex space-x-1 bg-slate-100 rounded-lg p-1 w-fit">
             <button
               onClick={() => setActiveTab('tasks')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'tasks' ? 'bg-white shadow text-cyan-700' : 'text-gray-600 hover:text-gray-900'
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                activeTab === 'tasks' ? 'bg-white shadow text-cyan-700' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Nhiệm vụ ({matchResult.stats.totalTasks})
             </button>
             <button
               onClick={() => setActiveTab('metrics')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === 'metrics' ? 'bg-white shadow text-cyan-700' : 'text-gray-600 hover:text-gray-900'
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                activeTab === 'metrics' ? 'bg-white shadow text-cyan-700' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Số liệu ({extractedMetrics.length})
@@ -376,29 +378,29 @@ export default function ImportPage() {
           {activeTab === 'tasks' && (
             <div className="space-y-3">
               {matchResult.departments.map(dept => (
-                <div key={dept.departmentName} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div key={dept.departmentName} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                   <button
                     onClick={() => toggleDept(dept.departmentName)}
-                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50"
                   >
                     <div className="flex items-center space-x-3">
                       <span className={`w-2 h-2 rounded-full ${dept.departmentId ? 'bg-green-500' : 'bg-red-400'}`} />
-                      <span className="font-medium text-sm text-gray-900">{dept.departmentName}</span>
+                      <span className="font-medium text-sm text-slate-900">{dept.departmentName}</span>
                       {dept.matchedName && dept.matchedName !== dept.departmentName && (
-                        <span className="text-xs text-gray-400">= {dept.matchedName}</span>
+                        <span className="text-xs text-slate-400">= {dept.matchedName}</span>
                       )}
-                      <span className="text-xs text-gray-400">{dept.tasks.length} NV</span>
+                      <span className="text-xs text-slate-400">{dept.tasks.length} NV</span>
                     </div>
-                    <svg className={`w-4 h-4 text-gray-400 transition-transform ${expandedDepts.has(dept.departmentName) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`w-4 h-4 text-slate-400 transition-transform ${expandedDepts.has(dept.departmentName) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
                   {expandedDepts.has(dept.departmentName) && (
-                    <div className="border-t border-gray-100">
+                    <div className="border-t border-slate-100">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-gray-50 text-gray-500 text-xs">
+                          <tr className="bg-slate-50 text-slate-500 text-xs">
                             <th className="px-3 py-2 text-left w-8">#</th>
                             <th className="px-3 py-2 text-left">Nhiệm vụ (Excel)</th>
                             <th className="px-3 py-2 text-left w-64">Khớp với NV trong DB</th>
@@ -437,7 +439,7 @@ export default function ImportPage() {
           <div className="flex items-center justify-between pt-4">
             <button
               onClick={() => { setStep('upload'); setMatchResult(null); setParsedData(null); setFileName(''); }}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
             >
               Quay lại
             </button>
@@ -461,20 +463,20 @@ export default function ImportPage() {
 
       {/* STEP 3: Submit result */}
       {step === 'submit' && submitResult && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">{submitResult.message}</h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">{submitResult.message}</h2>
+          <p className="text-sm text-slate-500 mb-6">
             {matchResult?.stats.matchedTasks} nhiệm vụ, {extractedMetrics.filter(m => m.value !== null).length} chỉ số
           </p>
           <div className="flex items-center justify-center space-x-3">
             <button
               onClick={() => router.push(`/dashboard/weeks`)}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
             >
               Xem danh sách tuần
             </button>
@@ -511,10 +513,10 @@ function StatCard({ label, value, total, suffix, color }: {
 }) {
   const colorMap: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700',
-    green: 'bg-green-50 text-green-700',
+    green: 'bg-green-50 text-emerald-700',
     red: 'bg-red-50 text-red-700',
     purple: 'bg-purple-50 text-purple-700',
-    gray: 'bg-gray-50 text-gray-700',
+    gray: 'bg-slate-50 text-slate-700',
   };
   return (
     <div className={`rounded-xl p-3 ${colorMap[color] || colorMap.gray}`}>
@@ -534,9 +536,9 @@ function TaskRow({ task, deptId, masterTasks, onChangeMatch }: {
   onChangeMatch: (mtId: string | null) => void;
 }) {
   const confidenceColors: Record<string, string> = {
-    exact: 'bg-green-100 text-green-700',
+    exact: 'bg-emerald-100 text-emerald-700',
     high: 'bg-emerald-100 text-emerald-700',
-    medium: 'bg-yellow-100 text-yellow-700',
+    medium: 'bg-amber-100 text-amber-700',
     low: 'bg-orange-100 text-orange-700',
     none: 'bg-red-100 text-red-700',
   };
@@ -549,12 +551,12 @@ function TaskRow({ task, deptId, masterTasks, onChangeMatch }: {
   };
 
   return (
-    <tr className="border-t border-gray-50 hover:bg-gray-50/50">
-      <td className="px-3 py-2 text-gray-400">{task.orderNumber}</td>
+    <tr className="border-t border-gray-50 hover:bg-slate-50/50">
+      <td className="px-3 py-2 text-slate-400">{task.orderNumber}</td>
       <td className="px-3 py-2">
-        <p className="text-gray-900 font-medium text-xs leading-tight">{task.taskName}</p>
+        <p className="text-slate-900 font-medium text-xs leading-tight">{task.taskName}</p>
         {task.result && (
-          <p className="text-gray-400 text-xs mt-0.5 line-clamp-2">{task.result.substring(0, 150)}</p>
+          <p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{task.result.substring(0, 150)}</p>
         )}
       </td>
       <td className="px-3 py-2">
@@ -573,11 +575,11 @@ function TaskRow({ task, deptId, masterTasks, onChangeMatch }: {
       </td>
       <td className="px-3 py-2 text-center">
         {task.progress !== null ? (
-          <span className={`text-xs font-medium ${task.progress === 100 ? 'text-green-600' : 'text-blue-600'}`}>
+          <span className={`text-xs font-medium ${task.progress === 100 ? 'text-emerald-600' : 'text-blue-600'}`}>
             {task.progress}%
           </span>
         ) : (
-          <span className="text-xs text-gray-300">-</span>
+          <span className="text-xs text-slate-300">-</span>
         )}
       </td>
       <td className="px-3 py-2 text-center">
@@ -604,16 +606,16 @@ function MetricsPreview({ metrics, onUpdateValue }: {
   return (
     <div className="space-y-3">
       {Array.from(byDept.entries()).map(([deptName, deptMetrics]) => (
-        <div key={deptName} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-            <span className="font-medium text-sm text-gray-900">{deptName}</span>
-            <span className="text-xs text-gray-400 ml-2">
+        <div key={deptName} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
+            <span className="font-medium text-sm text-slate-900">{deptName}</span>
+            <span className="text-xs text-slate-400 ml-2">
               {deptMetrics.filter(m => m.value !== null).length}/{deptMetrics.length} giá trị
             </span>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-gray-500 text-xs">
+              <tr className="text-slate-500 text-xs">
                 <th className="px-3 py-2 text-left">Chỉ số</th>
                 <th className="px-3 py-2 text-right w-40">Giá trị</th>
                 <th className="px-3 py-2 text-center w-20">Trạng thái</th>
@@ -621,8 +623,8 @@ function MetricsPreview({ metrics, onUpdateValue }: {
             </thead>
             <tbody>
               {deptMetrics.map(m => (
-                <tr key={m.metricId} className="border-t border-gray-50 hover:bg-gray-50/50">
-                  <td className="px-3 py-2 text-gray-700 text-xs">{m.metricName}</td>
+                <tr key={m.metricId} className="border-t border-gray-50 hover:bg-slate-50/50">
+                  <td className="px-3 py-2 text-slate-700 text-xs">{m.metricName}</td>
                   <td className="px-3 py-2 text-right">
                     <input
                       type="number"
@@ -631,14 +633,14 @@ function MetricsPreview({ metrics, onUpdateValue }: {
                         const v = e.target.value === '' ? null : parseFloat(e.target.value);
                         onUpdateValue(m.metricId, v);
                       }}
-                      className="w-full text-right text-xs px-2 py-1 border border-gray-200 rounded"
+                      className="w-full text-right text-xs px-2 py-1 border border-slate-200 rounded"
                       placeholder="Nhập giá trị"
                     />
                   </td>
                   <td className="px-3 py-2 text-center">
-                    {m.confidence === 'exact' && <span className="text-xs text-green-600">Tự động</span>}
+                    {m.confidence === 'exact' && <span className="text-xs text-emerald-600">Tự động</span>}
                     {m.confidence === 'extracted' && <span className="text-xs text-yellow-600">Trích xuất</span>}
-                    {m.confidence === 'missing' && <span className="text-xs text-gray-400">Trống</span>}
+                    {m.confidence === 'missing' && <span className="text-xs text-slate-400">Trống</span>}
                   </td>
                 </tr>
               ))}

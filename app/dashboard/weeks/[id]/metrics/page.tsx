@@ -84,7 +84,7 @@ export default function WeekMetricsPage() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default function WeekMetricsPage() {
         <p className="text-red-500">{error || 'Không tìm thấy tuần báo cáo'}</p>
         <Link
           href="/dashboard/weeks"
-          className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="mt-4 inline-block px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
         >
           Quay lại
         </Link>
@@ -114,17 +114,17 @@ export default function WeekMetricsPage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-slate-900">
           Nhập Số liệu - Tuần {week.weekNumber}/{week.year}
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-slate-600 mt-2">
           Nhập các chỉ số định lượng cho tuần này
         </p>
       </div>
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2">
+        <div className="mb-6 bg-green-50 border border-green-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -151,14 +151,14 @@ export default function WeekMetricsPage() {
       <div className="flex justify-end gap-4">
         <Link
           href="/dashboard/weeks"
-          className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium"
+          className="px-6 py-3 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium"
         >
           Hủy
         </Link>
         <button
           onClick={handleSave}
           disabled={saving || metricValues.length === 0}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {saving ? (
             <>

@@ -71,7 +71,11 @@ export async function GET(request: Request) {
       orderBy: { updatedAt: 'desc' },
     });
 
-    return NextResponse.json(mous);
+    return NextResponse.json(mous, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=120',
+      },
+    });
   } catch (error) {
     console.error('Error fetching MOUs:', error);
     return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 });

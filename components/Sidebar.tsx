@@ -4,8 +4,130 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import {
+  LayoutDashboard,
+  FileText,
+  CalendarDays,
+  Upload,
+  Building2,
+  ClipboardCheck,
+  DoorOpen,
+  CalendarRange,
+  CalendarClock,
+  Users,
+  Tag,
+  ArrowLeftRight,
+  FileUser,
+  Cake,
+  ShieldCheck,
+  Handshake,
+  BarChart3,
+  TrendingUp,
+  LineChart,
+  Table2,
+  PanelLeft,
+  PanelLeftClose,
+  Settings,
+  LogOut,
+  RefreshCw,
+  Monitor,
+  Car,
+  Gauge,
+  ChevronDown,
+  type LucideIcon,
+} from 'lucide-react';
 
 type MenuSection = 'reports' | 'management' | 'events' | 'statistics' | 'secretaries' | 'licenses' | 'mous';
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  exact?: boolean;
+}
+
+interface NavGroup {
+  id: MenuSection;
+  title: string;
+  icon: LucideIcon;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    id: 'reports',
+    title: 'Báo cáo',
+    icon: FileText,
+    items: [
+      { href: '/dashboard/weeks', label: 'Báo cáo tuần', icon: FileText, exact: true },
+      { href: '/dashboard/calendar', label: 'Lịch làm việc', icon: CalendarDays, exact: false },
+      { href: '/dashboard/import', label: 'Import tuần', icon: Upload, exact: true },
+    ],
+  },
+  {
+    id: 'management',
+    title: 'Quản lý',
+    icon: Building2,
+    items: [
+      { href: '/dashboard/departments', label: 'Phòng ban', icon: Building2, exact: true },
+      { href: '/dashboard/tasks', label: 'NV thường kỳ', icon: ClipboardCheck, exact: true },
+      { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen, exact: false },
+    ],
+  },
+  {
+    id: 'events',
+    title: 'Sự kiện',
+    icon: CalendarRange,
+    items: [
+      { href: '/dashboard/hospital-events', label: 'Quản lý sự kiện', icon: CalendarClock, exact: false },
+      { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
+    ],
+  },
+  {
+    id: 'secretaries',
+    title: 'Thư ký',
+    icon: Users,
+    items: [
+      { href: '/dashboard/secretaries', label: 'Danh sách', icon: Users, exact: true },
+      { href: '/dashboard/secretaries/types', label: 'Loại thư ký', icon: Tag, exact: true },
+      { href: '/dashboard/secretaries/transfers', label: 'Luân chuyển', icon: ArrowLeftRight, exact: true },
+      { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', icon: FileUser, exact: true },
+      { href: '/dashboard/secretaries/birthdays', label: 'Sinh nhật', icon: Cake, exact: true },
+    ],
+  },
+  {
+    id: 'licenses',
+    title: 'Giấy phép',
+    icon: ShieldCheck,
+    items: [
+      { href: '/dashboard/licenses', label: 'Danh sách', icon: ShieldCheck, exact: false },
+    ],
+  },
+  {
+    id: 'mous',
+    title: 'MOU',
+    icon: Handshake,
+    items: [
+      { href: '/dashboard/mous', label: 'Danh sách', icon: Handshake, exact: false },
+    ],
+  },
+  {
+    id: 'statistics',
+    title: 'Thống kê',
+    icon: BarChart3,
+    items: [
+      { href: '/dashboard/tasks/overview', label: 'Tổng hợp NV', icon: BarChart3, exact: true },
+      { href: '/dashboard/reports/timeline', label: 'Timeline', icon: TrendingUp, exact: true },
+      { href: '/dashboard/reports/metrics', label: 'Biểu đồ', icon: LineChart, exact: true },
+      { href: '/dashboard/reports/metrics-data', label: 'Bảng số liệu', icon: Table2, exact: true },
+      { href: '/dashboard/reports/phong-hc-native', label: 'Dashboard Phòng HC', icon: Gauge, exact: true },
+      { href: '/dashboard/reports/to-xe-native', label: 'Dashboard Tổ Xe', icon: Car, exact: true },
+      { href: '/dashboard/data-sync', label: 'Đồng bộ dữ liệu', icon: RefreshCw, exact: true },
+      { href: '/dashboard/reports/phong-hc', label: 'Dashboards Streamlit', icon: Monitor, exact: true },
+    ],
+  },
+];
 
 export function Sidebar() {
   const { data: session } = useSession();
@@ -20,28 +142,15 @@ export function Sidebar() {
 
   // Auto-expand section based on current path
   useEffect(() => {
-    if (pathname?.startsWith('/dashboard/weeks') || pathname?.startsWith('/dashboard/calendar') || pathname?.startsWith('/dashboard/import')) {
-      if (!openSections.includes('reports')) setOpenSections(prev => [...prev, 'reports']);
+    for (const group of navGroups) {
+      const hasActiveItem = group.items.some(item =>
+        item.exact ? pathname === item.href : pathname?.startsWith(item.href)
+      );
+      if (hasActiveItem && !openSections.includes(group.id)) {
+        setOpenSections(prev => [...prev, group.id]);
+      }
     }
-    if (pathname?.startsWith('/dashboard/departments') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/meeting-rooms')) {
-      if (!openSections.includes('management')) setOpenSections(prev => [...prev, 'management']);
-    }
-    if (pathname?.startsWith('/dashboard/hospital-events')) {
-      if (!openSections.includes('events')) setOpenSections(prev => [...prev, 'events']);
-    }
-    if (pathname?.startsWith('/dashboard/reports')) {
-      if (!openSections.includes('statistics')) setOpenSections(prev => [...prev, 'statistics']);
-    }
-    if (pathname?.startsWith('/dashboard/secretaries')) {
-      if (!openSections.includes('secretaries')) setOpenSections(prev => [...prev, 'secretaries']);
-    }
-    if (pathname?.startsWith('/dashboard/licenses')) {
-      if (!openSections.includes('licenses')) setOpenSections(prev => [...prev, 'licenses']);
-    }
-    if (pathname?.startsWith('/dashboard/mous')) {
-      if (!openSections.includes('mous')) setOpenSections(prev => [...prev, 'mous']);
-    }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSection = (section: MenuSection) => {
     setOpenSections(prev =>
@@ -56,89 +165,20 @@ export function Sidebar() {
     return pathname?.startsWith(path);
   };
 
-  const linkClass = (path: string, exact = true) =>
-    `flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-      isActivePath(path, exact)
-        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md'
-        : 'text-gray-600 hover:bg-cyan-50 hover:text-cyan-600'
-    }`;
-
-  const subLinkClass = (path: string, exact = true) =>
-    `flex items-center px-4 py-2 ml-4 rounded-lg transition-all duration-200 text-sm ${
-      isActivePath(path, exact)
-        ? 'bg-cyan-100 text-cyan-700 font-medium'
-        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-    }`;
-
-  const MenuGroup = ({
-    id,
-    title,
-    icon,
-    children,
-  }: {
-    id: MenuSection;
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-  }) => {
-    const isOpen = openSections.includes(id);
-
-    if (isCollapsed) {
-      // When collapsed: show only the section icon as a divider, hide children
-      return (
-        <div className="py-1">
-          <div className="flex justify-center px-1 py-2 text-gray-400">
-            {icon}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-1">
-        <button
-          onClick={() => toggleSection(id)}
-          className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-        >
-          <div className="flex items-center">
-            {icon}
-            <span className="ml-3 text-sm font-medium">{title}</span>
-          </div>
-          <svg
-            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-200 ${
-            isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="space-y-1 pb-2">
-            {children}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div
-      className={`flex flex-col bg-white border-r border-gray-200 h-screen sticky top-0 transition-all duration-300 ${
-        isCollapsed ? 'w-16' : 'w-64'
-      }`}
+    <aside
+      className={cn(
+        'flex flex-col bg-white border-r border-slate-200/80 h-screen sticky top-0 transition-all duration-300 shadow-sm',
+        isCollapsed ? 'w-[68px]' : 'w-64'
+      )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between h-14 px-3 bg-gradient-to-r from-cyan-500 to-blue-600">
+      <div className="flex items-center justify-between h-14 px-3 bg-gradient-to-r from-cyan-600 to-blue-600">
         {!isCollapsed && (
-          <Link href="/dashboard" className="text-base font-bold text-white flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
+          <Link href="/dashboard" className="text-[15px] font-bold text-white flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+              <ClipboardCheck className="w-4 h-4" />
+            </div>
             UMC Reports
           </Link>
         )}
@@ -148,309 +188,172 @@ export function Sidebar() {
             setIsCollapsed(next);
             localStorage.setItem('sidebar-collapsed', String(next));
           }}
-          className="p-1.5 rounded-lg text-white hover:bg-white/20 transition-colors"
+          className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors"
           title={isCollapsed ? 'Mở rộng' : 'Thu gọn'}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isCollapsed ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            )}
-          </svg>
+          {isCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Logo */}
       {!isCollapsed && (
-        <div className="px-4 py-4 border-b border-gray-100">
-          <img src="/logo-ngang.png" alt="Logo" className="h-12 w-auto object-contain mx-auto" />
+        <div className="px-4 py-3 border-b border-slate-100">
+          <img src="/logo-ngang.png" alt="Logo" className="h-11 w-auto object-contain mx-auto" />
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto min-h-0">
-        {/* Tổng quan - standalone */}
-        <Link href="/dashboard" className={linkClass('/dashboard')} title="Tổng quan">
-          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          {!isCollapsed && <span className="ml-3 text-sm font-medium">Tổng quan</span>}
+      <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto min-h-0">
+        {/* Tổng quan */}
+        <Link
+          href="/dashboard"
+          className={cn(
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+            isActivePath('/dashboard')
+              ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+          )}
+          title="Tổng quan"
+        >
+          <LayoutDashboard className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard') && 'text-slate-400 group-hover:text-slate-600')} />
+          {!isCollapsed && <span className="text-sm font-medium">Tổng quan</span>}
         </Link>
 
-        {/* Báo cáo */}
-        <MenuGroup
-          id="reports"
-          title="Báo cáo"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/weeks" className={subLinkClass('/dashboard/weeks')} title="Báo cáo tuần">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="ml-3">Báo cáo tuần</span>
-          </Link>
-          <Link href="/dashboard/calendar" className={subLinkClass('/dashboard/calendar', false)} title="Lịch làm việc">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="ml-3">Lịch làm việc</span>
-          </Link>
-          <Link href="/dashboard/import" className={subLinkClass('/dashboard/import')} title="Import tuần">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            <span className="ml-3">Import tuần</span>
-          </Link>
-        </MenuGroup>
+        <div className="pt-1" />
 
-        {/* Quản lý */}
-        <MenuGroup
-          id="management"
-          title="Quản lý"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/departments" className={subLinkClass('/dashboard/departments')} title="Phòng ban">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            <span className="ml-3">Phòng ban</span>
-          </Link>
-          <Link href="/dashboard/tasks" className={subLinkClass('/dashboard/tasks')} title="NV thường kỳ">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            <span className="ml-3">NV thường kỳ</span>
-          </Link>
-          <Link href="/dashboard/meeting-rooms" className={subLinkClass('/dashboard/meeting-rooms', false)} title="Phòng họp">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-            </svg>
-            <span className="ml-3">Phòng họp</span>
-          </Link>
-        </MenuGroup>
+        {/* Menu Groups */}
+        {navGroups.map(group => {
+          const GroupIcon = group.icon;
+          const isOpen = openSections.includes(group.id);
+          const hasActiveChild = group.items.some(item =>
+            item.exact ? pathname === item.href : pathname?.startsWith(item.href)
+          );
 
-        {/* Sự kiện */}
-        <MenuGroup
-          id="events"
-          title="Sự kiện"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+          if (isCollapsed) {
+            return (
+              <div key={group.id} className="py-0.5">
+                <div
+                  className={cn(
+                    'flex justify-center px-1 py-2 rounded-lg',
+                    hasActiveChild ? 'text-cyan-600 bg-cyan-50' : 'text-slate-400'
+                  )}
+                  title={group.title}
+                >
+                  <GroupIcon className="w-[18px] h-[18px]" />
+                </div>
+              </div>
+            );
           }
-        >
-          <Link href="/dashboard/hospital-events" className={subLinkClass('/dashboard/hospital-events', false)} title="Quản lý sự kiện">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            <span className="ml-3">Quản lý sự kiện</span>
-          </Link>
-          <Link href="/dashboard/hospital-events-calendar" className={subLinkClass('/dashboard/hospital-events-calendar')} title="Lịch sự kiện">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="ml-3">Lịch sự kiện</span>
-          </Link>
-        </MenuGroup>
 
-        {/* Thư ký */}
-        <MenuGroup
-          id="secretaries"
-          title="Thư ký"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/secretaries" className={subLinkClass('/dashboard/secretaries')} title="Danh sách thư ký">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-            <span className="ml-3">Danh sách</span>
-          </Link>
-          <Link href="/dashboard/secretaries/types" className={subLinkClass('/dashboard/secretaries/types')} title="Loại thư ký">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span className="ml-3">Loại thư ký</span>
-          </Link>
-          <Link href="/dashboard/secretaries/transfers" className={subLinkClass('/dashboard/secretaries/transfers')} title="Luân chuyển">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            <span className="ml-3">Luân chuyển</span>
-          </Link>
-          <Link href="/dashboard/secretaries/applications" className={subLinkClass('/dashboard/secretaries/applications')} title="Hồ sơ ứng tuyển">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="ml-3">Hồ sơ ứng tuyển</span>
-          </Link>
-          <Link href="/dashboard/secretaries/birthdays" className={subLinkClass('/dashboard/secretaries/birthdays')} title="Sinh nhật">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
-            </svg>
-            <span className="ml-3">Sinh nhật</span>
-          </Link>
-        </MenuGroup>
+          return (
+            <div key={group.id} className="space-y-0.5">
+              <button
+                onClick={() => toggleSection(group.id)}
+                className={cn(
+                  'w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all duration-200 group',
+                  hasActiveChild
+                    ? 'text-cyan-700 bg-cyan-50/60'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <GroupIcon className={cn('w-[18px] h-[18px]', hasActiveChild ? 'text-cyan-600' : 'text-slate-400 group-hover:text-slate-500')} />
+                  <span className="text-sm font-medium">{group.title}</span>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    'w-3.5 h-3.5 transition-transform duration-200',
+                    hasActiveChild ? 'text-cyan-500' : 'text-slate-400',
+                    isOpen && 'rotate-180'
+                  )}
+                />
+              </button>
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-200',
+                  isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+                )}
+              >
+                <div className="ml-3 pl-3 border-l-2 border-slate-100 space-y-0.5 py-1">
+                  {group.items.map(item => {
+                    const ItemIcon = item.icon;
+                    const isActive = isActivePath(item.href, item.exact);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all duration-200 text-[13px] group/item',
+                          isActive
+                            ? 'bg-cyan-50 text-cyan-700 font-medium'
+                            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                        )}
+                        title={item.label}
+                      >
+                        <ItemIcon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-cyan-600' : 'text-slate-400 group-hover/item:text-slate-500')} />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })}
 
-        {/* Giấy phép */}
-        <MenuGroup
-          id="licenses"
-          title="Giấy phép"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/licenses" className={subLinkClass('/dashboard/licenses', false)} title="Danh sách giấy phép">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="ml-3">Danh sách</span>
-          </Link>
-        </MenuGroup>
-
-        {/* MOU */}
-        <MenuGroup
-          id="mous"
-          title="MOU"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/mous" className={subLinkClass('/dashboard/mous', false)} title="Danh sách MOU">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="ml-3">Danh sách</span>
-          </Link>
-        </MenuGroup>
-
-        {/* Thống kê */}
-        <MenuGroup
-          id="statistics"
-          title="Thống kê"
-          icon={
-            <svg className="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-          }
-        >
-          <Link href="/dashboard/tasks/overview" className={subLinkClass('/dashboard/tasks/overview')} title="Tổng hợp NV">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <span className="ml-3">Tổng hợp NV</span>
-          </Link>
-          <Link href="/dashboard/reports/timeline" className={subLinkClass('/dashboard/reports/timeline')} title="Timeline">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-            </svg>
-            <span className="ml-3">Timeline</span>
-          </Link>
-          <Link href="/dashboard/reports/metrics" className={subLinkClass('/dashboard/reports/metrics')} title="Biểu đồ">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="ml-3">Biểu đồ</span>
-          </Link>
-          <Link href="/dashboard/reports/metrics-data" className={subLinkClass('/dashboard/reports/metrics-data')} title="Bảng số liệu">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span className="ml-3">Bảng số liệu</span>
-          </Link>
-          {/* Dashboard section divider */}
-          <div className="mx-4 my-1.5 border-t border-gray-100" />
-          <span className="px-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Dashboards</span>
-          <Link href="/dashboard/reports/phong-hc-native" className={subLinkClass('/dashboard/reports/phong-hc-native')} title="Dashboard Phòng HC">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="ml-3">Dashboard Phòng HC</span>
-          </Link>
-          <Link href="/dashboard/reports/to-xe-native" className={subLinkClass('/dashboard/reports/to-xe-native')} title="Dashboard Tổ Xe">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            <span className="ml-3">Dashboard Tổ Xe</span>
-          </Link>
-          <Link href="/dashboard/data-sync" className={subLinkClass('/dashboard/data-sync')} title="Đồng bộ dữ liệu">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span className="ml-3">Đồng bộ dữ liệu</span>
-          </Link>
-          <Link href="/dashboard/reports/phong-hc" className={subLinkClass('/dashboard/reports/phong-hc')} title="Dashboards Streamlit">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-            </svg>
-            <span className="ml-3">Dashboards Streamlit</span>
-          </Link>
-        </MenuGroup>
-
-        {/* Cài đặt - standalone */}
-        <div className="pt-2 border-t border-gray-100">
-          <Link href="/dashboard/settings" className={linkClass('/dashboard/settings')} title="Cài đặt">
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {!isCollapsed && <span className="ml-3 text-sm font-medium">Cài đặt</span>}
+        {/* Cài đặt */}
+        <div className="pt-2 mt-2 border-t border-slate-100">
+          <Link
+            href="/dashboard/settings"
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+              isActivePath('/dashboard/settings')
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            )}
+            title="Cài đặt"
+          >
+            <Settings className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard/settings') && 'text-slate-400 group-hover:text-slate-600')} />
+            {!isCollapsed && <span className="text-sm font-medium">Cài đặt</span>}
           </Link>
         </div>
       </nav>
 
       {/* User Section */}
-      <div className="border-t border-gray-200 p-3 bg-gray-50">
+      <div className="border-t border-slate-200 p-3 bg-slate-50/80">
         {!isCollapsed ? (
           <>
-            <div className="flex items-center mb-2">
-              <div className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <div className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                 {session?.user?.email?.[0].toUpperCase() || 'U'}
               </div>
-              <div className="ml-2 flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-800 truncate">
                   {session?.user?.name || 'User'}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-slate-500 truncate">
                   {session?.user?.email}
                 </p>
               </div>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-              className="w-full px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-all"
             >
+              <LogOut className="w-3.5 h-3.5" />
               Đăng xuất
             </button>
           </>
         ) : (
           <button
             onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-            className="w-full p-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-all"
+            className="w-full p-2 text-slate-500 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-700 transition-all"
             title="Đăng xuất"
           >
-            <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <LogOut className="w-4 h-4 mx-auto" />
           </button>
         )}
       </div>
-    </div>
+    </aside>
   );
 }

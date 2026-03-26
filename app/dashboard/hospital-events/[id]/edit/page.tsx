@@ -106,8 +106,8 @@ export default function EditHospitalEventPage({
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Chỉnh sửa sự kiện</h1>
-        <p className="mt-2 text-gray-600">Cập nhật thông tin sự kiện</p>
+        <h1 className="text-3xl font-bold text-slate-900">Chỉnh sửa sự kiện</h1>
+        <p className="mt-2 text-slate-600">Cập nhật thông tin sự kiện</p>
       </div>
 
       {error && (
@@ -119,10 +119,10 @@ export default function EditHospitalEventPage({
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
         {/* Thông tin cơ bản */}
         <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Thông tin cơ bản</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Thông tin cơ bản</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Tên sự kiện <span className="text-red-500">*</span>
               </label>
               <input
@@ -130,13 +130,13 @@ export default function EditHospitalEventPage({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Ngày diễn ra <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -144,32 +144,32 @@ export default function EditHospitalEventPage({
                   required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Giờ diễn ra
                 </label>
                 <input
                   type="time"
                   value={formData.time}
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Mô tả sự kiện
               </label>
               <textarea
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function EditHospitalEventPage({
 
         {/* Phòng họp */}
         <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Phòng họp</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Phòng họp</h2>
           <MeetingRoomSelector
             value={formData.meetingRoomId}
             onChange={(roomId) => setFormData({ ...formData, meetingRoomId: roomId })}
@@ -186,7 +186,7 @@ export default function EditHospitalEventPage({
 
         {/* Loại sự kiện */}
         <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Loại sự kiện</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Loại sự kiện</h2>
           <EventTypeSelector
             value={formData.eventType}
             onChange={(type) => setFormData({ ...formData, eventType: type })}
@@ -195,29 +195,29 @@ export default function EditHospitalEventPage({
 
         {/* Người tham gia */}
         <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Người tham gia</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Người tham gia</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Người chủ trì
               </label>
               <textarea
                 rows={2}
                 value={formData.chair}
                 onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Người/Đơn vị tham dự
               </label>
               <textarea
                 rows={3}
                 value={formData.participants}
                 onChange={(e) => setFormData({ ...formData, participants: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
           </div>
@@ -225,16 +225,16 @@ export default function EditHospitalEventPage({
 
         {/* Trạng thái & Ghi chú */}
         <div className="pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Trạng thái & Ghi chú</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Trạng thái & Ghi chú</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Trạng thái
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               >
                 <option value="UNCONFIRMED">Chưa xác nhận</option>
                 <option value="CONFIRMED">Đã xác nhận</option>
@@ -242,14 +242,14 @@ export default function EditHospitalEventPage({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Ghi chú
               </label>
               <textarea
                 rows={3}
                 value={formData.note}
                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               />
             </div>
           </div>
@@ -260,14 +260,14 @@ export default function EditHospitalEventPage({
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            className="px-6 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50"
           >
             Hủy
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50"
           >
             {submitting ? 'Đang cập nhật...' : 'Cập nhật'}
           </button>

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Users } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { SecretaryList } from '@/components/secretaries/SecretaryList';
 import { SecretaryForm } from '@/components/secretaries/SecretaryForm';
 import { SecretaryDetail } from '@/components/secretaries/SecretaryDetail';
@@ -154,26 +156,26 @@ export default function SecretariesPage() {
         onCancel={() => setDeleteTargetId(null)}
       />
 
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Quản lý Thư ký</h1>
-            <p className="text-gray-500 mt-1">Quản lý danh sách thư ký trong bệnh viện</p>
-          </div>
+      <PageHeader
+        icon={Users}
+        title="Quản lý Thư ký"
+        description="Quản lý danh sách thư ký trong bệnh viện"
+        className="mb-6"
+        actions={
           <button
             onClick={handleCreate}
-            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors flex items-center gap-2"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Thêm thư ký
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <input
@@ -181,14 +183,14 @@ export default function SecretariesPage() {
               placeholder="Tìm kiếm theo tên, email, SĐT..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             />
           </div>
           <div>
             <select
               value={filters.departmentId}
               onChange={(e) => setFilters({ ...filters, departmentId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
               <option value="">Tất cả khoa/phòng</option>
               {departments.map((dept) => (
@@ -200,7 +202,7 @@ export default function SecretariesPage() {
             <select
               value={filters.typeId}
               onChange={(e) => setFilters({ ...filters, typeId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
               <option value="">Tất cả loại</option>
               {types.map((type) => (
@@ -212,7 +214,7 @@ export default function SecretariesPage() {
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
               <option value="">Tất cả trạng thái</option>
               <option value="ACTIVE">Đang hoạt động</option>
@@ -225,27 +227,27 @@ export default function SecretariesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
           <div className="text-2xl font-bold text-cyan-600">{secretaries.length}</div>
-          <div className="text-sm text-gray-500">Tổng số thư ký</div>
+          <div className="text-sm text-slate-500">Tổng số thư ký</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+          <div className="text-2xl font-bold text-emerald-600">
             {secretaries.filter(s => s.status === 'ACTIVE').length}
           </div>
-          <div className="text-sm text-gray-500">Đang hoạt động</div>
+          <div className="text-sm text-slate-500">Đang hoạt động</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
           <div className="text-2xl font-bold text-orange-600">
             {secretaries.filter(s => s.status === 'ON_LEAVE').length}
           </div>
-          <div className="text-sm text-gray-500">Đang nghỉ phép</div>
+          <div className="text-sm text-slate-500">Đang nghỉ phép</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-gray-600">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+          <div className="text-2xl font-bold text-slate-600">
             {secretaries.filter(s => s.status === 'INACTIVE').length}
           </div>
-          <div className="text-sm text-gray-500">Nghỉ việc</div>
+          <div className="text-sm text-slate-500">Nghỉ việc</div>
         </div>
       </div>
 

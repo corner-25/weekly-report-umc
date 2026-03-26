@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import Link from 'next/link';
+import { FileText, Pencil } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Task {
   id: string;
@@ -83,7 +85,7 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải...</p>
       </div>
     );
   }
@@ -91,7 +93,7 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
   if (!week) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Không tìm thấy báo cáo</p>
+        <p className="text-slate-500">Không tìm thấy báo cáo</p>
       </div>
     );
   }
@@ -105,48 +107,44 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
       <div className="mb-6">
         <button
           onClick={() => router.back()}
-          className="text-blue-600 hover:text-blue-800 mb-4"
+          className="text-cyan-600 hover:text-cyan-800 mb-4"
         >
           ← Quay lại
         </button>
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Báo cáo Tuần {week.weekNumber}/{week.year}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              {format(new Date(week.startDate), 'dd/MM/yyyy', { locale: vi })} -{' '}
-              {format(new Date(week.endDate), 'dd/MM/yyyy', { locale: vi })}
-            </p>
-          </div>
-          <Link
-            href={`/dashboard/weeks/${week.id}/edit`}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            ✏️ Sửa
-          </Link>
-        </div>
+        <PageHeader
+          icon={FileText}
+          title={`Báo cáo Tuần ${week.weekNumber}/${week.year}`}
+          description={`${format(new Date(week.startDate), 'dd/MM/yyyy', { locale: vi })} - ${format(new Date(week.endDate), 'dd/MM/yyyy', { locale: vi })}`}
+          actions={
+            <Link
+              href={`/dashboard/weeks/${week.id}/edit`}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            >
+              <Pencil className="w-4 h-4" /> Sửa
+            </Link>
+          }
+        />
       </div>
 
       {/* File biên bản */}
       {week.reportFileUrl && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">📄 File biên bản</h2>
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-            <span className="text-gray-700">📎 {week.reportFileUrl.split('/').pop()}</span>
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+            <span className="text-slate-700">📎 {week.reportFileUrl.split('/').pop()}</span>
             <div className="flex gap-2">
               <a
                 href={week.reportFileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200"
+                className="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200"
               >
                 👁️ Xem
               </a>
               <a
                 href={week.reportFileUrl}
                 download
-                className="px-4 py-2 bg-green-100 text-green-700 rounded-md hover:bg-green-200"
+                className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl hover:bg-green-200"
               >
                 ⬇️ Tải về
               </a>
@@ -160,15 +158,15 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
         <h2 className="text-xl font-bold mb-4">📊 Tổng quan</h2>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-gray-600 text-sm">Tổng số phòng</p>
+            <p className="text-slate-600 text-sm">Tổng số phòng</p>
             <p className="text-2xl font-bold text-blue-600">{totalDepartments}</p>
           </div>
           <div>
-            <p className="text-gray-600 text-sm">Tổng số nhiệm vụ</p>
-            <p className="text-2xl font-bold text-green-600">{totalTasks}</p>
+            <p className="text-slate-600 text-sm">Tổng số nhiệm vụ</p>
+            <p className="text-2xl font-bold text-emerald-600">{totalTasks}</p>
           </div>
           <div>
-            <p className="text-gray-600 text-sm">Ngày tạo</p>
+            <p className="text-slate-600 text-sm">Ngày tạo</p>
             <p className="text-lg font-semibold">
               {format(new Date(week.createdAt), 'dd/MM/yyyy', { locale: vi })}
             </p>
@@ -185,11 +183,11 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
           const importantTasks = deptTask.tasks.filter((t) => t.isImportant);
 
           return (
-            <div key={deptTask.department.id} className="bg-white rounded-lg shadow">
+            <div key={deptTask.department.id} className="bg-white rounded-xl shadow-sm border border-slate-200/80">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold">📁 {deptTask.department.name}</h3>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-slate-600">
                     📌 {deptTask.tasks.length} nhiệm vụ
                   </span>
                 </div>
@@ -197,10 +195,10 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                 {/* Important tasks preview */}
                 {importantTasks.length > 0 && !isExpanded && (
                   <div className="mb-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">
+                    <p className="text-sm font-semibold text-slate-700 mb-2">
                       ⭐ THÔNG TIN QUAN TRỌNG:
                     </p>
-                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                    <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
                       {importantTasks.slice(0, 3).map((task) => (
                         <li key={task.id}>{task.masterTask?.name || task.taskName}</li>
                       ))}
@@ -230,7 +228,7 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                           {task.isImportant && <span className="text-xl">⭐</span>}
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="font-bold text-gray-900">
+                              <p className="font-bold text-slate-900">
                                 {task.orderNumber}. {task.masterTask?.name || task.taskName}
                               </p>
                               {isMasterTask && (
@@ -239,15 +237,15 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                                 </span>
                               )}
                               {isAdHoc && (
-                                <span className="px-2 py-0.5 text-xs font-semibold text-green-700 bg-green-100 rounded">
+                                <span className="px-2 py-0.5 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded">
                                   Ngắn hạn
                                 </span>
                               )}
                             </div>
                             {task.masterTask?.description && (
-                              <p className="text-xs text-gray-500 mt-1">{task.masterTask.description}</p>
+                              <p className="text-xs text-slate-500 mt-1">{task.masterTask.description}</p>
                             )}
-                            <div className="mt-2 space-y-2 text-sm text-gray-700">
+                            <div className="mt-2 space-y-2 text-sm text-slate-700">
                               <div>
                                 <span className="font-semibold">Kết quả:</span>
                                 <p className="whitespace-pre-wrap mt-1">{task.result}</p>
@@ -258,9 +256,9 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                               {task.progress !== null && task.progress !== undefined && (
                                 <div>
                                   <span className="font-semibold">Tiến độ:</span>
-                                  <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                                  <div className="mt-1 w-full bg-slate-200 rounded-full h-2">
                                     <div
-                                      className="bg-blue-600 h-2 rounded-full"
+                                      className="bg-cyan-500 h-2 rounded-full"
                                       style={{ width: `${task.progress}%` }}
                                     ></div>
                                   </div>
@@ -270,7 +268,7 @@ export default function WeekDetail({ params }: { params: Promise<{ id: string }>
                               {(task.progress === null || task.progress === undefined) && (
                                 <div>
                                   <span className="font-semibold">Tiến độ:</span>
-                                  <span className="text-gray-500 italic ml-2">Không có tiến độ định lượng</span>
+                                  <span className="text-slate-500 italic ml-2">Không có tiến độ định lượng</span>
                                 </div>
                               )}
                               <div>
