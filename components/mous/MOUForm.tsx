@@ -225,20 +225,11 @@ export function MOUForm({ initialData, departments, onSuccess, onClose }: Props)
           {/* Nội dung */}
           <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-3">Nội dung hợp tác</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Mục đích</label>
-                <textarea rows={2} value={form.purpose} onChange={e => setForm(p => ({ ...p, purpose: e.target.value }))} className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Phạm vi</label>
-                <textarea rows={2} value={form.scope} onChange={e => setForm(p => ({ ...p, scope: e.target.value }))} className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Điều khoản chính (tóm tắt)</label>
-                <textarea rows={3} value={form.keyTerms} onChange={e => setForm(p => ({ ...p, keyTerms: e.target.value }))} className={inputClass} />
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Mục đích hợp tác</label>
+              <textarea rows={3} value={form.purpose} onChange={e => setForm(p => ({ ...p, purpose: e.target.value }))} className={inputClass} placeholder="Mô tả mục đích chung của MOU..." />
             </div>
+            <p className="text-xs text-slate-400 mt-2 italic">Các hạng mục hợp tác chi tiết (lĩnh vực, điều khoản) được quản lý trong tab &quot;Hạng mục&quot; sau khi tạo MOU.</p>
           </div>
 
           {/* Người phụ trách */}

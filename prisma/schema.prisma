@@ -604,35 +604,59 @@ enum ClauseStatus {
   CANCELLED       // Đã hủy
 }
 
+enum ClauseType {
+  TRAINING            // Đào tạo
+  RESEARCH            // Nghiên cứu khoa học
+  CLINICAL            // Chuyên môn / Lâm sàng
+  TECHNOLOGY_TRANSFER // Chuyển giao kỹ thuật / Công nghệ
+  EXPERT_EXCHANGE     // Trao đổi chuyên gia
+  FACILITY            // Cơ sở vật chất / Phòng khám
+  EQUIPMENT           // Thiết bị / Vật tư
+  FINANCE             // Tài chính / Tài trợ
+  HR                  // Nhân sự / Tuyển dụng
+  EVENT               // Hội thảo / Sự kiện
+  PUBLICATION         // Xuất bản / Ấn phẩm
+  OTHER               // Khác
+}
+
+enum ResponsibleParty {
+  UMC                 // Phía UMC
+  PARTNER             // Phía đối tác
+  BOTH                // Cả hai bên
+}
+
 // MOUClause - Điều khoản / Hạng mục chi tiết của MOU
 model MOUClause {
-  id              String        @id @default(cuid())
+  id              String           @id @default(cuid())
   mouId           String
-  mou             MOU           @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  mou             MOU              @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  orderNumber     Int                       // Thứ tự điều khoản
-  title           String        @db.Text    // Tiêu đề hạng mục
-  content         String?       @db.Text    // Nội dung chi tiết
-  responsible     String?                   // Bên chịu trách nhiệm
-  deadline        DateTime?                 // Hạn thực hiện
-  progress        Int           @default(0) // 0-100%
-  clauseStatus    ClauseStatus  @default(NOT_STARTED) // Trạng thái triển khai
-  isCompleted     Boolean       @default(false)
+  orderNumber     Int                          // Thứ tự điều khoản
+  clauseType      ClauseType       @default(OTHER) // Lĩnh vực / Loại hạng mục
+  title           String           @db.Text    // Tiêu đề hạng mục
+  content         String?          @db.Text    // Nội dung chi tiết
+  responsibleParty ResponsibleParty @default(BOTH) // Bên chịu trách nhiệm
+  responsible     String?                      // Người/đơn vị cụ thể phụ trách
+  deadline        DateTime?                    // Hạn thực hiện
+  progress        Int              @default(0) // 0-100%
+  clauseStatus    ClauseStatus     @default(NOT_STARTED) // Trạng thái triển khai
+  isCompleted     Boolean          @default(false)
   completedAt     DateTime?
 
   // Kết quả & đánh giá
-  result          String?       @db.Text    // Kết quả đạt được
-  quality         String?                   // Đánh giá chất lượng (tốt/đạt/chưa đạt)
-  budget          String?                   // Ngân sách / chi phí
-  notes           String?       @db.Text
+  result          String?          @db.Text    // Kết quả đạt được
+  quality         String?                      // Đánh giá chất lượng (tốt/đạt/chưa đạt)
+  budget          String?                      // Ngân sách / chi phí
+  notes           String?          @db.Text
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   clauseProgress  ClauseProgress[]
 
   @@index([mouId])
   @@index([mouId, orderNumber])
+  @@index([mouId, clauseType])
   @@map("mou_clauses")
 }
 

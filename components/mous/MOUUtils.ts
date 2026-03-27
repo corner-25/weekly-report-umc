@@ -50,6 +50,48 @@ export const CLAUSE_STATUS_COLORS: Record<string, string> = {
   CANCELLED: 'bg-red-100 text-red-700',
 };
 
+export const CLAUSE_TYPE_LABELS: Record<string, string> = {
+  TRAINING: 'Đào tạo',
+  RESEARCH: 'Nghiên cứu khoa học',
+  CLINICAL: 'Chuyên môn / Lâm sàng',
+  TECHNOLOGY_TRANSFER: 'Chuyển giao kỹ thuật',
+  EXPERT_EXCHANGE: 'Trao đổi chuyên gia',
+  FACILITY: 'Cơ sở vật chất / Phòng khám',
+  EQUIPMENT: 'Thiết bị / Vật tư',
+  FINANCE: 'Tài chính / Tài trợ',
+  HR: 'Nhân sự / Tuyển dụng',
+  EVENT: 'Hội thảo / Sự kiện',
+  PUBLICATION: 'Xuất bản / Ấn phẩm',
+  OTHER: 'Khác',
+};
+
+export const CLAUSE_TYPE_COLORS: Record<string, string> = {
+  TRAINING: 'bg-blue-100 text-blue-700',
+  RESEARCH: 'bg-purple-100 text-purple-700',
+  CLINICAL: 'bg-emerald-100 text-emerald-700',
+  TECHNOLOGY_TRANSFER: 'bg-orange-100 text-orange-700',
+  EXPERT_EXCHANGE: 'bg-indigo-100 text-indigo-700',
+  FACILITY: 'bg-cyan-100 text-cyan-700',
+  EQUIPMENT: 'bg-amber-100 text-amber-700',
+  FINANCE: 'bg-pink-100 text-pink-700',
+  HR: 'bg-teal-100 text-teal-700',
+  EVENT: 'bg-rose-100 text-rose-700',
+  PUBLICATION: 'bg-violet-100 text-violet-700',
+  OTHER: 'bg-gray-100 text-gray-700',
+};
+
+export const RESPONSIBLE_PARTY_LABELS: Record<string, string> = {
+  UMC: 'Phía UMC',
+  PARTNER: 'Phía đối tác',
+  BOTH: 'Cả hai bên',
+};
+
+export const RESPONSIBLE_PARTY_COLORS: Record<string, string> = {
+  UMC: 'bg-cyan-100 text-cyan-700',
+  PARTNER: 'bg-purple-100 text-purple-700',
+  BOTH: 'bg-slate-100 text-slate-700',
+};
+
 export const QUALITY_OPTIONS = [
   { value: '', label: 'Chưa đánh giá' },
   { value: 'Tốt', label: 'Tốt' },

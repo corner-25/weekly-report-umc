@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   CATEGORY_LABELS, CATEGORY_COLORS, STATUS_COLORS, STATUS_LABELS,
   CLAUSE_STATUS_LABELS, CLAUSE_STATUS_COLORS, QUALITY_OPTIONS,
+  CLAUSE_TYPE_LABELS, CLAUSE_TYPE_COLORS, RESPONSIBLE_PARTY_LABELS, RESPONSIBLE_PARTY_COLORS,
   getMOUDisplayStatus, formatDate, getOverallProgress,
 } from './MOUUtils';
 import { MOUActivities } from './MOUActivities';
@@ -25,8 +26,10 @@ interface ClauseProgressLog {
 interface Clause {
   id: string;
   orderNumber: number;
+  clauseType: string;
   title: string;
   content: string | null;
+  responsibleParty: string;
   responsible: string | null;
   deadline: string | null;
   progress: number;
@@ -95,6 +98,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
   const [showProgressForm, setShowProgressForm] = useState(false);
   const [editingClause, setEditingClause] = useState<Clause | null>(null);
   const [expandedClause, setExpandedClause] = useState<string | null>(null);
+  const [clauseTypeFilter, setClauseTypeFilter] = useState<string>('ALL');
 
   const displayStatus = getMOUDisplayStatus(mou);
   const overallProgress = getOverallProgress(mou.clauses);
@@ -204,10 +208,27 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 <InfoField label="Điện thoại" value={mou.contactPhone || '-'} />
               </div>
 
-              {mou.purpose && <TextSection label="Mục đích" text={mou.purpose} />}
-              {mou.scope && <TextSection label="Phạm vi" text={mou.scope} />}
-              {mou.keyTerms && <TextSection label="Điều khoản chính" text={mou.keyTerms} />}
+              {mou.purpose && <TextSection label="Mục đích hợp tác" text={mou.purpose} />}
               {mou.notes && <TextSection label="Ghi chú" text={mou.notes} />}
+
+              {/* Tóm tắt lĩnh vực hợp tác */}
+              {mou.clauses.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-2">Lĩnh vực hợp tác ({mou.clauses.length} hạng mục)</p>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(
+                      mou.clauses.reduce((acc, c) => {
+                        acc[c.clauseType] = (acc[c.clauseType] || 0) + 1;
+                        return acc;
+                      }, {} as Record<string, number>)
+                    ).map(([type, count]) => (
+                      <span key={type} className={`px-2.5 py-1 rounded-lg text-xs font-medium ${CLAUSE_TYPE_COLORS[type] || 'bg-gray-100 text-gray-700'}`}>
+                        {CLAUSE_TYPE_LABELS[type] || 'Khác'} ({count})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {mou.fileUrl && (
                 <div>
@@ -278,8 +299,38 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 </div>
               )}
 
+              {/* Filter by type */}
+              {mou.clauses.length > 0 && (() => {
+                const typeCounts = mou.clauses.reduce((acc, c) => {
+                  acc[c.clauseType] = (acc[c.clauseType] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>);
+                const types = Object.keys(typeCounts);
+                return types.length > 1 ? (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <button
+                      onClick={() => setClauseTypeFilter('ALL')}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors ${clauseTypeFilter === 'ALL' ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    >
+                      Tất cả ({mou.clauses.length})
+                    </button>
+                    {types.map(type => (
+                      <button
+                        key={type}
+                        onClick={() => setClauseTypeFilter(type)}
+                        className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors ${clauseTypeFilter === type ? 'bg-slate-700 text-white' : `${CLAUSE_TYPE_COLORS[type] || 'bg-gray-100 text-gray-600'} hover:opacity-80`}`}
+                      >
+                        {CLAUSE_TYPE_LABELS[type] || 'Khác'} ({typeCounts[type]})
+                      </button>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+
               <div className="flex justify-between items-center mb-4">
-                <p className="text-sm text-gray-500">{mou.clauses.length} hạng mục</p>
+                <p className="text-sm text-gray-500">
+                  {clauseTypeFilter === 'ALL' ? `${mou.clauses.length} hạng mục` : `${mou.clauses.filter(c => c.clauseType === clauseTypeFilter).length} / ${mou.clauses.length} hạng mục`}
+                </p>
                 <button
                   onClick={() => { setEditingClause(null); setShowClauseForm(true); }}
                   className="px-3 py-1.5 text-sm font-medium text-white bg-cyan-500 rounded-lg hover:bg-cyan-600"
@@ -292,7 +343,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 <p className="text-center text-gray-400 py-8">Chưa có hạng mục nào. Thêm các hạng mục đã ký để theo dõi tiến độ triển khai.</p>
               ) : (
                 <div className="space-y-3">
-                  {mou.clauses.map(clause => (
+                  {mou.clauses.filter(c => clauseTypeFilter === 'ALL' || c.clauseType === clauseTypeFilter).map(clause => (
                     <ClauseCard
                       key={clause.id}
                       clause={clause}
@@ -487,6 +538,9 @@ function ClauseCard({ clause, mouId, isExpanded, onToggleExpand, onEdit, onRefre
                 <span className="text-sm font-semibold text-gray-900">
                   {clause.orderNumber}. {clause.title}
                 </span>
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${CLAUSE_TYPE_COLORS[clause.clauseType] || CLAUSE_TYPE_COLORS.OTHER}`}>
+                  {CLAUSE_TYPE_LABELS[clause.clauseType] || 'Khác'}
+                </span>
                 <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusColor}`}>
                   {statusLabel}
                 </span>
@@ -507,6 +561,7 @@ function ClauseCard({ clause, mouId, isExpanded, onToggleExpand, onEdit, onRefre
               </div>
               {clause.content && <p className="text-xs text-gray-500 line-clamp-1">{clause.content}</p>}
               <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-400">
+                <span>Bên thực hiện: <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium ${RESPONSIBLE_PARTY_COLORS[clause.responsibleParty] || RESPONSIBLE_PARTY_COLORS.BOTH}`}>{RESPONSIBLE_PARTY_LABELS[clause.responsibleParty] || 'Cả hai bên'}</span></span>
                 {clause.responsible && <span>Phụ trách: <span className="text-gray-600">{clause.responsible}</span></span>}
                 {clause.deadline && (
                   <span className={isOverdue ? 'text-red-500' : ''}>
@@ -643,8 +698,10 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
   onSuccess: () => void;
 }) {
   const [form, setForm] = useState({
+    clauseType: initialData?.clauseType || 'OTHER',
     title: initialData?.title || '',
     content: initialData?.content || '',
+    responsibleParty: initialData?.responsibleParty || 'BOTH',
     responsible: initialData?.responsible || '',
     deadline: initialData?.deadline ? new Date(initialData.deadline).toISOString().split('T')[0] : '',
     progress: initialData?.progress ?? 0,
@@ -683,6 +740,25 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
         <h3 className="text-lg font-bold">{initialData ? 'Sửa hạng mục' : 'Thêm hạng mục'}</h3>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Lĩnh vực *</label>
+            <select value={form.clauseType} onChange={e => setForm(p => ({ ...p, clauseType: e.target.value }))} className={inputClass}>
+              {Object.entries(CLAUSE_TYPE_LABELS).map(([val, label]) => (
+                <option key={val} value={val}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Bên thực hiện *</label>
+            <select value={form.responsibleParty} onChange={e => setForm(p => ({ ...p, responsibleParty: e.target.value }))} className={inputClass}>
+              {Object.entries(RESPONSIBLE_PARTY_LABELS).map(([val, label]) => (
+                <option key={val} value={val}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tiêu đề hạng mục *</label>
           <input type="text" required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
@@ -694,8 +770,8 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Bên phụ trách</label>
-            <input type="text" value={form.responsible} onChange={e => setForm(p => ({ ...p, responsible: e.target.value }))} className={inputClass} />
+            <label className="block text-xs font-medium text-gray-600 mb-1">Người/đơn vị phụ trách cụ thể</label>
+            <input type="text" placeholder="VD: Phòng NCKH, Dr. Nguyễn..." value={form.responsible} onChange={e => setForm(p => ({ ...p, responsible: e.target.value }))} className={inputClass} />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Hạn thực hiện</label>

@@ -31,8 +31,10 @@ export async function POST(
       data: {
         mouId: id,
         orderNumber: (maxOrder._max.orderNumber ?? 0) + 1,
+        clauseType: body.clauseType || 'OTHER',
         title: body.title,
         content: body.content || null,
+        responsibleParty: body.responsibleParty || 'BOTH',
         responsible: body.responsible || null,
         deadline: body.deadline ? new Date(body.deadline) : null,
         progress: body.progress ?? 0,
@@ -72,8 +74,10 @@ export async function PUT(
     const clause = await prisma.mOUClause.update({
       where: { id: body.clauseId },
       data: {
+        clauseType: body.clauseType ?? undefined,
         title: body.title ?? undefined,
         content: body.content ?? undefined,
+        responsibleParty: body.responsibleParty ?? undefined,
         responsible: body.responsible ?? undefined,
         deadline: body.deadline ? new Date(body.deadline) : body.deadline === null ? null : undefined,
         progress: body.progress ?? undefined,
