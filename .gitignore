@@ -39,6 +39,8 @@ prisma/migrations/
 # Uploads
 /public/uploads/*
 !/public/uploads/.gitkeep
+!/public/uploads/licenses/
+!/public/uploads/licenses/*
 
 # Scripts and local data tools
 /scripts/
