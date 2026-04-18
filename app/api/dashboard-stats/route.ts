@@ -26,6 +26,8 @@ const getCachedDashboardStats = unstable_cache(
       todayEvents,
       totalMeetingRooms,
       secretaryCounts,
+      secretaryTypeCounts,
+      secretaryTypes,
       birthdaySecretaries,
       recentTransfers,
     ] = await Promise.all([
@@ -93,6 +95,17 @@ const getCachedDashboardStats = unstable_cache(
         _count: true,
       }),
 
+      prisma.secretary.groupBy({
+        by: ['secretaryTypeId'],
+        where: { deletedAt: null, status: 'ACTIVE' },
+        _count: true,
+      }),
+
+      prisma.secretaryType.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, color: true },
+      }),
+
       prisma.$queryRaw<{ id: string; fullName: string; dateOfBirth: Date }[]>`
         SELECT id, "fullName", "dateOfBirth"
         FROM secretaries
@@ -140,6 +153,17 @@ const getCachedDashboardStats = unstable_cache(
     const totalSecretaries = secretaryCounts.reduce((sum, g) => sum + g._count, 0);
     const activeSecretaries = secretaryCounts.find((g) => g.status === 'ACTIVE')?._count ?? 0;
 
+    const typeMap = new Map(secretaryTypes.map((t) => [t.id, t]));
+    const secretariesByType = secretaryTypeCounts.map((g) => {
+      const t = g.secretaryTypeId ? typeMap.get(g.secretaryTypeId) : null;
+      return {
+        typeId: g.secretaryTypeId,
+        name: t?.name ?? 'Chưa phân loại',
+        color: t?.color ?? '#94a3b8',
+        count: g._count,
+      };
+    }).sort((a, b) => b.count - a.count);
+
     return {
       totalMasterTasks,
       tasksInProgress,
@@ -151,6 +175,7 @@ const getCachedDashboardStats = unstable_cache(
       totalMeetingRooms,
       totalSecretaries,
       activeSecretaries,
+      secretariesByType,
       birthdaySecretaries: weekBirthdays,
       recentTransfers,
     };

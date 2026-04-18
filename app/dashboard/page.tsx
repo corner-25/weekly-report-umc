@@ -267,20 +267,59 @@ export default function Dashboard() {
               <h2 className="font-semibold text-slate-900">Thư ký</h2>
             </div>
             <div className="p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-3xl font-bold text-cyan-600">{stats.activeSecretaries}</p>
-                  <p className="text-sm text-slate-500">Đang hoạt động</p>
-                </div>
-                <div className="w-16 h-16">
+              <div className="flex items-center gap-5 mb-4">
+                {/* Multi-segment donut by type */}
+                <div className="relative w-24 h-24 flex-shrink-0">
                   <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e2e8f0" strokeWidth="3" />
-                    <circle
-                      cx="18" cy="18" r="15.9155" fill="none" stroke="#0891b2" strokeWidth="3"
-                      strokeDasharray={`${(stats.activeSecretaries / stats.totalSecretaries) * 100}, 100`}
-                      strokeLinecap="round"
-                    />
+                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f1f5f9" strokeWidth="3.5" />
+                    {(() => {
+                      const total = stats.activeSecretaries || 1;
+                      let offset = 0;
+                      return (stats.secretariesByType || []).map((t: any, i: number) => {
+                        const pct = (t.count / total) * 100;
+                        const circ = (
+                          <circle
+                            key={t.typeId || i}
+                            cx="18" cy="18" r="15.9155" fill="none"
+                            stroke={t.color}
+                            strokeWidth="3.5"
+                            strokeDasharray={`${pct} ${100 - pct}`}
+                            strokeDashoffset={-offset}
+                          />
+                        );
+                        offset += pct;
+                        return circ;
+                      });
+                    })()}
                   </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-slate-900 leading-none">{stats.activeSecretaries}</span>
+                    <span className="text-[10px] text-slate-500 mt-0.5">hoạt động</span>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="flex-1 min-w-0 space-y-2">
+                  {(stats.secretariesByType || []).length === 0 ? (
+                    <p className="text-sm text-slate-500">Chưa có dữ liệu</p>
+                  ) : (
+                    (stats.secretariesByType || []).map((t: any) => {
+                      const pct = stats.activeSecretaries > 0
+                        ? Math.round((t.count / stats.activeSecretaries) * 100)
+                        : 0;
+                      return (
+                        <div key={t.typeId || t.name} className="flex items-center gap-2 text-sm">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: t.color }}
+                          />
+                          <span className="text-slate-700 truncate flex-1" title={t.name}>{t.name}</span>
+                          <span className="font-semibold text-slate-900 tabular-nums">{t.count}</span>
+                          <span className="text-xs text-slate-400 tabular-nums w-8 text-right">{pct}%</span>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
               <Link
