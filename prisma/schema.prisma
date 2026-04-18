@@ -336,6 +336,7 @@ model SecretaryType {
 // Secretary - Thư ký
 model Secretary {
   id                  String          @id @default(cuid())
+  employeeCode        String?         @unique // Mã nhân viên (VD: J15-120)
   fullName            String          // Họ và tên
   dateOfBirth         DateTime?       // Ngày sinh
   phone               String?
