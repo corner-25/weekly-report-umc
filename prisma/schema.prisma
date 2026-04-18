@@ -360,11 +360,37 @@ model Secretary {
   certificates        SecretaryCertificate[]
   transferLogs        SecretaryTransferLog[]
   application         SecretaryApplication?
+  examScores          SecretaryExamScore[]
 
   @@index([secretaryTypeId])
   @@index([currentDepartmentId])
   @@index([dateOfBirth])
   @@map("secretaries")
+}
+
+// SecretaryExamScore - Điểm các kỳ thi nghiệp vụ
+model SecretaryExamScore {
+  id             String    @id @default(cuid())
+  secretaryId    String
+  secretary      Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+
+  examName       String    // VD: "Kỳ thi Nghiệp vụ Thư ký 2026"
+  examYear       Int
+  part1          Float?    // P1
+  part2          Float?    // P2
+  part3          Float?    // P3
+  total          Float?    // Tổng điểm
+  rank           Int?      // Hạng trong kỳ thi
+  formula        String?   // Công thức tính (ghi chú)
+  notes          String?   @db.Text
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([secretaryId, examName])
+  @@index([secretaryId])
+  @@index([examYear])
+  @@map("secretary_exam_scores")
 }
 
 // SecretaryCertificate - Bằng cấp của thư ký
