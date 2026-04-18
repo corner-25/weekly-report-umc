@@ -110,7 +110,7 @@ export function SecretaryList({ secretaries, onEdit, onView, onDelete }: Props) 
                   {formatDate(secretary.dateOfBirth)}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600">
-                  {secretary.certificates.length > 0 ? (
+                  {(secretary.certificates?.length ?? 0) > 0 ? (
                     <span className="text-cyan-600">{secretary.certificates.length} bằng</span>
                   ) : (
                     <span className="text-gray-400">-</span>
