@@ -67,3 +67,12 @@ export function useDepartments() {
     dedupingInterval: 60 * 60 * 1000, // Dedupe for 1 hour
   });
 }
+
+// --- Master Tasks with progress (for Tasks Overview / Timeline / Metrics pages) ---
+export function useMasterTasksWithProgress() {
+  return useSWR('/api/master-tasks?includeProgress=true', fetcher, {
+    ...swrConfig,
+    revalidateIfStale: true,
+    refreshInterval: 5 * 60 * 1000,
+  });
+}

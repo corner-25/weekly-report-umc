@@ -19,6 +19,7 @@ interface MasterTask {
   name: string;
   description: string | null;
   department: Department;
+  progressType: 'RECURRING' | 'CUMULATIVE';
   latestProgress: number;
   weekCount: number;
 }
@@ -222,6 +223,12 @@ export default function NewWeekReport() {
 
   // Master Task Progress functions
   const addMasterTaskProgress = (departmentId: string, masterTaskId: string) => {
+    const mt = masterTasks.find((t) => t.id === masterTaskId);
+    // RECURRING: default 100%, CUMULATIVE: carry-over from last week
+    const defaultProgress = mt?.progressType === 'RECURRING'
+      ? 100
+      : (mt?.latestProgress ?? 0);
+
     setDepartmentData(
       departmentData.map((d) => {
         if (d.departmentId === departmentId) {
@@ -242,7 +249,7 @@ export default function NewWeekReport() {
                 orderNumber: nextOrder,
                 result: '',
                 timePeriod: '',
-                progress: 0,
+                progress: defaultProgress,
                 nextWeekPlan: '',
                 isImportant: false,
               },
@@ -598,7 +605,7 @@ export default function NewWeekReport() {
                     <option value="">-- Chọn nhiệm vụ --</option>
                     {availableTasks.map((mt) => (
                       <option key={mt.id} value={mt.id}>
-                        {mt.name} (Tiến độ tuần trước: {mt.latestProgress}%)
+                        {mt.name} {mt.progressType === 'RECURRING' ? '(Thường quy)' : `(Tích lũy - ${mt.latestProgress}%)`}
                       </option>
                     ))}
                   </select>
@@ -614,11 +621,18 @@ export default function NewWeekReport() {
                   <div key={index} className="border-2 border-blue-200 rounded-lg p-4 mb-4 bg-blue-50">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
-                        <h5 className="font-bold text-blue-900">#{tp.orderNumber}. {masterTask?.name}</h5>
+                        <div className="flex items-center gap-2">
+                          <h5 className="font-bold text-blue-900">#{tp.orderNumber}. {masterTask?.name}</h5>
+                          {masterTask?.progressType === 'RECURRING' ? (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-teal-100 text-teal-700 rounded-full">Thường quy</span>
+                          ) : (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-violet-100 text-violet-700 rounded-full">Tích lũy</span>
+                          )}
+                        </div>
                         {masterTask?.description && (
                           <p className="text-xs text-slate-600 mt-1">{masterTask.description}</p>
                         )}
-                        {masterTask && masterTask.latestProgress > 0 && (
+                        {masterTask?.progressType === 'CUMULATIVE' && masterTask.latestProgress > 0 && (
                           <p className="text-xs text-blue-600 mt-1">
                             Tiến độ tuần trước: {masterTask.latestProgress}%
                           </p>

@@ -52,7 +52,7 @@ export const getCachedMetrics = unstable_cache(
     return prisma.metricDefinition.findMany({
       where,
       select: {
-        id: true,
+        id:true,
         name: true,
         unit: true,
         description: true,

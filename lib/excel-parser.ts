@@ -6,6 +6,7 @@ export interface ParsedTask {
   result: string;
   timePeriod: string;
   progress: number | null;
+  nextWeekPlan: string;
   isImportant: boolean;
   subItems: string[]; // Sub-rows merged into this task
 }
@@ -18,17 +19,64 @@ export interface ParsedDepartment {
 export interface ParsedWeekData {
   departments: ParsedDepartment[];
   rawRowCount: number;
+  detectedWeekNumber: number | null;
+  detectedYear: number | null;
+}
+
+/**
+ * List available sheet names from an Excel file buffer.
+ */
+export function listSheets(buffer: ArrayBuffer): string[] {
+  const wb = XLSX.read(buffer, { type: 'array' });
+  return wb.SheetNames;
 }
 
 /**
  * Parse an Excel file buffer into structured weekly report data.
- * Expected format: 5 columns (Stt, Nhiệm vụ, Kết quả, Thời gian, Tiến độ)
+ * Expected format: 6 columns (Stt, Nhiệm vụ, Kết quả, Thời gian, Tiến độ, Kế hoạch tuần sau)
  * Department headers are rows where col 0 has a long text and cols 1-4 are empty.
+ * @param buffer - The Excel file buffer
+ * @param sheetName - Optional sheet name to parse (defaults to first sheet)
  */
-export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
+export function parseExcelFile(buffer: ArrayBuffer, sheetName?: string): ParsedWeekData {
   const wb = XLSX.read(buffer, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
+  const targetSheet = sheetName || wb.SheetNames[0];
+  const ws = wb.Sheets[targetSheet];
+
+  if (!ws) {
+    throw new Error(`Sheet "${targetSheet}" không tồn tại trong file`);
+  }
+
   const rows: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+  // Detect week number and year from header or sheet name
+  let detectedWeekNumber: number | null = null;
+  let detectedYear: number | null = null;
+
+  // Try from sheet name (e.g. "12.2026")
+  const sheetMatch = targetSheet.match(/^(\d{1,2})\.(\d{4})$/);
+  if (sheetMatch) {
+    detectedWeekNumber = parseInt(sheetMatch[1]);
+    detectedYear = parseInt(sheetMatch[2]);
+  }
+
+  // Try from header row (e.g. "Kế hoạch tuần 13/2026")
+  for (let i = 0; i < Math.min(6, rows.length); i++) {
+    for (let c = 0; c < 7; c++) {
+      const val = String(rows[i]?.[c] ?? '');
+      const headerMatch = val.match(/tuần\s+(\d{1,2})\s*\/\s*(\d{4})/i);
+      if (headerMatch) {
+        // This is "Kế hoạch tuần X/YYYY" - the current week is X-1
+        const planWeek = parseInt(headerMatch[1]);
+        detectedYear = detectedYear || parseInt(headerMatch[2]);
+        // If we don't have week from sheet name, infer current week
+        if (!detectedWeekNumber) {
+          detectedWeekNumber = planWeek - 1;
+        }
+        break;
+      }
+    }
+  }
 
   const departments: ParsedDepartment[] = [];
   let currentDept: ParsedDepartment | null = null;
@@ -42,12 +90,13 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
     const col2 = String(row[2] ?? '').trim();
     const col3 = String(row[3] ?? '').trim();
     const col4 = String(row[4] ?? '').trim();
+    const col5 = String(row[5] ?? '').trim();
 
     // Skip header row
     if (col0 === 'Stt' || col0 === 'STT') continue;
 
     // Skip completely empty rows
-    if (!col0 && !col1 && !col2 && !col3 && !col4) continue;
+    if (!col0 && !col1 && !col2 && !col3 && !col4 && !col5) continue;
 
     // Detect department header: text in col0 only, other cols empty/whitespace
     if (isDepartmentHeader(col0, col1, col2)) {
@@ -79,6 +128,7 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
         result: col2,
         timePeriod: col3,
         progress: normalizeProgress(col4),
+        nextWeekPlan: col5,
         isImportant: false,
         subItems: [],
       };
@@ -109,6 +159,12 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
             currentTask.progress = subProgress;
           }
         }
+        // Merge nextWeekPlan
+        if (col5) {
+          currentTask.nextWeekPlan = currentTask.nextWeekPlan
+            ? currentTask.nextWeekPlan + '\n' + col5
+            : col5;
+        }
       } else if (col2) {
         // Just result text continuation
         currentTask.result = currentTask.result
@@ -123,6 +179,11 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
             currentTask.progress = subProgress;
           }
         }
+        if (col5) {
+          currentTask.nextWeekPlan = currentTask.nextWeekPlan
+            ? currentTask.nextWeekPlan + '\n' + col5
+            : col5;
+        }
       }
     }
   }
@@ -132,7 +193,7 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedWeekData {
     currentDept.tasks.push(currentTask);
   }
 
-  return { departments, rawRowCount: rows.length };
+  return { departments, rawRowCount: rows.length, detectedWeekNumber, detectedYear };
 }
 
 function isDepartmentHeader(col0: string, col1: string, col2: string): boolean {

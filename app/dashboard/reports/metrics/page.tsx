@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { useState } from 'react';
 import { LineChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useMasterTasksWithProgress, useDepartments } from '@/lib/swr';
 
 interface Department {
   id: string;
@@ -50,48 +49,15 @@ interface MonthlyMetrics {
 }
 
 export default function MetricsPage() {
-  // Fixed: Added null checks for weeklyProgress to prevent undefined errors
-  const [tasks, setTasks] = useState<MasterTask[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: tasksData, isLoading: tasksLoading } = useMasterTasksWithProgress();
+  const { data: deptsData, isLoading: deptsLoading } = useDepartments();
+
+  const tasks: MasterTask[] = tasksData || [];
+  const departments: Department[] = deptsData || [];
+  const loading = tasksLoading || deptsLoading;
+
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedDept, setSelectedDept] = useState<string>('all');
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [tasksRes, deptsRes] = await Promise.all([
-        fetch('/api/master-tasks?includeProgress=true'),
-        fetch('/api/departments'),
-      ]);
-
-      if (tasksRes.ok && deptsRes.ok) {
-        const tasksData = await tasksRes.json();
-        const deptsData = await deptsRes.json();
-
-        console.log('Metrics - Fetched data:', {
-          tasksCount: tasksData.length,
-          departmentsCount: deptsData.length,
-          tasks: tasksData,
-        });
-
-        setTasks(tasksData);
-        setDepartments(deptsData);
-      } else {
-        console.error('Metrics - API error:', {
-          tasksStatus: tasksRes.status,
-          deptsStatus: deptsRes.status,
-        });
-      }
-    } catch (error) {
-      console.error('Metrics - Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Filter tasks by year
   const filteredTasks = tasks.filter(task => {

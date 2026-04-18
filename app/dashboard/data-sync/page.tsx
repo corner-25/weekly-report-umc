@@ -349,7 +349,6 @@ function FleetSyncPanel() {
         <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
           <p><span className="font-medium">GitHub:</span> corner-25/vehicle-storage</p>
           <p><span className="font-medium">File:</span> data/latest/fleet_data_latest.json</p>
-          <p><span className="font-medium">Dashboard:</span> /dashboard/reports/to-xe-native</p>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ export interface MatchedTask {
   result: string;
   timePeriod: string;
   progress: number | null;
+  nextWeekPlan: string;
   isImportant: boolean;
   masterTaskId: string | null;
   masterTaskName: string | null;
@@ -90,6 +91,7 @@ export function matchTasksToMaster(
         result: task.result,
         timePeriod: task.timePeriod,
         progress: task.progress,
+        nextWeekPlan: task.nextWeekPlan,
         isImportant: task.isImportant,
         masterTaskId: match?.task.id ?? null,
         masterTaskName: match?.task.name ?? null,

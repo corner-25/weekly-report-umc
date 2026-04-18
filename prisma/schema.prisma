@@ -77,6 +77,7 @@ model MasterTask {
   name              String    @db.Text
   description       String?   @db.Text
   estimatedDuration Int?      // Số tuần dự kiến hoàn thành (DEPRECATED - dùng startDate/endDate)
+  progressType      ProgressType @default(RECURRING) // Loại tiến độ
   startDate         DateTime? // Ngày bắt đầu nhiệm vụ
   endDate           DateTime? // Ngày kết thúc nhiệm vụ
   createdAt         DateTime  @default(now())
@@ -602,6 +603,11 @@ enum ClauseStatus {
   COMPLETED       // Hoàn thành
   ON_HOLD         // Tạm dừng
   CANCELLED       // Đã hủy
+}
+
+enum ProgressType {
+  RECURRING   // Công việc thường quy, lặp lại hàng tuần
+  CUMULATIVE  // Nhiệm vụ có tiến độ tích lũy, có điểm kết thúc
 }
 
 enum ClauseType {

@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Table2, LayoutGrid, GanttChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import LicenseList from '@/components/licenses/LicenseList';
+import LicenseKanban from '@/components/licenses/LicenseKanban';
+import LicenseTimeline from '@/components/licenses/LicenseTimeline';
 import LicenseForm from '@/components/licenses/LicenseForm';
 import LicenseDetail from '@/components/licenses/LicenseDetail';
 import { CATEGORY_LABELS } from '@/components/licenses/LicenseUtils';
+
+type ViewMode = 'table' | 'kanban' | 'timeline';
+const VIEW_STORAGE_KEY = 'licenses.viewMode';
 
 interface Department { id: string; name: string; }
 interface License {
@@ -41,11 +46,21 @@ export default function LicensesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingLicense, setEditingLicense] = useState<License | null>(null);
   const [viewingLicense, setViewingLicense] = useState<License | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = window.localStorage.getItem(VIEW_STORAGE_KEY) as ViewMode | null;
+      if (saved === 'table' || saved === 'kanban' || saved === 'timeline') setViewMode(saved);
+    }
     fetchDepartments();
     fetchStats();
   }, []);
+
+  const changeView = (mode: ViewMode) => {
+    setViewMode(mode);
+    if (typeof window !== 'undefined') window.localStorage.setItem(VIEW_STORAGE_KEY, mode);
+  };
 
   useEffect(() => {
     fetchLicenses();
@@ -186,11 +201,47 @@ export default function LicensesPage() {
         </div>
       </div>
 
+      {/* View switcher */}
+      <div className="mb-4 flex items-center gap-1 bg-slate-100 rounded-lg p-1 w-fit">
+        {([
+          { mode: 'table' as const, icon: Table2, label: 'Bảng' },
+          { mode: 'kanban' as const, icon: LayoutGrid, label: 'Kanban' },
+          { mode: 'timeline' as const, icon: GanttChart, label: 'Timeline' },
+        ]).map(({ mode, icon: Icon, label }) => (
+          <button
+            key={mode}
+            onClick={() => changeView(mode)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-all ${
+              viewMode === mode
+                ? 'bg-white text-cyan-600 shadow-sm font-medium'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* List */}
       {loading ? (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-12 text-center">
           <p className="text-slate-500">Đang tải...</p>
         </div>
+      ) : viewMode === 'kanban' ? (
+        <LicenseKanban
+          licenses={licenses}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : viewMode === 'timeline' ? (
+        <LicenseTimeline
+          licenses={licenses}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       ) : (
         <LicenseList
           licenses={licenses}

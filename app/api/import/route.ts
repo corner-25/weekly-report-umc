@@ -63,6 +63,7 @@ export async function GET() {
       masterTasks: masterTasks.map(mt => ({
         id: mt.id,
         name: mt.name,
+        progressType: mt.progressType,
         departmentId: mt.department.id,
         departmentName: mt.department.name,
       })),

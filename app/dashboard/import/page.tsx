@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { parseExcelFile, type ParsedWeekData } from '@/lib/excel-parser';
+import { parseExcelFile, listSheets, type ParsedWeekData } from '@/lib/excel-parser';
 import { matchTasksToMaster, type MatchResult, type MasterTaskRef, type MatchedTask } from '@/lib/task-matcher';
 import { extractMetrics, type MetricDefinitionRef, type ExtractedMetric } from '@/lib/metric-extractor';
 
@@ -25,6 +25,9 @@ export default function ImportPage() {
 
   // Upload step
   const [fileName, setFileName] = useState<string>('');
+  const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
+  const [sheetNames, setSheetNames] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>('');
   const [weekNumber, setWeekNumber] = useState<number>(0);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [startDate, setStartDate] = useState('');
@@ -57,12 +60,36 @@ export default function ImportPage() {
 
     try {
       const buffer = await file.arrayBuffer();
-      const parsed = parseExcelFile(buffer);
+      setFileBuffer(buffer);
+      const sheets = listSheets(buffer);
+      setSheetNames(sheets);
+      // Auto-select last sheet (most recent week)
+      if (sheets.length > 0) {
+        setSelectedSheet(sheets[sheets.length - 1]);
+      }
+    } catch (err) {
+      setError('Lỗi đọc file: ' + (err instanceof Error ? err.message : String(err)));
+    }
+  }, []);
+
+  const handleParseSheet = useCallback(() => {
+    if (!fileBuffer || !selectedSheet || !refData) {
+      setError(!refData ? 'Chưa tải xong dữ liệu tham chiếu, vui lòng thử lại' : 'Vui lòng chọn sheet');
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const parsed = parseExcelFile(fileBuffer, selectedSheet);
       setParsedData(parsed);
 
-      if (!refData) {
-        setError('Chưa tải xong dữ liệu tham chiếu, vui lòng thử lại');
-        return;
+      // Auto-fill week info from detected values
+      if (parsed.detectedWeekNumber && !weekNumber) {
+        setWeekNumber(parsed.detectedWeekNumber);
+      }
+      if (parsed.detectedYear) {
+        setYear(parsed.detectedYear);
       }
 
       // Match tasks
@@ -87,9 +114,9 @@ export default function ImportPage() {
 
       setStep('preview');
     } catch (err) {
-      setError('Lỗi đọc file: ' + (err instanceof Error ? err.message : String(err)));
+      setError('Lỗi parse sheet: ' + (err instanceof Error ? err.message : String(err)));
     }
-  }, [refData]);
+  }, [fileBuffer, selectedSheet, refData, weekNumber]);
 
   const handleSubmit = async () => {
     if (!matchResult || !weekNumber || !year || !startDate || !endDate) {
@@ -111,7 +138,7 @@ export default function ImportPage() {
           result: t.result || '',
           timePeriod: t.timePeriod || '',
           progress: t.progress,
-          nextWeekPlan: '',
+          nextWeekPlan: t.nextWeekPlan || '',
           isImportant: t.isImportant,
         }));
 
@@ -311,6 +338,35 @@ export default function ImportPage() {
             />
           </label>
 
+          {/* Sheet selector */}
+          {sheetNames.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold mb-3">Chọn sheet (tuần) để import</h2>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {sheetNames.map(name => (
+                  <button
+                    key={name}
+                    onClick={() => setSelectedSheet(name)}
+                    className={`px-4 py-2 text-sm rounded-lg border transition-all ${
+                      selectedSheet === name
+                        ? 'bg-cyan-500 text-white border-cyan-500 shadow-sm'
+                        : 'bg-white text-slate-700 border-slate-300 hover:border-cyan-400 hover:bg-cyan-50'
+                    }`}
+                  >
+                    Tuần {name}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleParseSheet}
+                disabled={!selectedSheet || !refData}
+                className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              >
+                Parse sheet &quot;{selectedSheet}&quot;
+              </button>
+            </div>
+          )}
+
           {!refData && (
             <p className="text-sm text-slate-500 mt-3 flex items-center">
               <svg className="animate-spin w-4 h-4 mr-2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.25" /><path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" /></svg>
@@ -486,6 +542,9 @@ export default function ImportPage() {
                 setMatchResult(null);
                 setParsedData(null);
                 setFileName('');
+                setFileBuffer(null);
+                setSheetNames([]);
+                setSelectedSheet('');
                 setSubmitResult(null);
                 setWeekNumber(0);
                 setStartDate('');
