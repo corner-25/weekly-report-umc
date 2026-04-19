@@ -206,7 +206,8 @@ export function Sidebar() {
         <Link
           href="/dashboard"
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+            'flex items-center rounded-lg transition-all duration-200 group',
+            isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
             isActivePath('/dashboard')
               ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -228,16 +229,47 @@ export function Sidebar() {
           );
 
           if (isCollapsed) {
+            const firstItem = group.items[0];
             return (
-              <div key={group.id} className="py-0.5">
-                <div
+              <div key={group.id} className="py-0.5 relative group/collapsed">
+                <Link
+                  href={firstItem.href}
                   className={cn(
-                    'flex justify-center px-1 py-2 rounded-lg',
-                    hasActiveChild ? 'text-cyan-600 bg-cyan-50' : 'text-slate-400'
+                    'flex justify-center px-1 py-2.5 rounded-lg transition-colors',
+                    hasActiveChild
+                      ? 'text-cyan-600 bg-cyan-50'
+                      : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
                   )}
                   title={group.title}
                 >
                   <GroupIcon className="w-[18px] h-[18px]" />
+                </Link>
+                {/* Flyout on hover */}
+                <div className="absolute left-full top-0 ml-2 hidden group-hover/collapsed:block z-50">
+                  <div className="bg-white rounded-xl shadow-lg border border-slate-200/80 py-1.5 min-w-[200px]">
+                    <div className="px-3 py-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100 mb-1">
+                      {group.title}
+                    </div>
+                    {group.items.map((item) => {
+                      const ItemIcon = item.icon;
+                      const isActive = isActivePath(item.href, item.exact);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn(
+                            'flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors',
+                            isActive
+                              ? 'bg-cyan-50 text-cyan-700 font-medium'
+                              : 'text-slate-600 hover:bg-slate-50'
+                          )}
+                        >
+                          <ItemIcon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-cyan-600' : 'text-slate-400')} />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             );
@@ -304,7 +336,8 @@ export function Sidebar() {
           <Link
             href="/dashboard/settings"
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+              'flex items-center rounded-lg transition-all duration-200 group',
+              isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
               isActivePath('/dashboard/settings')
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
