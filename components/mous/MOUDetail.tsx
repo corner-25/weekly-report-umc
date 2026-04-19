@@ -9,7 +9,7 @@ import {
 } from './MOUUtils';
 import { MOUActivities } from './MOUActivities';
 import { MOUDocuments } from './MOUDocuments';
-import { AlertTriangle, X as XIcon, Pencil } from 'lucide-react';
+import { AlertTriangle, X as XIcon, Pencil, Calendar, CheckCircle2, Clock as ClockIcon } from 'lucide-react';
 
 interface ClauseProgressLog {
   id: string;
@@ -90,7 +90,7 @@ interface Props {
   onRefresh: () => void;
 }
 
-type Tab = 'info' | 'clauses' | 'activities' | 'documents' | 'progress';
+type Tab = 'info' | 'clauses' | 'timeline' | 'activities' | 'documents' | 'progress';
 
 export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('clauses');
@@ -166,6 +166,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
           {([
             ['info', 'Thông tin'],
             ['clauses', `Hạng mục (${mou.clauses.length})`],
+            ['timeline', 'Timeline'],
             ['activities', `Hoạt động (${mou.activities?.length || 0})`],
             ['documents', `Văn bản (${mou.documents?.length || 0})`],
             ['progress', `Nhật ký (${mou.progressLogs.length})`],
@@ -366,6 +367,11 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 />
               )}
             </div>
+          )}
+
+          {/* Timeline Tab */}
+          {activeTab === 'timeline' && (
+            <ClauseTimeline clauses={mou.clauses} />
           )}
 
           {/* Activities Tab */}
@@ -962,6 +968,184 @@ function ProgressFormModal({ mouId, onClose, onSuccess }: {
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+// Timeline view — clauses sorted by deadline with status markers
+function ClauseTimeline({ clauses }: { clauses: Clause[] }) {
+  const withDeadline = clauses.filter((c) => c.deadline);
+  const noDeadline = clauses.filter((c) => !c.deadline);
+
+  if (clauses.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+        <p className="text-slate-500">Chưa có hạng mục nào</p>
+      </div>
+    );
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const sorted = [...withDeadline].sort((a, b) => {
+    return new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime();
+  });
+
+  const grouped: Record<string, Clause[]> = {
+    overdue: [],
+    thisMonth: [],
+    nextMonth: [],
+    later: [],
+    completed: [],
+  };
+
+  const endOfThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+  for (const c of sorted) {
+    if (c.clauseStatus === 'COMPLETED' || c.isCompleted) {
+      grouped.completed.push(c);
+      continue;
+    }
+    const d = new Date(c.deadline!);
+    d.setHours(0, 0, 0, 0);
+    if (d < today) grouped.overdue.push(c);
+    else if (d <= endOfThisMonth) grouped.thisMonth.push(c);
+    else if (d <= endOfNextMonth) grouped.nextMonth.push(c);
+    else grouped.later.push(c);
+  }
+
+  const sections: { key: keyof typeof grouped; label: string; accent: string; icon: any }[] = [
+    { key: 'overdue', label: 'Đã quá hạn', accent: 'bg-red-500', icon: AlertTriangle },
+    { key: 'thisMonth', label: 'Trong tháng này', accent: 'bg-orange-500', icon: ClockIcon },
+    { key: 'nextMonth', label: 'Tháng tới', accent: 'bg-amber-500', icon: Calendar },
+    { key: 'later', label: 'Sau này', accent: 'bg-blue-500', icon: Calendar },
+    { key: 'completed', label: 'Đã hoàn thành', accent: 'bg-emerald-500', icon: CheckCircle2 },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {sections.map((sec) => {
+        const items = grouped[sec.key];
+        if (items.length === 0) return null;
+        const SecIcon = sec.icon;
+        return (
+          <div key={sec.key}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-2.5 h-2.5 rounded-full ${sec.accent}`} />
+              <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <SecIcon className="w-3.5 h-3.5" />
+                {sec.label}
+              </h3>
+              <span className="text-xs text-slate-400">({items.length})</span>
+            </div>
+            <div className="relative pl-4 space-y-2 before:absolute before:left-[5px] before:top-1 before:bottom-1 before:w-0.5 before:bg-slate-100">
+              {items.map((c) => {
+                const deadline = c.deadline ? new Date(c.deadline) : null;
+                const daysLeft = deadline
+                  ? Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+                  : null;
+                const isDone = c.clauseStatus === 'COMPLETED' || c.isCompleted;
+                const isOverdue = !isDone && daysLeft !== null && daysLeft < 0;
+
+                return (
+                  <div key={c.id} className="relative">
+                    <div className={`absolute -left-4 top-3 w-2.5 h-2.5 rounded-full ring-2 ring-white ${
+                      isDone ? 'bg-emerald-500' :
+                      isOverdue ? 'bg-red-500' :
+                      c.clauseStatus === 'IN_PROGRESS' ? 'bg-blue-500' :
+                      'bg-slate-300'
+                    }`} />
+                    <div className={`bg-white rounded-lg border p-3 ${
+                      isDone ? 'border-emerald-200' :
+                      isOverdue ? 'border-red-200' :
+                      'border-slate-200'
+                    }`}>
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium text-slate-900">
+                              {c.orderNumber}. {c.title}
+                            </span>
+                            <span className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${CLAUSE_TYPE_COLORS[c.clauseType] || 'bg-gray-100 text-gray-600'}`}>
+                              {CLAUSE_TYPE_LABELS[c.clauseType] || 'Khác'}
+                            </span>
+                            <span className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${RESPONSIBLE_PARTY_COLORS[c.responsibleParty] || 'bg-slate-100 text-slate-600'}`}>
+                              {RESPONSIBLE_PARTY_LABELS[c.responsibleParty] || c.responsibleParty}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-shrink-0 text-right">
+                          <div className={`text-xs font-medium whitespace-nowrap ${
+                            isDone ? 'text-emerald-600' :
+                            isOverdue ? 'text-red-600' :
+                            daysLeft !== null && daysLeft <= 30 ? 'text-orange-600' :
+                            'text-slate-500'
+                          }`}>
+                            {deadline ? formatDate(deadline.toISOString()) : ''}
+                          </div>
+                          {!isDone && daysLeft !== null && (
+                            <div className={`text-[11px] ${
+                              isOverdue ? 'text-red-500' :
+                              daysLeft <= 30 ? 'text-orange-500' :
+                              'text-slate-400'
+                            }`}>
+                              {isOverdue ? `Quá ${Math.abs(daysLeft)} ngày` : `Còn ${daysLeft} ngày`}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {c.responsible && (
+                        <div className="text-xs text-slate-500 mt-1">Phụ trách: {c.responsible}</div>
+                      )}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${c.progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}
+                            style={{ width: `${c.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-slate-500 tabular-nums w-8 text-right">{c.progress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {noDeadline.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+            <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+              Không có deadline
+            </h3>
+            <span className="text-xs text-slate-400">({noDeadline.length})</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {noDeadline.map((c) => (
+              <div key={c.id} className="bg-slate-50 rounded-lg border border-slate-200 p-3">
+                <div className="flex items-start gap-2">
+                  <span className="text-sm font-medium text-slate-900">
+                    {c.orderNumber}. {c.title}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${CLAUSE_STATUS_COLORS[c.clauseStatus] || 'bg-slate-100'}`}>
+                    {CLAUSE_STATUS_LABELS[c.clauseStatus] || c.clauseStatus}
+                  </span>
+                  <span className="text-xs text-slate-500">{c.progress}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

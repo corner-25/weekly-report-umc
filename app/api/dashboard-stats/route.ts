@@ -30,6 +30,7 @@ const getCachedDashboardStats = unstable_cache(
       secretaryTypes,
       birthdaySecretaries,
       recentTransfers,
+      expiringMOUs,
     ] = await Promise.all([
       prisma.masterTask.count(),
 
@@ -127,6 +128,30 @@ const getCachedDashboardStats = unstable_cache(
           toDepartment: { select: { name: true } },
         },
       }),
+
+      // MOUs expiring in next 90 days or already expired (not terminated)
+      (async () => {
+        const today = new Date();
+        const soon = new Date();
+        soon.setDate(soon.getDate() + 90);
+        return prisma.mOU.findMany({
+          where: {
+            deletedAt: null,
+            status: { in: ['ACTIVE', 'EXPIRED'] },
+            expiryDate: { not: null, lte: soon },
+          },
+          take: 5,
+          orderBy: { expiryDate: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            mouNumber: true,
+            partnerName: true,
+            expiryDate: true,
+            status: true,
+          },
+        });
+      })(),
     ]);
 
     const weekBirthdays = birthdaySecretaries
@@ -178,6 +203,7 @@ const getCachedDashboardStats = unstable_cache(
       secretariesByType,
       birthdaySecretaries: weekBirthdays,
       recentTransfers,
+      expiringMOUs,
     };
   },
   [CACHE_TAGS.dashboardStats],

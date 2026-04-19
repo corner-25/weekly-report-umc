@@ -19,6 +19,8 @@ import {
   ArrowRight,
   ArrowLeftRight,
   Cake,
+  Handshake,
+  AlertTriangle,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -330,6 +332,49 @@ export default function Dashboard() {
               </Link>
             </div>
           </div>
+
+          {/* MOU Expiring Widget */}
+          {stats.expiringMOUs && stats.expiringMOUs.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-orange-500" />
+                  MOU cần chú ý
+                </h2>
+                <Link href="/dashboard/mous?status=EXPIRING" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
+                  Xem <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+              <div className="divide-y divide-slate-100">
+                {stats.expiringMOUs.map((m: any) => {
+                  const today = new Date();
+                  const expiry = new Date(m.expiryDate);
+                  const days = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                  const isExpired = days <= 0;
+                  return (
+                    <Link
+                      key={m.id}
+                      href="/dashboard/mous"
+                      className="block px-5 py-3 hover:bg-slate-50/50 transition-colors"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Handshake className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 line-clamp-1">{m.title}</p>
+                          <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{m.partnerName}</p>
+                          <p className={`text-xs font-medium mt-1 ${isExpired ? 'text-red-600' : days <= 30 ? 'text-red-600' : 'text-orange-600'}`}>
+                            {isExpired
+                              ? `Đã hết hạn ${Math.abs(days)} ngày`
+                              : `Còn ${days} ngày (${format(expiry, 'd/M/yyyy', { locale: vi })})`}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Recent Transfers */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">

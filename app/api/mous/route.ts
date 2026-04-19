@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { CACHE_TAGS } from '@/lib/cache';
+import type { Prisma } from '@prisma/client';
+
+type SortKey = 'updatedAt' | 'expiryDate' | 'signedDate' | 'title';
 
 // GET - List MOUs with filters
 export async function GET(request: Request) {
@@ -12,24 +17,30 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search');
+    const search = searchParams.get('search')?.trim();
     const category = searchParams.get('category');
     const status = searchParams.get('status');
     const departmentId = searchParams.get('departmentId');
+    const sortKey = (searchParams.get('sort') || 'updatedAt') as SortKey;
+    const sortDir = searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const pageSize = Math.min(200, Math.max(10, parseInt(searchParams.get('pageSize') || '50', 10)));
 
-    const where: Record<string, unknown> = { deletedAt: null };
+    const AND: Prisma.MOUWhereInput[] = [{ deletedAt: null }];
 
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { partnerName: { contains: search, mode: 'insensitive' } },
-        { mouNumber: { contains: search, mode: 'insensitive' } },
-        { contactPerson: { contains: search, mode: 'insensitive' } },
-      ];
+      AND.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { partnerName: { contains: search, mode: 'insensitive' } },
+          { mouNumber: { contains: search, mode: 'insensitive' } },
+          { contactPerson: { contains: search, mode: 'insensitive' } },
+        ],
+      });
     }
 
-    if (category) where.category = category;
-    if (departmentId) where.departmentId = departmentId;
+    if (category) AND.push({ category: category as any });
+    if (departmentId) AND.push({ departmentId });
 
     // Status filter with date-based logic
     if (status) {
@@ -39,43 +50,57 @@ export async function GET(request: Request) {
 
       switch (status) {
         case 'ACTIVE':
-          where.status = 'ACTIVE';
-          where.OR = [
-            { expiryDate: null },
-            { expiryDate: { gt: soon } },
-          ];
+          AND.push({ status: 'ACTIVE' });
+          AND.push({ OR: [{ expiryDate: null }, { expiryDate: { gt: soon } }] });
           break;
         case 'EXPIRING':
-          where.status = 'ACTIVE';
-          where.expiryDate = { lte: soon, gt: today };
+          AND.push({ status: 'ACTIVE' });
+          AND.push({ expiryDate: { lte: soon, gt: today } });
           break;
         case 'EXPIRED':
-          where.status = { in: ['EXPIRED', 'ACTIVE'] };
-          where.expiryDate = { lte: today };
+          AND.push({ status: { in: ['EXPIRED', 'ACTIVE'] } });
+          AND.push({ expiryDate: { lte: today } });
           break;
         case 'DRAFT':
-          where.status = 'DRAFT';
+          AND.push({ status: 'DRAFT' });
           break;
         case 'TERMINATED':
-          where.status = 'TERMINATED';
+          AND.push({ status: 'TERMINATED' });
           break;
       }
     }
 
-    const mous = await prisma.mOU.findMany({
-      where,
-      include: {
-        department: { select: { id: true, name: true } },
-        _count: { select: { clauses: true, progressLogs: true } },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+    const where: Prisma.MOUWhereInput = { AND };
 
-    return NextResponse.json(mous, {
-      headers: {
-        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=120',
+    const orderBy: Prisma.MOUOrderByWithRelationInput =
+      sortKey === 'expiryDate' ? { expiryDate: { sort: sortDir, nulls: 'last' } } :
+      sortKey === 'signedDate' ? { signedDate: { sort: sortDir, nulls: 'last' } } :
+      sortKey === 'title' ? { title: sortDir } :
+      { updatedAt: sortDir };
+
+    const [total, mous] = await Promise.all([
+      prisma.mOU.count({ where }),
+      prisma.mOU.findMany({
+        where,
+        include: {
+          department: { select: { id: true, name: true } },
+          clauses: { select: { progress: true } },
+          _count: { select: { clauses: true, progressLogs: true } },
+        },
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+
+    return NextResponse.json(
+      { items: mous, total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
+      {
+        headers: {
+          'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=120',
+        },
       },
-    });
+    );
   } catch (error) {
     console.error('Error fetching MOUs:', error);
     return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 });
@@ -99,10 +124,21 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check duplicate mouNumber (non-empty, not soft-deleted)
+    if (body.mouNumber?.trim()) {
+      const dup = await prisma.mOU.findFirst({
+        where: { mouNumber: body.mouNumber.trim(), deletedAt: null },
+        select: { id: true },
+      });
+      if (dup) {
+        return NextResponse.json({ error: 'Số hiệu MOU đã tồn tại' }, { status: 409 });
+      }
+    }
+
     const mou = await prisma.mOU.create({
       data: {
         title: body.title,
-        mouNumber: body.mouNumber || null,
+        mouNumber: body.mouNumber?.trim() || null,
         category: body.category,
         status: body.status || 'DRAFT',
         partnerName: body.partnerName,
@@ -127,6 +163,9 @@ export async function POST(request: Request) {
         department: { select: { id: true, name: true } },
       },
     });
+
+    revalidateTag(CACHE_TAGS.mouStats);
+    revalidateTag(CACHE_TAGS.dashboardStats);
 
     return NextResponse.json(mou, { status: 201 });
   } catch (error) {

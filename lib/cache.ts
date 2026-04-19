@@ -8,6 +8,7 @@ export const CACHE_TAGS = {
   secretaryTypes: 'secretary-types',
   metrics: 'metrics',
   dashboardStats: 'dashboard-stats',
+  mouStats: 'mou-stats',
 } as const;
 
 // Departments — cache vĩnh viễn, chỉ xóa khi có thay đổi

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { CACHE_TAGS } from '@/lib/cache';
 
 // GET - Get MOU detail
 export async function GET(
@@ -58,6 +60,17 @@ export async function PUT(
 
     const body = await request.json();
 
+    // Check duplicate mouNumber (non-empty, not soft-deleted, not self)
+    if (body.mouNumber?.trim()) {
+      const dup = await prisma.mOU.findFirst({
+        where: { mouNumber: body.mouNumber.trim(), deletedAt: null, NOT: { id } },
+        select: { id: true },
+      });
+      if (dup) {
+        return NextResponse.json({ error: 'Số hiệu MOU đã tồn tại' }, { status: 409 });
+      }
+    }
+
     const mou = await prisma.mOU.update({
       where: { id },
       data: {
@@ -89,6 +102,9 @@ export async function PUT(
       },
     });
 
+    revalidateTag(CACHE_TAGS.mouStats);
+    revalidateTag(CACHE_TAGS.dashboardStats);
+
     return NextResponse.json(mou);
   } catch (error) {
     console.error('Error updating MOU:', error);
@@ -112,6 +128,9 @@ export async function DELETE(
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    revalidateTag(CACHE_TAGS.mouStats);
+    revalidateTag(CACHE_TAGS.dashboardStats);
 
     return NextResponse.json({ message: 'Đã xóa MOU' });
   } catch (error) {

@@ -4,7 +4,9 @@ import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 
-const CACHE_TAG_MOU_STATS = 'mou-stats';
+import { CACHE_TAGS } from '@/lib/cache';
+
+const CACHE_TAG_MOU_STATS = CACHE_TAGS.mouStats;
 
 const getCachedMOUStats = unstable_cache(
   async () => {
