@@ -37,7 +37,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-type MenuSection = 'reports' | 'management' | 'events' | 'statistics' | 'secretaries' | 'licenses' | 'mous';
+type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'partnerships' | 'analytics' | 'settings';
 
 interface NavItem {
   href: string;
@@ -55,32 +55,34 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
   {
-    id: 'reports',
-    title: 'Báo cáo',
+    id: 'weekReports',
+    title: 'Báo cáo tuần',
     icon: FileText,
     items: [
-      { href: '/dashboard/weeks', label: 'Báo cáo tuần', icon: FileText, exact: true },
-      { href: '/dashboard/calendar', label: 'Lịch làm việc', icon: CalendarDays, exact: false },
-      { href: '/dashboard/import', label: 'Import tuần', icon: Upload, exact: true },
+      { href: '/dashboard/weeks', label: 'Danh sách báo cáo', icon: FileText, exact: true },
+      { href: '/dashboard/weeks/new', label: 'Tạo báo cáo mới', icon: FileText, exact: true },
+      { href: '/dashboard/import', label: 'Nhập từ Excel', icon: Upload, exact: true },
     ],
   },
   {
-    id: 'management',
-    title: 'Quản lý',
-    icon: Building2,
+    id: 'calendar',
+    title: 'Lịch & Sự kiện',
+    icon: CalendarRange,
     items: [
-      { href: '/dashboard/departments', label: 'Phòng ban', icon: Building2, exact: true },
-      { href: '/dashboard/tasks', label: 'NV thường kỳ', icon: ClipboardCheck, exact: true },
+      { href: '/dashboard/calendar', label: 'Lịch công tác', icon: CalendarDays, exact: false },
+      { href: '/dashboard/hospital-events', label: 'Sự kiện bệnh viện', icon: CalendarClock, exact: false },
+      { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
       { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen, exact: false },
     ],
   },
   {
-    id: 'events',
-    title: 'Sự kiện',
-    icon: CalendarRange,
+    id: 'tasks',
+    title: 'Nhiệm vụ',
+    icon: ClipboardCheck,
     items: [
-      { href: '/dashboard/hospital-events', label: 'Quản lý sự kiện', icon: CalendarClock, exact: false },
-      { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
+      { href: '/dashboard/tasks', label: 'Nhiệm vụ thường kỳ', icon: ClipboardCheck, exact: true },
+      { href: '/dashboard/tasks/overview', label: 'Tổng hợp tiến độ', icon: BarChart3, exact: true },
+      { href: '/dashboard/reports/timeline', label: 'Timeline', icon: TrendingUp, exact: true },
     ],
   },
   {
@@ -89,40 +91,39 @@ const navGroups: NavGroup[] = [
     icon: Users,
     items: [
       { href: '/dashboard/secretaries', label: 'Danh sách', icon: Users, exact: true },
-      { href: '/dashboard/secretaries/types', label: 'Loại thư ký', icon: Tag, exact: true },
       { href: '/dashboard/secretaries/transfers', label: 'Luân chuyển', icon: ArrowLeftRight, exact: true },
-      { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', icon: FileUser, exact: true },
       { href: '/dashboard/secretaries/birthdays', label: 'Sinh nhật', icon: Cake, exact: true },
+      { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', icon: FileUser, exact: true },
     ],
   },
   {
-    id: 'licenses',
-    title: 'Giấy phép',
-    icon: ShieldCheck,
-    items: [
-      { href: '/dashboard/licenses', label: 'Danh sách', icon: ShieldCheck, exact: false },
-    ],
-  },
-  {
-    id: 'mous',
-    title: 'MOU',
+    id: 'partnerships',
+    title: 'Hợp tác & Pháp lý',
     icon: Handshake,
     items: [
-      { href: '/dashboard/mous', label: 'Danh sách', icon: Handshake, exact: false },
+      { href: '/dashboard/mous', label: 'MOU', icon: Handshake, exact: false },
+      { href: '/dashboard/licenses', label: 'Giấy phép', icon: ShieldCheck, exact: false },
     ],
   },
   {
-    id: 'statistics',
-    title: 'Thống kê',
+    id: 'analytics',
+    title: 'Phân tích & Số liệu',
     icon: BarChart3,
     items: [
-      { href: '/dashboard/tasks/overview', label: 'Tổng hợp NV', icon: BarChart3, exact: true },
-      { href: '/dashboard/reports/timeline', label: 'Timeline', icon: TrendingUp, exact: true },
-      { href: '/dashboard/reports/metrics', label: 'Phân tích Nhiệm vụ', icon: LineChart, exact: true },
+      { href: '/dashboard/reports/metrics', label: 'Phân tích nhiệm vụ', icon: LineChart, exact: true },
       { href: '/dashboard/reports/metrics-data', label: 'Bảng số liệu', icon: Table2, exact: true },
       { href: '/dashboard/reports/phong-hc-native', label: 'Dashboard Phòng HC', icon: Gauge, exact: true },
-      { href: '/dashboard/data-sync', label: 'Đồng bộ dữ liệu', icon: RefreshCw, exact: true },
       { href: '/dashboard/reports/phong-hc', label: 'Dashboards Streamlit', icon: Monitor, exact: true },
+    ],
+  },
+  {
+    id: 'settings',
+    title: 'Cài đặt',
+    icon: Settings,
+    items: [
+      { href: '/dashboard/settings', label: 'Chung', icon: Settings, exact: true },
+      { href: '/dashboard/secretaries/types', label: 'Loại thư ký', icon: Tag, exact: true },
+      { href: '/dashboard/data-sync', label: 'Đồng bộ dữ liệu', icon: RefreshCw, exact: true },
     ],
   },
 ];
@@ -216,6 +217,22 @@ export function Sidebar() {
         >
           <LayoutDashboard className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard') && 'text-slate-400 group-hover:text-slate-600')} />
           {!isCollapsed && <span className="text-sm font-medium">Tổng quan</span>}
+        </Link>
+
+        {/* Phòng ban */}
+        <Link
+          href="/dashboard/departments"
+          className={cn(
+            'flex items-center rounded-lg transition-all duration-200 group',
+            isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
+            isActivePath('/dashboard/departments', false)
+              ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+          )}
+          title="Phòng ban"
+        >
+          <Building2 className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard/departments', false) && 'text-slate-400 group-hover:text-slate-600')} />
+          {!isCollapsed && <span className="text-sm font-medium">Phòng ban</span>}
         </Link>
 
         <div className="pt-1" />
@@ -331,23 +348,6 @@ export function Sidebar() {
           );
         })}
 
-        {/* Cài đặt */}
-        <div className="pt-2 mt-2 border-t border-slate-100">
-          <Link
-            href="/dashboard/settings"
-            className={cn(
-              'flex items-center rounded-lg transition-all duration-200 group',
-              isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
-              isActivePath('/dashboard/settings')
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            )}
-            title="Cài đặt"
-          >
-            <Settings className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard/settings') && 'text-slate-400 group-hover:text-slate-600')} />
-            {!isCollapsed && <span className="text-sm font-medium">Cài đặt</span>}
-          </Link>
-        </div>
       </nav>
 
       {/* User Section */}

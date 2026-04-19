@@ -17,6 +17,17 @@ export const getCachedDepartments = unstable_cache(
     prisma.department.findMany({
       where: { deletedAt: null },
       orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: {
+            masterTasks: true,
+            metricDefinitions: true,
+            secretaries: { where: { deletedAt: null, status: 'ACTIVE' } },
+            mous: { where: { deletedAt: null } },
+            licenses: { where: { deletedAt: null } },
+          },
+        },
+      },
     }),
   [CACHE_TAGS.departments],
   { revalidate: false, tags: [CACHE_TAGS.departments] }
