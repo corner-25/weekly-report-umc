@@ -8,6 +8,7 @@ import {
   Building2, Plus, Search, BarChart3, Pencil, Trash2, X,
   ClipboardList, Users, Handshake, ShieldCheck, LineChart, ChevronRight, LayoutGrid, List as ListIcon,
 } from 'lucide-react';
+import { getDeptVisual, PALETTE_STYLES } from '@/lib/department-visual';
 
 interface DeptCounts {
   masterTasks: number;
@@ -24,14 +25,6 @@ interface Department {
   _count?: Partial<DeptCounts>;
 }
 
-const DEPT_GRADIENT = 'from-cyan-500 to-blue-600';
-
-function initials(name: string) {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return '?';
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-}
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -309,15 +302,17 @@ function SummaryTile({
 function DeptCard({
   dept, onEdit, onDelete,
 }: { dept: Department; onEdit: () => void; onDelete: () => void }) {
-  const grad = DEPT_GRADIENT;
+  const visual = getDeptVisual(dept.name);
+  const styles = PALETTE_STYLES[visual.palette];
+  const Icon = visual.icon;
   const c = dept._count ?? {};
   return (
     <div className="group relative bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden">
-      <div className={`h-1 bg-gradient-to-r ${grad}`} />
+      <div className={`h-1 ${styles.bar}`} />
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <div className={`shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br ${grad} text-white flex items-center justify-center font-semibold text-sm shadow-sm`}>
-            {initials(dept.name)}
+          <div className={`shrink-0 w-11 h-11 rounded-xl ${styles.bg} ${styles.text} ring-1 ring-inset ${styles.ring} flex items-center justify-center`}>
+            <Icon className="w-5 h-5" />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">{dept.name}</h3>
@@ -379,12 +374,14 @@ function StatChip({
 function DeptRow({
   dept, onEdit, onDelete,
 }: { dept: Department; onEdit: () => void; onDelete: () => void }) {
-  const grad = DEPT_GRADIENT;
+  const visual = getDeptVisual(dept.name);
+  const styles = PALETTE_STYLES[visual.palette];
+  const Icon = visual.icon;
   const c = dept._count ?? {};
   return (
     <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50/60 transition-colors">
-      <div className={`shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${grad} text-white flex items-center justify-center font-semibold text-xs shadow-sm`}>
-        {initials(dept.name)}
+      <div className={`shrink-0 w-10 h-10 rounded-xl ${styles.bg} ${styles.text} ring-1 ring-inset ${styles.ring} flex items-center justify-center`}>
+        <Icon className="w-5 h-5" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-sm font-medium text-slate-900 truncate">{dept.name}</div>
