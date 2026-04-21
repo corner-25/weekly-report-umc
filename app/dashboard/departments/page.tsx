@@ -24,22 +24,7 @@ interface Department {
   _count?: Partial<DeptCounts>;
 }
 
-const GRADIENTS = [
-  'from-cyan-500 to-blue-600',
-  'from-violet-500 to-purple-600',
-  'from-emerald-500 to-teal-600',
-  'from-amber-500 to-orange-600',
-  'from-rose-500 to-pink-600',
-  'from-indigo-500 to-sky-600',
-  'from-lime-500 to-emerald-600',
-  'from-fuchsia-500 to-purple-600',
-];
-
-function hashGradient(seed: string) {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
-  return GRADIENTS[Math.abs(h) % GRADIENTS.length];
-}
+const DEPT_GRADIENT = 'from-cyan-500 to-blue-600';
 
 function initials(name: string) {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -324,7 +309,7 @@ function SummaryTile({
 function DeptCard({
   dept, onEdit, onDelete,
 }: { dept: Department; onEdit: () => void; onDelete: () => void }) {
-  const grad = hashGradient(dept.id);
+  const grad = DEPT_GRADIENT;
   const c = dept._count ?? {};
   return (
     <div className="group relative bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden">
@@ -394,7 +379,7 @@ function StatChip({
 function DeptRow({
   dept, onEdit, onDelete,
 }: { dept: Department; onEdit: () => void; onDelete: () => void }) {
-  const grad = hashGradient(dept.id);
+  const grad = DEPT_GRADIENT;
   const c = dept._count ?? {};
   return (
     <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50/60 transition-colors">
