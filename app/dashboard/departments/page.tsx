@@ -115,7 +115,14 @@ export default function DepartmentsPage() {
   };
 
   const filtered = useMemo(
-    () => departments.filter((d) => d.name.toLowerCase().includes(searchTerm.toLowerCase())),
+    () =>
+      departments
+        .filter((d) => d.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => {
+          const diff = (b._count?.masterTasks ?? 0) - (a._count?.masterTasks ?? 0);
+          if (diff !== 0) return diff;
+          return a.name.localeCompare(b.name, 'vi');
+        }),
     [departments, searchTerm]
   );
 
