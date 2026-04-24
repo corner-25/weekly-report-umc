@@ -495,11 +495,12 @@ model SecretaryApplication {
 // ==================== LICENSE / PERMIT MANAGEMENT ====================
 
 enum LicenseCategory {
-  HOSPITAL    // Giấy phép hoạt động bệnh viện
-  DEPARTMENT  // Giấy phép khoa/đơn vị
-  VEHICLE     // Giấy phép xe cứu thương
-  EQUIPMENT   // Giấy phép trang thiết bị y tế
-  OTHER       // Loại khác
+  HOSPITAL       // Giấy phép hoạt động bệnh viện
+  DEPARTMENT     // Giấy phép khoa/đơn vị
+  VEHICLE        // Giấy phép xe cứu thương
+  ADMIN_VEHICLE  // Giấy phép xe hành chính
+  EQUIPMENT      // Giấy phép trang thiết bị y tế
+  OTHER          // Loại khác
 }
 
 // License - Giấy phép / chứng chỉ

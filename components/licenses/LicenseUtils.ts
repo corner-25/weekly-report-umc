@@ -26,6 +26,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   HOSPITAL: 'Bệnh viện',
   DEPARTMENT: 'Khoa/Phòng',
   VEHICLE: 'Xe cứu thương',
+  ADMIN_VEHICLE: 'Xe hành chính',
   EQUIPMENT: 'Thiết bị y tế',
   OTHER: 'Khác',
 };
@@ -34,6 +35,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   HOSPITAL: 'bg-purple-100 text-purple-700',
   DEPARTMENT: 'bg-blue-100 text-blue-700',
   VEHICLE: 'bg-orange-100 text-orange-700',
+  ADMIN_VEHICLE: 'bg-amber-100 text-amber-700',
   EQUIPMENT: 'bg-cyan-100 text-cyan-700',
   OTHER: 'bg-gray-100 text-gray-700',
 };
