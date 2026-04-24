@@ -7,7 +7,7 @@ import { vi } from 'date-fns/locale';
 import Link from 'next/link';
 import {
   FileText, Pencil, ArrowLeft, Building2, ListChecks, Calendar,
-  Star, Download, Eye, Search, Filter, Layers, Clock, Target, ArrowRight,
+  Star, Download, Eye, Search, Filter, Layers, Clock, Target,
   CheckCircle2, CircleDot, FileDown, ChevronRight,
 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -438,12 +438,9 @@ function TaskCard({ task, showDept }: {
           </div>
         )}
 
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="mt-3">
           <Block icon={Target} label="Kết quả" tone="slate">
             {task.result || <span className="italic text-slate-400">Chưa cập nhật</span>}
-          </Block>
-          <Block icon={ArrowRight} label="Kế hoạch tuần sau" tone="cyan">
-            {task.nextWeekPlan || <span className="italic text-slate-400">Chưa có</span>}
           </Block>
         </div>
       </div>

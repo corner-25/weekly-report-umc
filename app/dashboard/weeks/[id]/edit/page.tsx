@@ -719,20 +719,6 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                         </div>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Kế hoạch tuần sau *
-                        </label>
-                        <textarea
-                          value={tp.nextWeekPlan}
-                          onChange={(e) =>
-                            updateTaskProgress(deptData.departmentId, index, 'nextWeekPlan', e.target.value)
-                          }
-                          rows={2}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-                          required
-                        />
-                      </div>
                     </div>
                   </div>
                 );
@@ -844,20 +830,6 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Kế hoạch tuần sau *
-                      </label>
-                      <textarea
-                        value={task.nextWeekPlan}
-                        onChange={(e) =>
-                          updateAdHocTask(deptData.departmentId, index, 'nextWeekPlan', e.target.value)
-                        }
-                        rows={2}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-                        required
-                      />
-                    </div>
                   </div>
                 </div>
               ))}

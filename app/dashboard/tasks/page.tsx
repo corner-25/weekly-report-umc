@@ -621,7 +621,6 @@ export default function MasterTasksPage() {
                           <div className="text-xs text-slate-700 space-y-1 mt-2 pt-2 border-t border-slate-100">
                             {p.result && <div className="whitespace-pre-wrap"><span className="font-medium text-slate-500">Kết quả:</span> {p.result}</div>}
                             {p.timePeriod && <div className="whitespace-pre-wrap"><span className="font-medium text-slate-500">Thời gian:</span> {p.timePeriod}</div>}
-                            {p.nextWeekPlan && <div className="whitespace-pre-wrap"><span className="font-medium text-slate-500">Kế hoạch tuần sau:</span> {p.nextWeekPlan}</div>}
                           </div>
                         </div>
                       </div>
