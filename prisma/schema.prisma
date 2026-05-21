@@ -46,6 +46,7 @@ model Week {
 
   @@unique([weekNumber, year])
   @@index([createdById])
+  @@index([year, weekNumber])
   @@map("weeks")
 }
 
@@ -87,6 +88,7 @@ model MasterTask {
   weekProgress      WeekTaskProgress[]
 
   @@index([departmentId])
+  @@index([createdAt])
   @@map("master_tasks")
 }
 
@@ -274,6 +276,7 @@ model HospitalEvent {
   @@index([date])
   @@index([meetingRoomId])
   @@index([date, meetingRoomId])
+  @@index([deletedAt, date])
   @@map("hospital_events")
 }
 
@@ -365,6 +368,7 @@ model Secretary {
   @@index([secretaryTypeId])
   @@index([currentDepartmentId])
   @@index([dateOfBirth])
+  @@index([deletedAt, status, secretaryTypeId])
   @@map("secretaries")
 }
 

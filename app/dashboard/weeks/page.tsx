@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { FileText, Plus, Search, Eye, Pencil, BarChart3 } from 'lucide-react';
+import { useWeeksList } from '@/lib/swr';
 
 interface Week {
   id: string;
@@ -20,36 +21,20 @@ interface Week {
 }
 
 export default function WeeksListPage() {
-  const [weeks, setWeeks] = useState<Week[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
 
-  useEffect(() => {
-    fetchWeeks();
-  }, [selectedYear]);
-
-  const fetchWeeks = async () => {
-    try {
-      setError('');
-      const params = new URLSearchParams();
-      if (selectedYear) params.append('year', selectedYear.toString());
-      if (searchTerm) params.append('search', searchTerm);
-
-      const response = await fetch(`/api/weeks?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setWeeks(data);
-    } catch {
-      setError('Không thể tải danh sách báo cáo. Vui lòng thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, error, isLoading, mutate } = useWeeksList({
+    year: selectedYear,
+    search: activeSearch,
+  });
+  const weeks: Week[] = data ?? [];
+  const loading = isLoading;
 
   const handleSearch = () => {
-    fetchWeeks();
+    setActiveSearch(searchTerm);
+    void mutate();
   };
 
   const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
@@ -110,8 +95,8 @@ export default function WeeksListPage() {
 
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex justify-between items-center">
-          {error}
-          <button onClick={fetchWeeks} className="underline hover:no-underline ml-4">Thử lại</button>
+          Không thể tải danh sách báo cáo. Vui lòng thử lại.
+          <button onClick={() => void mutate()} className="underline hover:no-underline ml-4">Thử lại</button>
         </div>
       )}
 

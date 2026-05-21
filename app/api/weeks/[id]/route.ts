@@ -40,33 +40,57 @@ export async function GET(
 
     const week = await prisma.week.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        weekNumber: true,
+        year: true,
+        startDate: true,
+        endDate: true,
+        reportFileUrl: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
         taskProgress: {
-          include: {
+          select: {
+            id: true,
+            masterTaskId: true,
+            orderNumber: true,
+            result: true,
+            timePeriod: true,
+            progress: true,
+            nextWeekPlan: true,
+            isImportant: true,
+            completedAt: true,
             masterTask: {
-              include: {
-                department: true,
+              select: {
+                id: true,
+                name: true,
+                department: {
+                  select: { id: true, name: true },
+                },
               },
             },
           },
-          orderBy: {
-            orderNumber: 'asc',
-          },
+          orderBy: { orderNumber: 'asc' },
         },
         tasks: {
-          include: {
-            department: true,
-          },
-          orderBy: {
-            orderNumber: 'asc',
-          },
-        },
-        createdBy: {
           select: {
             id: true,
-            name: true,
-            email: true,
+            orderNumber: true,
+            taskName: true,
+            result: true,
+            timePeriod: true,
+            progress: true,
+            nextWeekPlan: true,
+            isImportant: true,
+            department: {
+              select: { id: true, name: true },
+            },
           },
+          orderBy: { orderNumber: 'asc' },
+        },
+        createdBy: {
+          select: { id: true, name: true, email: true },
         },
       },
     });

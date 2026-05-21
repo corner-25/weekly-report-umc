@@ -16,14 +16,22 @@ const getCachedDashboardStats = unstable_cache(
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
+    // Master task status: 1 raw query instead of 3 separate counts.
+    // Buckets: total, withProgress (any week_progress row), completed (any completedAt).
+    type MasterTaskStatsRow = {
+      total: bigint;
+      withProgress: bigint;
+      completed: bigint;
+    };
+
+    const moUExpirySoon = new Date();
+    moUExpirySoon.setDate(moUExpirySoon.getDate() + 90);
+
     const [
-      totalMasterTasks,
-      tasksInProgress,
-      tasksCompleted,
+      masterTaskStatsRows,
       totalWeeks,
       recentWeeks,
-      upcomingEvents,
-      todayEvents,
+      todayAndUpcomingEvents,
       totalMeetingRooms,
       secretaryCounts,
       secretaryTypeCounts,
@@ -32,18 +40,22 @@ const getCachedDashboardStats = unstable_cache(
       recentTransfers,
       expiringMOUs,
     ] = await Promise.all([
-      prisma.masterTask.count(),
-
-      prisma.masterTask.count({
-        where: {
-          weekProgress: { some: {} },
-          NOT: { weekProgress: { some: { completedAt: { not: null } } } },
-        },
-      }),
-
-      prisma.masterTask.count({
-        where: { weekProgress: { some: { completedAt: { not: null } } } },
-      }),
+      prisma.$queryRaw<MasterTaskStatsRow[]>`
+        SELECT
+          COUNT(*)::bigint AS total,
+          COUNT(*) FILTER (
+            WHERE EXISTS (
+              SELECT 1 FROM week_task_progress wtp WHERE wtp."masterTaskId" = mt.id
+            )
+          )::bigint AS "withProgress",
+          COUNT(*) FILTER (
+            WHERE EXISTS (
+              SELECT 1 FROM week_task_progress wtp
+              WHERE wtp."masterTaskId" = mt.id AND wtp."completedAt" IS NOT NULL
+            )
+          )::bigint AS completed
+        FROM master_tasks mt
+      `,
 
       prisma.week.count(),
 
@@ -61,23 +73,11 @@ const getCachedDashboardStats = unstable_cache(
         },
       }),
 
+      // One query covers both upcoming (>= today) and today range. Split client-side.
       prisma.hospitalEvent.findMany({
         where: { deletedAt: null, date: { gte: startOfToday } },
-        take: 5,
+        take: 15,
         orderBy: { date: 'asc' },
-        select: {
-          id: true,
-          name: true,
-          date: true,
-          time: true,
-          status: true,
-          meetingRoom: { select: { name: true } },
-        },
-      }),
-
-      prisma.hospitalEvent.findMany({
-        where: { deletedAt: null, date: { gte: startOfToday, lte: endOfToday } },
-        orderBy: { time: 'asc' },
         select: {
           id: true,
           name: true,
@@ -129,30 +129,38 @@ const getCachedDashboardStats = unstable_cache(
         },
       }),
 
-      // MOUs expiring in next 90 days or already expired (not terminated)
-      (async () => {
-        const today = new Date();
-        const soon = new Date();
-        soon.setDate(soon.getDate() + 90);
-        return prisma.mOU.findMany({
-          where: {
-            deletedAt: null,
-            status: { in: ['ACTIVE', 'EXPIRED'] },
-            expiryDate: { not: null, lte: soon },
-          },
-          take: 5,
-          orderBy: { expiryDate: 'asc' },
-          select: {
-            id: true,
-            title: true,
-            mouNumber: true,
-            partnerName: true,
-            expiryDate: true,
-            status: true,
-          },
-        });
-      })(),
+      prisma.mOU.findMany({
+        where: {
+          deletedAt: null,
+          status: { in: ['ACTIVE', 'EXPIRED'] },
+          expiryDate: { not: null, lte: moUExpirySoon },
+        },
+        take: 5,
+        orderBy: { expiryDate: 'asc' },
+        select: {
+          id: true,
+          title: true,
+          mouNumber: true,
+          partnerName: true,
+          expiryDate: true,
+          status: true,
+        },
+      }),
     ]);
+
+    const masterTaskStats = masterTaskStatsRows[0] ?? {
+      total: BigInt(0),
+      withProgress: BigInt(0),
+      completed: BigInt(0),
+    };
+    const totalMasterTasks = Number(masterTaskStats.total);
+    const tasksCompleted = Number(masterTaskStats.completed);
+    const tasksInProgress = Number(masterTaskStats.withProgress) - tasksCompleted;
+
+    const todayEvents = todayAndUpcomingEvents
+      .filter((e) => e.date >= startOfToday && e.date <= endOfToday)
+      .sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''));
+    const upcomingEvents = todayAndUpcomingEvents.slice(0, 5);
 
     const weekBirthdays = birthdaySecretaries
       .filter((s) => {

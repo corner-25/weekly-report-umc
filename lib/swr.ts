@@ -76,3 +76,16 @@ export function useMasterTasksWithProgress() {
     refreshInterval: 5 * 60 * 1000,
   });
 }
+
+// --- Weeks List ---
+export function useWeeksList(params: { year?: number; search?: string } = {}) {
+  const sp = new URLSearchParams();
+  if (params.year) sp.set('year', String(params.year));
+  if (params.search) sp.set('search', params.search);
+  const qs = sp.toString();
+  return useSWR(qs ? `/api/weeks?${qs}` : '/api/weeks', fetcher, {
+    ...swrConfig,
+    revalidateIfStale: true,
+    keepPreviousData: true,
+  });
+}

@@ -63,25 +63,21 @@ export async function GET(request: Request) {
 
     const weeks = await prisma.week.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        weekNumber: true,
+        year: true,
+        startDate: true,
+        endDate: true,
+        reportFileUrl: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        createdById: true,
         _count: {
           select: {
             taskProgress: true,
             tasks: true, // Keep for backward compatibility
-          },
-        },
-        taskProgress: {
-          include: {
-            masterTask: {
-              include: {
-                department: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
           },
         },
       },
@@ -91,18 +87,29 @@ export async function GET(request: Request) {
       ],
     });
 
-    // Transform to include department count
-    const transformedWeeks = weeks.map((week) => {
-      const departments = new Set(
-        week.taskProgress.map((tp) => tp.masterTask.department.id)
-      );
+    // Count distinct departments per week using a single raw query
+    // instead of pulling every taskProgress row across the wire.
+    const weekIds = weeks.map((w) => w.id);
+    const deptCounts = weekIds.length > 0
+      ? await prisma.$queryRaw<{ weekId: string; deptCount: bigint }[]>`
+          SELECT wtp."weekId" AS "weekId",
+                 COUNT(DISTINCT mt."departmentId") AS "deptCount"
+          FROM week_task_progress wtp
+          JOIN master_tasks mt ON mt.id = wtp."masterTaskId"
+          WHERE wtp."weekId" = ANY(${weekIds}::text[])
+          GROUP BY wtp."weekId"
+        `
+      : [];
 
-      return {
-        ...week,
-        departmentCount: departments.size,
-        taskCount: week._count.taskProgress + week._count.tasks, // Sum both old and new
-      };
-    });
+    const deptCountByWeek = new Map(
+      deptCounts.map((r) => [r.weekId, Number(r.deptCount)])
+    );
+
+    const transformedWeeks = weeks.map((week) => ({
+      ...week,
+      departmentCount: deptCountByWeek.get(week.id) ?? 0,
+      taskCount: week._count.taskProgress + week._count.tasks,
+    }));
 
     return NextResponse.json(transformedWeeks);
   } catch (error) {

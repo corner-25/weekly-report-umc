@@ -50,6 +50,10 @@ COPY --from=builder /app/package.json ./package.json
 # Copy production node_modules (includes Prisma CLI + client with WASM)
 COPY --from=proddeps /app/node_modules ./node_modules
 
+# Ensure Next.js runtime cache dir is writable by the non-root user
+RUN mkdir -p .next/cache/fetch-cache .next/cache/images \
+    && chown -R nextjs:nodejs .next
+
 USER nextjs
 
 EXPOSE 8080
