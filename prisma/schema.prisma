@@ -22,8 +22,28 @@ model User {
   createdAt     DateTime @default(now())
 
   weeks         Week[]
+  chatLogs      ChatbotAuditLog[]
 
   @@map("users")
+}
+
+// ChatbotAuditLog - One row per chatbot exchange, used for cost tracking and abuse review.
+model ChatbotAuditLog {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  question        String   @db.Text
+  generatedSql    String?  @db.Text
+  rowCount        Int?
+  answer          String?  @db.Text
+  totalTokens     Int?
+  durationMs      Int?
+  errorMessage    String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@map("chatbot_audit_logs")
 }
 
 // Week model - represents a weekly report
