@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { prismaRo } from '@/lib/prisma-ro';
+import { getPrismaRo } from '@/lib/prisma-ro';
 import { CHATBOT_SCHEMA_PROMPT } from '@/lib/chatbot/schema-context';
 import { guardSql } from '@/lib/chatbot/sql-guard';
 import { deepseekComplete, deepseekStream, extractSql, type ChatMessage } from '@/lib/chatbot/deepseek';
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
         // Step 2: run the SQL against the readonly client.
         let rows: unknown[] = [];
         try {
-          const raw = await prismaRo.$queryRawUnsafe<unknown[]>(generatedSql);
+          const raw = await getPrismaRo().$queryRawUnsafe<unknown[]>(generatedSql);
           rows = Array.isArray(raw) ? raw : [];
           rowCount = rows.length;
         } catch (queryErr) {

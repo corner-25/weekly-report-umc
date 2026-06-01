@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { Sidebar } from '@/components/Sidebar';
+import { ChatbotFab } from '@/components/chatbot/ChatbotFab';
 
 export default async function DashboardLayout({
   children,
@@ -25,6 +26,8 @@ export default async function DashboardLayout({
           {children}
         </div>
       </main>
+
+      <ChatbotFab />
     </div>
   );
 }
