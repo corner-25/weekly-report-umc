@@ -59,33 +59,61 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 - current_department (text|null)
 - start_date (date|null)
 
-## Quy tắc khi sinh SQL
+## Quy tắc khi sinh SQL (đọc kỹ!)
 
-1. Chỉ dùng SELECT, không bao giờ DROP/DELETE/UPDATE/INSERT/ALTER.
+1. Chỉ dùng SELECT, không bao giờ DROP/DELETE/UPDATE/INSERT/ALTER. Không dùng dấu ; ở cuối.
 2. Luôn thêm LIMIT (mặc định 50, tối đa 200).
-3. Khi tìm theo tên (metric_name, partner_name, task_name…): dùng ILIKE '%từ khoá%' để chấp nhận hoa thường + dấu tiếng Việt khớp 1 phần.
-4. Khi user hỏi "hiện tại / hiện nay / tổng cộng" về chỉ số tích lũy (ca mổ, ca ghép, doanh thu…): LẤY GIÁ TRỊ MỚI NHẤT theo (year, week_number) chứ KHÔNG SUM. Ví dụ:
+3. **ILIKE phải chính xác**: dùng đúng cụm từ user nói. "tổ xe" KHÁC "bãi xe" — KHÔNG dùng ILIKE '%xe%' bắt cả hai. Nếu user gõ "tổ xe" → ILIKE '%tổ xe%' (không tách).
+4. **"Hiện tại / hiện nay / tổng cộng"** về chỉ số tích lũy (ca ghép, doanh thu, lượt khám VIP, lượt xem…): KHÔNG SUM. Lấy giá trị MỚI NHẤT:
    SELECT department_name, metric_name, value, week_number, year
    FROM v_chatbot_metrics
    WHERE metric_name ILIKE '%ghép tim%'
-   ORDER BY year DESC, week_number DESC
-   LIMIT 5;
-5. Khi user hỏi "tăng/giảm so với tuần trước": lấy 2-3 tuần gần nhất, để bước tổng hợp tự so sánh.
-6. Khi không chắc cột nào, ưu tiên department_name + metric_name (cả hai đều text dễ đọc).
-7. Ngày tháng trong câu hỏi tiếng Việt: "tuần này" = tuần ISO hiện tại; "tháng này" = tháng dương lịch.
-8. Trả SQL trong tag <sql>...</sql>, không giải thích.
+   ORDER BY year DESC, week_number DESC LIMIT 5;
+5. **"Tuần này / tuần qua / mới nhất"**: KHÔNG dùng EXTRACT(WEEK FROM CURRENT_DATE) — dữ liệu nhập theo tuần báo cáo, không đồng bộ với tuần hôm nay. Dùng tuần lớn nhất có trong dữ liệu:
+   SELECT task_name, result FROM v_chatbot_tasks
+   WHERE department_name ILIKE '%kế hoạch tổng hợp%'
+     AND (week_number, year) = (SELECT week_number, year FROM v_chatbot_tasks ORDER BY year DESC, week_number DESC LIMIT 1)
+   LIMIT 50;
+6. **MOU/Giấy phép sắp hết hạn**: KHÔNG filter status='ACTIVE' rồi loại EXPIRED — nhiều MOU đã hết hạn (days_until_expiry âm) vẫn cần báo cáo. Dùng:
+   SELECT title, partner_name, expiry_date, days_until_expiry, status
+   FROM v_chatbot_mou
+   WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90
+   ORDER BY days_until_expiry ASC LIMIT 50;
+7. **Tìm theo tên không dấu**: nếu user gõ không dấu ("ghep gan"), vẫn dùng ILIKE '%ghép gan%' với dấu (DB có dấu đầy đủ). Khi câu hỏi mơ hồ → ILIKE từng từ chính, không OR rộng.
+8. **Khi không chắc tên metric chính xác**: tìm trước bằng query phụ — query DISTINCT metric_name LIKE '%từ%' để xem có tên gì, rồi mới lọc.
+9. **Câu hỏi định lượng** ("bao nhiêu", "tổng cộng", "số lượng") về thứ KHÔNG phải tích lũy (ví dụ "có bao nhiêu khách VIP được đón") → lấy GIÁ TRỊ TUẦN MỚI NHẤT (vì value đã là tích lũy hoặc số gần nhất). Tuyệt đối không SUM trừ khi user nói "tổng tất cả các tuần".
+10. **Sự kiện "tuần này / sắp tới"**: dùng event_date >= CURRENT_DATE và <= CURRENT_DATE + interval '7 days'. Nếu không có data thì DB chưa cập nhật, không phải lỗi.
+11. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
 
 ## Ví dụ
 
 Q: Hiện nay có bao nhiêu ca ghép gan?
-<sql>SELECT department_name, metric_name, value, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%ghép gan%' ORDER BY year DESC, week_number DESC LIMIT 3;</sql>
+<sql>SELECT department_name, metric_name, value, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%ghép gan%' ORDER BY year DESC, week_number DESC LIMIT 3</sql>
+
+Q: Có bao nhiêu khách VIP được đón tiếp?
+<sql>SELECT department_name, metric_name, value, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%khách VIP%' ORDER BY year DESC, week_number DESC LIMIT 5</sql>
+
+Q: Doanh thu tổ xe tuần này
+<sql>SELECT department_name, metric_name, value, metric_unit, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%tổ xe%' ORDER BY year DESC, week_number DESC LIMIT 5</sql>
+
+Q: Doanh thu bãi xe các tuần gần đây
+<sql>SELECT department_name, metric_name, value, metric_unit, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%bãi xe%' ORDER BY year DESC, week_number DESC LIMIT 10</sql>
 
 Q: Phòng KHTH tuần 14 có nhiệm vụ gì đã hoàn thành?
-<sql>SELECT task_name, result, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND week_number = 14 AND completed_at IS NOT NULL ORDER BY task_name LIMIT 50;</sql>
+<sql>SELECT task_name, result, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND week_number = 14 AND completed_at IS NOT NULL ORDER BY task_name LIMIT 50</sql>
 
-Q: MOU nào sắp hết hạn trong 60 ngày tới?
-<sql>SELECT title, partner_name, expiry_date, days_until_expiry FROM v_chatbot_mou WHERE status = 'ACTIVE' AND days_until_expiry BETWEEN 0 AND 60 ORDER BY days_until_expiry ASC LIMIT 20;</sql>
+Q: Phòng KHTH làm gì tuần qua / tuần mới nhất?
+<sql>SELECT task_name, result, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND (week_number, year) = (SELECT week_number, year FROM v_chatbot_tasks ORDER BY year DESC, week_number DESC LIMIT 1) LIMIT 50</sql>
+
+Q: MOU nào sắp hết hạn?
+<sql>SELECT title, partner_name, expiry_date, days_until_expiry, status FROM v_chatbot_mou WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>
+
+Q: Giấy phép xe nào sắp hết hạn?
+<sql>SELECT name, license_number, expiry_date, days_until_expiry, category FROM v_chatbot_licenses WHERE category IN ('VEHICLE', 'ADMIN_VEHICLE') AND expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>
 
 Q: Có bao nhiêu thư ký đang hoạt động?
-<sql>SELECT COUNT(*)::int AS active_secretaries FROM v_chatbot_secretaries WHERE status = 'ACTIVE';</sql>
+<sql>SELECT COUNT(*)::int AS active_secretaries FROM v_chatbot_secretaries WHERE status = 'ACTIVE'</sql>
+
+Q: Sự kiện sắp tới trong 7 ngày
+<sql>SELECT name, event_date, event_time, meeting_room, status FROM v_chatbot_events WHERE event_date >= CURRENT_DATE AND event_date <= CURRENT_DATE + INTERVAL '7 days' ORDER BY event_date, event_time LIMIT 50</sql>
 `;

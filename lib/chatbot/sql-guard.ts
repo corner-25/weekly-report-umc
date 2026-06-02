@@ -89,14 +89,23 @@ export function guardSql(rawSql: string): SqlGuardResult {
   }
 
   // Make sure the query only references whitelisted views.
-  // Match `FROM <name>` and `JOIN <name>` clauses and ensure every referenced
-  // identifier starts with v_chatbot_ (subqueries are allowed since they will
-  // recurse through the same FROM/JOIN keywords).
+  // Match `FROM <name>` and `JOIN <name>` clauses. Skip Postgres datetime
+  // keywords that legitimately follow FROM in expressions like
+  // EXTRACT(WEEK FROM CURRENT_DATE) — those are not table references.
+  const SQL_DATETIME_FROM_KEYWORDS = new Set([
+    'current_date',
+    'current_time',
+    'current_timestamp',
+    'now',
+    'localtime',
+    'localtimestamp',
+  ]);
   const referencedTables = Array.from(
     sql.matchAll(/\b(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi),
     (m) => m[1].toLowerCase(),
   );
   for (const ref of referencedTables) {
+    if (SQL_DATETIME_FROM_KEYWORDS.has(ref)) continue;
     if (!ALLOWED_VIEWS.includes(ref)) {
       return { ok: false, sql, error: `Table "${ref}" is not allowed. Use one of: ${ALLOWED_VIEWS.join(', ')}` };
     }

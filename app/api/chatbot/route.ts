@@ -111,18 +111,60 @@ export async function POST(req: Request) {
         send('sql', { sql: generatedSql });
 
         // Step 2: run the SQL against the readonly client.
-        let rows: unknown[] = [];
-        try {
-          const raw = await getPrismaRo().$queryRawUnsafe<unknown[]>(generatedSql);
-          rows = Array.isArray(raw) ? raw : [];
-          rowCount = rows.length;
-        } catch (queryErr) {
-          errorMessage = queryErr instanceof Error ? queryErr.message : 'Query failed';
+        const runSql = async (sql: string): Promise<{ rows: unknown[]; error?: string }> => {
+          try {
+            const raw = await getPrismaRo().$queryRawUnsafe<unknown[]>(sql);
+            return { rows: Array.isArray(raw) ? raw : [] };
+          } catch (e) {
+            return { rows: [], error: e instanceof Error ? e.message : 'Query failed' };
+          }
+        };
+
+        let result = await runSql(generatedSql);
+        if (result.error) {
+          errorMessage = result.error;
           send('answer', { delta: 'Có lỗi khi truy vấn dữ liệu. Bạn thử lại nhé.' });
           send('done', { totalTokens, error: errorMessage });
           return;
         }
 
+        // Auto-retry: if the first query returned no rows, ask the model to
+        // relax the filters (e.g. drop status='ACTIVE', widen ILIKE, etc.)
+        // and try a second SQL. This catches the common case where the model
+        // over-constrains the WHERE clause.
+        if (result.rows.length === 0) {
+          const retryGen = await deepseekComplete(
+            [
+              { role: 'system', content: CHATBOT_SCHEMA_PROMPT },
+              ...historyContext,
+              { role: 'user', content: question },
+              { role: 'assistant', content: sqlGen.content },
+              {
+                role: 'user',
+                content:
+                  `Câu SQL trên trả về 0 dòng. Hãy thử lại với điều kiện rộng hơn — bỏ bớt filter status, mở rộng ILIKE, ` +
+                  `dùng OR thay vì AND khi cần. Trả về SQL mới trong tag <sql>.`,
+              },
+            ],
+            { maxTokens: 400, temperature: 0.1 },
+          );
+          totalTokens += retryGen.usage.total_tokens;
+          const retrySqlRaw = extractSql(retryGen.content);
+          if (retrySqlRaw) {
+            const retryGuard = guardSql(retrySqlRaw);
+            if (retryGuard.ok) {
+              const retryResult = await runSql(retryGuard.sql);
+              if (!retryResult.error && retryResult.rows.length > 0) {
+                generatedSql = retryGuard.sql;
+                send('sql', { sql: generatedSql });
+                result = retryResult;
+              }
+            }
+          }
+        }
+
+        const rows = result.rows;
+        rowCount = rows.length;
         const preview = rows.slice(0, MAX_ROWS_PREVIEW).map(serialize);
         send('rows', { rowCount, preview });
 
