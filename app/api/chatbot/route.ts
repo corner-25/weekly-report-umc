@@ -8,6 +8,7 @@ import { guardSql } from '@/lib/chatbot/sql-guard';
 import { deepseekComplete, deepseekStream, extractSql, type ChatMessage } from '@/lib/chatbot/deepseek';
 import { consumeRateLimit } from '@/lib/chatbot/rate-limit';
 import { scrubPii } from '@/lib/chatbot/pii-filter';
+import { findRelevantMetrics, embeddingsAvailable } from '@/lib/chatbot/embeddings';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -85,8 +86,29 @@ export async function POST(req: Request) {
           .slice(-MAX_HISTORY)
           .map((m): ChatMessage => ({ role: m.role, content: m.content }));
 
+        // Semantic search: find the metric / department combinations whose
+        // names are closest to the question. Falls back to no-op when
+        // embeddings aren't configured.
+        let metricHints = '';
+        if (embeddingsAvailable()) {
+          try {
+            const hits = await findRelevantMetrics(question, 10);
+            const strong = hits.filter((h) => h.score >= 0.45);
+            if (strong.length > 0) {
+              metricHints =
+                '\n\n## Metric có khả năng liên quan đến câu hỏi (sắp xếp theo độ tương đồng):\n' +
+                strong
+                  .map((h) => `- "${h.metric}" thuộc ${h.department} (score ${h.score.toFixed(2)})`)
+                  .join('\n') +
+                '\nƯu tiên dùng đúng tên đầy đủ trong ILIKE để tránh nhầm sang metric khác.';
+            }
+          } catch {
+            // Embedding failure is non-fatal; we just lose the hint.
+          }
+        }
+
         const sqlMessages: ChatMessage[] = [
-          { role: 'system', content: CHATBOT_SCHEMA_PROMPT },
+          { role: 'system', content: CHATBOT_SCHEMA_PROMPT + metricHints },
           ...historyContext,
           { role: 'user', content: question },
         ];
