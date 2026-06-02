@@ -25,7 +25,7 @@ let cache: CachedEmbeddings | null = null;
 // -----------------------------------------------------------------------------
 
 const OPENAI_MODEL = 'text-embedding-3-small';
-const GEMINI_MODEL = 'text-embedding-004';
+const GEMINI_MODEL = 'gemini-embedding-001';
 
 function getProvider(): 'openai' | 'gemini' | null {
   if (process.env.OPENAI_API_KEY) return 'openai';
@@ -49,16 +49,22 @@ async function embedOpenAi(inputs: string[]): Promise<number[][]> {
 
 async function embedGemini(inputs: string[]): Promise<number[][]> {
   // Gemini's embedding API accepts one input at a time but is fast.
-  // Limit concurrency to be polite.
+  // Authenticated via the X-goog-api-key header (works for both AIza* and
+  // AQ.* style keys).
   const out: number[][] = [];
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:embedContent?key=${process.env.GOOGLE_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:embedContent`;
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) throw new Error('GOOGLE_API_KEY is not configured');
   for (const input of inputs) {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-goog-api-key': apiKey,
+      },
       body: JSON.stringify({ content: { parts: [{ text: input }] } }),
     });
-    if (!res.ok) throw new Error(`Gemini embed ${res.status}: ${await res.text()}`);
+    if (!res.ok) throw new Error(`Gemini embed ${res.status}: ${(await res.text()).slice(0, 200)}`);
     const json = (await res.json()) as { embedding: { values: number[] } };
     out.push(json.embedding.values);
   }
