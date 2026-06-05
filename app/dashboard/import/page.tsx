@@ -241,6 +241,22 @@ export default function ImportPage() {
     <div className="max-w-7xl mx-auto">
       <PageHeader icon={Upload} title="Import Dữ Liệu Tuần" description="Nhập dữ liệu từ file Excel" className="mb-6" />
 
+      <a
+        href="/dashboard/import/ai"
+        className="mb-6 flex items-center justify-between gap-3 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-xl hover:shadow-md transition-shadow group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+          </div>
+          <div>
+            <div className="font-semibold text-slate-900">Mới: Nhập bằng AI (DeepSeek)</div>
+            <div className="text-sm text-slate-600">Upload Excel — AI tự đọc, match nhiệm vụ và chỉ số, bạn chỉ review rồi lưu</div>
+          </div>
+        </div>
+        <div className="text-cyan-600 group-hover:translate-x-1 transition-transform">→</div>
+      </a>
+
       {/* Steps indicator */}
       <div className="flex items-center mb-8">
         {(['upload', 'preview', 'submit'] as Step[]).map((s, i) => (
