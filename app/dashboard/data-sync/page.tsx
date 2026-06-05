@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { AiReportImportPanel } from './AiReportImportPanel';
 
 interface UploadSummary {
   totalRows: number;
@@ -17,9 +18,11 @@ export default function DataSyncPage() {
       <div>
         <h1 className="text-xl font-bold text-slate-900">Quản lý Đồng bộ Dữ liệu</h1>
         <p className="text-xs text-slate-400 mt-0.5">
-          Upload file Excel / Kiểm tra dữ liệu GitHub cho các dashboard native
+          Upload báo cáo tuần bằng AI / Đồng bộ dữ liệu cho các dashboard native
         </p>
       </div>
+
+      <AiReportImportPanel />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <HcUploadPanel />
