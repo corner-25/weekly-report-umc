@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Sparkles, CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet, RefreshCw, Plus, Check } from 'lucide-react';
 
 interface AiTask { masterTaskId: string; taskName: string; result: string; confidence: number }
 interface AiMetric { metricId: string; metricName: string; value: number | null; note: string | null; confidence: number }
@@ -54,6 +54,11 @@ export function AiReportImportPanel() {
   const [excludedTasks, setExcludedTasks] = useState<Set<string>>(new Set());
   const [excludedMetrics, setExcludedMetrics] = useState<Set<string>>(new Set());
 
+  // Per-dept ephemeral state for retry / add-to-DB actions
+  const [retryingDeptIds, setRetryingDeptIds] = useState<Set<string>>(new Set());
+  const [addingDeptIds, setAddingDeptIds] = useState<Set<string>>(new Set());
+  const [failedDepts, setFailedDepts] = useState<Array<{ sheetName: string; departmentId?: string; departmentName?: string; reason: string }>>([]);
+
   function toggleTask(deptId: string, masterTaskId: string) {
     const key = `${deptId}|${masterTaskId}`;
     setExcludedTasks((s) => {
@@ -80,6 +85,7 @@ export function AiReportImportPanel() {
     setPhase('parsing');
     setProgressEvents([]);
     setResults([]);
+    setFailedDepts([]);
 
     const form = new FormData();
     form.append('file', file);
@@ -116,7 +122,18 @@ export function AiReportImportPanel() {
         try {
           const obj = JSON.parse(data);
           if (lastEvent === 'progress') {
-            setProgressEvents((prev) => [...prev, obj as ProgressEvent]);
+            const pe = obj as ProgressEvent;
+            setProgressEvents((prev) => [...prev, pe]);
+            if (pe.status === 'error' || pe.status === 'skipped') {
+              setFailedDepts((prev) => [
+                ...prev,
+                {
+                  sheetName: pe.deptName,
+                  departmentName: pe.deptName,
+                  reason: pe.error || pe.reason || 'unknown',
+                },
+              ]);
+            }
           } else if (lastEvent === 'complete') {
             setResults(obj.results as DeptResult[]);
             setPhase('review');
@@ -128,6 +145,84 @@ export function AiReportImportPanel() {
           /* ignore */
         }
       }
+    }
+  }
+
+  async function retryDept(sheetName: string, departmentId?: string) {
+    if (!file || !weekNumber || !year) return;
+    const key = departmentId ?? sheetName;
+    setRetryingDeptIds((s) => new Set(s).add(key));
+    try {
+      // If departmentId is missing (skipped case), we cannot retry without it
+      if (!departmentId) {
+        setErrorMsg(`Không thể thử lại "${sheetName}" — không tìm thấy phòng tương ứng trong DB. Hãy tạo phòng trước.`);
+        return;
+      }
+      const form = new FormData();
+      form.append('file', file);
+      form.append('weekNumber', String(weekNumber));
+      form.append('year', String(year));
+      form.append('sheetDeptName', sheetName);
+      form.append('departmentId', departmentId);
+
+      const res = await fetch('/api/import/ai-match-dept', { method: 'POST', body: form });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({ error: `Lỗi ${res.status}` }));
+        setErrorMsg(j.error || `Lỗi ${res.status}`);
+        return;
+      }
+      const dr = (await res.json()) as DeptResult;
+      // Remove this dept from failedDepts and merge into results.
+      setFailedDepts((prev) => prev.filter((f) => (f.departmentId ?? f.sheetName) !== key));
+      setResults((prev) => {
+        const without = prev.filter((r) => r.departmentId !== dr.departmentId);
+        return [...without, dr];
+      });
+      // If we're still in matching phase but everything done, jump to review.
+      // Otherwise stay in current phase (review or matching).
+      if (phase === 'matching' || phase === 'error') setPhase('review');
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Lỗi');
+    } finally {
+      setRetryingDeptIds((s) => {
+        const next = new Set(s);
+        next.delete(key);
+        return next;
+      });
+    }
+  }
+
+  async function addNewTasksToDb(departmentId: string, names: string[]) {
+    if (names.length === 0) return;
+    setAddingDeptIds((s) => new Set(s).add(departmentId));
+    try {
+      const res = await fetch('/api/master-tasks/bulk-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ departmentId, names }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({ error: `Lỗi ${res.status}` }));
+        setErrorMsg(j.error || `Lỗi ${res.status}`);
+        return;
+      }
+      // Drop the added newTasks from the dept result so user sees they're done.
+      const addedNames = new Set(names);
+      setResults((prev) =>
+        prev.map((r) =>
+          r.departmentId === departmentId
+            ? { ...r, newTasks: r.newTasks.filter((nt) => !addedNames.has(nt.taskName)) }
+            : r,
+        ),
+      );
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Lỗi');
+    } finally {
+      setAddingDeptIds((s) => {
+        const next = new Set(s);
+        next.delete(departmentId);
+        return next;
+      });
     }
   }
 
@@ -307,6 +402,41 @@ export function AiReportImportPanel() {
 
         {phase === 'review' && (
           <div className="space-y-3">
+            {failedDepts.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <h3 className="font-semibold text-amber-900 text-sm">
+                    {failedDepts.length} phòng chưa phân tích được — thử lại?
+                  </h3>
+                </div>
+                <ul className="space-y-1.5">
+                  {failedDepts.map((fd, i) => {
+                    const key = fd.departmentId ?? fd.sheetName;
+                    const isRetrying = retryingDeptIds.has(key);
+                    // Try to resolve departmentId from results history or progressEvents
+                    const matchingResult = results.find((r) => r.departmentName === fd.sheetName);
+                    const deptId = fd.departmentId ?? matchingResult?.departmentId;
+                    return (
+                      <li key={i} className="flex items-center justify-between gap-2 bg-white border border-amber-100 rounded-md px-3 py-1.5">
+                        <div className="min-w-0">
+                          <div className="text-xs font-medium text-slate-900 truncate">{fd.sheetName}</div>
+                          <div className="text-[11px] text-amber-700 truncate">{fd.reason}</div>
+                        </div>
+                        <button
+                          onClick={() => retryDept(fd.sheetName, deptId)}
+                          disabled={isRetrying}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-100 border border-amber-200 rounded-md hover:bg-amber-200 disabled:opacity-50"
+                        >
+                          {isRetrying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                          Thử lại
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
             <div className="flex items-center justify-between bg-violet-50 border border-violet-200 rounded-lg p-3">
               <div>
                 <h3 className="font-semibold text-violet-900 text-sm">Phân tích xong — Xem lại trước khi lưu</h3>
@@ -330,15 +460,29 @@ export function AiReportImportPanel() {
               </div>
             </div>
             <div className="max-h-[600px] overflow-y-auto space-y-2.5">
-              {results.map((dr) => (
+              {results.map((dr) => {
+                const isRetrying = retryingDeptIds.has(dr.departmentId);
+                const isAdding = addingDeptIds.has(dr.departmentId);
+                return (
                 <div key={dr.departmentId} className="border border-slate-200 rounded-lg overflow-hidden">
-                  <div className="px-4 py-2 bg-slate-50 border-b border-slate-200">
-                    <div className="font-semibold text-slate-900 text-sm">{dr.departmentName}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {dr.tasks.length}/{dr.masterTaskCount} nhiệm vụ · {dr.metrics.length}/{dr.metricDefCount} chỉ số
-                      {dr.newTasks.length > 0 && <> · <span className="text-violet-600">{dr.newTasks.length} task mới</span></>}
-                      {dr.dormantTasks.length > 0 && <> · <span className="text-slate-500">{dr.dormantTasks.length} không hoạt động</span></>}
+                  <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-900 text-sm truncate">{dr.departmentName}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {dr.tasks.length}/{dr.masterTaskCount} nhiệm vụ · {dr.metrics.length}/{dr.metricDefCount} chỉ số
+                        {dr.newTasks.length > 0 && <> · <span className="text-violet-600">{dr.newTasks.length} task mới</span></>}
+                        {dr.dormantTasks.length > 0 && <> · <span className="text-slate-500">{dr.dormantTasks.length} không hoạt động</span></>}
+                      </div>
                     </div>
+                    <button
+                      onClick={() => retryDept(dr.departmentName, dr.departmentId)}
+                      disabled={isRetrying}
+                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
+                      title="Chạy lại AI cho phòng này"
+                    >
+                      {isRetrying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                      Chạy lại
+                    </button>
                   </div>
                   <div className="px-4 py-2.5 space-y-2">
                     {dr.metrics.length > 0 && (
@@ -388,22 +532,52 @@ export function AiReportImportPanel() {
                       </details>
                     )}
                     {dr.newTasks.length > 0 && (
-                      <details className="text-sm">
-                        <summary className="cursor-pointer font-medium text-violet-700 text-xs">🆕 Task mới đề xuất ({dr.newTasks.length})</summary>
+                      <details className="text-sm" open>
+                        <summary className="cursor-pointer font-medium text-violet-700 text-xs flex items-center justify-between">
+                          <span>🆕 Task mới đề xuất ({dr.newTasks.length})</span>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              addNewTasksToDb(
+                                dr.departmentId,
+                                dr.newTasks.map((nt) => nt.taskName),
+                              );
+                            }}
+                            disabled={isAdding}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-white bg-violet-600 rounded-md hover:bg-violet-700 disabled:opacity-50"
+                          >
+                            {isAdding ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
+                            Thêm tất cả vào DB
+                          </button>
+                        </summary>
                         <ul className="mt-1.5 space-y-1 pl-2 text-xs text-slate-600">
                           {dr.newTasks.map((nt, i) => (
-                            <li key={i}>
-                              <span className="font-medium text-violet-700">{nt.taskName}</span>
-                              {nt.result && <span className="text-slate-500"> — {nt.result.slice(0, 150)}</span>}
+                            <li key={i} className="flex items-start justify-between gap-2 py-0.5">
+                              <div className="min-w-0 flex-1">
+                                <span className="font-medium text-violet-700">{nt.taskName}</span>
+                                {nt.result && <span className="text-slate-500"> — {nt.result.slice(0, 150)}</span>}
+                              </div>
+                              <button
+                                onClick={() => addNewTasksToDb(dr.departmentId, [nt.taskName])}
+                                disabled={isAdding}
+                                className="shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 border border-violet-200 rounded hover:bg-violet-50 disabled:opacity-50"
+                                title="Thêm task này vào DB"
+                              >
+                                <Plus className="w-2.5 h-2.5" />
+                                Thêm
+                              </button>
                             </li>
                           ))}
                         </ul>
-                        <p className="text-[11px] text-slate-400 mt-1 pl-2">Các task mới KHÔNG được lưu — bạn tự thêm vào DB nếu muốn track.</p>
+                        <p className="text-[11px] text-slate-400 mt-1 pl-2">
+                          Sau khi thêm vào DB, các task này sẽ có sẵn để chọn từ tuần sau. Chạy lại phòng để map dữ liệu tuần này vào task vừa tạo.
+                        </p>
                       </details>
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
