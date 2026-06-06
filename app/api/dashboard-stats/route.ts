@@ -4,6 +4,7 @@ import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { CACHE_TAGS } from '@/lib/cache';
+import { getMasterTaskStatusCounts } from '@/lib/master-task-status';
 
 // Server-side cache: revalidate every 2 minutes
 const getCachedDashboardStats = unstable_cache(
@@ -16,19 +17,11 @@ const getCachedDashboardStats = unstable_cache(
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    // Master task status: 1 raw query instead of 3 separate counts.
-    // Buckets: total, withProgress (any week_progress row), completed (any completedAt).
-    type MasterTaskStatsRow = {
-      total: bigint;
-      withProgress: bigint;
-      completed: bigint;
-    };
-
     const moUExpirySoon = new Date();
     moUExpirySoon.setDate(moUExpirySoon.getDate() + 90);
 
     const [
-      masterTaskStatsRows,
+      masterTaskStatusCounts,
       totalWeeks,
       recentWeeks,
       todayAndUpcomingEvents,
@@ -40,22 +33,7 @@ const getCachedDashboardStats = unstable_cache(
       recentTransfers,
       expiringMOUs,
     ] = await Promise.all([
-      prisma.$queryRaw<MasterTaskStatsRow[]>`
-        SELECT
-          COUNT(*)::bigint AS total,
-          COUNT(*) FILTER (
-            WHERE EXISTS (
-              SELECT 1 FROM week_task_progress wtp WHERE wtp."masterTaskId" = mt.id
-            )
-          )::bigint AS "withProgress",
-          COUNT(*) FILTER (
-            WHERE EXISTS (
-              SELECT 1 FROM week_task_progress wtp
-              WHERE wtp."masterTaskId" = mt.id AND wtp."completedAt" IS NOT NULL
-            )
-          )::bigint AS completed
-        FROM master_tasks mt
-      `,
+      getMasterTaskStatusCounts(),
 
       prisma.week.count(),
 
@@ -148,14 +126,9 @@ const getCachedDashboardStats = unstable_cache(
       }),
     ]);
 
-    const masterTaskStats = masterTaskStatsRows[0] ?? {
-      total: BigInt(0),
-      withProgress: BigInt(0),
-      completed: BigInt(0),
-    };
-    const totalMasterTasks = Number(masterTaskStats.total);
-    const tasksCompleted = Number(masterTaskStats.completed);
-    const tasksInProgress = Number(masterTaskStats.withProgress) - tasksCompleted;
+    const totalMasterTasks = masterTaskStatusCounts.total;
+    const tasksInProgress = masterTaskStatusCounts.inProgress;
+    const tasksCompleted = masterTaskStatusCounts.completed;
 
     const todayEvents = todayAndUpcomingEvents
       .filter((e) => e.date >= startOfToday && e.date <= endOfToday)

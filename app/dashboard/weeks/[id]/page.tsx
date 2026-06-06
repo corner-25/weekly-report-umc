@@ -407,18 +407,6 @@ function TaskCard({ task, showDept }: {
                   <Clock className="w-3 h-3" /> {task.timePeriod}
                 </span>
               )}
-              {progress !== null && progress !== undefined && (
-                <span className="inline-flex items-center gap-1">
-                  {isDone ? (
-                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                  ) : (
-                    <CircleDot className="w-3 h-3 text-cyan-500" />
-                  )}
-                  <span className={isDone ? 'text-emerald-600 font-medium' : ''}>
-                    {progress}%
-                  </span>
-                </span>
-              )}
             </div>
 
             {desc && (
@@ -427,16 +415,6 @@ function TaskCard({ task, showDept }: {
           </div>
         </div>
 
-        {progress !== null && progress !== undefined && (
-          <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${
-                isDone ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'
-              }`}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        )}
 
         <div className="mt-3">
           <Block icon={Target} label="Kết quả" tone="slate">

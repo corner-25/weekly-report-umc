@@ -22,14 +22,14 @@ interface MasterTask {
   startDate: string | null;
   endDate: string | null;
   department: Department;
-  latestProgress: number;
   isCompleted: boolean;
+  status: 'IN_PROGRESS' | 'COMPLETED';
   weekCount: number;
   createdAt: string;
 }
 
-type StatusKey = 'all' | 'inProgress' | 'completed' | 'notStarted';
-type SortKey = 'recent' | 'progress' | 'name' | 'weeks';
+type StatusKey = 'all' | 'inProgress' | 'completed';
+type SortKey = 'recent' | 'name' | 'weeks';
 type SortDir = 'asc' | 'desc';
 type ViewMode = 'grid' | 'list';
 
@@ -58,15 +58,12 @@ function initials(name: string) {
 }
 
 function statusOf(task: MasterTask): Exclude<StatusKey, 'all'> {
-  if (task.isCompleted) return 'completed';
-  if (task.weekCount > 0) return 'inProgress';
-  return 'notStarted';
+  return task.status === 'COMPLETED' ? 'completed' : 'inProgress';
 }
 
 const STATUS_META: Record<Exclude<StatusKey, 'all'>, { label: string; dot: string; text: string; bg: string; ring: string; accent: string }> = {
-  inProgress: { label: 'Đang làm', dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', ring: 'ring-blue-200', accent: 'border-l-blue-500' },
-  completed: { label: 'Hoàn thành', dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-200', accent: 'border-l-emerald-500' },
-  notStarted: { label: 'Chưa bắt đầu', dot: 'bg-slate-400', text: 'text-slate-600', bg: 'bg-slate-100', ring: 'ring-slate-200', accent: 'border-l-slate-300' },
+  inProgress: { label: 'Đang thực hiện', dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', ring: 'ring-blue-200', accent: 'border-l-blue-500' },
+  completed: { label: 'Đã hoàn thành', dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-200', accent: 'border-l-emerald-500' },
 };
 
 function fmtDate(d: string | null | undefined) {
@@ -209,7 +206,7 @@ export default function MasterTasksPage() {
   };
 
   const counts = useMemo(() => {
-    const c = { all: tasks.length, inProgress: 0, completed: 0, notStarted: 0 };
+    const c = { all: tasks.length, inProgress: 0, completed: 0 };
     for (const t of tasks) {
       const s = statusOf(t);
       c[s]++;
@@ -228,7 +225,6 @@ export default function MasterTasksPage() {
     list = [...list].sort((a, b) => {
       switch (sortKey) {
         case 'name': return a.name.localeCompare(b.name, 'vi') * dir;
-        case 'progress': return (a.latestProgress - b.latestProgress) * dir;
         case 'weeks': return (a.weekCount - b.weekCount) * dir;
         case 'recent':
         default: return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * dir;
@@ -278,26 +274,21 @@ export default function MasterTasksPage() {
       />
 
       {/* Summary strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <StatCard
           label="Tổng nhiệm vụ" value={counts.all} icon={ClipboardCheck}
           accent="from-cyan-500 to-blue-600" active={statusFilter === 'all'}
           onClick={() => setStatusFilter('all')}
         />
         <StatCard
-          label="Đang làm" value={counts.inProgress} icon={PlayCircle}
+          label="Đang thực hiện" value={counts.inProgress} icon={PlayCircle}
           accent="from-blue-500 to-indigo-600" active={statusFilter === 'inProgress'}
           onClick={() => setStatusFilter(statusFilter === 'inProgress' ? 'all' : 'inProgress')}
         />
         <StatCard
-          label="Hoàn thành" value={counts.completed} icon={CheckCircle2}
+          label="Đã hoàn thành" value={counts.completed} icon={CheckCircle2}
           accent="from-emerald-500 to-teal-600" active={statusFilter === 'completed'}
           onClick={() => setStatusFilter(statusFilter === 'completed' ? 'all' : 'completed')}
-        />
-        <StatCard
-          label="Chưa bắt đầu" value={counts.notStarted} icon={Circle}
-          accent="from-slate-400 to-slate-600" active={statusFilter === 'notStarted'}
-          onClick={() => setStatusFilter(statusFilter === 'notStarted' ? 'all' : 'notStarted')}
         />
       </div>
 
@@ -356,7 +347,6 @@ export default function MasterTasksPage() {
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-xs text-slate-500 font-medium">Sắp xếp:</span>
         <SortChip label="Mới nhất" active={sortKey === 'recent'} dir={sortDir} onClick={() => toggleSort('recent')} />
-        <SortChip label="Tiến độ" active={sortKey === 'progress'} dir={sortDir} onClick={() => toggleSort('progress')} />
         <SortChip label="Tên" active={sortKey === 'name'} dir={sortDir} onClick={() => toggleSort('name')} />
         <SortChip label="Số tuần" active={sortKey === 'weeks'} dir={sortDir} onClick={() => toggleSort('weeks')} />
         <div className="flex-1" />
@@ -579,10 +569,7 @@ export default function MasterTasksPage() {
               ) : (
                 <div className="relative pl-6 before:absolute before:left-[11px] before:top-1 before:bottom-1 before:w-px before:bg-slate-200">
                   {selectedTaskHistory.weekProgress.map((p: any) => {
-                    const dotColor =
-                      p.completedAt ? 'bg-emerald-500 ring-emerald-100'
-                      : p.progress >= 50 ? 'bg-blue-500 ring-blue-100'
-                      : 'bg-amber-500 ring-amber-100';
+                    const dotColor = p.completedAt ? 'bg-emerald-500 ring-emerald-100' : 'bg-blue-500 ring-blue-100';
                     return (
                       <div key={p.id} className="relative mb-4 last:mb-0">
                         <div className={`absolute -left-[22px] top-2 w-3 h-3 rounded-full ring-4 ${dotColor}`} />
@@ -607,15 +594,6 @@ export default function MasterTasksPage() {
                               <div className="text-xs text-slate-500 mt-0.5">
                                 {fmtDate(p.week.startDate)} – {fmtDate(p.week.endDate)}
                               </div>
-                            </div>
-                            <div className="shrink-0 flex items-center gap-2">
-                              <div className="w-20 bg-slate-200 rounded-full h-1.5">
-                                <div
-                                  className={`h-1.5 rounded-full ${p.progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}
-                                  style={{ width: `${p.progress}%` }}
-                                />
-                              </div>
-                              <span className="text-xs font-semibold text-slate-700 tabular-nums">{p.progress}%</span>
                             </div>
                           </div>
                           <div className="text-xs text-slate-700 space-y-1 mt-2 pt-2 border-t border-slate-100">
@@ -733,15 +711,7 @@ function TaskCard({
           <p className="text-xs text-slate-500 line-clamp-2 mb-3">{task.description}</p>
         )}
 
-        <div className="mb-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">Tiến độ</span>
-            <span className="text-xs font-semibold text-slate-700 tabular-nums">{task.latestProgress}%</span>
-          </div>
-          <ProgressBar value={task.latestProgress} />
-        </div>
-
-        <div className="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">
+        <div className="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap mb-3">
           <span className="inline-flex items-center gap-1">
             <Calendar className="w-3 h-3 text-slate-400" />
             {task.weekCount}{plannedWeeks ? ` / ${plannedWeeks}` : ''} tuần
@@ -814,10 +784,6 @@ function TaskRow({
             <span className="hidden lg:inline">{fmtDate(task.startDate)} – {fmtDate(task.endDate)}</span>
           )}
         </div>
-      </div>
-      <div className="hidden md:flex items-center gap-2 w-40 shrink-0">
-        <ProgressBar value={task.latestProgress} small />
-        <span className="text-xs font-semibold text-slate-700 tabular-nums w-9 text-right">{task.latestProgress}%</span>
       </div>
       <div className="flex items-center gap-0.5 shrink-0">
         <button

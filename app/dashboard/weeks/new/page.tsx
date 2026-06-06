@@ -605,7 +605,7 @@ export default function NewWeekReport() {
                     <option value="">-- Chọn nhiệm vụ --</option>
                     {availableTasks.map((mt) => (
                       <option key={mt.id} value={mt.id}>
-                        {mt.name} {mt.progressType === 'RECURRING' ? '(Thường quy)' : `(Tích lũy - ${mt.latestProgress}%)`}
+                        {mt.name}
                       </option>
                     ))}
                   </select>
@@ -631,11 +631,6 @@ export default function NewWeekReport() {
                         </div>
                         {masterTask?.description && (
                           <p className="text-xs text-slate-600 mt-1">{masterTask.description}</p>
-                        )}
-                        {masterTask?.progressType === 'CUMULATIVE' && masterTask.latestProgress > 0 && (
-                          <p className="text-xs text-blue-600 mt-1">
-                            Tiến độ tuần trước: {masterTask.latestProgress}%
-                          </p>
                         )}
                       </div>
                       <div className="flex gap-2">
@@ -696,32 +691,6 @@ export default function NewWeekReport() {
                             className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                             required
                           />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={tp.progress ?? ''}
-                            onChange={(e) =>
-                              updateTaskProgress(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
-                            }
-                            placeholder="Bỏ trống nếu không có tiến độ"
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-                          />
-                          {tp.progress === 100 && (
-                            <p className="text-xs text-emerald-600 mt-1">
-                              ✓ Nhiệm vụ sẽ được đánh dấu hoàn thành
-                            </p>
-                          )}
-                          {tp.progress === null && (
-                            <p className="text-xs text-slate-500 mt-1">
-                              Nhiệm vụ không có tiến độ định lượng
-                            </p>
-                          )}
                         </div>
                       </div>
 
@@ -818,22 +787,6 @@ export default function NewWeekReport() {
                           placeholder="VD: 15-19/10"
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={task.progress ?? ''}
-                          onChange={(e) =>
-                            updateAdHocTask(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
-                          }
-                          placeholder="Bỏ trống nếu không có tiến độ"
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         />
                       </div>
                     </div>

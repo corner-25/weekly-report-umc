@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
+import { getActivityWindow, classifyMasterTask, type MasterTaskStatus } from '@/lib/master-task-status';
 
 const masterTaskSchema = z.object({
   departmentId: z.string(),
@@ -65,11 +66,9 @@ export async function GET(request: Request) {
                 progress: true,
                 completedAt: true,
                 weekId: true,
+                week: { select: { weekNumber: true, year: true } },
               },
-              orderBy: {
-                createdAt: 'desc',
-              },
-              take: 1, // Lấy progress mới nhất
+              orderBy: { createdAt: 'desc' },
             },
         _count: {
           select: {
@@ -82,16 +81,25 @@ export async function GET(request: Request) {
       },
     });
 
-    // Transform để thêm latest progress
+    // Compute activity window once for status classification.
+    const { weeks: windowWeeks } = await getActivityWindow();
+
+    // Transform để thêm status (in_progress | completed) theo quy luật 4 tuần.
     const transformed = masterTasks.map((task) => {
       const latestWeekProgress = includeProgress && task.weekProgress.length > 0
         ? task.weekProgress[task.weekProgress.length - 1]
         : task.weekProgress[0];
 
+      const taskWeekKeys = (task.weekProgress as Array<{ week?: { weekNumber: number; year: number } | null }>)
+        .map((wp) => wp.week)
+        .filter((w): w is { weekNumber: number; year: number } => Boolean(w));
+      const status: MasterTaskStatus = classifyMasterTask({ weekKeys: windowWeeks, taskWeekKeys });
+
       const baseData = {
         ...task,
-        latestProgress: latestWeekProgress?.progress ?? 0, // Use 0 if null or undefined
-        isCompleted: latestWeekProgress?.completedAt !== null && latestWeekProgress !== undefined,
+        latestProgress: latestWeekProgress?.progress ?? 0, // Deprecated, kept for back-compat
+        isCompleted: status === 'COMPLETED',
+        status,
         weekCount: task._count.weekProgress,
       };
 

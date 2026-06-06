@@ -626,7 +626,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                     <option value="">-- Chọn nhiệm vụ --</option>
                     {availableTasks.map((mt) => (
                       <option key={mt.id} value={mt.id}>
-                        {mt.name} (Tiến độ tuần trước: {mt.latestProgress}%)
+                        {mt.name}
                       </option>
                     ))}
                   </select>
@@ -699,22 +699,6 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                             required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={tp.progress ?? ''}
-                            onChange={(e) =>
-                              updateTaskProgress(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
-                            }
-                            placeholder="Bỏ trống nếu không có tiến độ"
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           />
                         </div>
                       </div>
@@ -810,22 +794,6 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                           required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Tiến độ (%) <span className="text-slate-400 text-xs font-normal">(Tùy chọn)</span>
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={task.progress ?? ''}
-                          onChange={(e) =>
-                            updateAdHocTask(deptData.departmentId, index, 'progress', e.target.value ? parseInt(e.target.value) : null)
-                          }
-                          placeholder="Bỏ trống nếu không có tiến độ"
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                         />
                       </div>
                     </div>
