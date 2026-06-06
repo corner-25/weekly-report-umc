@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Sparkles, CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet, RefreshCw, Plus, Check } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Sparkles, CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet, RefreshCw, Plus, Database, Trash2 } from 'lucide-react';
+import { computeFileHash, loadCache, saveResultsToCache, clearCache, listCachedDepartments } from '@/lib/chatbot/ai-import-cache';
 
 interface AiTask { masterTaskId: string; taskName: string; result: string; confidence: number }
 interface AiMetric { metricId: string; metricName: string; value: number | null; note: string | null; confidence: number }
@@ -59,6 +60,33 @@ export function AiReportImportPanel() {
   const [addingDeptIds, setAddingDeptIds] = useState<Set<string>>(new Set());
   const [failedDepts, setFailedDepts] = useState<Array<{ sheetName: string; departmentId?: string; departmentName?: string; reason: string }>>([]);
 
+  // Cache state
+  const [fileHash, setFileHash] = useState<string>('');
+  const [cachedSheetNames, setCachedSheetNames] = useState<string[]>([]); // sheetNames already in cache for current hash+week+year
+  const [cachedDeptCount, setCachedDeptCount] = useState<number>(0);
+  const [freshDeptIds, setFreshDeptIds] = useState<Set<string>>(new Set()); // dept ids newly parsed this session
+
+  // Recompute hash + load cache whenever file/week/year changes
+  useEffect(() => {
+    let cancelled = false;
+    if (!file || !weekNumber || !year) {
+      setFileHash('');
+      setCachedSheetNames([]);
+      setCachedDeptCount(0);
+      return;
+    }
+    (async () => {
+      const hash = await computeFileHash(file);
+      if (cancelled) return;
+      setFileHash(hash);
+      const entry = loadCache(hash, weekNumber, year);
+      const cached = listCachedDepartments(entry);
+      setCachedSheetNames(cached.map((c) => c.sheetName));
+      setCachedDeptCount(cached.length);
+    })();
+    return () => { cancelled = true; };
+  }, [file, weekNumber, year]);
+
   function toggleTask(deptId: string, masterTaskId: string) {
     const key = `${deptId}|${masterTaskId}`;
     setExcludedTasks((s) => {
@@ -84,13 +112,22 @@ export function AiReportImportPanel() {
     setErrorMsg('');
     setPhase('parsing');
     setProgressEvents([]);
-    setResults([]);
     setFailedDepts([]);
+    setFreshDeptIds(new Set());
+
+    // Seed results from cache so user sees them while we process the rest.
+    const cacheEntry = loadCache(fileHash, weekNumber, year);
+    const seeded = listCachedDepartments(cacheEntry);
+    setResults(seeded);
 
     const form = new FormData();
     form.append('file', file);
     form.append('weekNumber', String(weekNumber));
     form.append('year', String(year));
+    if (seeded.length > 0) {
+      // Tell the API to skip these sheet names entirely.
+      form.append('skipSheets', seeded.map((s) => s.sheetName).join('\n'));
+    }
 
     const res = await fetch('/api/import/ai-match', { method: 'POST', body: form });
     if (!res.ok || !res.body) {
@@ -135,7 +172,24 @@ export function AiReportImportPanel() {
               ]);
             }
           } else if (lastEvent === 'complete') {
-            setResults(obj.results as DeptResult[]);
+            const freshResults = obj.results as DeptResult[];
+            setFreshDeptIds(new Set(freshResults.map((r) => r.departmentId)));
+            // Merge fresh with whatever cache had: fresh overrides cache for same dept.
+            setResults((prev) => {
+              const byId = new Map<string, DeptResult>();
+              for (const r of prev) byId.set(r.departmentId, r);
+              for (const r of freshResults) byId.set(r.departmentId, r);
+              return Array.from(byId.values());
+            });
+            // Persist cache (fresh adds, cache for skipped already there).
+            if (fileHash && file) {
+              saveResultsToCache(fileHash, file.name, weekNumber, year, freshResults);
+              // Refresh cache state for the UI counter
+              const entry = loadCache(fileHash, weekNumber, year);
+              const cached = listCachedDepartments(entry);
+              setCachedSheetNames(cached.map((c) => c.sheetName));
+              setCachedDeptCount(cached.length);
+            }
             setPhase('review');
           } else if (lastEvent === 'error') {
             setErrorMsg(obj.error || 'Lỗi');
@@ -178,6 +232,15 @@ export function AiReportImportPanel() {
         const without = prev.filter((r) => r.departmentId !== dr.departmentId);
         return [...without, dr];
       });
+      setFreshDeptIds((s) => new Set(s).add(dr.departmentId));
+      // Overwrite cache for this dept.
+      if (fileHash && file) {
+        saveResultsToCache(fileHash, file.name, weekNumber, year, [dr]);
+        const entry = loadCache(fileHash, weekNumber, year);
+        const cached = listCachedDepartments(entry);
+        setCachedSheetNames(cached.map((c) => c.sheetName));
+        setCachedDeptCount(cached.length);
+      }
       // If we're still in matching phase but everything done, jump to review.
       // Otherwise stay in current phase (review or matching).
       if (phase === 'matching' || phase === 'error') setPhase('review');
@@ -259,6 +322,21 @@ export function AiReportImportPanel() {
     const json = await res.json();
     setSavedWeekId(json.id);
     setPhase('success');
+    // Cache no longer useful once the week is saved.
+    if (fileHash) {
+      clearCache(fileHash, weekNumber, year);
+      setCachedSheetNames([]);
+      setCachedDeptCount(0);
+    }
+  }
+
+  function handleClearCache() {
+    if (!fileHash) return;
+    clearCache(fileHash, weekNumber, year);
+    setCachedSheetNames([]);
+    setCachedDeptCount(0);
+    setResults([]);
+    setFreshDeptIds(new Set());
   }
 
   const matchedCount = progressEvents.filter((p) => p.status === 'done').length;
@@ -300,6 +378,22 @@ export function AiReportImportPanel() {
                 <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1">
                   <FileSpreadsheet className="w-3.5 h-3.5" /> {file.name} ({Math.round(file.size / 1024)} KB)
                 </p>
+              )}
+              {cachedDeptCount > 0 && (
+                <div className="mt-2 flex items-center justify-between gap-2 px-3 py-2 bg-cyan-50 border border-cyan-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-xs text-cyan-800">
+                    <Database className="w-3.5 h-3.5" />
+                    <span>
+                      Đã có <strong>{cachedDeptCount}</strong> phòng trong cache cho file này (tuần {weekNumber}/{year}) — sẽ skip khi chạy lại.
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearCache}
+                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-cyan-700 hover:bg-cyan-100 rounded-md"
+                  >
+                    <Trash2 className="w-3 h-3" /> Xoá cache
+                  </button>
+                </div>
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -467,7 +561,15 @@ export function AiReportImportPanel() {
                 <div key={dr.departmentId} className="border border-slate-200 rounded-lg overflow-hidden">
                   <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="font-semibold text-slate-900 text-sm truncate">{dr.departmentName}</div>
+                      <div className="font-semibold text-slate-900 text-sm truncate flex items-center gap-1.5">
+                        {dr.departmentName}
+                        {!freshDeptIds.has(dr.departmentId) && (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-cyan-700 bg-cyan-100 rounded">
+                            <Database className="w-2.5 h-2.5" />
+                            cache
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-slate-500 mt-0.5">
                         {dr.tasks.length}/{dr.masterTaskCount} nhiệm vụ · {dr.metrics.length}/{dr.metricDefCount} chỉ số
                         {dr.newTasks.length > 0 && <> · <span className="text-violet-600">{dr.newTasks.length} task mới</span></>}

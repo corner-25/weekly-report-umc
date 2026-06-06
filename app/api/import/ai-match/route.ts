@@ -100,6 +100,13 @@ export async function POST(req: Request) {
   const file = form.get('file') as File | null;
   const weekNumber = parseInt(String(form.get('weekNumber') ?? '0'), 10);
   const year = parseInt(String(form.get('year') ?? '0'), 10);
+  const skipSheetsRaw = String(form.get('skipSheets') ?? '');
+  const skipSheets = new Set(
+    skipSheetsRaw
+      .split('\n')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0),
+  );
 
   if (!file || !weekNumber || !year) return new Response('Missing file/week/year', { status: 400 });
 
@@ -115,7 +122,12 @@ export async function POST(req: Request) {
       };
 
       try {
-        send('parsed', { departments: parsed.departments.length });
+        const sheetsToProcess = parsed.departments.filter((d) => !skipSheets.has(d.name));
+        send('parsed', {
+          departments: parsed.departments.length,
+          skipped: parsed.departments.length - sheetsToProcess.length,
+          willProcess: sheetsToProcess.length,
+        });
 
         const results: Array<{
           sheetName: string;
@@ -132,8 +144,8 @@ export async function POST(req: Request) {
           error?: string;
         }> = [];
 
-        for (let i = 0; i < parsed.departments.length; i++) {
-          const sheetDept = parsed.departments[i];
+        for (let i = 0; i < sheetsToProcess.length; i++) {
+          const sheetDept = sheetsToProcess[i];
           const sNorm = sheetDept.name.toLowerCase().replace(/^phòng\s+/, '').replace(/^trung tâm\s+/, '').replace(/^đơn vị\s+/, '');
           const ranked = allDbDepts
             .map((d) => ({ d, score: matchScore(sNorm, d.name.toLowerCase()) }))
@@ -141,13 +153,13 @@ export async function POST(req: Request) {
             .sort((a, b) => b.score - a.score);
           const dbDept = ranked[0]?.d;
           if (!dbDept) {
-            send('progress', { index: i + 1, total: parsed.departments.length, deptName: sheetDept.name, status: 'skipped', reason: 'no-db-match' });
+            send('progress', { index: i + 1, total: sheetsToProcess.length, deptName: sheetDept.name, status: 'skipped', reason: 'no-db-match' });
             continue;
           }
 
           send('progress', {
             index: i + 1,
-            total: parsed.departments.length,
+            total: sheetsToProcess.length,
             deptName: dbDept.name,
             status: 'matching',
           });
@@ -182,7 +194,7 @@ export async function POST(req: Request) {
 
             send('progress', {
               index: i + 1,
-              total: parsed.departments.length,
+              total: sheetsToProcess.length,
               deptName: dbDept.name,
               status: 'done',
               taskCount: cleanTasks.length,
@@ -206,7 +218,7 @@ export async function POST(req: Request) {
               unmatched: [],
               error: msg,
             });
-            send('progress', { index: i + 1, total: parsed.departments.length, deptName: dbDept.name, status: 'error', error: msg });
+            send('progress', { index: i + 1, total: sheetsToProcess.length, deptName: dbDept.name, status: 'error', error: msg });
           }
         }
 
