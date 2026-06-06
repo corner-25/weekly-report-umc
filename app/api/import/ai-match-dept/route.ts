@@ -98,8 +98,35 @@ export async function POST(req: Request) {
 
   const ab = await file.arrayBuffer();
   const parsed = parseExcelFile(ab);
-  const sheetDept = parsed.departments.find((d) => d.name === sheetDeptName);
-  if (!sheetDept) return NextResponse.json({ error: `Không tìm thấy phòng "${sheetDeptName}" trong file` }, { status: 404 });
+
+  // Match sheet by either exact name or fuzzy lowercased substring (the sheet
+  // may be uppercased while we received a DB-style name from the UI).
+  function normalize(s: string): string {
+    return s
+      .toLowerCase()
+      .replace(/^phòng\s+/, '')
+      .replace(/^trung tâm\s+/, '')
+      .replace(/^đơn vị\s+/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  const target = normalize(sheetDeptName);
+  let sheetDept = parsed.departments.find((d) => d.name === sheetDeptName);
+  if (!sheetDept) sheetDept = parsed.departments.find((d) => normalize(d.name) === target);
+  if (!sheetDept) {
+    sheetDept = parsed.departments.find((d) => {
+      const n = normalize(d.name);
+      return n.includes(target) || target.includes(n);
+    });
+  }
+  if (!sheetDept) {
+    return NextResponse.json(
+      {
+        error: `Không tìm thấy phòng "${sheetDeptName}" trong file. Các phòng trong file: ${parsed.departments.map((d) => d.name).join(', ')}`,
+      },
+      { status: 404 },
+    );
+  }
 
   const dbDept = await prisma.department.findUnique({ where: { id: departmentId } });
   if (!dbDept) return NextResponse.json({ error: 'Department not found' }, { status: 404 });

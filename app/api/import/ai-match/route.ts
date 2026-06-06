@@ -101,10 +101,18 @@ export async function POST(req: Request) {
   const weekNumber = parseInt(String(form.get('weekNumber') ?? '0'), 10);
   const year = parseInt(String(form.get('year') ?? '0'), 10);
   const skipSheetsRaw = String(form.get('skipSheets') ?? '');
+  const normalizeName = (s: string): string =>
+    s
+      .toLowerCase()
+      .replace(/^phòng\s+/, '')
+      .replace(/^trung tâm\s+/, '')
+      .replace(/^đơn vị\s+/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   const skipSheets = new Set(
     skipSheetsRaw
       .split('\n')
-      .map((s) => s.trim())
+      .map((s) => normalizeName(s))
       .filter((s) => s.length > 0),
   );
 
@@ -122,7 +130,7 @@ export async function POST(req: Request) {
       };
 
       try {
-        const sheetsToProcess = parsed.departments.filter((d) => !skipSheets.has(d.name));
+        const sheetsToProcess = parsed.departments.filter((d) => !skipSheets.has(normalizeName(d.name)));
         send('parsed', {
           departments: parsed.departments.length,
           skipped: parsed.departments.length - sheetsToProcess.length,
