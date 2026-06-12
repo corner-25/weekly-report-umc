@@ -476,14 +476,51 @@ enum ApplicationStatus {
   REJECTED    // Từ chối
 }
 
+enum ScreeningResult {
+  PASS    // Đạt
+  FAIL    // Không đạt
+}
+
+enum ScreeningRating {
+  EXCELLENT     // Xuất sắc
+  GOOD          // Tốt
+  FAIR          // Khá
+  AVERAGE       // Trung bình
+  POOR          // Kém
+}
+
 // SecretaryApplication - Hồ sơ ứng tuyển thư ký
 model SecretaryApplication {
   id                   String            @id @default(cuid())
   fullName             String
   dateOfBirth          DateTime?
+  birthPlace           String?           // Nơi sinh
   phone                String?
   email                String?
+  permanentAddress     String?           @db.Text  // Địa chỉ thường trú
+  temporaryAddress     String?           @db.Text  // Địa chỉ tạm trú
   cvUrl                String?           // Link/URL CV đính kèm
+
+  // Trình độ học vấn
+  education            String?           // Trình độ chuyên môn (VD: Cao đẳng Quản trị văn phòng)
+  educationInstitution String?           // Nơi đào tạo
+  graduationYear       Int?              // Năm tốt nghiệp
+  graduationRank       String?           // Xếp loại tốt nghiệp (Xuất sắc/Giỏi/Khá/...)
+
+  // Chứng chỉ
+  trainingCertificate  String?           @db.Text  // Chứng chỉ đào tạo (VD: Thư ký y khoa năm 2022 tại UMP, Xếp loại: Xuất sắc)
+  foreignLanguage      String?           // Trình độ ngoại ngữ (VD: IELTS 6.0, TOEIC 485)
+  itSkill              String?           @db.Text  // Trình độ tin học
+
+  // Kinh nghiệm
+  appliedPosition      String?           // Vị trí tuyển dụng (VD: Thư ký y khoa)
+  workExperience       String?           @db.Text  // Kinh nghiệm làm việc
+  previousSalary       Decimal?          @db.Decimal(15, 2)  // Mức thu nhập đã được nhận
+  resignReason         String?           @db.Text  // Lý do nghỉ việc
+
+  // Hiểu biết về Bệnh viện
+  knowsHospital        Boolean?          // Có hiểu biết về Bệnh viện?
+  hospitalRelative     String?           @db.Text  // Thân nhân đang công tác tại Bệnh viện
 
   appliedTypeId        String?           // Loại thư ký ứng tuyển
   appliedType          SecretaryType?    @relation(fields: [appliedTypeId], references: [id])
@@ -494,6 +531,28 @@ model SecretaryApplication {
   source               String?           // Nguồn tuyển dụng (LinkedIn, giới thiệu nội bộ, website...)
 
   status               ApplicationStatus @default(SCREENING)
+
+  // Vòng sơ tuyển
+  screeningDate        DateTime?         // Ngày sơ tuyển
+  screeningLocation    String?           // Địa điểm sơ tuyển
+  screeningPanel       String?           @db.Text  // Thành phần tham gia sơ tuyển
+
+  // Đánh giá chi tiết sơ tuyển (Xuất sắc/Tốt/Khá/Trung bình/Kém)
+  ratingAppearance     ScreeningRating?  // Tác phong, ngoại hình, trang phục
+  ratingExpertise      ScreeningRating?  // Nghiệp vụ chuyên môn
+  ratingCommunication  ScreeningRating?  // Kỹ năng giao tiếp
+  ratingITSkill        ScreeningRating?  // Kỹ năng vi tính, tin học văn phòng
+  ratingAI             ScreeningRating?  // Khả năng ứng dụng AI trong công việc
+  ratingKnowledge      ScreeningRating?  // Mức độ am hiểu nhiều mảng kiến thức
+
+  // Điểm bài thi (kỹ năng tin học)
+  scoreMultipleChoice  Float?            // Trắc nghiệm lý thuyết (/10)
+  scoreWordProcessing  Float?            // Soạn thảo văn bản (/10)
+  scoreTypingSpeed     Float?            // Tốc độ đánh máy (/10)
+  typingWordsPerMinute Int?              // Số từ/phút
+
+  screeningResult      ScreeningResult?  // Kết luận: Đạt / Không Đạt
+  screeningNotes       String?           @db.Text
 
   // Vòng phỏng vấn
   interviewDate        DateTime?
@@ -513,6 +572,7 @@ model SecretaryApplication {
   @@index([status])
   @@index([appliedTypeId])
   @@index([desiredDepartmentId])
+  @@index([screeningDate])
   @@map("secretary_applications")
 }
 
