@@ -481,6 +481,117 @@ enum ScreeningResult {
   FAIL    // Không đạt
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Vehicle (Lý lịch xe ô tô) — kept separate from the existing License table so
+// the License rows remain about VEHICLE registrations / 'cavet' documents,
+// while Vehicle here owns the per-vehicle lifetime maintenance log.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum VehicleCategory {
+  AMBULANCE         // Xe cứu thương
+  ADMIN_CAR         // Xe ô tô hành chính / con
+  BUS               // Xe khách
+  TRUCK             // Xe tải
+  PICKUP            // Xe pickup
+  OTHER
+}
+
+enum VehicleStatus {
+  IN_USE            // Đang sử dụng
+  RETIRED           // Đã ngừng hoạt động
+  SOLD              // Đã thanh lý
+  TRANSFERRED       // Đã chuyển giao
+}
+
+model Vehicle {
+  id                      String          @id @default(cuid())
+  licensePlate            String          @unique  // Biển số (VD: 50A-007-20)
+  brand                   String?         // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
+  model                   String?         // Số loại (HIACE, FORTUNER, ...)
+  category                VehicleCategory @default(OTHER)
+  color                   String?         // Màu sơn
+  engineNumber            String?         // Số máy
+  chassisNumber           String?         // Số khung
+  seatCount               String?         // Số chỗ (giữ raw vì format không thống nhất: "07 ngồi + 1 nằm", "05 chỗ"...)
+  payloadKg               String?         // Tải trọng hàng hóa
+  curbWeightKg            String?         // Tự trọng
+  totalWeightKg           String?         // Trọng lượng toàn bộ
+  manufactureYear         Int?            // Năm sản xuất
+  manufactureCountry      String?         // Nước sản xuất
+  expiryYear              String?         // Niên hạn sử dụng (có thể là "Không thời hạn")
+
+  // Hồ sơ đăng ký
+  registrationNumber      String?         // Giấy đăng ký số
+  registrationDate        DateTime?       // Ngày cấp giấy đăng ký
+  firstRegistrationDate   DateTime?       // Đăng ký lần đầu
+
+  // Hồ sơ kiểm định
+  inspectionCertNumber    String?         // Giấy chứng nhận kiểm định số
+  inspectionExpiry        DateTime?       // Kiểm định hết hạn
+  insuranceExpiry         DateTime?       // Bảo hiểm hết hạn
+
+  // Chủ xe
+  ownerName               String?         // Tên chủ xe
+  ownerAddress            String?         // Địa chỉ chủ xe
+  manager                 String?         // Người quản lý phương tiện
+
+  // Thông số kỹ thuật
+  dimensions              String?         // Kích thước bao (Dài×Rộng×Cao)
+  tireSpecification       String?         // Sai vỏ
+  wheelTrack              String?         // Vết bánh trước/sau
+  wheelbase               String?         // Chiều dài cơ sở
+  fuelType                String?         // Nhiên liệu
+  engineType              String?         // Kiểu động cơ
+  displacement            String?         // Dung tích
+  maxPower                String?         // Công suất lớn nhất
+  steeringSystem          String?         // Hệ thống lái
+  transmission            String?         // Hộp số
+  brakeSystem             String?         // Phanh chính
+  parkingBrake            String?         // Phanh đỗ
+  airConditioning         String?         // Điều hòa
+
+  // Vận hành
+  status                  VehicleStatus   @default(IN_USE)
+  rawHistory              String?         @db.Text  // Toàn bộ lịch sử bảo dưỡng raw từ file .doc
+  sourceFile              String?         // Tên file gốc
+
+  // Liên kết tới License (chứng nhận đăng ký) nếu có
+  licenseId               String?         @unique
+  license                 License?        @relation(fields: [licenseId], references: [id])
+
+  maintenanceLogs         VehicleMaintenance[]
+
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  deletedAt               DateTime?
+
+  @@index([category])
+  @@index([status])
+  @@index([brand])
+  @@map("vehicles")
+}
+
+// VehicleMaintenance - 1 record bảo dưỡng / sửa chữa / sự kiện
+model VehicleMaintenance {
+  id              String     @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  date            DateTime?  // Ngày thực hiện (có thể null khi text không rõ)
+  odometer        Int?       // Số km (cây số)
+  category        String?    // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
+  description     String     @db.Text  // Mô tả chi tiết
+  workshop        String?    // Gara/đơn vị thực hiện
+  costAmount      Decimal?   @db.Decimal(15, 2)
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([vehicleId, date])
+  @@index([date])
+  @@map("vehicle_maintenance_logs")
+}
+
 enum ScreeningRating {
   EXCELLENT     // Xuất sắc
   GOOD          // Tốt
@@ -608,6 +719,7 @@ model License {
   deletedAt     DateTime?
 
   renewals      LicenseRenewal[]
+  vehicle       Vehicle?
 
   @@index([category])
   @@index([departmentId])
