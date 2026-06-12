@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (category) where.category = category;
+    else where.category = { notIn: ['VEHICLE', 'ADMIN_VEHICLE'] as const };
     if (departmentId) where.departmentId = departmentId;
 
     if (status === 'EXPIRED') {

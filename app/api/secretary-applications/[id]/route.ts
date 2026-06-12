@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import {
+  applicationFieldsSchema,
+  toPrismaPayload,
+  autoAdvanceStatus,
+} from '@/lib/application-fields';
+import type { ApplicationStatus, ScreeningResult } from '@prisma/client';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -24,35 +30,40 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params;
     const body = await request.json();
-    const {
-      fullName, dateOfBirth, phone, email, cvUrl,
-      appliedTypeId, desiredDepartmentId, source,
-      interviewDate, interviewScore, interviewNotes, notes,
-    } = body;
-
-    if (!fullName?.trim()) {
-      return NextResponse.json({ error: 'Họ và tên không được để trống' }, { status: 400 });
+    const parsed = applicationFieldsSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? 'Dữ liệu không hợp lệ' },
+        { status: 400 },
+      );
     }
+
+    const existing = await prisma.secretaryApplication.findUnique({
+      where: { id },
+      select: { status: true, screeningResult: true },
+    });
+    if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    const payload = toPrismaPayload(parsed.data);
+
+    // Auto-advance: use the effective screening result (new value if provided,
+    // else existing) and the proposed status.
+    const effectiveResult: ScreeningResult | null | undefined =
+      'screeningResult' in payload
+        ? (payload.screeningResult as ScreeningResult | null)
+        : existing.screeningResult;
+    const advanced = autoAdvanceStatus({
+      currentStatus: existing.status,
+      proposedStatus: payload.status as ApplicationStatus | undefined,
+      proposedResult: effectiveResult,
+    });
+    if (advanced) payload.status = advanced;
 
     const application = await prisma.secretaryApplication.update({
       where: { id },
-      data: {
-        fullName: fullName.trim(),
-        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-        phone: phone?.trim() || null,
-        email: email?.trim() || null,
-        cvUrl: cvUrl?.trim() || null,
-        appliedTypeId: appliedTypeId || null,
-        desiredDepartmentId: desiredDepartmentId || null,
-        source: source?.trim() || null,
-        interviewDate: interviewDate ? new Date(interviewDate) : null,
-        interviewScore: interviewScore !== '' && interviewScore != null ? parseFloat(interviewScore) : null,
-        interviewNotes: interviewNotes?.trim() || null,
-        notes: notes?.trim() || null,
-      },
+      data: payload as Parameters<typeof prisma.secretaryApplication.update>[0]['data'],
       include: { appliedType: true, desiredDepartment: true },
     });
-
     return NextResponse.json(application);
   } catch (error) {
     console.error('Error updating application:', error);

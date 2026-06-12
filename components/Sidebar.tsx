@@ -34,6 +34,7 @@ import {
   Monitor,
   Gauge,
   ChevronDown,
+  Truck,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -103,6 +104,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/dashboard/mous', label: 'MOU', icon: Handshake, exact: false },
       { href: '/dashboard/licenses', label: 'Giấy phép', icon: ShieldCheck, exact: false },
+      { href: '/dashboard/vehicles', label: 'Phương tiện vận chuyển', icon: Truck, exact: false },
     ],
   },
   {

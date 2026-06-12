@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FileUser } from 'lucide-react';
+import {
+  FileUser, Plus, Search, Edit, Trash2, ArrowRight, GraduationCap, MapPin, Phone, Mail,
+  Briefcase, Award, ClipboardCheck, Calendar, X, CheckCircle2, XCircle, Star,
+} from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ApplicationForm } from '@/components/secretaries/ApplicationForm';
 import { AdvanceModal } from '@/components/secretaries/AdvanceModal';
@@ -11,11 +14,42 @@ interface Application {
   id: string;
   fullName: string;
   dateOfBirth: string | null;
+  birthPlace: string | null;
   phone: string | null;
   email: string | null;
+  permanentAddress: string | null;
+  temporaryAddress: string | null;
   cvUrl: string | null;
+  education: string | null;
+  educationInstitution: string | null;
+  graduationYear: number | null;
+  graduationRank: string | null;
+  trainingCertificate: string | null;
+  foreignLanguage: string | null;
+  itSkill: string | null;
+  appliedPosition: string | null;
+  workExperience: string | null;
+  previousSalary: number | string | null;
+  resignReason: string | null;
+  knowsHospital: boolean | null;
+  hospitalRelative: string | null;
   source: string | null;
   status: string;
+  screeningDate: string | null;
+  screeningLocation: string | null;
+  screeningPanel: string | null;
+  ratingAppearance: string | null;
+  ratingExpertise: string | null;
+  ratingCommunication: string | null;
+  ratingITSkill: string | null;
+  ratingAI: string | null;
+  ratingKnowledge: string | null;
+  scoreMultipleChoice: number | null;
+  scoreWordProcessing: number | null;
+  scoreTypingSpeed: number | null;
+  typingWordsPerMinute: number | null;
+  screeningResult: string | null;
+  screeningNotes: string | null;
   notes: string | null;
   interviewDate: string | null;
   interviewScore: number | null;
@@ -26,11 +60,19 @@ interface Application {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  SCREENING: { label: 'Sơ tuyển', color: 'text-amber-700', bg: 'bg-amber-100' },
-  INTERVIEW: { label: 'Phỏng vấn', color: 'text-blue-700', bg: 'bg-blue-100' },
-  ACCEPTED: { label: 'Nhận việc', color: 'text-emerald-700', bg: 'bg-emerald-100' },
-  REJECTED: { label: 'Từ chối', color: 'text-red-700', bg: 'bg-red-100' },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; ring: string }> = {
+  SCREENING: { label: 'Sơ tuyển', color: 'text-amber-700', bg: 'bg-amber-100', ring: 'ring-amber-200' },
+  INTERVIEW: { label: 'Phỏng vấn', color: 'text-blue-700', bg: 'bg-blue-100', ring: 'ring-blue-200' },
+  ACCEPTED: { label: 'Nhận việc', color: 'text-emerald-700', bg: 'bg-emerald-100', ring: 'ring-emerald-200' },
+  REJECTED: { label: 'Từ chối', color: 'text-red-700', bg: 'bg-red-100', ring: 'ring-red-200' },
+};
+
+const RATING_LABEL: Record<string, string> = {
+  EXCELLENT: 'Xuất sắc',
+  GOOD: 'Tốt',
+  FAIR: 'Khá',
+  AVERAGE: 'Trung bình',
+  POOR: 'Kém',
 };
 
 const ALL_TABS = ['ALL', 'SCREENING', 'INTERVIEW', 'ACCEPTED', 'REJECTED'] as const;
@@ -42,6 +84,33 @@ const TAB_LABEL: Record<string, string> = {
   REJECTED: 'Từ chối',
 };
 
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '?';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+function fmtDate(d: string | null): string {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('vi-VN');
+}
+
+function fmtMoney(v: number | string | null): string {
+  if (v === null || v === undefined || v === '') return '—';
+  const n = typeof v === 'string' ? Number(v) : v;
+  if (!Number.isFinite(n)) return '—';
+  return n.toLocaleString('vi-VN') + ' đ';
+}
+
+function averageRating(app: Application): number | null {
+  const values = [app.ratingAppearance, app.ratingExpertise, app.ratingCommunication, app.ratingITSkill, app.ratingAI, app.ratingKnowledge];
+  const scores: Record<string, number> = { EXCELLENT: 5, GOOD: 4, FAIR: 3, AVERAGE: 2, POOR: 1 };
+  const numbers = values.map((v) => (v ? scores[v] : null)).filter((n): n is number => n !== null);
+  if (numbers.length === 0) return null;
+  return numbers.reduce((a, b) => a + b, 0) / numbers.length;
+}
+
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [types, setTypes] = useState<{ id: string; name: string; color: string | null }[]>([]);
@@ -52,7 +121,7 @@ export default function ApplicationsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingApp, setEditingApp] = useState<Application | null>(null);
   const [advanceTarget, setAdvanceTarget] = useState<{ app: Application; action: 'INTERVIEW' | 'ACCEPTED' | 'REJECTED' } | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [detailApp, setDetailApp] = useState<Application | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const fetchApplications = async () => {
@@ -83,6 +152,7 @@ export default function ApplicationsPage() {
   useEffect(() => {
     setLoading(true);
     fetchApplications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, search]);
 
   const handleDelete = async () => {
@@ -100,254 +170,72 @@ export default function ApplicationsPage() {
     REJECTED: applications.filter((a) => a.status === 'REJECTED').length,
   };
 
-  // Count from full data (independent of filter)
-  const [allStats, setAllStats] = useState({ total: 0, SCREENING: 0, INTERVIEW: 0, ACCEPTED: 0, REJECTED: 0 });
-  useEffect(() => {
-    fetch('/api/secretary-applications').then((r) => r.json()).then((data) => {
-      if (Array.isArray(data)) {
-        setAllStats({
-          total: data.length,
-          SCREENING: data.filter((a: Application) => a.status === 'SCREENING').length,
-          INTERVIEW: data.filter((a: Application) => a.status === 'INTERVIEW').length,
-          ACCEPTED: data.filter((a: Application) => a.status === 'ACCEPTED').length,
-          REJECTED: data.filter((a: Application) => a.status === 'REJECTED').length,
-        });
-      }
-    });
-  }, [applications]);
-
   return (
-    <div className="p-6">
-      <ConfirmDialog
-        open={!!deleteTargetId}
-        title="Xác nhận xóa"
-        message="Bạn có chắc muốn xóa hồ sơ này?"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTargetId(null)}
-      />
-      {/* Header */}
+    <div className="space-y-6">
       <PageHeader
         icon={FileUser}
         title="Hồ sơ ứng tuyển"
-        description="Quản lý pipeline tuyển dụng thư ký"
-        className="mb-6"
+        description="Theo dõi pipeline tuyển dụng thư ký theo từng giai đoạn"
         actions={
           <button
             onClick={() => { setEditingApp(null); setShowForm(true); }}
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <Plus className="w-4 h-4" />
             Thêm hồ sơ
           </button>
         }
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        {[
-          { key: 'total', label: 'Tổng cộng', color: 'text-slate-700', val: allStats.total },
-          { key: 'SCREENING', label: 'Sơ tuyển', color: 'text-yellow-600', val: allStats.SCREENING },
-          { key: 'INTERVIEW', label: 'Phỏng vấn', color: 'text-blue-600', val: allStats.INTERVIEW },
-          { key: 'ACCEPTED', label: 'Nhận việc', color: 'text-emerald-600', val: allStats.ACCEPTED },
-          { key: 'REJECTED', label: 'Từ chối', color: 'text-red-600', val: allStats.REJECTED },
-        ].map((s) => (
-          <div key={s.key} className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-            <div className={`text-2xl font-bold ${s.color}`}>{s.val}</div>
-            <div className="text-sm text-slate-500">{s.label}</div>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <StatCard label="Tổng hồ sơ" value={stats.total} accent="from-slate-500 to-slate-700" active={activeTab === 'ALL'} onClick={() => setActiveTab('ALL')} />
+        <StatCard label="Sơ tuyển" value={stats.SCREENING} accent="from-amber-500 to-orange-600" active={activeTab === 'SCREENING'} onClick={() => setActiveTab('SCREENING')} />
+        <StatCard label="Phỏng vấn" value={stats.INTERVIEW} accent="from-blue-500 to-cyan-600" active={activeTab === 'INTERVIEW'} onClick={() => setActiveTab('INTERVIEW')} />
+        <StatCard label="Nhận việc" value={stats.ACCEPTED} accent="from-emerald-500 to-teal-600" active={activeTab === 'ACCEPTED'} onClick={() => setActiveTab('ACCEPTED')} />
+        <StatCard label="Từ chối" value={stats.REJECTED} accent="from-red-500 to-rose-600" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
       </div>
 
-      {/* Tabs + Search */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
-        <div className="flex items-center gap-1 px-4 pt-3 border-b border-slate-200 overflow-x-auto">
-          {ALL_TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg whitespace-nowrap transition-colors ${
-                activeTab === tab
-                  ? 'bg-cyan-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              {TAB_LABEL[tab]}
-            </button>
-          ))}
-        </div>
-        <div className="p-4">
-          <input
-            type="text"
-            placeholder="Tìm theo tên, email, SĐT..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-          />
-        </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Tìm theo tên / email / SĐT..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 bg-white"
+        />
       </div>
 
-      {/* Table */}
+      {/* List */}
       {loading ? (
-        <div className="text-center py-10 text-slate-500">Đang tải...</div>
+        <div className="text-center py-16">
+          <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-500 text-sm">Đang tải...</p>
+        </div>
       ) : applications.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-slate-200">
-          <svg className="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p className="text-slate-500">Không có hồ sơ nào</p>
+        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center">
+          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-slate-100 flex items-center justify-center">
+            <FileUser className="w-7 h-7 text-slate-400" />
+          </div>
+          <p className="text-slate-600 font-medium">Chưa có hồ sơ trong nhóm {TAB_LABEL[activeTab]}</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Ứng viên</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Loại TK</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Phòng mong muốn</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Nguồn</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Trạng thái</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Ngày nộp</th>
-                <th className="text-right px-4 py-3 font-medium text-slate-600">Hành động</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {applications.map((app) => {
-                const st = STATUS_CONFIG[app.status];
-                const isExpanded = expandedId === app.id;
-                return (
-                  <>
-                    <tr key={app.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : app.id)}>
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-slate-900">{app.fullName}</div>
-                        <div className="text-xs text-slate-500">{app.email || app.phone || '—'}</div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600">{app.appliedType?.name || '—'}</td>
-                      <td className="px-4 py-3 text-slate-600">{app.desiredDepartment?.name || '—'}</td>
-                      <td className="px-4 py-3 text-slate-600">{app.source || '—'}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${st.bg} ${st.color}`}>
-                          {st.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-500">
-                        {new Date(app.createdAt).toLocaleDateString('vi-VN')}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                          {/* Action buttons tùy theo trạng thái */}
-                          {app.status === 'SCREENING' && (
-                            <>
-                              <button
-                                onClick={() => setAdvanceTarget({ app, action: 'INTERVIEW' })}
-                                className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100"
-                                title="Chuyển sang phỏng vấn"
-                              >
-                                → PV
-                              </button>
-                              <button
-                                onClick={() => setAdvanceTarget({ app, action: 'REJECTED' })}
-                                className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100"
-                                title="Từ chối"
-                              >
-                                Từ chối
-                              </button>
-                            </>
-                          )}
-                          {app.status === 'INTERVIEW' && (
-                            <>
-                              <button
-                                onClick={() => setAdvanceTarget({ app, action: 'ACCEPTED' })}
-                                className="px-2 py-1 text-xs bg-green-50 text-emerald-700 rounded hover:bg-emerald-100"
-                                title="Nhận việc"
-                              >
-                                Nhận việc
-                              </button>
-                              <button
-                                onClick={() => setAdvanceTarget({ app, action: 'REJECTED' })}
-                                className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100"
-                                title="Từ chối"
-                              >
-                                Từ chối
-                              </button>
-                            </>
-                          )}
-                          {app.status === 'ACCEPTED' && app.convertedSecretary && (
-                            <span className="text-xs text-emerald-600">✓ Đã tạo TK</span>
-                          )}
-                          <button
-                            onClick={() => { setEditingApp(app); setShowForm(true); }}
-                            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded"
-                            title="Chỉnh sửa"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          {app.status !== 'ACCEPTED' && (
-                            <button
-                              onClick={() => setDeleteTargetId(app.id)}
-                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
-                              title="Xóa"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* Expanded detail row */}
-                    {isExpanded && (
-                      <tr key={`${app.id}-detail`} className="bg-slate-50">
-                        <td colSpan={7} className="px-6 py-4">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Liên hệ</p>
-                              <p className="text-slate-700">📞 {app.phone || '—'}</p>
-                              <p className="text-slate-700">✉️ {app.email || '—'}</p>
-                              {app.cvUrl && (
-                                <a href={app.cvUrl} target="_blank" rel="noopener noreferrer"
-                                  className="text-cyan-600 hover:underline">📄 Xem CV</a>
-                              )}
-                            </div>
-                            {app.status === 'INTERVIEW' || app.status === 'ACCEPTED' ? (
-                              <div>
-                                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Phỏng vấn</p>
-                                <p className="text-slate-700">📅 {app.interviewDate ? new Date(app.interviewDate).toLocaleDateString('vi-VN') : '—'}</p>
-                                <p className="text-slate-700">⭐ Điểm: {app.interviewScore != null ? app.interviewScore : '—'}</p>
-                                {app.interviewNotes && <p className="text-slate-600 mt-1 italic">{app.interviewNotes}</p>}
-                              </div>
-                            ) : <div />}
-                            <div>
-                              {app.notes && (
-                                <>
-                                  <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Ghi chú</p>
-                                  <p className="text-slate-600 italic">{app.notes}</p>
-                                </>
-                              )}
-                              {app.status === 'ACCEPTED' && app.convertedSecretary && (
-                                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-emerald-700 text-xs">
-                                  ✓ Đã tạo thư ký: <strong>{app.convertedSecretary.fullName}</strong>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {applications.map((app) => (
+            <ApplicantCard
+              key={app.id}
+              app={app}
+              onView={() => setDetailApp(app)}
+              onEdit={() => { setEditingApp(app); setShowForm(true); }}
+              onDelete={() => setDeleteTargetId(app.id)}
+              onAdvance={(action) => setAdvanceTarget({ app, action })}
+            />
+          ))}
         </div>
       )}
 
-      {/* Form Modal */}
       {showForm && (
         <ApplicationForm
           application={editingApp}
@@ -357,8 +245,6 @@ export default function ApplicationsPage() {
           onSuccess={() => { setShowForm(false); setEditingApp(null); fetchApplications(); }}
         />
       )}
-
-      {/* Advance Modal */}
       {advanceTarget && (
         <AdvanceModal
           application={advanceTarget.app}
@@ -368,6 +254,344 @@ export default function ApplicationsPage() {
           onSuccess={() => { setAdvanceTarget(null); fetchApplications(); }}
         />
       )}
+      {detailApp && (
+        <DetailDrawer
+          app={detailApp}
+          onClose={() => setDetailApp(null)}
+          onEdit={() => { setEditingApp(detailApp); setDetailApp(null); setShowForm(true); }}
+        />
+      )}
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá hồ sơ ứng tuyển này?"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
+    </div>
+  );
+}
+
+function StatCard({
+  label, value, accent, active, onClick,
+}: {
+  label: string; value: number; accent: string; active?: boolean; onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-left bg-white rounded-2xl border shadow-sm p-4 transition-all ${
+        active ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200/80 hover:border-slate-300 hover:shadow-md'
+      }`}
+    >
+      <div className="text-xs text-slate-500">{label}</div>
+      <div className={`text-2xl font-semibold leading-tight tabular-nums bg-gradient-to-br ${accent} bg-clip-text text-transparent mt-1`}>
+        {value.toLocaleString('vi-VN')}
+      </div>
+    </button>
+  );
+}
+
+function ApplicantCard({
+  app, onView, onEdit, onDelete, onAdvance,
+}: {
+  app: Application;
+  onView: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onAdvance: (action: 'INTERVIEW' | 'ACCEPTED' | 'REJECTED') => void;
+}) {
+  const status = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.SCREENING;
+  const avgRating = averageRating(app);
+
+  return (
+    <div className="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col">
+      <div className="p-4 cursor-pointer" onClick={onView}>
+        <div className="flex items-start gap-3 mb-3">
+          <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+            {initials(app.fullName)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm font-semibold text-slate-900 leading-snug truncate">{app.fullName}</h3>
+            {app.appliedPosition && (
+              <p className="text-xs text-slate-500 mt-0.5 truncate">{app.appliedPosition}</p>
+            )}
+            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${status.bg} ${status.color} ring-1 ring-inset ${status.ring}`}>
+                {status.label}
+              </span>
+              {app.screeningResult === 'PASS' && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded-full ring-1 ring-emerald-200">
+                  <CheckCircle2 className="w-2.5 h-2.5" /> Đạt sơ tuyển
+                </span>
+              )}
+              {app.screeningResult === 'FAIL' && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold text-red-700 bg-red-50 rounded-full ring-1 ring-red-200">
+                  <XCircle className="w-2.5 h-2.5" /> Không đạt
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1.5 text-xs text-slate-600">
+          {app.education && (
+            <div className="flex items-center gap-1.5">
+              <GraduationCap className="w-3 h-3 text-slate-400 shrink-0" />
+              <span className="truncate">{app.education}</span>
+            </div>
+          )}
+          {app.workExperience && (
+            <div className="flex items-start gap-1.5">
+              <Briefcase className="w-3 h-3 text-slate-400 shrink-0 mt-0.5" />
+              <span className="line-clamp-2">{app.workExperience}</span>
+            </div>
+          )}
+          {(app.phone || app.email) && (
+            <div className="flex items-center gap-3 text-[11px] text-slate-500">
+              {app.phone && <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3" /> {app.phone}</span>}
+              {app.email && <span className="inline-flex items-center gap-1 truncate"><Mail className="w-3 h-3" /> {app.email}</span>}
+            </div>
+          )}
+        </div>
+
+        {(app.scoreMultipleChoice !== null || app.scoreWordProcessing !== null || app.scoreTypingSpeed !== null) && (
+          <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-2 text-center">
+            <div>
+              <div className="text-[10px] text-slate-500">TN</div>
+              <div className="text-sm font-semibold text-slate-900 tabular-nums">{app.scoreMultipleChoice ?? '—'}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500">Soạn</div>
+              <div className="text-sm font-semibold text-slate-900 tabular-nums">{app.scoreWordProcessing ?? '—'}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-500">Máy</div>
+              <div className="text-sm font-semibold text-slate-900 tabular-nums">{app.scoreTypingSpeed ?? '—'}</div>
+            </div>
+          </div>
+        )}
+
+        {avgRating !== null && (
+          <div className="mt-2 flex items-center gap-1">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+            <span className="text-[11px] text-slate-600">Đánh giá TB: <strong>{avgRating.toFixed(1)}/5</strong></span>
+          </div>
+        )}
+      </div>
+
+      <div className="px-4 py-2 border-t border-slate-100 flex items-center gap-1 bg-slate-50/50">
+        <button onClick={onView} className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-white rounded-lg transition-colors">
+          Chi tiết
+        </button>
+        <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-cyan-600 hover:bg-white rounded-lg transition-colors" title="Sửa">
+          <Edit className="w-3.5 h-3.5" />
+        </button>
+        {app.status === 'SCREENING' && (
+          <button onClick={() => onAdvance('INTERVIEW')} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-colors" title="Chuyển sang phỏng vấn">
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+        {app.status === 'INTERVIEW' && (
+          <>
+            <button onClick={() => onAdvance('ACCEPTED')} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-lg transition-colors" title="Nhận việc">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={() => onAdvance('REJECTED')} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg transition-colors" title="Từ chối">
+              <XCircle className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
+        <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white rounded-lg transition-colors" title="Xoá">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DetailDrawer({ app, onClose, onEdit }: { app: Application; onClose: () => void; onEdit: () => void }) {
+  const status = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.SCREENING;
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-end z-40">
+      <div className="bg-white w-full max-w-2xl h-full overflow-y-auto shadow-2xl">
+        <header className="sticky top-0 z-10 bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center font-semibold">
+              {initials(app.fullName)}
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-slate-900 truncate">{app.fullName}</h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full ${status.bg} ${status.color}`}>
+                  {status.label}
+                </span>
+                {app.appliedPosition && <span className="text-xs text-slate-500 truncate">· {app.appliedPosition}</span>}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={onEdit} className="px-3 py-1.5 text-xs font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50">
+              Chỉnh sửa
+            </button>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100">
+              <X className="w-5 h-5 text-slate-500" />
+            </button>
+          </div>
+        </header>
+
+        <div className="px-6 py-4 space-y-6">
+          <Section title="Thông tin cá nhân">
+            <KV label="Ngày sinh" value={fmtDate(app.dateOfBirth)} />
+            <KV label="Nơi sinh" value={app.birthPlace || '—'} />
+            <KV label="Điện thoại" value={app.phone || '—'} />
+            <KV label="Email" value={app.email || '—'} />
+            {app.permanentAddress && <KV label="Thường trú" value={app.permanentAddress} span2 />}
+            {app.temporaryAddress && <KV label="Tạm trú" value={app.temporaryAddress} span2 />}
+            {app.cvUrl && (
+              <KV
+                label="CV"
+                value={
+                  <a href={app.cvUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-600 hover:underline break-all">
+                    {app.cvUrl}
+                  </a>
+                }
+                span2
+              />
+            )}
+          </Section>
+
+          {(app.education || app.educationInstitution || app.foreignLanguage || app.itSkill || app.trainingCertificate) && (
+            <Section title="Học vấn">
+              {app.education && <KV label="Trình độ" value={app.education} span2 />}
+              {app.educationInstitution && <KV label="Nơi đào tạo" value={app.educationInstitution} span2 />}
+              {app.graduationYear && <KV label="Năm tốt nghiệp" value={String(app.graduationYear)} />}
+              {app.graduationRank && <KV label="Xếp loại" value={app.graduationRank} />}
+              {app.trainingCertificate && <KV label="Chứng chỉ" value={app.trainingCertificate} span2 />}
+              {app.foreignLanguage && <KV label="Ngoại ngữ" value={app.foreignLanguage} />}
+              {app.itSkill && <KV label="Tin học" value={app.itSkill} />}
+            </Section>
+          )}
+
+          {(app.workExperience || app.previousSalary !== null || app.resignReason || app.appliedType || app.desiredDepartment) && (
+            <Section title="Kinh nghiệm & Mong muốn">
+              {app.workExperience && <KV label="Kinh nghiệm" value={app.workExperience} span2 />}
+              {app.previousSalary !== null && <KV label="Thu nhập cũ" value={fmtMoney(app.previousSalary)} />}
+              {app.resignReason && <KV label="Lý do nghỉ" value={app.resignReason} span2 />}
+              {app.knowsHospital !== null && (
+                <KV label="Hiểu biết BV" value={app.knowsHospital ? 'Có' : 'Chưa có'} />
+              )}
+              {app.hospitalRelative && <KV label="Thân nhân BV" value={app.hospitalRelative} span2 />}
+              {app.appliedType && <KV label="Loại thư ký" value={app.appliedType.name} />}
+              {app.desiredDepartment && <KV label="Phòng mong muốn" value={app.desiredDepartment.name} />}
+              {app.source && <KV label="Nguồn" value={app.source} />}
+            </Section>
+          )}
+
+          {(app.screeningDate || app.screeningResult || app.scoreMultipleChoice !== null) && (
+            <Section title="Sơ tuyển">
+              {app.screeningDate && <KV label="Ngày sơ tuyển" value={fmtDate(app.screeningDate)} />}
+              {app.screeningResult && (
+                <KV
+                  label="Kết luận"
+                  value={
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full ${app.screeningResult === 'PASS' ? 'text-emerald-700 bg-emerald-100' : 'text-red-700 bg-red-100'}`}>
+                      {app.screeningResult === 'PASS' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                      {app.screeningResult === 'PASS' ? 'Đạt' : 'Không đạt'}
+                    </span>
+                  }
+                />
+              )}
+              {app.screeningLocation && <KV label="Địa điểm" value={app.screeningLocation} span2 />}
+              {app.screeningPanel && <KV label="Hội đồng" value={app.screeningPanel} span2 />}
+
+              {(app.ratingAppearance || app.ratingExpertise || app.ratingCommunication || app.ratingITSkill || app.ratingAI || app.ratingKnowledge) && (
+                <div className="col-span-2 bg-slate-50 rounded-lg p-3 mt-2">
+                  <h4 className="text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wide">Đánh giá 6 mục</h4>
+                  <div className="space-y-1">
+                    {[
+                      { key: 'ratingAppearance', label: 'Tác phong, ngoại hình' },
+                      { key: 'ratingExpertise', label: 'Nghiệp vụ chuyên môn' },
+                      { key: 'ratingCommunication', label: 'Kỹ năng giao tiếp' },
+                      { key: 'ratingITSkill', label: 'Kỹ năng tin học' },
+                      { key: 'ratingAI', label: 'Ứng dụng AI' },
+                      { key: 'ratingKnowledge', label: 'Am hiểu kiến thức' },
+                    ].map((r) => {
+                      const v = app[r.key as keyof Application] as string | null;
+                      if (!v) return null;
+                      return (
+                        <div key={r.key} className="flex items-center justify-between text-xs">
+                          <span className="text-slate-600">{r.label}</span>
+                          <span className="font-medium text-slate-900">{RATING_LABEL[v] ?? v}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {(app.scoreMultipleChoice !== null || app.scoreWordProcessing !== null || app.scoreTypingSpeed !== null) && (
+                <div className="col-span-2 bg-cyan-50 border border-cyan-200 rounded-lg p-3 mt-2">
+                  <h4 className="text-xs font-semibold text-cyan-800 mb-2 uppercase tracking-wide">Điểm bài thi</h4>
+                  <div className="grid grid-cols-4 gap-3 text-center">
+                    <div>
+                      <div className="text-[10px] text-cyan-700 uppercase">Trắc nghiệm</div>
+                      <div className="text-lg font-semibold text-cyan-900 tabular-nums">{app.scoreMultipleChoice ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-cyan-700 uppercase">Soạn thảo</div>
+                      <div className="text-lg font-semibold text-cyan-900 tabular-nums">{app.scoreWordProcessing ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-cyan-700 uppercase">Đánh máy</div>
+                      <div className="text-lg font-semibold text-cyan-900 tabular-nums">{app.scoreTypingSpeed ?? '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-cyan-700 uppercase">Từ/phút</div>
+                      <div className="text-lg font-semibold text-cyan-900 tabular-nums">{app.typingWordsPerMinute ?? '—'}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {app.screeningNotes && <KV label="Ghi chú" value={app.screeningNotes} span2 />}
+            </Section>
+          )}
+
+          {(app.interviewDate || app.interviewScore !== null || app.interviewNotes) && (
+            <Section title="Phỏng vấn">
+              {app.interviewDate && <KV label="Ngày phỏng vấn" value={fmtDate(app.interviewDate)} />}
+              {app.interviewScore !== null && <KV label="Điểm phỏng vấn" value={`${app.interviewScore}/10`} />}
+              {app.interviewNotes && <KV label="Ghi chú" value={app.interviewNotes} span2 />}
+            </Section>
+          )}
+
+          {app.notes && (
+            <Section title="Ghi chú chung">
+              <div className="col-span-2 text-sm text-slate-700 whitespace-pre-wrap">{app.notes}</div>
+            </Section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{title}</h3>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 bg-slate-50/60 rounded-xl p-3 border border-slate-100">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function KV({ label, value, span2 }: { label: string; value: React.ReactNode; span2?: boolean }) {
+  return (
+    <div className={span2 ? 'col-span-2' : ''}>
+      <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-0.5">{label}</div>
+      <div className="text-sm text-slate-800">{value}</div>
     </div>
   );
 }
