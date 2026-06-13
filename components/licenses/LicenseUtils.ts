@@ -22,22 +22,13 @@ export function getDaysUntilExpiry(expiryDate: string): number {
   return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-// Categories shown in the UI dropdown. VEHICLE / ADMIN_VEHICLE rows still exist
-// in the DB and are surfaced from the Phương tiện vận chuyển page; they're
-// removed from the Giấy phép selector so the two pages stay distinct.
 export const CATEGORY_LABELS: Record<string, string> = {
   HOSPITAL: 'Bệnh viện',
   DEPARTMENT: 'Khoa/Phòng',
-  EQUIPMENT: 'Thiết bị y tế',
-  OTHER: 'Khác',
-};
-
-// Full label map including vehicle categories, used when rendering legacy rows
-// that still carry those categories.
-export const CATEGORY_LABELS_FULL: Record<string, string> = {
-  ...CATEGORY_LABELS,
   VEHICLE: 'Xe cứu thương',
   ADMIN_VEHICLE: 'Xe hành chính',
+  EQUIPMENT: 'Thiết bị y tế',
+  OTHER: 'Khác',
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -48,6 +39,3 @@ export const CATEGORY_COLORS: Record<string, string> = {
   EQUIPMENT: 'bg-cyan-100 text-cyan-700',
   OTHER: 'bg-gray-100 text-gray-700',
 };
-
-// Categories excluded from the Giấy phép list / stats by default.
-export const VEHICLE_CATEGORIES: ReadonlyArray<string> = ['VEHICLE', 'ADMIN_VEHICLE'];
