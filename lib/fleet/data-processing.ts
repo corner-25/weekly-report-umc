@@ -7,6 +7,7 @@ import {
   type DriverStats,
   type DailyStats,
 } from './types';
+import { normalizeDuration } from './duration';
 
 // ─── PARSING ────────────────────────────────────────────────
 
@@ -33,7 +34,8 @@ function parseDistance(val: unknown): number {
   if (isNaN(dist)) return 0;
   // Convert metres to km
   const km = dist > 1000 && dist < 1000000 ? dist / 1000 : dist;
-  return km > 0 && km <= 1000 ? Math.round(km * 100) / 100 : 0;
+  // Allow up to 3000 km — a 4-day southbound run is plausible.
+  return km > 0 && km <= 3000 ? Math.round(km * 100) / 100 : 0;
 }
 
 function parseRevenue(val: unknown): number {
@@ -114,15 +116,28 @@ export function processRawData(rawRecords: Record<string, unknown>[]): FleetTrip
         prefixedId = `CT_${vehicleId}`;
       }
 
+      const startTimeStr = mapped['start_time'] ? String(mapped['start_time']) : null;
+      const endTimeStr = mapped['end_time'] ? String(mapped['end_time']) : null;
+      const reportedHours = parseDuration(mapped['duration_hours']);
+      const distanceKm = parseDistance(mapped['distance_km']);
+      const normalized = normalizeDuration({
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+        distanceKm,
+        reportedHours,
+      });
+
       const trip: FleetTrip = {
         vehicle_id: prefixedId,
         driver_name: String(mapped['driver_name'] ?? '').trim(),
         vehicle_type: vehicleType,
         record_date: dateStr ?? '',
-        start_time: mapped['start_time'] ? String(mapped['start_time']) : null,
-        end_time: mapped['end_time'] ? String(mapped['end_time']) : null,
-        duration_hours: parseDuration(mapped['duration_hours']),
-        distance_km: parseDistance(mapped['distance_km']),
+        start_time: startTimeStr,
+        end_time: endTimeStr,
+        duration_hours: normalized.hours,
+        reported_hours: reportedHours,
+        duration_adjustment: normalized.adjustment,
+        distance_km: distanceKm,
         fuel_liters: parseFuel(mapped['fuel_liters']),
         revenue_vnd: parseRevenue(mapped['revenue_vnd']),
         destination: String(mapped['destination'] ?? ''),
@@ -170,7 +185,7 @@ export function computeOverview(data: FleetTrip[]): FleetOverview {
     data.map((t) => t.driver_name).filter((n) => n && n !== 'nan' && n !== 'NaN' && n.trim())
   );
   const totalRevenue = data.reduce((s, t) => s + t.revenue_vnd, 0);
-  const validHours = data.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 24);
+  const validHours = data.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 48);
   const totalHours = validHours.reduce((s, t) => s + t.duration_hours, 0);
   const totalDistance = data.reduce((s, t) => s + t.distance_km, 0);
   const revenueTrips = data.filter((t) => t.revenue_vnd > 0);
@@ -221,7 +236,7 @@ export function computeVehicleStats(data: FleetTrip[]): VehicleStats[] {
   return Object.entries(grouped).map(([vehicleId, trips]) => {
     const totalTrips = trips.length;
     const totalRevenue = trips.reduce((s, t) => s + t.revenue_vnd, 0);
-    const validH = trips.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 24);
+    const validH = trips.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 48);
     const totalHours = validH.reduce((s, t) => s + t.duration_hours, 0);
     const totalDistance = trips.reduce((s, t) => s + t.distance_km, 0);
     const totalFuel = trips.reduce((s, t) => s + t.fuel_liters, 0);
@@ -274,7 +289,7 @@ export function computeDriverStats(data: FleetTrip[]): DriverStats[] {
   return Object.entries(grouped).map(([name, trips]) => {
     const totalTrips = trips.length;
     const totalRevenue = trips.reduce((s, t) => s + t.revenue_vnd, 0);
-    const validH = trips.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 24);
+    const validH = trips.filter((t) => t.duration_hours >= 0 && t.duration_hours <= 48);
     const totalHours = validH.reduce((s, t) => s + t.duration_hours, 0);
     const activeDays = new Set(trips.map((t) => t.date).filter(Boolean)).size;
     return {

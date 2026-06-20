@@ -58,6 +58,9 @@ export interface FleetTrip {
   date: string;               // YYYY-MM-DD
   month: string;              // YYYY-MM
   weekday: number;            // 0=Sun..6=Sat
+  // audit
+  reported_hours: number;     // duration as reported in the source sheet (before normalization)
+  duration_adjustment: 'NONE' | 'ROLLED_OVERNIGHT' | 'SNAPPED_TO_DAY' | 'BOTH';
 }
 
 /** Overview metrics */
