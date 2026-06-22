@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { formatDate } from './MOUUtils';
 import {
@@ -110,10 +111,10 @@ export function MOUDocuments({ mouId, documents, onRefresh }: Props) {
             <div className="col-span-2">
               <input name="title" required placeholder="Tên văn bản *" className={inputClass} />
             </div>
-            <select name="documentType" className={inputClass}>
+            <Select name="documentType" className={inputClass}>
               <option value="">Loại văn bản</option>
               {DOCUMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
+            </Select>
             <input name="fileUrl" placeholder="URL file (nếu có)" className={inputClass} />
             <div className="col-span-2">
               <textarea name="description" rows={2} placeholder="Mô tả" className={inputClass} />

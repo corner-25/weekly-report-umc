@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MOUList, type MOUItem } from '@/components/mous/MOUList';
@@ -185,24 +186,24 @@ export default function MOUsPage() {
               className={`${inputClass} pl-9`}
             />
           </div>
-          <select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }} className={inputClass}>
+          <Select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }} className={inputClass}>
             <option value="">Tất cả loại</option>
             {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
-          </select>
-          <select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }} className={inputClass}>
+          </Select>
+          <Select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }} className={inputClass}>
             <option value="">Tất cả trạng thái</option>
             {Object.entries(STATUS_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
-          </select>
-          <select value={filterDept} onChange={(e) => { setFilterDept(e.target.value); setPage(1); }} className={inputClass}>
+          </Select>
+          <Select value={filterDept} onChange={(e) => { setFilterDept(e.target.value); setPage(1); }} className={inputClass}>
             <option value="">Tất cả phòng</option>
             {departments.map((d) => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="flex items-center justify-between gap-3 mt-3 flex-wrap">

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -232,7 +233,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
             </div>
 
             {chairMode === 'select' ? (
-              <select
+              <Select
                 value={formData.chair}
                 onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
@@ -243,7 +244,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
                     {option}
                   </option>
                 ))}
-              </select>
+              </Select>
             ) : (
               <textarea
                 rows={2}
@@ -285,7 +286,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
             <label className="block text-sm font-medium text-slate-700 mb-1">
               Trạng thái <span className="text-red-500">*</span>
             </label>
-            <select
+            <Select
               required
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -293,7 +294,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
             >
               <option value="UNCONFIRMED">Chưa xác nhận</option>
               <option value="CONFIRMED">Đã xác nhận</option>
-            </select>
+            </Select>
             <p className="text-xs text-slate-500 mt-1">
               Sự kiện "Đã xác nhận" sẽ được hiển thị nổi bật hơn trên lịch
             </p>

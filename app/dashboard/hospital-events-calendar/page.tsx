@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { startOfWeek, endOfWeek, addWeeks, format, addDays, isSameDay } from 'date-fns';
@@ -135,7 +136,7 @@ export default function HospitalEventsCalendarPage() {
           </div>
         </div>
 
-        <select
+        <Select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
           className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -143,9 +144,9 @@ export default function HospitalEventsCalendarPage() {
           <option value="">Tất cả loại</option>
           <option value="ORGANIZED">Tổ chức</option>
           <option value="COLLABORATED">Phối hợp</option>
-        </select>
+        </Select>
 
-        <select
+        <Select
           value={filterRoom}
           onChange={(e) => setFilterRoom(e.target.value)}
           className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -154,7 +155,7 @@ export default function HospitalEventsCalendarPage() {
           {rooms.map(room => (
             <option key={room.id} value={room.id}>{room.name}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {/* Legend */}

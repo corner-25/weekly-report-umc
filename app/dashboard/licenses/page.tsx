@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useState } from 'react';
 import { ShieldCheck, Table2, LayoutGrid, GanttChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -175,21 +176,21 @@ export default function LicensesPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           />
-          <select
+          <Select
             value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="">Tất cả loại</option>
             {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
-          <select
+          </Select>
+          <Select
             value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="">Tất cả khoa/phòng</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
-          <select
+          </Select>
+          <Select
             value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
@@ -197,7 +198,7 @@ export default function LicensesPage() {
             <option value="ACTIVE">Còn hiệu lực</option>
             <option value="EXPIRING_SOON">Sắp hết hạn</option>
             <option value="EXPIRED">Đã hết hạn</option>
-          </select>
+          </Select>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 
 interface Secretary {
@@ -185,7 +186,7 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Loại thư ký</label>
-                <select
+                <Select
                   value={formData.secretaryTypeId}
                   onChange={(e) => setFormData({ ...formData, secretaryTypeId: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -194,12 +195,12 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
                   {types.map((type) => (
                     <option key={type.id} value={type.id}>{type.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Khoa/Phòng hiện tại</label>
-                <select
+                <Select
                   value={formData.currentDepartmentId}
                   onChange={(e) => setFormData({ ...formData, currentDepartmentId: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -208,12 +209,12 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
                   {departments.map((dept) => (
                     <option key={dept.id} value={dept.id}>{dept.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
-                <select
+                <Select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -221,7 +222,7 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
                   <option value="ACTIVE">Đang hoạt động</option>
                   <option value="ON_LEAVE">Nghỉ phép</option>
                   <option value="INACTIVE">Nghỉ việc</option>
-                </select>
+                </Select>
               </div>
             </div>
           </div>

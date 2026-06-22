@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { LineChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -188,7 +189,7 @@ export default function MetricsPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Năm
             </label>
-            <select
+            <Select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -198,14 +199,14 @@ export default function MetricsPage() {
                   {year}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Phòng ban
             </label>
-            <select
+            <Select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -216,7 +217,7 @@ export default function MetricsPage() {
                   {dept.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
       </div>

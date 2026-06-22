@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { formatDate } from './MOUUtils';
 import {
@@ -113,15 +114,15 @@ export function MOUActivities({ mouId, activities, onRefresh }: Props) {
             <div className="col-span-2">
               <input name="title" required placeholder="Tên hoạt động *" className={inputClass} />
             </div>
-            <select name="activityType" className={inputClass}>
+            <Select name="activityType" className={inputClass}>
               <option value="">Loại hoạt động</option>
               {ACTIVITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <select name="status" className={inputClass} defaultValue="PLANNED">
+            </Select>
+            <Select name="status" className={inputClass} defaultValue="PLANNED">
               {Object.entries(ACTIVITY_STATUS_LABELS).map(([k, v]) => (
                 <option key={k} value={k}>{v}</option>
               ))}
-            </select>
+            </Select>
             <input name="startDate" type="date" className={inputClass} placeholder="Ngày bắt đầu" />
             <input name="endDate" type="date" className={inputClass} placeholder="Ngày kết thúc" />
             <input name="location" placeholder="Địa điểm" className={inputClass} />

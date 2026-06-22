@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
@@ -635,7 +636,7 @@ function TaskRow({ task, deptId, masterTasks, onChangeMatch }: {
         )}
       </td>
       <td className="px-3 py-2">
-        <select
+        <Select
           value={task.masterTaskId || ''}
           onChange={e => onChangeMatch(e.target.value || null)}
           className={`w-full text-xs px-2 py-1.5 rounded border ${
@@ -646,7 +647,7 @@ function TaskRow({ task, deptId, masterTasks, onChangeMatch }: {
           {masterTasks.map(mt => (
             <option key={mt.id} value={mt.id}>{mt.name}</option>
           ))}
-        </select>
+        </Select>
       </td>
       <td className="px-3 py-2 text-center">
         {task.progress !== null ? (

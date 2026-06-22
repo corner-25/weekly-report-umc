@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 
 interface MeetingRoom {
@@ -40,7 +41,7 @@ export function MeetingRoomSelector({ value, onChange }: MeetingRoomSelectorProp
 
   return (
     <div className="space-y-2">
-      <select
+      <Select
         value={value || ''}
         onChange={(e) => onChange(e.target.value || null)}
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -52,7 +53,7 @@ export function MeetingRoomSelector({ value, onChange }: MeetingRoomSelectorProp
             {room.name} {room.location ? `(${room.location})` : ''} - {room.capacity} người
           </option>
         ))}
-      </select>
+      </Select>
 
       {selectedRoom && (
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-sm">

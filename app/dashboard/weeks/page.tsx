@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -74,7 +75,7 @@ export default function WeeksListPage() {
           </div>
           <div className="w-48">
             <label className="block text-xs font-medium text-slate-500 mb-1.5">Năm</label>
-            <select
+            <Select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
               className={inputClass}
@@ -82,7 +83,7 @@ export default function WeeksListPage() {
               {years.map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <button
             onClick={handleSearch}

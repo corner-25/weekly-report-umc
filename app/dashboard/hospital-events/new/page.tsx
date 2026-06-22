@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MeetingRoomSelector } from '@/components/hospital-events/MeetingRoomSelector';
@@ -236,14 +237,14 @@ export default function NewHospitalEventPage() {
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Trạng thái
               </label>
-              <select
+              <Select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               >
                 <option value="UNCONFIRMED">Chưa xác nhận</option>
                 <option value="CONFIRMED">Đã xác nhận</option>
-              </select>
+              </Select>
             </div>
 
             <div>

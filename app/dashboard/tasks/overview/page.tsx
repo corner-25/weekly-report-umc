@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -334,7 +335,7 @@ export default function TasksOverview() {
               className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
             />
           </div>
-          <select
+          <Select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
@@ -343,8 +344,8 @@ export default function TasksOverview() {
             {departments.map((dept) => (
               <option key={dept.id} value={dept.id}>{dept.name}</option>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
@@ -353,7 +354,7 @@ export default function TasksOverview() {
             <option value="in_progress">Đang làm</option>
             <option value="completed">Hoàn thành</option>
             <option value="not_started">Chưa bắt đầu</option>
-          </select>
+          </Select>
           {viewMode === 'list' && (
             <label className="inline-flex items-center gap-2 px-3 py-2 text-sm text-slate-600 cursor-pointer">
               <input

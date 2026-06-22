@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { format, startOfYear, endOfYear, eachWeekOfInterval, getWeek } from 'date-fns';
@@ -139,7 +140,7 @@ export default function TimelinePage() {
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-3 mb-5">
         <div className="flex flex-wrap items-center gap-2">
-          <select
+          <Select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
@@ -147,15 +148,15 @@ export default function TimelinePage() {
             {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => (
               <option key={y} value={y}>Năm {y}</option>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
             className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
           >
             <option value="all">Tất cả phòng</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
+          </Select>
 
           <div className="ml-auto flex items-center gap-3 text-xs text-slate-600">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" /> Hoàn thành</span>

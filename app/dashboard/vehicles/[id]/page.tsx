@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -363,14 +364,14 @@ function AddMaintenanceModal({ vehicleId, onClose, onSuccess }: { vehicleId: str
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Loại</label>
-            <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg">
+            <Select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg">
               <option value="">--</option>
               <option value="BAO_DUONG">Bảo dưỡng</option>
               <option value="SUA_CHUA">Sửa chữa</option>
               <option value="DANG_KIEM">Đăng kiểm</option>
               <option value="BAO_HIEM">Bảo hiểm</option>
               <option value="KHAC">Khác</option>
-            </select>
+            </Select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Mô tả *</label>

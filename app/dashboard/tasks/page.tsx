@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useMemo, useState } from 'react';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -314,7 +315,7 @@ export default function MasterTasksPage() {
         </div>
         <div className="relative">
           <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-          <select
+          <Select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
             className={`${inputClass} pl-9 pr-8 appearance-none min-w-[200px]`}
@@ -323,7 +324,7 @@ export default function MasterTasksPage() {
             {departments.map((d) => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 self-start lg:self-auto">
           <button
@@ -437,7 +438,7 @@ export default function MasterTasksPage() {
               {!editingTask && (
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Phòng ban *</label>
-                  <select
+                  <Select
                     value={formData.departmentId}
                     onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
                     required
@@ -447,7 +448,7 @@ export default function MasterTasksPage() {
                     {departments.map((d) => (
                       <option key={d.id} value={d.id}>{d.name}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               )}
 

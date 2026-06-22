@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { ArrowLeftRight } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -234,7 +235,7 @@ export default function SecretaryTransfersPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Thư ký <span className="text-red-500">*</span>
                 </label>
-                <select
+                <Select
                   value={formData.secretaryId}
                   onChange={(e) => setFormData({ ...formData, secretaryId: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -246,7 +247,7 @@ export default function SecretaryTransfersPage() {
                       {s.fullName} {s.currentDepartment ? `(${s.currentDepartment.name})` : ''}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               {selectedSecretary?.currentDepartment && (
@@ -260,7 +261,7 @@ export default function SecretaryTransfersPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Chuyển đến <span className="text-red-500">*</span>
                 </label>
-                <select
+                <Select
                   value={formData.toDepartmentId}
                   onChange={(e) => setFormData({ ...formData, toDepartmentId: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -272,7 +273,7 @@ export default function SecretaryTransfersPage() {
                     .map((d) => (
                       <option key={d.id} value={d.id}>{d.name}</option>
                     ))}
-                </select>
+                </Select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

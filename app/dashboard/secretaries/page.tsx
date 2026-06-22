@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -187,7 +188,7 @@ export default function SecretariesPage() {
             />
           </div>
           <div>
-            <select
+            <Select
               value={filters.departmentId}
               onChange={(e) => setFilters({ ...filters, departmentId: e.target.value })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -196,10 +197,10 @@ export default function SecretariesPage() {
               {departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>{dept.name}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
-            <select
+            <Select
               value={filters.typeId}
               onChange={(e) => setFilters({ ...filters, typeId: e.target.value })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -208,10 +209,10 @@ export default function SecretariesPage() {
               {types.map((type) => (
                 <option key={type.id} value={type.id}>{type.name}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
-            <select
+            <Select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -220,7 +221,7 @@ export default function SecretariesPage() {
               <option value="ACTIVE">Đang hoạt động</option>
               <option value="INACTIVE">Nghỉ việc</option>
               <option value="ON_LEAVE">Nghỉ phép</option>
-            </select>
+            </Select>
           </div>
         </div>
       </div>

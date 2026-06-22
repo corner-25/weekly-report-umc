@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import {
   CATEGORY_LABELS, CATEGORY_COLORS, STATUS_COLORS, STATUS_LABELS,
@@ -749,19 +750,19 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Lĩnh vực *</label>
-            <select value={form.clauseType} onChange={e => setForm(p => ({ ...p, clauseType: e.target.value }))} className={inputClass}>
+            <Select value={form.clauseType} onChange={e => setForm(p => ({ ...p, clauseType: e.target.value }))} className={inputClass}>
               {Object.entries(CLAUSE_TYPE_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Bên thực hiện *</label>
-            <select value={form.responsibleParty} onChange={e => setForm(p => ({ ...p, responsibleParty: e.target.value }))} className={inputClass}>
+            <Select value={form.responsibleParty} onChange={e => setForm(p => ({ ...p, responsibleParty: e.target.value }))} className={inputClass}>
               {Object.entries(RESPONSIBLE_PARTY_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -788,19 +789,19 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Trạng thái</label>
-            <select value={form.clauseStatus} onChange={e => setForm(p => ({ ...p, clauseStatus: e.target.value }))} className={inputClass}>
+            <Select value={form.clauseStatus} onChange={e => setForm(p => ({ ...p, clauseStatus: e.target.value }))} className={inputClass}>
               {Object.entries(CLAUSE_STATUS_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Đánh giá chất lượng</label>
-            <select value={form.quality} onChange={e => setForm(p => ({ ...p, quality: e.target.value }))} className={inputClass}>
+            <Select value={form.quality} onChange={e => setForm(p => ({ ...p, quality: e.target.value }))} className={inputClass}>
               {QUALITY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import type { ProcessedRow, ReportType, TimeFilter } from '@/lib/phong-hc/types';
 import {
@@ -237,7 +238,7 @@ export default function PhongHcNativePage() {
         {/* Controls row */}
         <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
           {/* Report type */}
-          <select
+          <Select
             value={reportType}
             onChange={(e) => setReportType(e.target.value as ReportType)}
             className="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
@@ -246,7 +247,7 @@ export default function PhongHcNativePage() {
             <option value="monthly">Theo tháng</option>
             <option value="quarterly">Theo quý</option>
             <option value="yearly">Theo năm</option>
-          </select>
+          </Select>
 
           {/* Year pills */}
           {stats.years.length > 1 && (

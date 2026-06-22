@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { User, GraduationCap, Briefcase, ClipboardCheck, MessageSquare, X, Loader2 } from 'lucide-react';
 
@@ -372,7 +373,7 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
                 </div>
                 <div>
                   <label className={labelCls}>Hiểu biết về Bệnh viện?</label>
-                  <select
+                  <Select
                     value={formData.knowsHospital === null ? '' : formData.knowsHospital ? 'true' : 'false'}
                     onChange={(e) => update('knowsHospital', e.target.value === '' ? null : e.target.value === 'true')}
                     className={inputCls}
@@ -380,14 +381,14 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
                     <option value="">--</option>
                     <option value="true">Có hiểu biết</option>
                     <option value="false">Chưa có hiểu biết</option>
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <label className={labelCls}>Nguồn tuyển dụng</label>
-                  <select value={formData.source} onChange={(e) => update('source', e.target.value)} className={inputCls}>
+                  <Select value={formData.source} onChange={(e) => update('source', e.target.value)} className={inputCls}>
                     <option value="">--</option>
                     {SOURCE_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  </Select>
                 </div>
                 <div className="col-span-2">
                   <label className={labelCls}>Thân nhân đang công tác tại Bệnh viện</label>
@@ -395,17 +396,17 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
                 </div>
                 <div>
                   <label className={labelCls}>Loại thư ký ứng tuyển</label>
-                  <select value={formData.appliedTypeId} onChange={(e) => update('appliedTypeId', e.target.value)} className={inputCls}>
+                  <Select value={formData.appliedTypeId} onChange={(e) => update('appliedTypeId', e.target.value)} className={inputCls}>
                     <option value="">--</option>
                     {types.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <label className={labelCls}>Phòng ban mong muốn</label>
-                  <select value={formData.desiredDepartmentId} onChange={(e) => update('desiredDepartmentId', e.target.value)} className={inputCls}>
+                  <Select value={formData.desiredDepartmentId} onChange={(e) => update('desiredDepartmentId', e.target.value)} className={inputCls}>
                     <option value="">--</option>
                     {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                  </select>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -441,14 +442,14 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
                   ].map((r) => (
                     <div key={r.key} className="grid grid-cols-3 gap-2 items-center">
                       <label className="text-xs text-slate-700 col-span-2">{r.label}</label>
-                      <select
+                      <Select
                         value={formData[r.key as keyof typeof formData] as string}
                         onChange={(e) => update(r.key as keyof typeof formData, e.target.value)}
                         className={inputCls}
                       >
                         <option value="">--</option>
                         {RATING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                      </select>
+                      </Select>
                     </div>
                   ))}
                 </div>
@@ -479,11 +480,11 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Kết luận sơ tuyển</label>
-                  <select value={formData.screeningResult} onChange={(e) => update('screeningResult', e.target.value)} className={inputCls}>
+                  <Select value={formData.screeningResult} onChange={(e) => update('screeningResult', e.target.value)} className={inputCls}>
                     <option value="">--</option>
                     <option value="PASS">Đạt</option>
                     <option value="FAIL">Không đạt</option>
-                  </select>
+                  </Select>
                   {formData.screeningResult === 'PASS' && (
                     <p className="text-[11px] text-emerald-600 mt-1">Sẽ tự động chuyển sang phỏng vấn khi lưu.</p>
                   )}

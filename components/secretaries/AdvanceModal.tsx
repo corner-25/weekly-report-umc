@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 
 interface Application {
@@ -129,14 +130,14 @@ export function AdvanceModal({ application, action, departments, onClose, onSucc
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phòng ban phân công</label>
-                <select
+                <Select
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"
                 >
                   <option value="">-- Chọn phòng ban --</option>
                   {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu làm việc</label>

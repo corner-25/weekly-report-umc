@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useEffect, useState } from 'react';
 
 interface Department {
@@ -136,7 +137,7 @@ export default function MetricsDataPage() {
         <div className="flex flex-wrap gap-4 items-end">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Năm</label>
-            <select
+            <Select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
               className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -144,11 +145,11 @@ export default function MetricsDataPage() {
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Phòng ban</label>
-            <select
+            <Select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
               className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -157,7 +158,7 @@ export default function MetricsDataPage() {
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
       </div>

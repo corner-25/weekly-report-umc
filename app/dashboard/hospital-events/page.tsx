@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -129,7 +130,7 @@ export default function HospitalEventsPage() {
           className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
         />
 
-        <select
+        <Select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
           className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -137,9 +138,9 @@ export default function HospitalEventsPage() {
           <option value="">Tất cả loại sự kiện</option>
           <option value="ORGANIZED">Tổ chức</option>
           <option value="COLLABORATED">Phối hợp</option>
-        </select>
+        </Select>
 
-        <select
+        <Select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
           className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -147,7 +148,7 @@ export default function HospitalEventsPage() {
           <option value="">Tất cả trạng thái</option>
           <option value="CONFIRMED">Đã xác nhận</option>
           <option value="UNCONFIRMED">Chưa xác nhận</option>
-        </select>
+        </Select>
 
         <Link
           href="/dashboard/hospital-events/new"

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { CATEGORY_LABELS } from './LicenseUtils';
 
@@ -127,14 +128,14 @@ export default function LicenseForm({ initialData, departments, onSuccess, onClo
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Loại giấy phép <span className="text-red-500">*</span></label>
-              <select
+              <Select
                 value={form.category} onChange={(e) => set('category', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -168,13 +169,13 @@ export default function LicenseForm({ initialData, departments, onSuccess, onClo
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Khoa/Phòng</label>
-              <select
+              <Select
                 value={form.departmentId} onChange={(e) => set('departmentId', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">— Cấp bệnh viện —</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
+              </Select>
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getWeek, getYear, startOfWeek, endOfWeek, format } from 'date-fns';
@@ -535,7 +536,7 @@ export default function NewWeekReport() {
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-bold mb-4">Chọn phòng ban</h2>
         <div className="flex gap-4">
-          <select
+          <Select
             value={currentDeptId}
             onChange={(e) => setCurrentDeptId(e.target.value)}
             className="flex-1 px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
@@ -548,7 +549,7 @@ export default function NewWeekReport() {
                   {dept.name}
                 </option>
               ))}
-          </select>
+          </Select>
           <button
             onClick={addDepartment}
             disabled={!currentDeptId}
@@ -593,7 +594,7 @@ export default function NewWeekReport() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Chọn nhiệm vụ thường kỳ từ danh sách:
                   </label>
-                  <select
+                  <Select
                     onChange={(e) => {
                       if (e.target.value) {
                         addMasterTaskProgress(deptData.departmentId, e.target.value);
@@ -608,7 +609,7 @@ export default function NewWeekReport() {
                         {mt.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   <p className="text-xs text-slate-500 mt-2">
                     Nhiệm vụ này sẽ tiếp tục được cập nhật trong các tuần tiếp theo
                   </p>

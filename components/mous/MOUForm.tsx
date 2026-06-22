@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { CATEGORY_LABELS, STATUS_LABELS } from './MOUUtils';
 
@@ -160,22 +161,22 @@ export function MOUForm({ initialData, departments, onSuccess, onClose }: Props)
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Loại *</label>
-                <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className={inputClass}>
+                <Select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} className={inputClass}>
                   {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Trạng thái</label>
-                <select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className={inputClass}>
+                <Select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className={inputClass}>
                   {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Phòng đầu mối</label>
-                <select value={form.departmentId} onChange={e => setForm(p => ({ ...p, departmentId: e.target.value }))} className={inputClass}>
+                <Select value={form.departmentId} onChange={e => setForm(p => ({ ...p, departmentId: e.target.value }))} className={inputClass}>
                   <option value="">-- Chọn phòng --</option>
                   {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
+                </Select>
               </div>
             </div>
           </div>
