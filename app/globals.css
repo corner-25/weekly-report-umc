@@ -16,6 +16,80 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  /*
+   * Shared select / combobox treatment.
+   * Most screens use native selects with local utility classes, so this keeps
+   * their behaviour and accessibility while giving them one visual language.
+   */
+  select:not([multiple]) {
+    min-height: 42px;
+    padding-right: 2.75rem !important;
+    color: #334155;
+    font-weight: 500;
+    line-height: 1.25rem;
+    background-color: #ffffff;
+    background-image:
+      linear-gradient(135deg, transparent 50%, #0891b2 50%),
+      linear-gradient(45deg, #0891b2 50%, transparent 50%),
+      linear-gradient(to right, #e2e8f0, #e2e8f0);
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 13px) 50%,
+      calc(100% - 2.35rem) 50%;
+    background-size: 5px 5px, 5px 5px, 1px 1.35rem;
+    background-repeat: no-repeat;
+    border-color: #cbd5e1;
+    border-radius: 0.75rem;
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.04),
+      inset 0 1px 0 rgb(255 255 255 / 0.75);
+    appearance: none;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
+  }
+
+  select:not([multiple]):hover:not(:disabled) {
+    border-color: #67e8f9;
+    background-color: #f8fdff;
+    box-shadow:
+      0 3px 10px rgb(8 145 178 / 0.08),
+      inset 0 1px 0 rgb(255 255 255 / 0.8);
+  }
+
+  select:not([multiple]):focus,
+  select:not([multiple]):focus-visible {
+    outline: none;
+    border-color: #06b6d4;
+    background-color: #ffffff;
+    box-shadow:
+      0 0 0 3px rgb(6 182 212 / 0.14),
+      0 4px 12px rgb(8 145 178 / 0.1);
+  }
+
+  select:not([multiple]):disabled {
+    color: #94a3b8;
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  select option {
+    color: #334155;
+    background: #ffffff;
+    font-weight: 500;
+  }
+
+  select option:checked {
+    color: #0e7490;
+    background: #ecfeff;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
