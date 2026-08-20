@@ -128,17 +128,24 @@ Custom Start Command, dùng `CMD` trong Dockerfile là chạy được ngay.
 Sau khi hai dashboard chạy, copy URL của chúng vào biến `DASHBOARD_TO_XE_URL` và
 `DASHBOARD_PHONG_HC_OLD_URL` của service 1, rồi redeploy service 1.
 
-## Lịch chạy đồng bộ
+## Service 4 — Cron đồng bộ
 
-Tạo thêm một **Cron Service** trên Railway trỏ vào app chính:
+| Mục | Giá trị |
+|---|---|
+| Root Directory | `cron` |
+| Cron Schedule | `0 23 * * *` (06:00 giờ VN — Railway dùng UTC) |
+| Restart Policy | NEVER (chạy xong là thoát) |
 
-```bash
-curl -fsS -X POST \
-  -H "x-cron-secret: $CRON_SECRET" \
-  "https://<app>.railway.app/api/cron/sync"
+Biến môi trường:
+
+```
+CRON_SECRET     # giống service web
+SYNC_URL=https://umc.up.railway.app/api/cron/sync
 ```
 
-Lịch đề xuất: `0 23 * * *` (06:00 giờ VN — Railway dùng UTC).
+Container chỉ chứa `curl` và `sync.sh`. Script thoát khác 0 khi HTTP lỗi **hoặc** khi
+API trả `success:false` — nhờ vậy nguồn dữ liệu hỏng sẽ hiện thành deployment FAILED
+thay vì âm thầm trôi qua.
 
 Endpoint chạy tuần tự mọi nguồn đang bật `cronEnabled`, bỏ qua nguồn không đổi nhờ checksum,
 và ghi kết quả vào `sync_runs` / `sync_logs`.
@@ -170,9 +177,19 @@ DASHBOARD_PHONG_HC_OLD_URL="http://localhost:8502"
 Dashboard cần `dashboards/.streamlit/secrets.toml` (file này đã gitignore — copy từ repo
 Streamlit cũ sang).
 
+## Hiệu năng ingestion
+
+Bản đầu dùng `upsert` từng dòng: 14.000 chuyến mất **271s**, sát giới hạn
+`maxDuration = 300s` của route. Đổi sang lọc trước rồi `createMany` đưa xuống **2s**.
+
+Lý do lọc trước được: dữ liệu nguồn là bản ghi lịch sử, tài xế không sửa chuyến đã
+nhập — chuyến cùng `sourceRowHash` chắc chắn giống hệt bản đã lưu.
+
 ## Việc chưa làm
 
-- Hai dashboard vẫn đọc dữ liệu từ GitHub (`vehicle-storage`, `dashboard-storage`).
-  Sau khi ingestion chạy ổn định, chuyển chúng sang đọc thẳng Postgres.
-- Chưa có đăng nhập cho dashboard Streamlit — hiện ai có URL đều xem được.
-  Cân nhắc bật xác thực ở tầng Railway hoặc thêm mật khẩu trong Streamlit.
+- **HC OfficeAPI** chưa có connector (`cronEnabled = false`). API chỉ gọi được từ mạng
+  nội bộ nên phải giữ GitHub làm cầu; xem `docs/INGESTION-REFACTOR.md` mục 3.4.
+- **Chưa có đăng nhập cho dashboard Streamlit** — ai có URL đều xem được. Cân nhắc bật
+  xác thực ở tầng Railway hoặc thêm mật khẩu trong Streamlit.
+- **Trang quản trị đồng bộ** (`/dashboard/data-sync`) chưa viết lại — hiện vẫn là panel
+  upload Excel cũ, chưa hiện trạng thái `sync_runs`.
