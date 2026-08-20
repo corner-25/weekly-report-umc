@@ -89,24 +89,40 @@ DASHBOARD_PHONG_HC_OLD_URL             # điền sau khi deploy service 3
 | Mục | Giá trị |
 |---|---|
 | Root Directory | `dashboards` |
-| Config file | `dashboards/railway.toxe.json` |
-| Builder | Dockerfile (`dashboards/Dockerfile`) |
+| Config file | *(để trống)* — Railway đọc `dashboards/railway.json` |
+| Builder | Dockerfile |
+| Custom Start Command | **để trống** |
 
 Biến môi trường:
 
 ```
 STREAMLIT_SECRETS   # toàn bộ nội dung secrets.toml, dán vào một biến
 DASHBOARD_APP=app_toxe.py
+PORT=8080
 ```
 
 ### Service 3 — Dashboard Hành chính
 
-Giống service 2, chỉ khác:
+Giống service 2, chỉ khác `DASHBOARD_APP=app_phonghc.py`.
 
-```
-Config file: dashboards/railway.phonghc.json
-DASHBOARD_APP=app_phonghc.py
-```
+### Ba cạm bẫy đã gặp khi thiết lập
+
+Ghi lại để lần sau không mất thời gian:
+
+**1. Tên file config tuỳ biến không dùng được.** Đặt `railwayConfigFile` thành
+`railway.toxe.json` khiến build fail với thông báo *"service config at 'railway.toxe.json'
+not found"*, và log build chỉ có đúng một dòng nên không đoán được. Railway chỉ đọc
+`railway.json` / `railway.toml` ở root directory của service.
+
+**2. `rootDirectory` không đổi Dockerfile mặc định.** Đặt `rootDirectory=dashboards` chỉ
+giới hạn build context; Railway vẫn dùng `Dockerfile` ở root repo, nên nó build Next.js
+(`node:20-alpine`, `COPY prisma`, `npm run build`) rồi fail ở bước cache. Phải khai báo
+`dockerfilePath` trong `dashboards/railway.json`.
+
+**3. Custom Start Command làm container chết im lặng.** Đặt `startCommand` trên service sẽ
+ghi đè `CMD` của Dockerfile, nhưng Railway bọc chuỗi đó theo cách khác shell — container
+khởi động rồi tắt, runtime log chỉ có *"Starting Container"* và HTTP trả 502. Để trống
+Custom Start Command, dùng `CMD` trong Dockerfile là chạy được ngay.
 
 ### Nối lại
 
