@@ -48,8 +48,7 @@ weekly-report-umc/
 │   ├── fleet_validators.py
 │   ├── fleet_evaluation.py     # đánh giá tài xế
 │   ├── Dockerfile              # dùng chung cho cả hai dashboard
-│   ├── railway.toxe.json
-│   └── railway.phonghc.json
+│   └── railway.json            # trỏ builder + dockerfilePath
 ├── Dockerfile                  # app chính
 └── railway.json                # app chính
 ```
