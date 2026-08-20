@@ -12,8 +12,8 @@ import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types
  * hẳn khâu trung gian đó.
  */
 
-/** Ghi theo lô để không giữ transaction quá lâu; dữ liệu có hơn 11.000 chuyến. */
-const UPSERT_BATCH_SIZE = 200;
+/** Số dòng mỗi lô createMany. Lô lớn hơn ít lợi mà tốn bộ nhớ. */
+const UPSERT_BATCH_SIZE = 500;
 
 /** Số dòng lỗi ghi log chi tiết; phần còn lại chỉ đếm. */
 const MAX_REJECTED_LOGGED = 20;
@@ -103,43 +103,40 @@ export const fleetGoogleSheets: Connector<SheetData[], FleetParseResult> = {
 
   async upsert([result]: FleetParseResult[], ctx: SyncContext): Promise<UpsertResult> {
     const { prisma, source, runId } = ctx;
+
+    // Chỉ ghi những chuyến CHƯA có. Dữ liệu nguồn là bản ghi lịch sử — tài xế
+    // không sửa chuyến đã nhập, nên chuyến cùng sourceRowHash chắc chắn giống
+    // hệt bản đã lưu, ghi đè cũng ra kết quả đó.
+    //
+    // Ban đầu dùng upsert từng dòng thì 14.000 chuyến mất 271s trên Railway,
+    // sát giới hạn maxDuration 300s. Lọc trước rồi createMany đưa xuống vài giây,
+    // vì mỗi lô chỉ còn một câu lệnh thay vì 200.
+    const existing = new Set(
+      (
+        await prisma.fleetTrip.findMany({
+          where: { sourceId: source.id },
+          select: { sourceRowHash: true },
+        })
+      ).map((r) => r.sourceRowHash),
+    );
+
+    const fresh = result.rows.filter((r) => !existing.has(r.sourceRowHash));
     let upserted = 0;
 
-    for (let i = 0; i < result.rows.length; i += UPSERT_BATCH_SIZE) {
-      const batch = result.rows.slice(i, i + UPSERT_BATCH_SIZE);
-
-      await prisma.$transaction(
-        batch.map((row) =>
-          prisma.fleetTrip.upsert({
-            where: { sourceRowHash: row.sourceRowHash },
-            create: { ...row, sourceId: source.id, syncRunId: runId },
-            update: {
-              vehicleId: row.vehicleId,
-              driverName: row.driverName,
-              vehicleType: row.vehicleType,
-              recordDate: row.recordDate,
-              startTime: row.startTime,
-              endTime: row.endTime,
-              durationHours: row.durationHours,
-              durationSuspicious: row.durationSuspicious,
-              distanceKm: row.distanceKm,
-              distanceFixMethod: row.distanceFixMethod,
-              fuelLiters: row.fuelLiters,
-              revenueVnd: row.revenueVnd,
-              destination: row.destination,
-              workCategory: row.workCategory,
-              areaType: row.areaType,
-              tripDetails: row.tripDetails,
-              syncRunId: runId,
-            },
-          }),
-        ),
-      );
-
-      upserted += batch.length;
+    for (let i = 0; i < fresh.length; i += UPSERT_BATCH_SIZE) {
+      const batch = fresh.slice(i, i + UPSERT_BATCH_SIZE);
+      const { count } = await prisma.fleetTrip.createMany({
+        data: batch.map((row) => ({ ...row, sourceId: source.id, syncRunId: runId })),
+        // Chặn trường hợp hiếm: hai lần chạy song song cùng chèn một chuyến.
+        skipDuplicates: true,
+      });
+      upserted += count;
     }
 
-    await ctx.log('info', `Đã ghi ${upserted} chuyến vào fleet_trips`);
+    await ctx.log(
+      'info',
+      `Đã ghi ${upserted} chuyến mới vào fleet_trips (${existing.size} chuyến đã có sẵn)`,
+    );
 
     return {
       upserted,
