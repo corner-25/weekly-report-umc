@@ -1,124 +1,113 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-const DASHBOARDS = [
-  {
-    key: 'phong-hc',
-    label: 'Dashboard Phòng HC',
-    icon: '📋',
-    description: 'Dashboard số liệu hành chính (v2)',
-    envKey: 'DASHBOARD_PHONG_HC_URL',
-  },
-  {
-    key: 'phong-hc-old',
-    label: 'Dashboard HC Cũ',
-    icon: '📊',
-    description: 'Dashboard hành chính phiên bản cũ',
-    envKey: 'DASHBOARD_PHONG_HC_OLD_URL',
-  },
+/**
+ * Trang điều hướng sang các dashboard Streamlit.
+ *
+ * Hai dashboard này deploy thành service riêng trên Railway, không nhúng iframe
+ * nữa: Streamlit gửi header chống nhúng và giữ kết nối websocket riêng, chạy
+ * trong iframe hay mất session và vỡ layout. Mở tab mới ổn định hơn hẳn.
+ */
+
+interface DashboardLink {
+  key: string;
+  label: string;
+  icon: string;
+  description: string;
+  envKey: string;
+}
+
+const DASHBOARDS: readonly DashboardLink[] = [
   {
     key: 'to-xe',
     label: 'Dashboard Tổ Xe',
     icon: '🚗',
-    description: 'Dashboard quản lý tổ xe',
+    description: 'Chuyến xe, tài xế, nhiên liệu, đánh giá vận hành',
     envKey: 'DASHBOARD_TO_XE_URL',
   },
   {
-    key: 'umc',
-    label: 'Dashboard UMC',
-    icon: '🏥',
-    description: 'Dashboard đa phòng ban UMC',
-    envKey: 'DASHBOARD_UMC_URL',
+    key: 'phong-hc-old',
+    label: 'Dashboard Hành chính',
+    icon: '📊',
+    description: 'Số liệu văn thư, phòng họp, tổng đài, bãi xe',
+    envKey: 'DASHBOARD_PHONG_HC_OLD_URL',
   },
 ];
 
-export default function PhongHcDashboardPage() {
-  const [activeTab, setActiveTab] = useState('phong-hc');
+export default function DashboardLinksPage() {
   const [urls, setUrls] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/dashboard-urls')
-      .then(r => r.json())
-      .then(data => setUrls(data))
+      .then((r) => r.json())
+      .then(setUrls)
+      .catch(() => setUrls({}))
       .finally(() => setLoading(false));
   }, []);
 
-  const activeDashboard = DASHBOARDS.find(d => d.key === activeTab)!;
-  const activeUrl = urls[activeTab];
-
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div>
+    <div className="space-y-6">
+      <header>
         <h1 className="text-2xl font-bold text-slate-900">Dashboard Số Liệu</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Hệ thống dashboard phân tích số liệu Phòng Hành Chính - UMC
+          Dashboard phân tích chuyên sâu, mở trong tab mới
         </p>
-      </div>
+      </header>
 
-      {/* Tab selector */}
-      <div className="flex gap-2 border-b border-slate-200">
-        {DASHBOARDS.map(d => (
-          <button
-            key={d.key}
-            onClick={() => setActiveTab(d.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px ${
-              activeTab === d.key
-                ? 'border-cyan-500 text-cyan-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-            }`}
-          >
-            <span>{d.icon}</span>
-            <span>{d.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
-          Đang tải cấu hình...
-        </div>
-      ) : !activeUrl ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
-          <p className="font-semibold">Chưa cấu hình URL cho {activeDashboard.label}</p>
-          <p className="mt-2 text-sm">
-            Thêm biến môi trường{' '}
-            <code className="bg-amber-100 px-1 rounded">{activeDashboard.envKey}</code>{' '}
-            vào Railway Variables (hoặc file <code className="bg-amber-100 px-1 rounded">.env</code> khi dev).
-          </p>
+        <div className="flex h-40 items-center justify-center text-sm text-slate-400">
+          Đang tải cấu hình…
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {/* Toolbar */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-            <div>
-              <p className="text-sm font-medium text-slate-900">
-                {activeDashboard.icon} {activeDashboard.label}
-              </p>
-              <p className="text-xs text-slate-400">{activeDashboard.description}</p>
-            </div>
-            <a
-              href={activeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-cyan-200 px-3 py-1.5 text-xs font-medium text-cyan-700 transition hover:bg-cyan-50"
-            >
-              Mở tab mới ↗
-            </a>
-          </div>
-
-          {/* iframe */}
-          <iframe
-            key={activeTab}
-            src={activeUrl}
-            title={activeDashboard.label}
-            className="h-[calc(100vh-260px)] min-h-[680px] w-full border-0"
-          />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {DASHBOARDS.map((d) => (
+            <DashboardCard key={d.key} dashboard={d} url={urls[d.key] ?? null} />
+          ))}
         </div>
       )}
     </div>
+  );
+}
+
+function DashboardCard({ dashboard, url }: { dashboard: DashboardLink; url: string | null }) {
+  if (!url) {
+    return (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+        <p className="flex items-center gap-2 font-semibold text-amber-900">
+          <span aria-hidden>{dashboard.icon}</span>
+          {dashboard.label}
+        </p>
+        <p className="mt-2 text-sm text-amber-800">Chưa cấu hình địa chỉ dashboard.</p>
+        <p className="mt-1 text-xs text-amber-700">
+          Thêm biến <code className="rounded bg-amber-100 px-1">{dashboard.envKey}</code> vào
+          Railway Variables (hoặc <code className="rounded bg-amber-100 px-1">.env</code> khi chạy máy cá nhân).
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-cyan-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+    >
+      <div>
+        <p className="flex items-center gap-2 text-base font-semibold text-slate-900">
+          <span aria-hidden className="text-xl">
+            {dashboard.icon}
+          </span>
+          {dashboard.label}
+        </p>
+        <p className="mt-2 text-sm text-slate-500">{dashboard.description}</p>
+      </div>
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-cyan-700 transition group-hover:gap-2">
+        Mở dashboard
+        <span aria-hidden>↗</span>
+      </span>
+    </a>
   );
 }

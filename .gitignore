@@ -34,7 +34,8 @@ yarn-error.log*
 next-env.d.ts
 
 # Prisma
-prisma/migrations/
+# migrations/ ĐƯỢC commit — Railway chạy `prisma migrate deploy` lúc khởi động,
+# không có file migration thì bảng mới sẽ không được tạo.
 
 # Uploads
 /public/uploads/*
@@ -45,3 +46,9 @@ prisma/migrations/
 # Scripts and local data tools
 /scripts/
 /data-push-railway/
+
+# Python (dashboards Streamlit)
+__pycache__/
+*.pyc
+dashboards/.streamlit/secrets.toml
+dashboards/*.log

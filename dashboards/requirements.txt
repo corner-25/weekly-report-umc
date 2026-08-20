@@ -1,0 +1,22 @@
+# Core dashboard dependencies
+streamlit>=1.41.0,<1.46.0
+pandas
+numpy
+plotly
+requests
+
+# Google API dependencies
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+
+# Additional utilities
+toml
+python-dotenv
+openpyxl
+xlsxwriter
+
+# Optional: for better performance
+pyarrow
+fastparquet

@@ -1,0 +1,9 @@
+{
+  "targets": {
+    "distance_km": 1000,
+    "trips": 80,
+    "hours": 80
+  },
+  "driver_targets": {},
+  "manual_scores": []
+}

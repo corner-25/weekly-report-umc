@@ -12,7 +12,9 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed-sources": "tsx prisma/seed-sync-sources.ts",
+    "sync:local": "curl -X POST -H \"x-cron-secret: $CRON_SECRET\" http://localhost:3000/api/cron/sync"
   },
   "keywords": [],
   "author": "",

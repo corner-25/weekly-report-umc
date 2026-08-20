@@ -15,31 +15,31 @@ datasource db {
 
 // User model for authentication
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  passwordHash  String
-  name          String?
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
 
-  weeks         Week[]
-  chatLogs      ChatbotAuditLog[]
+  weeks    Week[]
+  chatLogs ChatbotAuditLog[]
 
   @@map("users")
 }
 
 // ChatbotAuditLog - One row per chatbot exchange, used for cost tracking and abuse review.
 model ChatbotAuditLog {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  question        String   @db.Text
-  generatedSql    String?  @db.Text
-  rowCount        Int?
-  answer          String?  @db.Text
-  totalTokens     Int?
-  durationMs      Int?
-  errorMessage    String?  @db.Text
-  createdAt       DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  question     String   @db.Text
+  generatedSql String?  @db.Text
+  rowCount     Int?
+  answer       String?  @db.Text
+  totalTokens  Int?
+  durationMs   Int?
+  errorMessage String?  @db.Text
+  createdAt    DateTime @default(now())
 
   @@index([userId, createdAt])
   @@index([createdAt])
@@ -48,21 +48,21 @@ model ChatbotAuditLog {
 
 // Week model - represents a weekly report
 model Week {
-  id              String   @id @default(cuid())
-  weekNumber      Int
-  year            Int
-  startDate       DateTime
-  endDate         DateTime
-  reportFileUrl   String?
-  status          Status   @default(DRAFT)
-  createdById     String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(cuid())
+  weekNumber    Int
+  year          Int
+  startDate     DateTime
+  endDate       DateTime
+  reportFileUrl String?
+  status        Status   @default(DRAFT)
+  createdById   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  createdBy       User               @relation(fields: [createdById], references: [id])
-  tasks           Task[]             // DEPRECATED
-  taskProgress    WeekTaskProgress[] // NEW
-  metricValues    WeekMetricValue[]  // NEW - Số liệu định lượng
+  createdBy    User               @relation(fields: [createdById], references: [id])
+  tasks        Task[] // DEPRECATED
+  taskProgress WeekTaskProgress[] // NEW
+  metricValues WeekMetricValue[] // NEW - Số liệu định lượng
 
   @@unique([weekNumber, year])
   @@index([createdById])
@@ -78,34 +78,34 @@ model Department {
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
 
-  masterTasks            MasterTask[]
-  tasks                  Task[]
-  metricDefinitions      MetricDefinition[]
-  secretaries            Secretary[]
-  transfersFrom          SecretaryTransferLog[] @relation("TransferFrom")
-  transfersTo            SecretaryTransferLog[] @relation("TransferTo")
-  secretaryApplications  SecretaryApplication[] @relation("ApplicationDesiredDept")
-  licenses               License[]
-  mous                   MOU[]
+  masterTasks           MasterTask[]
+  tasks                 Task[]
+  metricDefinitions     MetricDefinition[]
+  secretaries           Secretary[]
+  transfersFrom         SecretaryTransferLog[] @relation("TransferFrom")
+  transfersTo           SecretaryTransferLog[] @relation("TransferTo")
+  secretaryApplications SecretaryApplication[] @relation("ApplicationDesiredDept")
+  licenses              License[]
+  mous                  MOU[]
 
   @@map("departments")
 }
 
 // MasterTask - Danh sách nhiệm vụ chung của mỗi phòng
 model MasterTask {
-  id                String    @id @default(cuid())
+  id                String       @id @default(cuid())
   departmentId      String
-  name              String    @db.Text
-  description       String?   @db.Text
-  estimatedDuration Int?      // Số tuần dự kiến hoàn thành (DEPRECATED - dùng startDate/endDate)
+  name              String       @db.Text
+  description       String?      @db.Text
+  estimatedDuration Int? // Số tuần dự kiến hoàn thành (DEPRECATED - dùng startDate/endDate)
   progressType      ProgressType @default(RECURRING) // Loại tiến độ
   startDate         DateTime? // Ngày bắt đầu nhiệm vụ
   endDate           DateTime? // Ngày kết thúc nhiệm vụ
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
-  department        Department         @relation(fields: [departmentId], references: [id])
-  weekProgress      WeekTaskProgress[]
+  department   Department         @relation(fields: [departmentId], references: [id])
+  weekProgress WeekTaskProgress[]
 
   @@index([departmentId])
   @@index([createdAt])
@@ -114,21 +114,21 @@ model MasterTask {
 
 // WeekTaskProgress - Tiến độ nhiệm vụ từng tuần
 model WeekTaskProgress {
-  id             String    @id @default(cuid())
-  masterTaskId   String
-  weekId         String
-  orderNumber    Int       // Thứ tự hiển thị trong tuần
-  result         String    @db.Text // Kết quả tuần này
-  timePeriod     String    // Thời gian thực hiện
-  progress       Int?      // 0-100, null nếu nhiệm vụ không có tiến độ
-  nextWeekPlan   String    @db.Text
-  isImportant    Boolean   @default(false)
-  completedAt    DateTime? // Ngày hoàn thành (nếu progress = 100)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  masterTaskId String
+  weekId       String
+  orderNumber  Int // Thứ tự hiển thị trong tuần
+  result       String    @db.Text // Kết quả tuần này
+  timePeriod   String // Thời gian thực hiện
+  progress     Int? // 0-100, null nếu nhiệm vụ không có tiến độ
+  nextWeekPlan String    @db.Text
+  isImportant  Boolean   @default(false)
+  completedAt  DateTime? // Ngày hoàn thành (nếu progress = 100)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  masterTask     MasterTask @relation(fields: [masterTaskId], references: [id], onDelete: Cascade)
-  week           Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  masterTask MasterTask @relation(fields: [masterTaskId], references: [id], onDelete: Cascade)
+  week       Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
 
   @@unique([masterTaskId, weekId]) // Mỗi nhiệm vụ chỉ xuất hiện 1 lần/tuần
   @@index([weekId])
@@ -140,21 +140,21 @@ model WeekTaskProgress {
 // Task model - DEPRECATED - giữ lại để backward compatible
 // Sẽ migrate dần sang WeekTaskProgress
 model Task {
-  id             String   @id @default(cuid())
-  weekId         String
-  departmentId   String
-  orderNumber    Int
-  taskName       String   @db.Text
-  result         String   @db.Text
-  timePeriod     String
-  progress       Int?     // 0-100, null nếu nhiệm vụ không có tiến độ
-  nextWeekPlan   String   @db.Text
-  isImportant    Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(cuid())
+  weekId       String
+  departmentId String
+  orderNumber  Int
+  taskName     String   @db.Text
+  result       String   @db.Text
+  timePeriod   String
+  progress     Int? // 0-100, null nếu nhiệm vụ không có tiến độ
+  nextWeekPlan String   @db.Text
+  isImportant  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  week           Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  department     Department @relation(fields: [departmentId], references: [id])
+  week       Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id])
 
   @@index([weekId])
   @@index([departmentId])
@@ -166,15 +166,15 @@ model MetricDefinition {
   id           String   @id @default(cuid())
   departmentId String
   name         String   @db.Text // Tên chỉ số (VD: "Số ca ghép tim", "Nghiên cứu khoa học")
-  unit         String?  // Đơn vị (VD: "ca", "bài", "nghiên cứu")
+  unit         String? // Đơn vị (VD: "ca", "bài", "nghiên cứu")
   description  String?  @db.Text
   orderNumber  Int      @default(0) // Thứ tự hiển thị
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  department   Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  weekValues   WeekMetricValue[]
+  department Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  weekValues WeekMetricValue[]
 
   @@index([departmentId])
   @@map("metric_definitions")
@@ -182,16 +182,16 @@ model MetricDefinition {
 
 // WeekMetricValue - Giá trị số liệu theo tuần
 model WeekMetricValue {
-  id               String   @id @default(cuid())
-  metricId         String
-  weekId           String
-  value            Float    // Giá trị số liệu
-  note             String?  @db.Text // Ghi chú (nếu có)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id        String   @id @default(cuid())
+  metricId  String
+  weekId    String
+  value     Float // Giá trị số liệu
+  note      String?  @db.Text // Ghi chú (nếu có)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  metric           MetricDefinition @relation(fields: [metricId], references: [id], onDelete: Cascade)
-  week             Week             @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  metric MetricDefinition @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  week   Week             @relation(fields: [weekId], references: [id], onDelete: Cascade)
 
   @@unique([metricId, weekId]) // Mỗi chỉ số chỉ có 1 giá trị/tuần
   @@index([weekId])
@@ -202,18 +202,18 @@ model WeekMetricValue {
 
 // Event - Lịch làm việc
 model Event {
-  id              String         @id @default(cuid())
-  date            DateTime       // Ngày diễn ra
-  time            String?        // Giờ diễn ra (VD: "13g30", "08g00")
-  location        String?        @db.Text // Địa điểm
-  content         String         @db.Text // Nội dung sự kiện
-  chair           String?        @db.Text // Người chủ trì
-  participants    String?        @db.Text // Đơn vị chuẩn bị/tham dự
-  note            String?        @db.Text // Ghi chú
-  status          EventStatus    @default(UNCONFIRMED) // Trạng thái xác nhận
-  isEdited        Boolean        @default(false) // Đã chỉnh sửa sau khi tạo
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id           String      @id @default(cuid())
+  date         DateTime // Ngày diễn ra
+  time         String? // Giờ diễn ra (VD: "13g30", "08g00")
+  location     String?     @db.Text // Địa điểm
+  content      String      @db.Text // Nội dung sự kiện
+  chair        String?     @db.Text // Người chủ trì
+  participants String?     @db.Text // Đơn vị chuẩn bị/tham dự
+  note         String?     @db.Text // Ghi chú
+  status       EventStatus @default(UNCONFIRMED) // Trạng thái xác nhận
+  isEdited     Boolean     @default(false) // Đã chỉnh sửa sau khi tạo
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   @@index([date])
   @@index([date, status])
@@ -226,72 +226,72 @@ enum Status {
 }
 
 enum EventStatus {
-  CONFIRMED     // Đã xác nhận
-  UNCONFIRMED   // Chưa xác nhận
+  CONFIRMED // Đã xác nhận
+  UNCONFIRMED // Chưa xác nhận
 }
 
 // Meeting Room - Phòng họp
 model MeetingRoom {
-  id              String    @id @default(cuid())
-  name            String    @unique
-  location        String?   @db.Text
-  capacity        Int
-  description     String?   @db.Text
+  id          String  @id @default(cuid())
+  name        String  @unique
+  location    String? @db.Text
+  capacity    Int
+  description String? @db.Text
 
   // Thiết bị âm thanh
-  hasMicrophone   Boolean   @default(false)
-  hasSpeaker      Boolean   @default(false)
-  audioSystemType String?   @db.Text
+  hasMicrophone   Boolean @default(false)
+  hasSpeaker      Boolean @default(false)
+  audioSystemType String? @db.Text
 
   // Thiết bị hình ảnh
-  hasProjector    Boolean   @default(false)
-  hasScreen       Boolean   @default(false)
-  hasTV           Boolean   @default(false)
-  hasSmartBoard   Boolean   @default(false)
-  visualEquipment String?   @db.Text
+  hasProjector    Boolean @default(false)
+  hasScreen       Boolean @default(false)
+  hasTV           Boolean @default(false)
+  hasSmartBoard   Boolean @default(false)
+  visualEquipment String? @db.Text
 
   // Tiện ích khác
-  hasWifi         Boolean   @default(false)
-  hasAircon       Boolean   @default(false)
-  hasWhiteboard   Boolean   @default(false)
-  furnitureType   String?   @db.Text
-  otherAmenities  String?   @db.Text
+  hasWifi        Boolean @default(false)
+  hasAircon      Boolean @default(false)
+  hasWhiteboard  Boolean @default(false)
+  furnitureType  String? @db.Text
+  otherAmenities String? @db.Text
 
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  hospitalEvents  HospitalEvent[]
+  hospitalEvents HospitalEvent[]
 
   @@map("meeting_rooms")
 }
 
 // Hospital Event - Sự kiện bệnh viện
 model HospitalEvent {
-  id              String            @id @default(cuid())
-  name            String            @db.Text
-  date            DateTime
-  time            String?
-  description     String?           @db.Text
+  id          String   @id @default(cuid())
+  name        String   @db.Text
+  date        DateTime
+  time        String?
+  description String?  @db.Text
 
-  meetingRoomId   String?
-  meetingRoom     MeetingRoom?      @relation(fields: [meetingRoomId], references: [id])
+  meetingRoomId String?
+  meetingRoom   MeetingRoom? @relation(fields: [meetingRoomId], references: [id])
 
-  eventType       HospitalEventType @default(ORGANIZED)
+  eventType HospitalEventType @default(ORGANIZED)
 
-  chair           String?           @db.Text
-  participants    String?           @db.Text
-  note            String?           @db.Text
+  chair        String? @db.Text
+  participants String? @db.Text
+  note         String? @db.Text
 
-  status          EventStatus       @default(UNCONFIRMED)
-  isEdited        Boolean           @default(false)
+  status   EventStatus @default(UNCONFIRMED)
+  isEdited Boolean     @default(false)
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  deletedAt       DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  checklistItems  EventChecklistItem[]
+  checklistItems EventChecklistItem[]
 
   @@index([date])
   @@index([meetingRoomId])
@@ -302,14 +302,14 @@ model HospitalEvent {
 
 // Checklist Template - Master checklist
 model ChecklistTemplate {
-  id          String    @id @default(cuid())
-  title       String    @db.Text
-  description String?   @db.Text
-  orderNumber Int       @default(0)
-  isDefault   Boolean   @default(true)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  title       String   @db.Text
+  description String?  @db.Text
+  orderNumber Int      @default(0)
+  isDefault   Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("checklist_templates")
 }
@@ -320,35 +320,35 @@ model EventChecklistItem {
   hospitalEventId String
   hospitalEvent   HospitalEvent @relation(fields: [hospitalEventId], references: [id], onDelete: Cascade)
 
-  title           String        @db.Text
-  description     String?       @db.Text
-  orderNumber     Int           @default(0)
-  isCompleted     Boolean       @default(false)
-  completedAt     DateTime?
+  title       String    @db.Text
+  description String?   @db.Text
+  orderNumber Int       @default(0)
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([hospitalEventId])
   @@map("event_checklist_items")
 }
 
 enum HospitalEventType {
-  ORGANIZED     // Tổ chức
-  COLLABORATED  // Phối hợp
+  ORGANIZED // Tổ chức
+  COLLABORATED // Phối hợp
 }
 
 // ==================== SECRETARY MANAGEMENT ====================
 
 // SecretaryType - Loại thư ký
 model SecretaryType {
-  id          String    @id @default(cuid())
-  name        String    @unique // VD: "Thư ký y khoa", "Thư ký hành chính"
-  description String?   @db.Text
-  color       String?   // Màu hiển thị (hex code)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  name        String   @unique // VD: "Thư ký y khoa", "Thư ký hành chính"
+  description String?  @db.Text
+  color       String? // Màu hiển thị (hex code)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   secretaries  Secretary[]
   applications SecretaryApplication[]
@@ -358,32 +358,32 @@ model SecretaryType {
 
 // Secretary - Thư ký
 model Secretary {
-  id                  String          @id @default(cuid())
-  employeeCode        String?         @unique // Mã nhân viên (VD: J15-120)
-  fullName            String          // Họ và tên
-  dateOfBirth         DateTime?       // Ngày sinh
-  phone               String?
-  email               String?
-  avatar              String?         // URL ảnh đại diện
+  id           String    @id @default(cuid())
+  employeeCode String?   @unique // Mã nhân viên (VD: J15-120)
+  fullName     String // Họ và tên
+  dateOfBirth  DateTime? // Ngày sinh
+  phone        String?
+  email        String?
+  avatar       String? // URL ảnh đại diện
 
-  secretaryTypeId     String?
-  secretaryType       SecretaryType?  @relation(fields: [secretaryTypeId], references: [id])
+  secretaryTypeId String?
+  secretaryType   SecretaryType? @relation(fields: [secretaryTypeId], references: [id])
 
   currentDepartmentId String?
-  currentDepartment   Department?     @relation(fields: [currentDepartmentId], references: [id])
+  currentDepartment   Department? @relation(fields: [currentDepartmentId], references: [id])
 
-  status              SecretaryStatus @default(ACTIVE)
-  startDate           DateTime?       // Ngày bắt đầu làm thư ký
-  notes               String?         @db.Text
+  status    SecretaryStatus @default(ACTIVE)
+  startDate DateTime? // Ngày bắt đầu làm thư ký
+  notes     String?         @db.Text
 
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  deletedAt           DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  certificates        SecretaryCertificate[]
-  transferLogs        SecretaryTransferLog[]
-  application         SecretaryApplication?
-  examScores          SecretaryExamScore[]
+  certificates SecretaryCertificate[]
+  transferLogs SecretaryTransferLog[]
+  application  SecretaryApplication?
+  examScores   SecretaryExamScore[]
 
   @@index([secretaryTypeId])
   @@index([currentDepartmentId])
@@ -394,22 +394,22 @@ model Secretary {
 
 // SecretaryExamScore - Điểm các kỳ thi nghiệp vụ
 model SecretaryExamScore {
-  id             String    @id @default(cuid())
-  secretaryId    String
-  secretary      Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  secretaryId String
+  secretary   Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
 
-  examName       String    // VD: "Kỳ thi Nghiệp vụ Thư ký 2026"
-  examYear       Int
-  part1          Float?    // P1
-  part2          Float?    // P2
-  part3          Float?    // P3
-  total          Float?    // Tổng điểm
-  rank           Int?      // Hạng trong kỳ thi
-  formula        String?   // Công thức tính (ghi chú)
-  notes          String?   @db.Text
+  examName String // VD: "Kỳ thi Nghiệp vụ Thư ký 2026"
+  examYear Int
+  part1    Float? // P1
+  part2    Float? // P2
+  part3    Float? // P3
+  total    Float? // Tổng điểm
+  rank     Int? // Hạng trong kỳ thi
+  formula  String? // Công thức tính (ghi chú)
+  notes    String? @db.Text
 
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([secretaryId, examName])
   @@index([secretaryId])
@@ -419,18 +419,18 @@ model SecretaryExamScore {
 
 // SecretaryCertificate - Bằng cấp của thư ký
 model SecretaryCertificate {
-  id            String    @id @default(cuid())
-  secretaryId   String
-  secretary     Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  secretaryId String
+  secretary   Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
 
-  name          String    // Tên bằng cấp
-  issuedYear    Int?      // Năm cấp bằng
-  issuedBy      String?   // Nơi cấp
-  attachmentUrl String?   // File đính kèm (scan bằng)
-  notes         String?   @db.Text
+  name          String // Tên bằng cấp
+  issuedYear    Int? // Năm cấp bằng
+  issuedBy      String? // Nơi cấp
+  attachmentUrl String? // File đính kèm (scan bằng)
+  notes         String? @db.Text
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([secretaryId])
   @@map("secretary_certificates")
@@ -438,23 +438,23 @@ model SecretaryCertificate {
 
 // SecretaryTransferLog - Lịch sử luân chuyển
 model SecretaryTransferLog {
-  id               String     @id @default(cuid())
-  secretaryId      String
-  secretary        Secretary  @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  secretaryId String
+  secretary   Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
 
   fromDepartmentId String?
   fromDepartment   Department? @relation("TransferFrom", fields: [fromDepartmentId], references: [id])
 
-  toDepartmentId   String
-  toDepartment     Department  @relation("TransferTo", fields: [toDepartmentId], references: [id])
+  toDepartmentId String
+  toDepartment   Department @relation("TransferTo", fields: [toDepartmentId], references: [id])
 
-  transferDate     DateTime    // Ngày luân chuyển
-  decisionNumber   String?     // Số quyết định
-  reason           String?     @db.Text // Lý do luân chuyển
-  notes            String?     @db.Text
+  transferDate   DateTime // Ngày luân chuyển
+  decisionNumber String? // Số quyết định
+  reason         String?  @db.Text // Lý do luân chuyển
+  notes          String?  @db.Text
 
-  createdAt        DateTime    @default(now())
-  createdBy        String?     // User ID tạo record
+  createdAt DateTime @default(now())
+  createdBy String? // User ID tạo record
 
   @@index([secretaryId])
   @@index([fromDepartmentId])
@@ -464,21 +464,21 @@ model SecretaryTransferLog {
 }
 
 enum SecretaryStatus {
-  ACTIVE      // Đang hoạt động
-  INACTIVE    // Nghỉ việc
-  ON_LEAVE    // Đang nghỉ phép dài hạn
+  ACTIVE // Đang hoạt động
+  INACTIVE // Nghỉ việc
+  ON_LEAVE // Đang nghỉ phép dài hạn
 }
 
 enum ApplicationStatus {
-  SCREENING   // Vòng 1 - Sơ tuyển
-  INTERVIEW   // Vòng 2 - Phỏng vấn
-  ACCEPTED    // Đã nhận việc
-  REJECTED    // Từ chối
+  SCREENING // Vòng 1 - Sơ tuyển
+  INTERVIEW // Vòng 2 - Phỏng vấn
+  ACCEPTED // Đã nhận việc
+  REJECTED // Từ chối
 }
 
 enum ScreeningResult {
-  PASS    // Đạt
-  FAIL    // Không đạt
+  PASS // Đạt
+  FAIL // Không đạt
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -488,82 +488,82 @@ enum ScreeningResult {
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum VehicleCategory {
-  AMBULANCE         // Xe cứu thương
-  ADMIN_CAR         // Xe ô tô hành chính / con
-  BUS               // Xe khách
-  TRUCK             // Xe tải
-  PICKUP            // Xe pickup
+  AMBULANCE // Xe cứu thương
+  ADMIN_CAR // Xe ô tô hành chính / con
+  BUS // Xe khách
+  TRUCK // Xe tải
+  PICKUP // Xe pickup
   OTHER
 }
 
 enum VehicleStatus {
-  IN_USE            // Đang sử dụng
-  RETIRED           // Đã ngừng hoạt động
-  SOLD              // Đã thanh lý
-  TRANSFERRED       // Đã chuyển giao
+  IN_USE // Đang sử dụng
+  RETIRED // Đã ngừng hoạt động
+  SOLD // Đã thanh lý
+  TRANSFERRED // Đã chuyển giao
 }
 
 model Vehicle {
-  id                      String          @id @default(cuid())
-  licensePlate            String          @unique  // Biển số (VD: 50A-007-20)
-  brand                   String?         // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
-  model                   String?         // Số loại (HIACE, FORTUNER, ...)
-  category                VehicleCategory @default(OTHER)
-  color                   String?         // Màu sơn
-  engineNumber            String?         // Số máy
-  chassisNumber           String?         // Số khung
-  seatCount               String?         // Số chỗ (giữ raw vì format không thống nhất: "07 ngồi + 1 nằm", "05 chỗ"...)
-  payloadKg               String?         // Tải trọng hàng hóa
-  curbWeightKg            String?         // Tự trọng
-  totalWeightKg           String?         // Trọng lượng toàn bộ
-  manufactureYear         Int?            // Năm sản xuất
-  manufactureCountry      String?         // Nước sản xuất
-  expiryYear              String?         // Niên hạn sử dụng (có thể là "Không thời hạn")
+  id                 String          @id @default(cuid())
+  licensePlate       String          @unique // Biển số (VD: 50A-007-20)
+  brand              String? // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
+  model              String? // Số loại (HIACE, FORTUNER, ...)
+  category           VehicleCategory @default(OTHER)
+  color              String? // Màu sơn
+  engineNumber       String? // Số máy
+  chassisNumber      String? // Số khung
+  seatCount          String? // Số chỗ (giữ raw vì format không thống nhất: "07 ngồi + 1 nằm", "05 chỗ"...)
+  payloadKg          String? // Tải trọng hàng hóa
+  curbWeightKg       String? // Tự trọng
+  totalWeightKg      String? // Trọng lượng toàn bộ
+  manufactureYear    Int? // Năm sản xuất
+  manufactureCountry String? // Nước sản xuất
+  expiryYear         String? // Niên hạn sử dụng (có thể là "Không thời hạn")
 
   // Hồ sơ đăng ký
-  registrationNumber      String?         // Giấy đăng ký số
-  registrationDate        DateTime?       // Ngày cấp giấy đăng ký
-  firstRegistrationDate   DateTime?       // Đăng ký lần đầu
+  registrationNumber    String? // Giấy đăng ký số
+  registrationDate      DateTime? // Ngày cấp giấy đăng ký
+  firstRegistrationDate DateTime? // Đăng ký lần đầu
 
   // Hồ sơ kiểm định
-  inspectionCertNumber    String?         // Giấy chứng nhận kiểm định số
-  inspectionExpiry        DateTime?       // Kiểm định hết hạn
-  insuranceExpiry         DateTime?       // Bảo hiểm hết hạn
+  inspectionCertNumber String? // Giấy chứng nhận kiểm định số
+  inspectionExpiry     DateTime? // Kiểm định hết hạn
+  insuranceExpiry      DateTime? // Bảo hiểm hết hạn
 
   // Chủ xe
-  ownerName               String?         // Tên chủ xe
-  ownerAddress            String?         // Địa chỉ chủ xe
-  manager                 String?         // Người quản lý phương tiện
+  ownerName    String? // Tên chủ xe
+  ownerAddress String? // Địa chỉ chủ xe
+  manager      String? // Người quản lý phương tiện
 
   // Thông số kỹ thuật
-  dimensions              String?         // Kích thước bao (Dài×Rộng×Cao)
-  tireSpecification       String?         // Sai vỏ
-  wheelTrack              String?         // Vết bánh trước/sau
-  wheelbase               String?         // Chiều dài cơ sở
-  fuelType                String?         // Nhiên liệu
-  engineType              String?         // Kiểu động cơ
-  displacement            String?         // Dung tích
-  maxPower                String?         // Công suất lớn nhất
-  steeringSystem          String?         // Hệ thống lái
-  transmission            String?         // Hộp số
-  brakeSystem             String?         // Phanh chính
-  parkingBrake            String?         // Phanh đỗ
-  airConditioning         String?         // Điều hòa
+  dimensions        String? // Kích thước bao (Dài×Rộng×Cao)
+  tireSpecification String? // Sai vỏ
+  wheelTrack        String? // Vết bánh trước/sau
+  wheelbase         String? // Chiều dài cơ sở
+  fuelType          String? // Nhiên liệu
+  engineType        String? // Kiểu động cơ
+  displacement      String? // Dung tích
+  maxPower          String? // Công suất lớn nhất
+  steeringSystem    String? // Hệ thống lái
+  transmission      String? // Hộp số
+  brakeSystem       String? // Phanh chính
+  parkingBrake      String? // Phanh đỗ
+  airConditioning   String? // Điều hòa
 
   // Vận hành
-  status                  VehicleStatus   @default(IN_USE)
-  rawHistory              String?         @db.Text  // Toàn bộ lịch sử bảo dưỡng raw từ file .doc
-  sourceFile              String?         // Tên file gốc
+  status     VehicleStatus @default(IN_USE)
+  rawHistory String?       @db.Text // Toàn bộ lịch sử bảo dưỡng raw từ file .doc
+  sourceFile String? // Tên file gốc
 
   // Liên kết tới License (chứng nhận đăng ký) nếu có
-  licenseId               String?         @unique
-  license                 License?        @relation(fields: [licenseId], references: [id])
+  licenseId String?  @unique
+  license   License? @relation(fields: [licenseId], references: [id])
 
-  maintenanceLogs         VehicleMaintenance[]
+  maintenanceLogs VehicleMaintenance[]
 
-  createdAt               DateTime        @default(now())
-  updatedAt               DateTime        @updatedAt
-  deletedAt               DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([category])
   @@index([status])
@@ -573,19 +573,19 @@ model Vehicle {
 
 // VehicleMaintenance - 1 record bảo dưỡng / sửa chữa / sự kiện
 model VehicleMaintenance {
-  id              String     @id @default(cuid())
-  vehicleId       String
-  vehicle         Vehicle    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  date            DateTime?  // Ngày thực hiện (có thể null khi text không rõ)
-  odometer        Int?       // Số km (cây số)
-  category        String?    // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
-  description     String     @db.Text  // Mô tả chi tiết
-  workshop        String?    // Gara/đơn vị thực hiện
-  costAmount      Decimal?   @db.Decimal(15, 2)
+  date        DateTime? // Ngày thực hiện (có thể null khi text không rõ)
+  odometer    Int? // Số km (cây số)
+  category    String? // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
+  description String    @db.Text // Mô tả chi tiết
+  workshop    String? // Gara/đơn vị thực hiện
+  costAmount  Decimal?  @db.Decimal(15, 2)
 
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([vehicleId, date])
   @@index([date])
@@ -593,92 +593,92 @@ model VehicleMaintenance {
 }
 
 enum ScreeningRating {
-  EXCELLENT     // Xuất sắc
-  GOOD          // Tốt
-  FAIR          // Khá
-  AVERAGE       // Trung bình
-  POOR          // Kém
+  EXCELLENT // Xuất sắc
+  GOOD // Tốt
+  FAIR // Khá
+  AVERAGE // Trung bình
+  POOR // Kém
 }
 
 // SecretaryApplication - Hồ sơ ứng tuyển thư ký
 model SecretaryApplication {
-  id                   String            @id @default(cuid())
-  fullName             String
-  dateOfBirth          DateTime?
-  birthPlace           String?           // Nơi sinh
-  phone                String?
-  email                String?
-  permanentAddress     String?           @db.Text  // Địa chỉ thường trú
-  temporaryAddress     String?           @db.Text  // Địa chỉ tạm trú
-  cvUrl                String?           // Link/URL CV đính kèm
+  id               String    @id @default(cuid())
+  fullName         String
+  dateOfBirth      DateTime?
+  birthPlace       String? // Nơi sinh
+  phone            String?
+  email            String?
+  permanentAddress String?   @db.Text // Địa chỉ thường trú
+  temporaryAddress String?   @db.Text // Địa chỉ tạm trú
+  cvUrl            String? // Link/URL CV đính kèm
 
   // Trình độ học vấn
-  education            String?           // Trình độ chuyên môn (VD: Cao đẳng Quản trị văn phòng)
-  educationInstitution String?           // Nơi đào tạo
-  graduationYear       Int?              // Năm tốt nghiệp
-  graduationRank       String?           // Xếp loại tốt nghiệp (Xuất sắc/Giỏi/Khá/...)
+  education            String? // Trình độ chuyên môn (VD: Cao đẳng Quản trị văn phòng)
+  educationInstitution String? // Nơi đào tạo
+  graduationYear       Int? // Năm tốt nghiệp
+  graduationRank       String? // Xếp loại tốt nghiệp (Xuất sắc/Giỏi/Khá/...)
 
   // Chứng chỉ
-  trainingCertificate  String?           @db.Text  // Chứng chỉ đào tạo (VD: Thư ký y khoa năm 2022 tại UMP, Xếp loại: Xuất sắc)
-  foreignLanguage      String?           // Trình độ ngoại ngữ (VD: IELTS 6.0, TOEIC 485)
-  itSkill              String?           @db.Text  // Trình độ tin học
+  trainingCertificate String? @db.Text // Chứng chỉ đào tạo (VD: Thư ký y khoa năm 2022 tại UMP, Xếp loại: Xuất sắc)
+  foreignLanguage     String? // Trình độ ngoại ngữ (VD: IELTS 6.0, TOEIC 485)
+  itSkill             String? @db.Text // Trình độ tin học
 
   // Kinh nghiệm
-  appliedPosition      String?           // Vị trí tuyển dụng (VD: Thư ký y khoa)
-  workExperience       String?           @db.Text  // Kinh nghiệm làm việc
-  previousSalary       Decimal?          @db.Decimal(15, 2)  // Mức thu nhập đã được nhận
-  resignReason         String?           @db.Text  // Lý do nghỉ việc
+  appliedPosition String? // Vị trí tuyển dụng (VD: Thư ký y khoa)
+  workExperience  String?  @db.Text // Kinh nghiệm làm việc
+  previousSalary  Decimal? @db.Decimal(15, 2) // Mức thu nhập đã được nhận
+  resignReason    String?  @db.Text // Lý do nghỉ việc
 
   // Hiểu biết về Bệnh viện
-  knowsHospital        Boolean?          // Có hiểu biết về Bệnh viện?
-  hospitalRelative     String?           @db.Text  // Thân nhân đang công tác tại Bệnh viện
+  knowsHospital    Boolean? // Có hiểu biết về Bệnh viện?
+  hospitalRelative String?  @db.Text // Thân nhân đang công tác tại Bệnh viện
 
-  appliedTypeId        String?           // Loại thư ký ứng tuyển
-  appliedType          SecretaryType?    @relation(fields: [appliedTypeId], references: [id])
+  appliedTypeId String? // Loại thư ký ứng tuyển
+  appliedType   SecretaryType? @relation(fields: [appliedTypeId], references: [id])
 
-  desiredDepartmentId  String?           // Phòng ban mong muốn
-  desiredDepartment    Department?       @relation("ApplicationDesiredDept", fields: [desiredDepartmentId], references: [id])
+  desiredDepartmentId String? // Phòng ban mong muốn
+  desiredDepartment   Department? @relation("ApplicationDesiredDept", fields: [desiredDepartmentId], references: [id])
 
-  source               String?           // Nguồn tuyển dụng (LinkedIn, giới thiệu nội bộ, website...)
+  source String? // Nguồn tuyển dụng (LinkedIn, giới thiệu nội bộ, website...)
 
-  status               ApplicationStatus @default(SCREENING)
+  status ApplicationStatus @default(SCREENING)
 
   // Vòng sơ tuyển
-  screeningDate        DateTime?         // Ngày sơ tuyển
-  screeningLocation    String?           // Địa điểm sơ tuyển
-  screeningPanel       String?           @db.Text  // Thành phần tham gia sơ tuyển
+  screeningDate     DateTime? // Ngày sơ tuyển
+  screeningLocation String? // Địa điểm sơ tuyển
+  screeningPanel    String?   @db.Text // Thành phần tham gia sơ tuyển
 
   // Đánh giá chi tiết sơ tuyển (Xuất sắc/Tốt/Khá/Trung bình/Kém)
-  ratingAppearance     ScreeningRating?  // Tác phong, ngoại hình, trang phục
-  ratingExpertise      ScreeningRating?  // Nghiệp vụ chuyên môn
-  ratingCommunication  ScreeningRating?  // Kỹ năng giao tiếp
-  ratingITSkill        ScreeningRating?  // Kỹ năng vi tính, tin học văn phòng
-  ratingAI             ScreeningRating?  // Khả năng ứng dụng AI trong công việc
-  ratingKnowledge      ScreeningRating?  // Mức độ am hiểu nhiều mảng kiến thức
+  ratingAppearance    ScreeningRating? // Tác phong, ngoại hình, trang phục
+  ratingExpertise     ScreeningRating? // Nghiệp vụ chuyên môn
+  ratingCommunication ScreeningRating? // Kỹ năng giao tiếp
+  ratingITSkill       ScreeningRating? // Kỹ năng vi tính, tin học văn phòng
+  ratingAI            ScreeningRating? // Khả năng ứng dụng AI trong công việc
+  ratingKnowledge     ScreeningRating? // Mức độ am hiểu nhiều mảng kiến thức
 
   // Điểm bài thi (kỹ năng tin học)
-  scoreMultipleChoice  Float?            // Trắc nghiệm lý thuyết (/10)
-  scoreWordProcessing  Float?            // Soạn thảo văn bản (/10)
-  scoreTypingSpeed     Float?            // Tốc độ đánh máy (/10)
-  typingWordsPerMinute Int?              // Số từ/phút
+  scoreMultipleChoice  Float? // Trắc nghiệm lý thuyết (/10)
+  scoreWordProcessing  Float? // Soạn thảo văn bản (/10)
+  scoreTypingSpeed     Float? // Tốc độ đánh máy (/10)
+  typingWordsPerMinute Int? // Số từ/phút
 
-  screeningResult      ScreeningResult?  // Kết luận: Đạt / Không Đạt
-  screeningNotes       String?           @db.Text
+  screeningResult ScreeningResult? // Kết luận: Đạt / Không Đạt
+  screeningNotes  String?          @db.Text
 
   // Vòng phỏng vấn
-  interviewDate        DateTime?
-  interviewScore       Float?
-  interviewNotes       String?           @db.Text
+  interviewDate  DateTime?
+  interviewScore Float?
+  interviewNotes String?   @db.Text
 
-  notes                String?           @db.Text
+  notes String? @db.Text
 
   // Khi được nhận việc → liên kết với Secretary được tạo
-  convertedSecretaryId String?           @unique
-  convertedSecretary   Secretary?        @relation(fields: [convertedSecretaryId], references: [id])
+  convertedSecretaryId String?    @unique
+  convertedSecretary   Secretary? @relation(fields: [convertedSecretaryId], references: [id])
 
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  deletedAt            DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([status])
   @@index([appliedTypeId])
@@ -690,12 +690,12 @@ model SecretaryApplication {
 // ==================== LICENSE / PERMIT MANAGEMENT ====================
 
 enum LicenseCategory {
-  HOSPITAL       // Giấy phép hoạt động bệnh viện
-  DEPARTMENT     // Giấy phép khoa/đơn vị
-  VEHICLE        // Giấy phép xe cứu thương
-  ADMIN_VEHICLE  // Giấy phép xe hành chính
-  EQUIPMENT      // Giấy phép trang thiết bị y tế
-  OTHER          // Loại khác
+  HOSPITAL // Giấy phép hoạt động bệnh viện
+  DEPARTMENT // Giấy phép khoa/đơn vị
+  VEHICLE // Giấy phép xe cứu thương
+  ADMIN_VEHICLE // Giấy phép xe hành chính
+  EQUIPMENT // Giấy phép trang thiết bị y tế
+  OTHER // Loại khác
 }
 
 // License - Giấy phép / chứng chỉ
@@ -711,15 +711,15 @@ model License {
   fileUrl       String?
   notes         String?         @db.Text
 
-  departmentId  String?
-  department    Department?     @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  deletedAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  renewals      LicenseRenewal[]
-  vehicle       Vehicle?
+  renewals LicenseRenewal[]
+  vehicle  Vehicle?
 
   @@index([category])
   @@index([departmentId])
@@ -730,19 +730,19 @@ model License {
 
 // LicenseRenewal - Lịch sử gia hạn giấy phép
 model LicenseRenewal {
-  id              String    @id @default(cuid())
-  licenseId       String
-  license         License   @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  licenseId String
+  license   License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
 
-  renewedDate     DateTime
-  newExpiryDate   DateTime?
-  previousExpiry  DateTime?
-  renewedBy       String?
-  decisionNumber  String?
-  fileUrl         String?
-  notes           String?   @db.Text
+  renewedDate    DateTime
+  newExpiryDate  DateTime?
+  previousExpiry DateTime?
+  renewedBy      String?
+  decisionNumber String?
+  fileUrl        String?
+  notes          String?   @db.Text
 
-  createdAt       DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([licenseId])
   @@index([renewedDate])
@@ -752,66 +752,66 @@ model LicenseRenewal {
 // ==================== MOU MANAGEMENT ====================
 
 enum MOUStatus {
-  DRAFT       // Đang soạn thảo
-  ACTIVE      // Đang hiệu lực
-  EXPIRING    // Sắp hết hạn
-  EXPIRED     // Đã hết hạn
-  TERMINATED  // Đã chấm dứt
+  DRAFT // Đang soạn thảo
+  ACTIVE // Đang hiệu lực
+  EXPIRING // Sắp hết hạn
+  EXPIRED // Đã hết hạn
+  TERMINATED // Đã chấm dứt
 }
 
 enum MOUCategory {
-  DOMESTIC          // Hợp tác trong nước
-  INTERNATIONAL     // Hợp tác quốc tế
-  ACADEMIC          // Đào tạo - Nghiên cứu
-  CLINICAL          // Lâm sàng - Chuyên môn
-  TECHNOLOGY        // Công nghệ - Chuyển giao
-  OTHER             // Khác
+  DOMESTIC // Hợp tác trong nước
+  INTERNATIONAL // Hợp tác quốc tế
+  ACADEMIC // Đào tạo - Nghiên cứu
+  CLINICAL // Lâm sàng - Chuyên môn
+  TECHNOLOGY // Công nghệ - Chuyển giao
+  OTHER // Khác
 }
 
 // MOU - Biên bản ghi nhớ / Thỏa thuận hợp tác
 model MOU {
-  id                String      @id @default(cuid())
-  title             String      @db.Text    // Tên MOU
-  mouNumber         String?                 // Số hiệu MOU
-  category          MOUCategory
-  status            MOUStatus   @default(DRAFT)
+  id        String      @id @default(cuid())
+  title     String      @db.Text // Tên MOU
+  mouNumber String? // Số hiệu MOU
+  category  MOUCategory
+  status    MOUStatus   @default(DRAFT)
 
   // Đối tác
-  partnerName       String      @db.Text    // Tên đối tác
-  partnerCountry    String?                 // Quốc gia đối tác
-  partnerContact    String?     @db.Text    // Thông tin liên hệ đối tác
-  partnerLogo       String?                 // URL logo đối tác
+  partnerName    String  @db.Text // Tên đối tác
+  partnerCountry String? // Quốc gia đối tác
+  partnerContact String? @db.Text // Thông tin liên hệ đối tác
+  partnerLogo    String? // URL logo đối tác
 
   // Thời hạn
-  signedDate        DateTime?               // Ngày ký kết
-  effectiveDate     DateTime?               // Ngày có hiệu lực
-  expiryDate        DateTime?               // Ngày hết hạn
-  autoRenew         Boolean     @default(false) // Tự động gia hạn
+  signedDate    DateTime? // Ngày ký kết
+  effectiveDate DateTime? // Ngày có hiệu lực
+  expiryDate    DateTime? // Ngày hết hạn
+  autoRenew     Boolean   @default(false) // Tự động gia hạn
 
   // Nội dung
-  purpose           String?     @db.Text    // Mục đích hợp tác
-  scope             String?     @db.Text    // Phạm vi hợp tác
-  keyTerms          String?     @db.Text    // Điều khoản chính (tóm tắt)
-  fileUrl           String?                 // File MOU đính kèm
-  notes             String?     @db.Text
+  purpose  String? @db.Text // Mục đích hợp tác
+  scope    String? @db.Text // Phạm vi hợp tác
+  keyTerms String? @db.Text // Điều khoản chính (tóm tắt)
+  fileUrl  String? // File MOU đính kèm
+  notes    String? @db.Text
 
   // Phòng đầu mối
-  departmentId      String?
-  department        Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
 
   // Người phụ trách
-  contactPerson     String?                 // Người phụ trách phía BV
-  contactEmail      String?
-  contactPhone      String?
+  contactPerson String? // Người phụ trách phía BV
+  contactEmail  String?
+  contactPhone  String?
 
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  deletedAt         DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  clauses           MOUClause[]
-  progressLogs      MOUProgress[]
-  activities        MOUActivity[]
-  documents         MOUDocument[]
+  clauses      MOUClause[]
+  progressLogs MOUProgress[]
+  activities   MOUActivity[]
+  documents    MOUDocument[]
 
   @@index([category])
   @@index([status])
@@ -822,67 +822,67 @@ model MOU {
 }
 
 enum ClauseStatus {
-  NOT_STARTED     // Chưa triển khai
-  IN_PROGRESS     // Đang triển khai
-  COMPLETED       // Hoàn thành
-  ON_HOLD         // Tạm dừng
-  CANCELLED       // Đã hủy
+  NOT_STARTED // Chưa triển khai
+  IN_PROGRESS // Đang triển khai
+  COMPLETED // Hoàn thành
+  ON_HOLD // Tạm dừng
+  CANCELLED // Đã hủy
 }
 
 enum ProgressType {
-  RECURRING   // Công việc thường quy, lặp lại hàng tuần
-  CUMULATIVE  // Nhiệm vụ có tiến độ tích lũy, có điểm kết thúc
+  RECURRING // Công việc thường quy, lặp lại hàng tuần
+  CUMULATIVE // Nhiệm vụ có tiến độ tích lũy, có điểm kết thúc
 }
 
 enum ClauseType {
-  TRAINING            // Đào tạo
-  RESEARCH            // Nghiên cứu khoa học
-  CLINICAL            // Chuyên môn / Lâm sàng
+  TRAINING // Đào tạo
+  RESEARCH // Nghiên cứu khoa học
+  CLINICAL // Chuyên môn / Lâm sàng
   TECHNOLOGY_TRANSFER // Chuyển giao kỹ thuật / Công nghệ
-  EXPERT_EXCHANGE     // Trao đổi chuyên gia
-  FACILITY            // Cơ sở vật chất / Phòng khám
-  EQUIPMENT           // Thiết bị / Vật tư
-  FINANCE             // Tài chính / Tài trợ
-  HR                  // Nhân sự / Tuyển dụng
-  EVENT               // Hội thảo / Sự kiện
-  PUBLICATION         // Xuất bản / Ấn phẩm
-  OTHER               // Khác
+  EXPERT_EXCHANGE // Trao đổi chuyên gia
+  FACILITY // Cơ sở vật chất / Phòng khám
+  EQUIPMENT // Thiết bị / Vật tư
+  FINANCE // Tài chính / Tài trợ
+  HR // Nhân sự / Tuyển dụng
+  EVENT // Hội thảo / Sự kiện
+  PUBLICATION // Xuất bản / Ấn phẩm
+  OTHER // Khác
 }
 
 enum ResponsibleParty {
-  UMC                 // Phía UMC
-  PARTNER             // Phía đối tác
-  BOTH                // Cả hai bên
+  UMC // Phía UMC
+  PARTNER // Phía đối tác
+  BOTH // Cả hai bên
 }
 
 // MOUClause - Điều khoản / Hạng mục chi tiết của MOU
 model MOUClause {
-  id              String           @id @default(cuid())
-  mouId           String
-  mou             MOU              @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  id    String @id @default(cuid())
+  mouId String
+  mou   MOU    @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  orderNumber     Int                          // Thứ tự điều khoản
-  clauseType      ClauseType       @default(OTHER) // Lĩnh vực / Loại hạng mục
-  title           String           @db.Text    // Tiêu đề hạng mục
-  content         String?          @db.Text    // Nội dung chi tiết
+  orderNumber      Int // Thứ tự điều khoản
+  clauseType       ClauseType       @default(OTHER) // Lĩnh vực / Loại hạng mục
+  title            String           @db.Text // Tiêu đề hạng mục
+  content          String?          @db.Text // Nội dung chi tiết
   responsibleParty ResponsibleParty @default(BOTH) // Bên chịu trách nhiệm
-  responsible     String?                      // Người/đơn vị cụ thể phụ trách
-  deadline        DateTime?                    // Hạn thực hiện
-  progress        Int              @default(0) // 0-100%
-  clauseStatus    ClauseStatus     @default(NOT_STARTED) // Trạng thái triển khai
-  isCompleted     Boolean          @default(false)
-  completedAt     DateTime?
+  responsible      String? // Người/đơn vị cụ thể phụ trách
+  deadline         DateTime? // Hạn thực hiện
+  progress         Int              @default(0) // 0-100%
+  clauseStatus     ClauseStatus     @default(NOT_STARTED) // Trạng thái triển khai
+  isCompleted      Boolean          @default(false)
+  completedAt      DateTime?
 
   // Kết quả & đánh giá
-  result          String?          @db.Text    // Kết quả đạt được
-  quality         String?                      // Đánh giá chất lượng (tốt/đạt/chưa đạt)
-  budget          String?                      // Ngân sách / chi phí
-  notes           String?          @db.Text
+  result  String? @db.Text // Kết quả đạt được
+  quality String? // Đánh giá chất lượng (tốt/đạt/chưa đạt)
+  budget  String? // Ngân sách / chi phí
+  notes   String? @db.Text
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  clauseProgress  ClauseProgress[]
+  clauseProgress ClauseProgress[]
 
   @@index([mouId])
   @@index([mouId, orderNumber])
@@ -892,20 +892,20 @@ model MOUClause {
 
 // ClauseProgress - Nhật ký tiến độ của TỪNG điều khoản/hạng mục
 model ClauseProgress {
-  id              String    @id @default(cuid())
-  clauseId        String
-  clause          MOUClause @relation(fields: [clauseId], references: [id], onDelete: Cascade)
+  id       String    @id @default(cuid())
+  clauseId String
+  clause   MOUClause @relation(fields: [clauseId], references: [id], onDelete: Cascade)
 
-  date            DateTime  @default(now())
-  content         String    @db.Text        // Nội dung cập nhật
-  achievement     String?   @db.Text        // Kết quả đạt được
-  issues          String?   @db.Text        // Vấn đề phát sinh
-  nextSteps       String?   @db.Text        // Kế hoạch tiếp theo
-  progressBefore  Int?                      // Tiến độ trước cập nhật
-  progressAfter   Int?                      // Tiến độ sau cập nhật
-  updatedBy       String?                   // Người cập nhật
+  date           DateTime @default(now())
+  content        String   @db.Text // Nội dung cập nhật
+  achievement    String?  @db.Text // Kết quả đạt được
+  issues         String?  @db.Text // Vấn đề phát sinh
+  nextSteps      String?  @db.Text // Kế hoạch tiếp theo
+  progressBefore Int? // Tiến độ trước cập nhật
+  progressAfter  Int? // Tiến độ sau cập nhật
+  updatedBy      String? // Người cập nhật
 
-  createdAt       DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([clauseId])
   @@index([date])
@@ -914,18 +914,18 @@ model ClauseProgress {
 
 // MOUProgress - Nhật ký tiến độ chung của MOU
 model MOUProgress {
-  id              String    @id @default(cuid())
-  mouId           String
-  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  id    String @id @default(cuid())
+  mouId String
+  mou   MOU    @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  date            DateTime  @default(now()) // Ngày cập nhật
-  content         String    @db.Text        // Nội dung cập nhật
-  achievement     String?   @db.Text        // Kết quả đạt được
-  issues          String?   @db.Text        // Vấn đề phát sinh
-  nextSteps       String?   @db.Text        // Kế hoạch tiếp theo
-  updatedBy       String?                   // Người cập nhật
+  date        DateTime @default(now()) // Ngày cập nhật
+  content     String   @db.Text // Nội dung cập nhật
+  achievement String?  @db.Text // Kết quả đạt được
+  issues      String?  @db.Text // Vấn đề phát sinh
+  nextSteps   String?  @db.Text // Kế hoạch tiếp theo
+  updatedBy   String? // Người cập nhật
 
-  createdAt       DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([mouId])
   @@index([date])
@@ -934,35 +934,35 @@ model MOUProgress {
 
 // Loại hoạt động MOU
 enum ActivityStatus {
-  PLANNED       // Đã lên kế hoạch
-  IN_PROGRESS   // Đang thực hiện
-  COMPLETED     // Hoàn thành
-  CANCELLED     // Đã hủy
+  PLANNED // Đã lên kế hoạch
+  IN_PROGRESS // Đang thực hiện
+  COMPLETED // Hoàn thành
+  CANCELLED // Đã hủy
 }
 
 // MOUActivity - Hoạt động cụ thể trong khuôn khổ MOU
 model MOUActivity {
-  id              String          @id @default(cuid())
-  mouId           String
-  mou             MOU             @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  id    String @id @default(cuid())
+  mouId String
+  mou   MOU    @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  title           String          @db.Text    // Tên hoạt động
-  description     String?         @db.Text    // Mô tả chi tiết
-  activityType    String?                     // Loại hoạt động (đào tạo, nghiên cứu, trao đổi, hội thảo...)
-  status          ActivityStatus  @default(PLANNED)
+  title        String         @db.Text // Tên hoạt động
+  description  String?        @db.Text // Mô tả chi tiết
+  activityType String? // Loại hoạt động (đào tạo, nghiên cứu, trao đổi, hội thảo...)
+  status       ActivityStatus @default(PLANNED)
 
-  startDate       DateTime?                   // Ngày bắt đầu
-  endDate         DateTime?                   // Ngày kết thúc
-  location        String?                     // Địa điểm
-  participants    String?         @db.Text    // Người tham gia
-  responsible     String?                     // Người phụ trách
-  budget          String?                     // Ngân sách dự kiến
+  startDate    DateTime? // Ngày bắt đầu
+  endDate      DateTime? // Ngày kết thúc
+  location     String? // Địa điểm
+  participants String?   @db.Text // Người tham gia
+  responsible  String? // Người phụ trách
+  budget       String? // Ngân sách dự kiến
 
-  result          String?         @db.Text    // Kết quả thực hiện
-  notes           String?         @db.Text
+  result String? @db.Text // Kết quả thực hiện
+  notes  String? @db.Text
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([mouId])
   @@index([status])
@@ -972,22 +972,179 @@ model MOUActivity {
 
 // MOUDocument - Văn bản / tài liệu đính kèm MOU
 model MOUDocument {
-  id              String    @id @default(cuid())
-  mouId           String
-  mou             MOU       @relation(fields: [mouId], references: [id], onDelete: Cascade)
+  id    String @id @default(cuid())
+  mouId String
+  mou   MOU    @relation(fields: [mouId], references: [id], onDelete: Cascade)
 
-  title           String                      // Tên văn bản
-  description     String?   @db.Text          // Mô tả
-  documentType    String?                     // Loại (hợp đồng, phụ lục, biên bản, công văn...)
-  fileUrl         String?                     // URL file
-  fileName        String?                     // Tên file gốc
-  fileSize        Int?                        // Kích thước file (bytes)
-  uploadedBy      String?                     // Người upload
+  title        String // Tên văn bản
+  description  String? @db.Text // Mô tả
+  documentType String? // Loại (hợp đồng, phụ lục, biên bản, công văn...)
+  fileUrl      String? // URL file
+  fileName     String? // Tên file gốc
+  fileSize     Int? // Kích thước file (bytes)
+  uploadedBy   String? // Người upload
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([mouId])
   @@index([documentType])
   @@map("mou_documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INGESTION LAYER — đồng bộ dữ liệu tập trung
+// Xem docs/INGESTION-REFACTOR.md
+// ═══════════════════════════════════════════════════════════════════════
+
+enum SyncSourceKind {
+  ONEDRIVE_SHARE // File Excel trên OneDrive qua share link
+  GOOGLE_SHEETS // Spreadsheet qua service account
+  GITHUB_JSON // File JSON trong GitHub repo (cầu vượt tường lửa cho API nội bộ)
+  HTTP_API // API nội bộ gọi trực tiếp (khi chạy trong mạng UMC)
+}
+
+enum SyncRunStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED // Nguồn không đổi (checksum trùng) nên bỏ qua
+}
+
+// SyncSource - Khai báo một nguồn dữ liệu. Slug làm id để cấu hình đọc được.
+model SyncSource {
+  id            String         @id // slug, vd "dept-report-onedrive"
+  name          String
+  kind          SyncSourceKind
+  config        Json // URL/repo/path/year, tuỳ kind
+  cronEnabled   Boolean        @default(true)
+  lastRunAt     DateTime?
+  lastSuccessAt DateTime?
+  lastChecksum  String? // bỏ qua khi nguồn không đổi
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  runs           SyncRun[]
+  pendingImports PendingAiImport[]
+
+  @@map("sync_sources")
+}
+
+// SyncRun - Một lần chạy đồng bộ của một nguồn.
+model SyncRun {
+  id           String        @id @default(cuid())
+  sourceId     String
+  status       SyncRunStatus @default(RUNNING)
+  trigger      String // "cron" | "manual" | "webhook"
+  startedAt    DateTime      @default(now())
+  finishedAt   DateTime?
+  rowsRead     Int           @default(0)
+  rowsUpserted Int           @default(0)
+  rowsSkipped  Int           @default(0)
+  errorMessage String?       @db.Text
+
+  source SyncSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  logs   SyncLog[]
+
+  @@index([sourceId, startedAt])
+  @@index([startedAt])
+  @@map("sync_runs")
+}
+
+// SyncLog - Chi tiết diễn biến trong một lần chạy (cảnh báo dòng lỗi, dòng bỏ qua...).
+model SyncLog {
+  id        String   @id @default(cuid())
+  runId     String
+  level     String // "info" | "warn" | "error"
+  message   String   @db.Text
+  context   Json?
+  createdAt DateTime @default(now())
+
+  run SyncRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@map("sync_logs")
+}
+
+enum PendingImportStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// PendingAiImport - Báo cáo bệnh viện chờ AI xử lý + người duyệt.
+// Cron chỉ tải file và tách sheet; KHÔNG tự ghi vào Week/WeekTaskProgress.
+model PendingAiImport {
+  id         String              @id @default(cuid())
+  sourceId   String
+  year       Int
+  week       Int
+  sheetName  String
+  rawText    String              @db.Text // nội dung sheet đã trích
+  status     PendingImportStatus @default(PENDING)
+  syncRunId  String?
+  reviewedAt DateTime?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  source SyncSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, year, week])
+  @@index([status])
+  @@map("pending_ai_imports")
+}
+
+// HcMetric - Số liệu tuần của báo cáo phòng, nạp từ OneDrive.
+// Nguồn: sheet "Số liệu tuần (<năm>)" — xem docs/ONEDRIVE-DATA-ANALYSIS.md
+model HcMetric {
+  id        String   @id @default(cuid())
+  category  String // "Danh mục"
+  content   String   @db.Text // "Nội dung"
+  year      Int
+  week      Int
+  month     Int? // đọc thẳng từ file, không thuộc khoá
+  value     Float // "Số liệu"
+  sourceId  String
+  syncRunId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, content, year, week])
+  @@index([year, week])
+  @@index([category])
+  @@map("hc_metrics")
+}
+
+// FleetTrip - Chuyến xe, nạp từ Google Sheets (mỗi sheet = 1 xe).
+// Thay cho manual_fleet_sync.py vốn đẩy qua GitHub. Xem docs/INGESTION-REFACTOR.md mục 4.1
+model FleetTrip {
+  id                 String   @id @default(cuid())
+  // Nguồn không có ID ổn định; hash các trường định danh làm khoá.
+  sourceRowHash      String   @unique
+  vehicleId          String
+  driverName         String
+  vehicleType        String // "Hành chính" | "Cứu thương"
+  recordDate         DateTime
+  startTime          String?
+  endTime            String?
+  durationHours      Float?
+  durationSuspicious Boolean  @default(false) // > 16h, nhiều khả năng nhầm start/end
+  distanceKm         Float?
+  distanceFixMethod  String? // NONE|ODO_DELTA|ESTIMATED_FROM_HOURS|UNFIXABLE
+  fuelLiters         Float?
+  revenueVnd         Float?
+  destination        String   @db.Text
+  workCategory       String
+  areaType           String
+  tripDetails        String?  @db.Text
+  isDuplicate        Boolean  @default(false) // nghi trùng, chỉ đánh dấu không xoá
+  sourceId           String
+  syncRunId          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([recordDate])
+  @@index([vehicleId, recordDate])
+  @@index([driverName])
+  @@map("fleet_trips")
 }

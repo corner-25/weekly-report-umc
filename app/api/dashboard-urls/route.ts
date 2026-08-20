@@ -10,10 +10,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Chỉ còn hai dashboard được duy trì, mỗi cái là một service Streamlit riêng
+  // trên Railway (mã nguồn trong thư mục dashboards/).
   return NextResponse.json({
-    'phong-hc': process.env.DASHBOARD_PHONG_HC_URL ?? null,
-    'phong-hc-old': process.env.DASHBOARD_PHONG_HC_OLD_URL ?? null,
     'to-xe': process.env.DASHBOARD_TO_XE_URL ?? null,
-    'umc': process.env.DASHBOARD_UMC_URL ?? null,
+    'phong-hc-old': process.env.DASHBOARD_PHONG_HC_OLD_URL ?? null,
   });
 }
