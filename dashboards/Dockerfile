@@ -26,6 +26,3 @@ CMD mkdir -p .streamlit && \
       --server.headless true \
       --server.enableCORS false \
       --server.enableXsrfProtection false
-
-# GIỮ LẠI ĐỂ THAM KHẢO — hiện Railway build bằng Railpack (tự nhận requirements.txt).
-# Đổi tên thành Dockerfile nếu muốn quay lại dùng Docker.
