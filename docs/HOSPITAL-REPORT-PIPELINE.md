@@ -406,11 +406,112 @@ Bạn muốn xử lý lại toàn bộ. Đề xuất trình tự:
 5. **Đối chiếu bản mới với bản cũ**, xem chênh ở đâu trước khi thay thế
 6. Chỉ khi bạn xác nhận mới **chuyển sang dùng bản mới**
 
+## 5. zAI — đã kiểm chứng trên dữ liệu thật
+
+API key hoạt động. Endpoint `https://api.z.ai/api/paas/v4/chat/completions`.
+
+### Model khả dụng
+
+`glm-4.6` · `glm-4.5` · `glm-4.5-air` · `glm-4.5-flash` · `glm-4-plus`
+(`glm-4-long` không tồn tại)
+
+### Thử nghiệm: gom 143 tên nhiệm vụ của CNTT thành nghiệp vụ
+
+Đưa cả 143 tên trong **một lần gọi**:
+
+| Model | Nhóm | Phủ | Thiếu | Trùng | Bịa tên |
+|---|---|---|---|---|---|
+| glm-4.6 (thinking) | 4 | 138 | 5 | 0 | **2** |
+| glm-4.6 (no-think) | 5 | 140 | 3 | 0 | 0 |
+| glm-4.5 | 5 | 139 | 4 | 0 | 1 |
+| glm-4.5-air | 8 | 134 | 9 | **17** | 1 |
+| glm-4-plus | 8 | 127 | 16 | 2 | 4 |
+
+**Không model nào phủ hết.** Đáng chú ý: bật `thinking` ở glm-4.6 lại **kém hơn** tắt —
+model tiêu 3.868/4.000 token cho suy luận rồi không còn chỗ trả JSON, và khi tăng token
+lên 32.000 thì gom quá thô (4 nhóm, một nhóm ôm 75 biến thể) và **bịa ra 2 tên không có
+trong danh sách**. Với tác vụ phân loại có ràng buộc chặt, thinking không giúp gì.
+
+### Cách làm cho kết quả đúng: chia nhỏ + ngữ cảnh + xét từng mục
+
+```
+GĐ1  Dựng danh mục nghiệp vụ
+     → chỉ đưa các mục xuất hiện ≥8/33 tuần (nhiệm vụ cốt lõi)
+     → kèm mục cha trong Excel + ví dụ kết quả thực hiện
+     → AI đề xuất 6-9 nghiệp vụ, mỗi cái có "phạm vi" và "dấu hiệu nhận biết"
+
+GĐ2  Xét TỪNG nhiệm vụ, lô 12 mục
+     → mỗi mục kèm: tên + số tuần + mục cha + 2 kết quả thực tế
+     → AI trả: nghiệp vụ nào, đối tượng cụ thể, độ tin cậy, lý do
+
+GĐ3  Kiểm tra nhất quán (không dùng AI)
+     → tên gần giống (độ tương đồng ≥0.85 sau khi bỏ dấu) mà khác nghiệp vụ → gắn cờ
+
+GĐ4  AI phân xử các cặp bị gắn cờ
+     → xem kết quả thực tế của cả hai rồi quyết
+```
+
+**Kết quả trên CNTT** (`glm-4.5`, không thinking):
+
+```
+GĐ1: 6 nghiệp vụ · 1.139 tokens
+GĐ2: 141/141 nhiệm vụ · thiếu 0 · bịa 0 · chỉ 2 mục tin cậy <0.7 · 40.676 tokens
+GĐ3: phát hiện 2 cặp bất nhất
+GĐ4: 1.043 tokens
+
+Tổng ~44.000 tokens · ~5 phút cho một phòng
+```
+
+Phân bố: Vận hành & Phát triển Phần mềm 68 · Hạ tầng Mạng 47 · Hỗ trợ Người dùng 10 ·
+Lắp đặt Thiết bị 6 · Sự kiện & Ngoại viện 6 · Xử lý Dữ liệu 4
+
+### Kiểm chứng các mục từng gây khó
+
+| Tên gốc | Gom vào | Tin cậy |
+|---|---|---|
+| Phần mềm Chỉ định CLS | Vận hành & Phát triển Hệ thống Phần mềm | 0.95 |
+| Phần mềm Quản lý Kho | Vận hành & Phát triển Hệ thống Phần mềm | 0.95 |
+| Ứng dụng di động **-** UMC Care | Vận hành & Phát triển Hệ thống Phần mềm | 0.95 |
+| Ứng dụng di động **–** UMC Care | Vận hành & Phát triển Hệ thống Phần mềm | 0.95 |
+
+Hai dòng UMC Care khác nhau dấu gạch ngang nay về cùng một nghiệp vụ.
+
+### GĐ3–GĐ4 bắt được lỗi thật
+
+GĐ2 xếp `Hỗ trợ mạng` → *Hạ tầng Mạng* nhưng `Hỗ trợ về mạng` → *Hỗ trợ Người dùng*.
+Cùng một việc, hai nghiệp vụ. GĐ3 phát hiện, GĐ4 sửa đúng.
+
+Đáng chú ý ở cặp thứ hai: `Hỗ trợ kỹ thuật và lắp đặt thiết bị CNTT` vs
+`Hỗ trợ lắp đặt thiết bị CNTT` — tên gần giống nhưng AI **giữ nguyên hai nghiệp vụ khác nhau**,
+vì đọc kết quả thấy một cái lắp thiết bị mạng nội bộ, cái kia hỗ trợ sự kiện bên ngoài.
+Quy tắc máy móc "chọn bản tin cậy cao hơn" sẽ gộp sai ở đây.
+
+### Cấu hình đề xuất
+
+```
+Model:        glm-4.5           (glm-4.6 cho GĐ1 nếu muốn danh mục sắc hơn)
+thinking:     disabled          (bật vào làm giảm chất lượng ở tác vụ này)
+temperature:  0.1
+max_tokens:   16000
+Lô GĐ2:       12 mục            (nhỏ để mỗi mục được xét kỹ kèm ngữ cảnh)
+response_format: json_object
+```
+
+### Ước tính chi phí toàn bộ
+
+| Việc | Tokens |
+|---|---|
+| Gom nghiệp vụ 14 phòng (một lần) | ~250.000 |
+| Khớp 33 tuần × 14 phòng | ~600.000 |
+| Trích metric | ~500.000 |
+| **Tổng** | **~1,4 triệu tokens** |
+
+Với `glm-4.5` đây là chi phí nhỏ, và phần gom nghiệp vụ chỉ chạy một lần.
+
 ## 5. Việc cần bạn quyết trước khi tôi viết code
 
-1. **zAI**: endpoint, model, API key — tôi chưa từng gọi API này
-2. **Ngân sách token**: 33 tuần × 14 phòng × ~150 nhiệm vụ. Gọi AI từng ô hay gộp cả phòng
-   trong một lần? Gộp thì rẻ hơn nhiều nhưng dễ lẫn ngữ cảnh.
+1. ~~zAI~~ — đã kiểm chứng, xem mục 5
+2. ~~Ngân sách token~~ — đã đo: ~1,4 triệu tokens cho toàn bộ
 3. **Danh mục nghiệp vụ**: sau khi AI gom (bước 3a), bạn duyệt một lần cho 14 phòng.
    Đây là việc tốn thời gian nhất nhưng làm một lần dùng mãi.
 4. **Metric tích luỹ**: "Tính đến ngày 18/4 đã có 09 ca ghép tim" — lưu là giá trị tại thời
