@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "dashboards/Dockerfile"
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
     "startCommand": "mkdir -p .streamlit && if [ -n \"$STREAMLIT_SECRETS\" ]; then printenv STREAMLIT_SECRETS > .streamlit/secrets.toml; fi && streamlit run app_toxe.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false",
