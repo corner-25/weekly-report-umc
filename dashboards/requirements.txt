@@ -11,6 +11,9 @@ google-auth-oauthlib
 google-auth-httplib2
 google-api-python-client
 
+# Database (đọc dữ liệu đã đồng bộ từ Postgres)
+psycopg2-binary
+
 # Additional utilities
 toml
 python-dotenv

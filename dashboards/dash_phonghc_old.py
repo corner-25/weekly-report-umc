@@ -14,6 +14,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+# Nguồn dữ liệu: Postgres (ingestion layer ghi vào), không còn đọc GitHub.
+from db_source import DatabaseNotConfigured, get_hc_metadata, load_hc_data
+
     
 st.markdown("""
 <style>
@@ -423,25 +426,27 @@ class DataManager:
             st.warning(f"Không thể update metadata: {str(e)}")
     
     def load_current_data(self):
-        """Load dữ liệu hiện tại"""
+        """Load số liệu tuần từ Postgres.
+
+        Trước đây đọc JSON trên GitHub; nay ingestion layer của app Next.js lấy
+        thẳng từ OneDrive, làm sạch rồi ghi vào bảng hc_metrics. Trả về cùng
+        dạng (DataFrame, metadata) nên phần còn lại của dashboard không phải sửa.
+        """
         try:
-            current_url = f"https://api.github.com/repos/{self.github_owner}/{self.github_repo}/contents/{self.current_data_file}"
-            headers = {"Authorization": f"token {self.github_token}"}
-            
-            response = requests.get(current_url, headers=headers)
-            
-            if response.status_code == 200:
-                file_data = response.json()
-                content = base64.b64decode(file_data['content']).decode()
-                data_package = json.loads(content)
-                
-                df = pd.DataFrame(data_package['data'], columns=data_package['columns'])
-                
-                return df, data_package['metadata']
-            
-        except Exception as e:
-            st.warning(f"Không thể load dữ liệu: {str(e)}")
-        
+            df = load_hc_data()
+            if df is None or df.empty:
+                st.info(
+                    "Chưa có số liệu trong hệ thống. Dữ liệu được đồng bộ tự động "
+                    "hằng ngày từ file báo cáo trên OneDrive."
+                )
+                return None, None
+            return df, get_hc_metadata()
+
+        except DatabaseNotConfigured as exc:
+            st.error(f"❌ {exc}")
+        except Exception as exc:
+            st.warning(f"Không thể load dữ liệu: {exc}")
+
         return None, None
     
     def get_storage_info(self):

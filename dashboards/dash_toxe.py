@@ -34,6 +34,29 @@ from fleet_cleaning import (
 # Validator chuyên dụng cho từng trường nhập liệu
 from fleet_validators import validate_row
 from fleet_evaluation import render_driver_evaluation
+
+# Nguồn dữ liệu: Postgres (ingestion layer ghi vào), không còn đọc GitHub.
+from db_source import DatabaseNotConfigured, get_fleet_last_sync, load_fleet_data
+
+
+def _render_sync_status() -> None:
+    """Hiện lần đồng bộ gần nhất để người xem biết dữ liệu mới tới đâu."""
+    try:
+        info = get_fleet_last_sync()
+    except Exception:
+        return
+    if not info:
+        return
+
+    finished = info.get("finishedAt")
+    when = str(finished)[:16] if finished else "đang chạy"
+
+    if info.get("status") == "SUCCESS":
+        st.sidebar.caption(f"🔄 Đồng bộ gần nhất: {when}")
+    elif info.get("status") == "FAILED":
+        st.sidebar.warning(f"⚠️ Lần đồng bộ {when} thất bại — dữ liệu có thể chưa mới nhất")
+    else:
+        st.sidebar.caption(f"🔄 Trạng thái đồng bộ: {info.get('status')}")
 # --------------------------------------------------------------------
 # Bypass login nếu đã authenticated ở dashboard tổng
 if 'authenticated' in st.session_state and st.session_state.authenticated:
@@ -3692,14 +3715,27 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
     
-    # Load data first
-    with st.spinner("📊 Đang tải dữ liệu từ GitHub..."):
-        df_raw = load_data_from_github()
-    
+    # Nguồn dữ liệu là Postgres, do ingestion layer của app Next.js ghi vào.
+    # Dữ liệu đã làm sạch ở đó nên KHÔNG chạy lại process_dataframe.
+    with st.spinner("📊 Đang tải dữ liệu..."):
+        try:
+            df_raw = load_fleet_data()
+        except DatabaseNotConfigured as exc:
+            st.error(f"❌ {exc}")
+            return
+        except Exception as exc:
+            st.error(f"❌ Không đọc được dữ liệu từ database: {exc}")
+            return
+
     if df_raw.empty:
-        st.warning("⚠️ Không có dữ liệu từ GitHub repository")
-        st.info("💡 Click 'Sync dữ liệu mới' để lấy dữ liệu từ Google Sheets")
+        st.warning("⚠️ Chưa có dữ liệu chuyến xe trong hệ thống")
+        st.info(
+            "💡 Dữ liệu được đồng bộ tự động hằng ngày từ Google Sheets. "
+            "Cần lấy ngay thì chạy đồng bộ thủ công ở trang quản trị ứng dụng chính."
+        )
         return
+
+    _render_sync_status()
     
     # Sidebar controls
     st.sidebar.markdown("## 🔧 Điều khiển Dashboard")
