@@ -133,7 +133,7 @@ Sau khi hai dashboard chạy, copy URL của chúng vào biến `DASHBOARD_TO_XE
 | Mục | Giá trị |
 |---|---|
 | Root Directory | `cron` |
-| Cron Schedule | `0 23 * * *` (06:00 giờ VN — Railway dùng UTC) |
+| Cron Schedule | `0 0 * * *` (07:00 giờ VN — Railway dùng UTC) |
 | Restart Policy | NEVER (chạy xong là thoát) |
 
 Biến môi trường:
@@ -185,11 +185,34 @@ Bản đầu dùng `upsert` từng dòng: 14.000 chuyến mất **271s**, sát g
 Lý do lọc trước được: dữ liệu nguồn là bản ghi lịch sử, tài xế không sửa chuyến đã
 nhập — chuyến cùng `sourceRowHash` chắc chắn giống hệt bản đã lưu.
 
+## Quy tắc ghi dữ liệu: chỉ thêm mới
+
+Không nguồn nào ghi đè dữ liệu đã lưu.
+
+| Nguồn | Khoá nhận biết | Khi nguồn đổi giá trị |
+|---|---|---|
+| Đội xe | `sourceRowHash` (xe + tài xế + ngày + giờ + điểm đến) | Không xảy ra — chuyến đã nhập không sửa |
+| Báo cáo phòng | `(danh mục, nội dung, năm, tuần)` | **Giữ số cũ**, ghi cảnh báo vào `SyncLog` |
+| Báo cáo bệnh viện | `(nguồn, năm, tuần)` | Chỉ làm mới bản `PENDING`; bản đã duyệt giữ nguyên |
+
+Lý do giữ số cũ ở báo cáo phòng: số liệu đã nạp coi như đã chốt. Nếu ai đó sửa nhầm file
+Excel nguồn, hệ thống không âm thầm sửa theo. Muốn áp dụng số mới thì sửa trực tiếp trong
+hệ thống — và cảnh báo trong `SyncLog` cho biết chính xác dòng nào lệch.
+
+## Trang quản trị đồng bộ
+
+`/dashboard/data-sync`:
+
+- **Thẻ từng nguồn** — trạng thái, lần chạy cuối, nút *Chạy ngay* / *Buộc chạy lại*,
+  công tắc bật/tắt lịch tự động. Cảnh báo vàng khi quá 36 giờ chưa đồng bộ thành công.
+- **Lịch sử 20 lần chạy** — bấm *Chi tiết* để xem toàn bộ `SyncLog` của lần đó.
+- **Tuần chờ duyệt** — báo cáo bệnh viện đang ở trạng thái `PENDING`.
+- **Nhập liệu thủ công** — panel upload Excel giữ làm dự phòng, nay ghi thẳng vào
+  `hc_metrics` (trước đây đẩy JSON lên GitHub) và cũng theo quy tắc chỉ-thêm-mới.
+
 ## Việc chưa làm
 
 - **HC OfficeAPI** chưa có connector (`cronEnabled = false`). API chỉ gọi được từ mạng
   nội bộ nên phải giữ GitHub làm cầu; xem `docs/INGESTION-REFACTOR.md` mục 3.4.
-- **Chưa có đăng nhập cho dashboard Streamlit** — ai có URL đều xem được. Cân nhắc bật
-  xác thực ở tầng Railway hoặc thêm mật khẩu trong Streamlit.
-- **Trang quản trị đồng bộ** (`/dashboard/data-sync`) chưa viết lại — hiện vẫn là panel
-  upload Excel cũ, chưa hiện trạng thái `sync_runs`.
+- **Dashboard Streamlit không có đăng nhập riêng** — theo yêu cầu, vì người dùng đã đăng
+  nhập ở app chính trước khi bấm sang. Lưu ý: ai biết URL vẫn mở trực tiếp được.
