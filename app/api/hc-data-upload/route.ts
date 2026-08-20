@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import * as XLSX from 'xlsx';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN_PHC;
-const GITHUB_OWNER = process.env.GITHUB_OWNER_PHC || 'corner-25';
-const GITHUB_REPO = process.env.GITHUB_REPO_PHC || 'dashboard-storage';
-const DATA_FILE = 'current_dashboard_data.json';
+/** Nguồn ghi cho dữ liệu nhập tay, phân biệt với luồng tự động từ OneDrive. */
+const MANUAL_SOURCE_ID = 'manual-upload';
+
 
 interface PhongHcRow {
   'Danh mục': string;
@@ -20,7 +20,7 @@ interface PhongHcRow {
 }
 
 /**
- * POST: Upload Excel file(s), parse into PhongHcRow[], merge, upload JSON to GitHub
+ * POST: Nhận file Excel, parse, gộp trùng rồi ghi các dòng mới vào hc_metrics.
  * Accepts multipart form with fields:
  *   - file_2025: Excel file for 2025
  *   - file_2026: Excel file for 2026
@@ -30,13 +30,6 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  if (!GITHUB_TOKEN) {
-    return NextResponse.json(
-      { error: 'GitHub token not configured (GITHUB_TOKEN_PHC)' },
-      { status: 500 }
-    );
   }
 
   try {
@@ -91,7 +84,6 @@ export async function POST(request: Request) {
       return a['Tuần'] - b['Tuần'];
     });
 
-    // Build GitHub data package
     const columns = ['Danh mục', 'Nội dung', 'Năm', 'Tháng', 'Tuần', 'Số liệu'];
     const years = [...new Set(deduped.map(r => r['Năm']))].sort();
     const latestWeek = deduped.reduce((max, r) => {
@@ -101,32 +93,45 @@ export async function POST(request: Request) {
       return max;
     }, { year: 0, week: 0 });
 
-    const dataPackage = {
-      data: deduped,
-      columns,
-      metadata: {
-        filename: files.map(f => f.name).join(', '),
-        upload_time: new Date().toISOString(),
-        week_number: latestWeek.week,
-        year: latestWeek.year,
-        row_count: deduped.length,
-        file_size_mb: 0,
-        uploader: session.user?.name || session.user?.email || 'unknown',
-        replaced_backup: null,
-        years,
-      },
-    };
+    // Ghi thẳng vào hc_metrics. Trước đây đẩy JSON lên GitHub, nhưng dashboard
+    // giờ đọc từ Postgres nên GitHub không còn là kho dữ liệu.
+    //
+    // Giữ đúng quy tắc của luồng tự động: CHỈ THÊM dòng mới, không ghi đè số
+    // đã lưu. Người dùng cần biết dòng nào bị bỏ qua để khỏi tưởng đã cập nhật.
+    const existing = await prisma.hcMetric.findMany({
+      where: { year: { in: years } },
+      select: { category: true, content: true, year: true, week: true },
+    });
+    const seen = new Set(
+      existing.map((r) => `${r.category}|${r.content}|${r.year}|${r.week}`),
+    );
 
-    const jsonContent = JSON.stringify(dataPackage, null, 2);
-    dataPackage.metadata.file_size_mb = parseFloat((Buffer.byteLength(jsonContent) / 1024 / 1024).toFixed(2));
+    const fresh = deduped.filter(
+      (r) => !seen.has(`${r['Danh mục']}|${r['Nội dung']}|${r['Năm']}|${r['Tuần']}`),
+    );
 
-    // Upload to GitHub
-    await uploadToGitHub(jsonContent);
+    let inserted = 0;
+    for (let i = 0; i < fresh.length; i += 200) {
+      const { count } = await prisma.hcMetric.createMany({
+        data: fresh.slice(i, i + 200).map((r) => ({
+          category: r['Danh mục'],
+          content: r['Nội dung'],
+          year: r['Năm'],
+          week: r['Tuần'],
+          month: r['Tháng'],
+          value: r['Số liệu'],
+          sourceId: MANUAL_SOURCE_ID,
+        })),
+        skipDuplicates: true,
+      });
+      inserted += count;
+    }
 
     return NextResponse.json({
       success: true,
       summary: {
-        totalRows: deduped.length,
+        totalRows: inserted,
+        skippedExisting: deduped.length - fresh.length,
         years,
         latestWeek: `Tuần ${latestWeek.week}/${latestWeek.year}`,
         filesProcessed: fileResults,
@@ -188,45 +193,4 @@ function deduplicateRows(rows: PhongHcRow[]): PhongHcRow[] {
     map.set(key, row); // later entry overwrites earlier
   }
   return Array.from(map.values());
-}
-
-// ==================== GITHUB UPLOAD ====================
-
-async function uploadToGitHub(content: string) {
-  const headers = {
-    Authorization: `token ${GITHUB_TOKEN}`,
-    Accept: 'application/vnd.github.v3+json',
-    'User-Agent': 'HC-Dashboard-Upload',
-  };
-
-  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-
-  // Get current file SHA (needed for update)
-  let sha: string | undefined;
-  const getRes = await fetch(apiUrl, { headers, cache: 'no-store' });
-  if (getRes.ok) {
-    const existing = await getRes.json();
-    sha = existing.sha;
-  }
-
-  // Upload/update file
-  const body: Record<string, unknown> = {
-    message: `Update HC dashboard data - ${new Date().toISOString()}`,
-    content: Buffer.from(content).toString('base64'),
-  };
-  if (sha) {
-    body.sha = sha;
-  }
-
-  const putRes = await fetch(apiUrl, {
-    method: 'PUT',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  });
-
-  if (!putRes.ok) {
-    const errText = await putRes.text();
-    throw new Error(`GitHub upload failed: ${putRes.status} - ${errText}`);
-  }
 }

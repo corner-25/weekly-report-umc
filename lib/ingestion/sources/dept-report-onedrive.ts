@@ -10,6 +10,9 @@ const UPSERT_BATCH_SIZE = 100;
 /** Số dòng lỗi ghi log chi tiết; phần còn lại chỉ đếm. */
 const MAX_REJECTED_LOGGED = 20;
 
+/** Số thay đổi giá trị ghi chi tiết vào log; phần còn lại chỉ đếm. */
+const MAX_CHANGED_LOGGED = 30;
+
 interface DeptReportConfig {
   /** Tên biến môi trường chứa share link — link không nằm trong DB. */
   shareUrlEnv: string;
@@ -76,48 +79,77 @@ export const deptReportOnedrive: Connector<Buffer, DeptReportParseResult> = {
 
   async upsert([result]: DeptReportParseResult[], ctx: SyncContext): Promise<UpsertResult> {
     const { prisma, source, runId } = ctx;
-    let upserted = 0;
 
-    for (let i = 0; i < result.rows.length; i += UPSERT_BATCH_SIZE) {
-      const batch = result.rows.slice(i, i + UPSERT_BATCH_SIZE);
+    // CHỈ THÊM DÒNG MỚI, không ghi đè dòng đã có.
+    //
+    // Số liệu đã nạp coi như đã chốt: nếu ai đó sửa nhầm file Excel nguồn, DB
+    // vẫn giữ nguyên con số cũ. Muốn sửa số đã chốt thì sửa thẳng trong DB.
+    //
+    // Đổi lại, khi file nguồn có giá trị khác giá trị đã lưu, ta ghi cảnh báo
+    // vào SyncLog để người vận hành biết mà quyết định — im lặng bỏ qua sẽ
+    // khiến sai lệch nằm mãi mà không ai hay.
+    const existing = await prisma.hcMetric.findMany({
+      where: { year: result.year },
+      select: { category: true, content: true, week: true, value: true },
+    });
 
-      await prisma.$transaction(
-        batch.map((row) =>
-          prisma.hcMetric.upsert({
-            where: {
-              category_content_year_week: {
-                category: row.category,
-                content: row.content,
-                year: result.year,
-                week: row.week,
-              },
-            },
-            create: {
-              category: row.category,
-              content: row.content,
-              year: result.year,
-              week: row.week,
-              month: row.month,
-              value: row.value,
-              sourceId: source.id,
-              syncRunId: runId,
-            },
-            update: {
-              month: row.month,
-              value: row.value,
-              syncRunId: runId,
-            },
-          }),
-        ),
-      );
+    const keyOf = (r: { category: string; content: string; week: number }) =>
+      `${r.category}|${r.content}|${r.week}`;
+    const existingByKey = new Map(existing.map((r) => [keyOf(r), r.value]));
 
-      upserted += batch.length;
+    const fresh: typeof result.rows = [];
+    const changed: Array<{ key: string; oldValue: number; newValue: number }> = [];
+
+    for (const row of result.rows) {
+      const key = keyOf(row);
+      const known = existingByKey.get(key);
+
+      if (known === undefined) {
+        fresh.push(row);
+      } else if (known !== row.value) {
+        changed.push({ key, oldValue: known, newValue: row.value });
+      }
     }
 
-    await ctx.log('info', `Đã ghi ${upserted} dòng vào hc_metrics`);
+    let upserted = 0;
+    for (let i = 0; i < fresh.length; i += UPSERT_BATCH_SIZE) {
+      const batch = fresh.slice(i, i + UPSERT_BATCH_SIZE);
+      const { count } = await prisma.hcMetric.createMany({
+        data: batch.map((row) => ({
+          category: row.category,
+          content: row.content,
+          year: result.year,
+          week: row.week,
+          month: row.month,
+          value: row.value,
+          sourceId: source.id,
+          syncRunId: runId,
+        })),
+        // Chặn trường hợp hiếm: hai lần chạy song song cùng chèn một dòng.
+        skipDuplicates: true,
+      });
+      upserted += count;
+    }
+
+    await ctx.log(
+      'info',
+      `Đã ghi ${upserted} dòng mới vào hc_metrics (${existing.length} dòng năm ${result.year} đã có sẵn)`,
+    );
+
+    if (changed.length > 0) {
+      await ctx.log(
+        'warn',
+        `${changed.length} số liệu trong file nguồn khác giá trị đã lưu — GIỮ NGUYÊN giá trị cũ. ` +
+          'Muốn áp dụng số mới thì sửa trực tiếp trong hệ thống.',
+        { changes: changed.slice(0, MAX_CHANGED_LOGGED) },
+      );
+    }
 
     // Ô chưa nhập không phải dòng "bỏ qua do lỗi", nhưng vẫn đáng đếm để
     // trang quản trị cho thấy còn bao nhiêu số liệu chưa có.
-    return { upserted, skipped: result.emptyValueCount + result.notApplicableCount };
+    return {
+      upserted,
+      skipped: result.emptyValueCount + result.notApplicableCount + changed.length,
+    };
   },
 };

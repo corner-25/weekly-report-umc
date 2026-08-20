@@ -1,359 +1,208 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AiReportImportPanel } from './AiReportImportPanel';
+import { HcUploadPanel } from './HcUploadPanel';
+import { RunDetail } from './RunDetail';
+import { SourceCard } from './SourceCard';
+import { formatDuration, formatTime, statusLabel, statusStyle } from './format';
+import type { SyncAdminData } from './types';
 
-interface UploadSummary {
-  totalRows: number;
-  years: number[];
-  latestWeek: string;
-  filesProcessed: { name: string; rows: number; years: number[] }[];
-  categories: number;
-  uploadedAt: string;
-}
-
+/**
+ * Trang quản trị đồng bộ dữ liệu.
+ *
+ * Dữ liệu được lấy tự động hằng ngày lúc 07:00 (cron service trên Railway).
+ * Trang này để xem trạng thái, chạy tay khi cần, và truy nguyên khi có lỗi.
+ */
 export default function DataSyncPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-slate-900">Quản lý Đồng bộ Dữ liệu</h1>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Upload báo cáo tuần bằng AI / Đồng bộ dữ liệu cho các dashboard native
-        </p>
-      </div>
-
-      <AiReportImportPanel />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <HcUploadPanel />
-        <FleetSyncPanel />
-      </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════
-// HC UPLOAD PANEL - Upload Excel → Parse → GitHub
-// ═══════════════════════════════════════════════════════════
-
-function HcUploadPanel() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState<UploadSummary | null>(null);
+  const [data, setData] = useState<SyncAdminData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [openRunId, setOpenRunId] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
-      setResult(null);
-      setError(null);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const handleUpload = async () => {
-    if (files.length === 0) {
-      setError('Vui lòng chọn ít nhất 1 file Excel');
-      return;
-    }
-
-    setUploading(true);
-    setError(null);
-    setResult(null);
-
+  const reload = useCallback(async () => {
     try {
-      const formData = new FormData();
-      files.forEach((file, i) => formData.append(`file_${i}`, file));
-
-      const res = await fetch('/api/hc-data-upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || `Lỗi ${res.status}`);
-      } else {
-        setResult(data.summary);
-        setFiles([]);
-        if (fileInputRef.current) fileInputRef.current.value = '';
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi kết nối');
+      const res = await fetch('/api/sync-admin');
+      if (!res.ok) throw new Error(`Không tải được dữ liệu (HTTP ${res.status})`);
+      setData(await res.json());
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Lỗi không xác định');
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-4">
-        <div className="flex items-center gap-2 text-white">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-          <h2 className="font-semibold text-lg">Dashboard Phòng HC</h2>
-        </div>
-        <p className="text-blue-100 text-xs mt-1">
-          Upload file Excel → Parse → Upload JSON lên GitHub
-        </p>
-      </div>
-
-      {/* Content */}
-      <div className="p-5 space-y-4">
-        {/* Pipeline explanation */}
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
-          <p className="font-semibold mb-1">Quy trình:</p>
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="bg-white px-2 py-0.5 rounded border border-blue-200">File Excel</span>
-            <span>→</span>
-            <span className="bg-white px-2 py-0.5 rounded border border-blue-200">Parse dữ liệu</span>
-            <span>→</span>
-            <span className="bg-white px-2 py-0.5 rounded border border-blue-200">Merge &amp; Dedup</span>
-            <span>→</span>
-            <span className="bg-white px-2 py-0.5 rounded border border-blue-200">GitHub</span>
-          </div>
-          <p className="mt-2 text-blue-600">
-            Upload 1 hoặc nhiều file Excel (VD: năm 2025 + 2026). Hệ thống tự merge và loại trùng.
+    <div className="space-y-8">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">Đồng bộ dữ liệu</h1>
+          <p className="mt-0.5 text-xs text-slate-400">
+            Tự động chạy hằng ngày lúc 07:00. Chỉ nạp dữ liệu mới, không ghi đè số đã lưu.
           </p>
         </div>
+        {data && <Stats stats={data.stats} />}
+      </header>
 
-        {/* File input */}
-        <div>
-          <label className="text-xs font-medium text-slate-700 block mb-1.5">Chọn file Excel (.xlsx, .xls)</label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls"
-            multiple
-            onChange={handleFileChange}
-            className="w-full text-sm text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-          />
-        </div>
+      {error && (
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          {error}
+        </p>
+      )}
 
-        {/* Selected files */}
-        {files.length > 0 && (
-          <div className="space-y-1.5">
-            <p className="text-xs font-medium text-slate-700">File đã chọn ({files.length}):</p>
-            {files.map((file, i) => (
-              <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span className="text-sm text-slate-700 flex-1 truncate">{file.name}</span>
-                <span className="text-xs text-slate-400">{(file.size / 1024).toFixed(0)} KB</span>
-                <button onClick={() => removeFile(i)} className="text-red-400 hover:text-red-600">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Upload button */}
-        <button onClick={handleUpload} disabled={uploading || files.length === 0}
-          className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
-            uploading
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : files.length === 0
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-sm'
-          }`}>
-          {uploading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
-              Đang xử lý &amp; upload...
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              Upload &amp; Cập nhật Dashboard
-            </>
-          )}
-        </button>
-
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
-            <p className="font-semibold">Lỗi</p>
-            <p className="text-xs mt-1">{error}</p>
-          </div>
-        )}
-
-        {/* Success result */}
-        {result && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-            <p className="font-semibold text-sm text-emerald-700 mb-2">Upload thành công!</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-slate-500">Tổng dòng dữ liệu</p>
-                <p className="font-bold text-emerald-700 text-lg">{result.totalRows.toLocaleString()}</p>
-              </div>
-              <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-slate-500">Danh mục</p>
-                <p className="font-bold text-emerald-700 text-lg">{result.categories}</p>
-              </div>
-              <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-slate-500">Năm dữ liệu</p>
-                <p className="font-bold text-emerald-700">{result.years.join(', ')}</p>
-              </div>
-              <div className="bg-white rounded-lg p-2 border border-emerald-100">
-                <p className="text-slate-500">Tuần mới nhất</p>
-                <p className="font-bold text-emerald-700">{result.latestWeek}</p>
-              </div>
+      {loading ? (
+        <p className="py-12 text-center text-sm text-slate-400">Đang tải…</p>
+      ) : data ? (
+        <>
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-slate-700">Nguồn dữ liệu</h2>
+            <div className="grid gap-3 lg:grid-cols-2">
+              {data.sources.map((source) => (
+                <SourceCard
+                  key={source.id}
+                  source={source}
+                  lastRun={data.recentRuns.find((r) => r.sourceId === source.id) ?? null}
+                  onChanged={reload}
+                />
+              ))}
             </div>
-            {result.filesProcessed.length > 0 && (
-              <div className="mt-2 space-y-1">
-                <p className="text-xs font-medium text-emerald-700">Chi tiết file:</p>
-                {result.filesProcessed.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-emerald-600">
-                    <span>✅</span>
-                    <span className="font-medium">{f.name}</span>
-                    <span className="text-slate-400">
-                      {f.rows} dòng | Năm: {f.years.join(', ')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <p className="text-xs text-slate-400 mt-2">
-              Uploaded: {new Date(result.uploadedAt).toLocaleString('vi-VN')}
-            </p>
-          </div>
-        )}
+          </section>
 
-        {/* Target info */}
-        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
-          <p><span className="font-medium">Format:</span> Excel (.xlsx/.xls) với cột: Danh mục, Nội dung, Năm, Tháng, Tuần, Số liệu</p>
-          <p><span className="font-medium">GitHub:</span> corner-25/dashboard-storage → current_dashboard_data.json</p>
-          <p><span className="font-medium">Dashboard:</span> /dashboard/reports/phong-hc-native</p>
+          {data.pending.length > 0 && <PendingWeeks pending={data.pending} />}
+
+          <RecentRuns runs={data.recentRuns} onOpen={setOpenRunId} />
+        </>
+      ) : null}
+
+      <section className="space-y-4 border-t border-slate-100 pt-8">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-700">Nhập liệu thủ công</h2>
+          <p className="mt-0.5 text-xs text-slate-400">
+            Phương án dự phòng khi cần nạp gấp ngoài lịch
+          </p>
         </div>
-      </div>
+        <AiReportImportPanel />
+        <HcUploadPanel />
+      </section>
+
+      {openRunId && <RunDetail runId={openRunId} onClose={() => setOpenRunId(null)} />}
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-// FLEET SYNC PANEL
-// ═══════════════════════════════════════════════════════════
-
-function FleetSyncPanel() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [refreshResult, setRefreshResult] = useState<{ ok: boolean; message: string; fetchedAt?: string } | null>(null);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    setRefreshResult(null);
-
-    try {
-      const res = await fetch('/api/fleet-data', { cache: 'no-store' });
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        setRefreshResult({ ok: false, message: data.error || `Lỗi ${res.status}` });
-      } else {
-        const recordCount = Array.isArray(data.data) ? data.data.length : 0;
-        setRefreshResult({
-          ok: true,
-          message: `Đã tải ${recordCount.toLocaleString()} bản ghi`,
-          fetchedAt: data.fetchedAt,
-        });
-      }
-    } catch (err) {
-      setRefreshResult({ ok: false, message: err instanceof Error ? err.message : 'Lỗi kết nối' });
-    } finally {
-      setRefreshing(false);
-    }
-  };
+function Stats({ stats }: { stats: SyncAdminData['stats'] }) {
+  const items = [
+    { label: 'Số liệu Phòng HC', value: stats.hcMetrics },
+    { label: 'Chuyến xe', value: stats.fleetTrips },
+    { label: 'Tuần chờ duyệt', value: stats.pendingCount },
+  ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-4">
-        <div className="flex items-center gap-2 text-white">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-          <h2 className="font-semibold text-lg">Dashboard Tổ Xe</h2>
+    <dl className="flex gap-6">
+      {items.map((item) => (
+        <div key={item.label}>
+          <dt className="text-xs text-slate-400">{item.label}</dt>
+          <dd className="text-lg font-semibold tabular-nums text-slate-900">
+            {item.value.toLocaleString('vi-VN')}
+          </dd>
         </div>
-        <p className="text-amber-100 text-xs mt-1">
-          Kiểm tra &amp; làm mới dữ liệu từ GitHub
+      ))}
+    </dl>
+  );
+}
+
+function PendingWeeks({ pending }: { pending: SyncAdminData['pending'] }) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h2 className="text-sm font-semibold text-slate-700">
+          Báo cáo bệnh viện chờ duyệt ({pending.length})
+        </h2>
+        <p className="mt-0.5 text-xs text-slate-400">
+          Nội dung là văn bản tự do, cần AI trích xuất và người xác nhận trước khi ghi vào báo cáo tuần
         </p>
       </div>
-
-      {/* Content */}
-      <div className="p-5 space-y-4">
-        <div className="text-xs text-slate-500 space-y-0.5">
-          <p className="font-medium text-slate-700 mb-1">Dữ liệu Fleet:</p>
-          <div className="space-y-0.5">
-            <span className="block">🚗 Dữ liệu chuyến xe (từ Google Sheets → GitHub)</span>
-            <span className="block">📊 Bao gồm: xe HC, xe cứu thương, tài xế, doanh thu</span>
-          </div>
-        </div>
-
-        <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 text-xs text-amber-700">
-          <p className="font-semibold mb-1">📝 Quy trình đồng bộ:</p>
-          <ol className="list-decimal list-inside space-y-0.5">
-            <li>Tài xế nhập dữ liệu vào Google Sheets</li>
-            <li>Script Python sync từ Google Sheets → GitHub</li>
-            <li>Dashboard native đọc từ GitHub</li>
-          </ol>
-          <p className="mt-2 text-amber-600">
-            Nút bên dưới kiểm tra kết nối và tải lại dữ liệu mới nhất từ GitHub.
-          </p>
-        </div>
-
-        <button onClick={handleRefresh} disabled={refreshing}
-          className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
-            refreshing
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-sm'
-          }`}>
-          {refreshing ? (
-            <>
-              <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
-              Đang kiểm tra...
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Kiểm tra &amp; Làm mới dữ liệu
-            </>
-          )}
-        </button>
-
-        {refreshResult && (
-          <div className={`rounded-lg border p-3 text-sm ${
-            refreshResult.ok ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-600'
-          }`}>
-            <p className="font-semibold">{refreshResult.ok ? '✅ Kết nối OK' : '❌ Lỗi'}</p>
-            <p className="text-xs mt-1">{refreshResult.message}</p>
-            {refreshResult.fetchedAt && (
-              <p className="text-xs text-slate-400 mt-1">
-                Fetched: {new Date(refreshResult.fetchedAt).toLocaleString('vi-VN')}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg p-3">
-          <p><span className="font-medium">GitHub:</span> corner-25/vehicle-storage</p>
-          <p><span className="font-medium">File:</span> data/latest/fleet_data_latest.json</p>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {pending.map((p) => (
+          <span
+            key={p.id}
+            className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900"
+          >
+            Tuần {p.week}/{p.year}
+          </span>
+        ))}
       </div>
-    </div>
+    </section>
+  );
+}
+
+function RecentRuns({
+  runs,
+  onOpen,
+}: {
+  runs: SyncAdminData['recentRuns'];
+  onOpen: (id: string) => void;
+}) {
+  if (runs.length === 0) {
+    return <p className="text-sm text-slate-400">Chưa có lần chạy nào.</p>;
+  }
+
+  return (
+    <section className="space-y-3">
+      <h2 className="text-sm font-semibold text-slate-700">Lịch sử chạy</h2>
+      <div className="overflow-x-auto rounded-xl border border-slate-200">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-left text-xs text-slate-500">
+            <tr>
+              <th className="px-4 py-2.5 font-medium">Nguồn</th>
+              <th className="px-4 py-2.5 font-medium">Trạng thái</th>
+              <th className="px-4 py-2.5 font-medium">Bắt đầu</th>
+              <th className="px-4 py-2.5 text-right font-medium">Ghi</th>
+              <th className="px-4 py-2.5 text-right font-medium">Bỏ qua</th>
+              <th className="px-4 py-2.5 text-right font-medium">Thời gian</th>
+              <th className="px-4 py-2.5" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {runs.map((run) => (
+              <tr key={run.id} className="hover:bg-slate-50">
+                <td className="px-4 py-2.5 text-slate-700">{run.sourceId}</td>
+                <td className="px-4 py-2.5">
+                  <span
+                    className={`inline-block rounded-md border px-2 py-0.5 text-xs font-medium ${statusStyle(run.status)}`}
+                  >
+                    {statusLabel(run.status)}
+                  </span>
+                </td>
+                <td className="px-4 py-2.5 text-slate-500">{formatTime(run.startedAt)}</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-slate-700">
+                  {run.rowsUpserted.toLocaleString('vi-VN')}
+                </td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-slate-400">
+                  {run.rowsSkipped.toLocaleString('vi-VN')}
+                </td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-slate-500">
+                  {formatDuration(run.startedAt, run.finishedAt)}
+                </td>
+                <td className="px-4 py-2.5 text-right">
+                  <button
+                    type="button"
+                    onClick={() => onOpen(run.id)}
+                    className="text-xs font-medium text-cyan-700 hover:underline"
+                  >
+                    Chi tiết
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
