@@ -1128,7 +1128,9 @@ model FleetTrip {
   startTime          String?
   endTime            String?
   durationHours      Float?
-  durationSuspicious Boolean  @default(false) // > 16h, nhiều khả năng nhầm start/end
+  durationConfidence String   @default("medium") // high|medium|low
+  durationMethod     String   @default("normal") // normal|fixed_ampm|overnight|estimated_*
+  durationSuspicious Boolean  @default(false) // tin cậy thấp hoặc > 16h
   distanceKm         Float?
   distanceFixMethod  String? // NONE|ODO_DELTA|ESTIMATED_FROM_HOURS|UNFIXABLE
   fuelLiters         Float?
@@ -1137,7 +1139,6 @@ model FleetTrip {
   workCategory       String
   areaType           String
   tripDetails        String?  @db.Text
-  isDuplicate        Boolean  @default(false) // nghi trùng, chỉ đánh dấu không xoá
   sourceId           String
   syncRunId          String?
   createdAt          DateTime @default(now())
