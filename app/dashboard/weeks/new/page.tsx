@@ -1,6 +1,7 @@
 'use client';
 
 import { Select } from '@/components/ui/Select';
+import { getDefaultProgress, getTaskTypeInfo } from '@/lib/task-type';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getWeek, getYear, startOfWeek, endOfWeek, format } from 'date-fns';
@@ -20,7 +21,8 @@ interface MasterTask {
   name: string;
   description: string | null;
   department: Department;
-  progressType: 'RECURRING' | 'CUMULATIVE';
+  progressType: 'RECURRING' | 'CUMULATIVE' | 'MILESTONE' | 'MONITORING' | 'UNRELIABLE';
+  progressMeaning?: 'COMPLETION' | 'WEEKLY_DONE' | 'TIME_RATIO' | 'MEANINGLESS';
   latestProgress: number;
   weekCount: number;
 }
@@ -32,7 +34,8 @@ interface TaskProgress {
   orderNumber: number;
   result: string;
   timePeriod: string;
-  progress: number;
+  /** null với loại nhiệm vụ không dùng tiến độ (MILESTONE, MONITORING, UNRELIABLE). */
+  progress: number | null;
   nextWeekPlan: string;
   isImportant: boolean;
   isAdHoc?: boolean; // Flag to distinguish ad-hoc tasks
@@ -225,10 +228,7 @@ export default function NewWeekReport() {
   // Master Task Progress functions
   const addMasterTaskProgress = (departmentId: string, masterTaskId: string) => {
     const mt = masterTasks.find((t) => t.id === masterTaskId);
-    // RECURRING: default 100%, CUMULATIVE: carry-over from last week
-    const defaultProgress = mt?.progressType === 'RECURRING'
-      ? 100
-      : (mt?.latestProgress ?? 0);
+    const defaultProgress = getDefaultProgress(mt?.progressType, mt?.latestProgress);
 
     setDepartmentData(
       departmentData.map((d) => {
@@ -624,11 +624,12 @@ export default function NewWeekReport() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h5 className="font-bold text-blue-900">#{tp.orderNumber}. {masterTask?.name}</h5>
-                          {masterTask?.progressType === 'RECURRING' ? (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-teal-100 text-teal-700 rounded-full">Thường quy</span>
-                          ) : (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-violet-100 text-violet-700 rounded-full">Tích lũy</span>
-                          )}
+                          <span
+                            title={getTaskTypeInfo(masterTask?.progressType).description}
+                            className={`px-2 py-0.5 text-xs font-medium rounded-full ${getTaskTypeInfo(masterTask?.progressType).badgeClass}`}
+                          >
+                            {getTaskTypeInfo(masterTask?.progressType).label}
+                          </span>
                         </div>
                         {masterTask?.description && (
                           <p className="text-xs text-slate-600 mt-1">{masterTask.description}</p>

@@ -1,6 +1,8 @@
 'use client';
 
 import { Select } from '@/components/ui/Select';
+import type { ProgressMeaning, ProgressType } from '@prisma/client';
+import { countsTowardProgressStats } from '@/lib/task-type';
 import { useState } from 'react';
 import { LineChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -29,6 +31,8 @@ interface MasterTask {
   weekCount: number;
   estimatedDuration: number | null;
   createdAt: string;
+  progressType?: ProgressType;
+  progressMeaning?: ProgressMeaning;
 }
 
 interface DepartmentMetrics {
@@ -38,6 +42,8 @@ interface DepartmentMetrics {
   inProgressTasks: number;
   notStartedTasks: number;
   avgProgress: number;
+  /** Số nhiệm vụ thực sự có tiến độ đo được — mẫu số của avgProgress. */
+  measurableTasks: number;
   totalWeeks: number;
   completionRate: number;
 }
@@ -75,8 +81,12 @@ export default function MetricsPage() {
     const inProgress = deptTasks.filter(t => !t.isCompleted && t.weekCount > 0).length;
     const notStarted = deptTasks.filter(t => t.weekCount === 0).length;
 
-    const totalProgress = deptTasks.reduce((sum, t) => sum + t.latestProgress, 0);
-    const avgProgress = deptTasks.length > 0 ? Math.round(totalProgress / deptTasks.length) : 0;
+    // Chỉ nhiệm vụ tích luỹ mới có tiến độ phản ánh mức hoàn thành thật.
+    // Gộp cả nhiệm vụ thường quy (luôn 100%) và loại UNRELIABLE (5,5,5 hoặc
+    // 2,4,6 = % thời gian trôi qua) làm con số trung bình vô nghĩa.
+    const measurable = deptTasks.filter((t) => countsTowardProgressStats(t.progressType, t.progressMeaning));
+    const totalProgress = measurable.reduce((sum, t) => sum + t.latestProgress, 0);
+    const avgProgress = measurable.length > 0 ? Math.round(totalProgress / measurable.length) : 0;
 
     const totalWeeks = deptTasks.reduce((sum, t) => sum + t.weekCount, 0);
     const completionRate = deptTasks.length > 0 ? Math.round((completed / deptTasks.length) * 100) : 0;
@@ -88,6 +98,7 @@ export default function MetricsPage() {
       inProgressTasks: inProgress,
       notStartedTasks: notStarted,
       avgProgress,
+      measurableTasks: measurable.length,
       totalWeeks,
       completionRate,
     };
@@ -104,9 +115,13 @@ export default function MetricsPage() {
     completedTasks: filteredTasks.filter(t => t.isCompleted).length,
     inProgressTasks: filteredTasks.filter(t => !t.isCompleted && t.weekCount > 0).length,
     notStartedTasks: filteredTasks.filter(t => t.weekCount === 0).length,
-    avgProgress: filteredTasks.length > 0
-      ? Math.round(filteredTasks.reduce((sum, t) => sum + t.latestProgress, 0) / filteredTasks.length)
-      : 0,
+    avgProgress: (() => {
+      const measurable = filteredTasks.filter((t) => countsTowardProgressStats(t.progressType, t.progressMeaning));
+      return measurable.length > 0
+        ? Math.round(measurable.reduce((sum, t) => sum + t.latestProgress, 0) / measurable.length)
+        : 0;
+    })(),
+    measurableTasks: filteredTasks.filter((t) => countsTowardProgressStats(t.progressType, t.progressMeaning)).length,
     totalWeeks: filteredTasks.reduce((sum, t) => sum + t.weekCount, 0),
     avgWeeksPerTask: filteredTasks.length > 0
       ? Math.round(filteredTasks.reduce((sum, t) => sum + t.weekCount, 0) / filteredTasks.length)
@@ -245,6 +260,9 @@ export default function MetricsPage() {
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-sm text-slate-600">TB Tiến độ</p>
             <p className="text-2xl font-bold text-blue-600">{overallMetrics.avgProgress}%</p>
+            <p className="text-xs text-slate-400 mt-0.5" title="Chỉ tính nhiệm vụ tích luỹ — nhiệm vụ thường quy luôn 100% nên không phản ánh tiến độ">
+              trên {overallMetrics.measurableTasks} nhiệm vụ tích luỹ
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-sm text-slate-600">Tổng tuần</p>

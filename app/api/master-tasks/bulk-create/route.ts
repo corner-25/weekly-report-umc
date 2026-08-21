@@ -9,6 +9,10 @@ export const runtime = 'nodejs';
 const BodySchema = z.object({
   departmentId: z.string(),
   names: z.array(z.string().min(1)).min(1).max(50),
+  /** Loại nhiệm vụ; xem lib/task-type.ts để biết ý nghĩa từng loại. */
+  progressType: z
+    .enum(['RECURRING', 'CUMULATIVE', 'MILESTONE', 'MONITORING', 'UNRELIABLE'])
+    .optional(),
 });
 
 export async function POST(req: Request) {
@@ -43,7 +47,9 @@ export async function POST(req: Request) {
         data: {
           departmentId: body.departmentId,
           name: name.trim(),
-          progressType: 'RECURRING',
+          // Mặc định thường quy; đổi lại trong màn hình quản lý nhiệm vụ khi
+          // biết rõ đây là dự án tích luỹ hay việc một lần.
+          progressType: body.progressType ?? 'RECURRING',
         },
         select: { id: true, name: true },
       }),
