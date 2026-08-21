@@ -285,6 +285,22 @@ async function extractMetricsForWeek(
     }
   }
 
+  // Xoá metric cũ của đúng phòng + tuần này trước khi ghi mới.
+  //
+  // Trích xuất là thao tác thay thế, không phải bổ sung: chạy lại cùng một tuần
+  // phải cho cùng kết quả. Không xoá thì mỗi lần chạy lại nhân bản toàn bộ —
+  // đo được trên production: tuần 5 phình từ 358 lên 824 metric sau hai lần chạy.
+  //
+  // Giữ lại bản người dùng đã duyệt hoặc sửa: đó là quyết định của con người,
+  // AI không được ghi đè.
+  await db.extractedMetric.deleteMany({
+    where: {
+      weekId,
+      departmentId: input.departmentId,
+      reviewStatus: 'PENDING',
+    },
+  });
+
   let extracted = 0;
   let flagged = 0;
 
