@@ -14,7 +14,9 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed-sources": "tsx prisma/seed-sync-sources.ts",
-    "sync:local": "curl -X POST -H \"x-cron-secret: $CRON_SECRET\" http://localhost:3000/api/cron/sync"
+    "sync:local": "curl -X POST -H \"x-cron-secret: $CRON_SECRET\" http://localhost:3000/api/cron/sync",
+    "watch:import": "tsx prisma/watch-import.ts",
+    "import:week": "tsx prisma/import-hospital-week.ts"
   },
   "keywords": [],
   "author": "",
