@@ -122,6 +122,33 @@ def load_fleet_data() -> pd.DataFrame:
 
 
 @st.cache_data(ttl=CACHE_TTL_SECONDS)
+def get_fleet_sync_warnings() -> list[str]:
+    """Cảnh báo của lần đồng bộ thành công gần nhất.
+
+    Một số vấn đề chỉ thấy được ở tầng ingestion, không còn dấu vết trong bảng
+    chuyến xe — ví dụ chuyến nghi trùng bị loại trước khi ghi. Đọc từ sync_logs
+    để dashboard vẫn báo cho người xem biết.
+    """
+    df = _read_sql(
+        """
+        SELECT l.message
+        FROM sync_logs l
+        JOIN sync_runs r ON r.id = l."runId"
+        WHERE r."sourceId" = 'fleet-google-sheets'
+          AND r.status = 'SUCCESS'
+          AND l.level = 'warn'
+          AND r.id = (
+              SELECT id FROM sync_runs
+              WHERE "sourceId" = 'fleet-google-sheets' AND status = 'SUCCESS'
+              ORDER BY "startedAt" DESC LIMIT 1
+          )
+        ORDER BY l."createdAt"
+        """
+    )
+    return [] if df.empty else df["message"].tolist()
+
+
+@st.cache_data(ttl=CACHE_TTL_SECONDS)
 def get_fleet_last_sync() -> dict | None:
     """Thông tin lần đồng bộ gần nhất, để hiển thị 'dữ liệu tới ngày nào'."""
     df = _read_sql(

@@ -35,7 +35,12 @@ from fleet_validators import validate_row
 from fleet_evaluation import render_driver_evaluation
 
 # Nguồn dữ liệu: Postgres (ingestion layer ghi vào), không còn đọc GitHub.
-from db_source import DatabaseNotConfigured, get_fleet_last_sync, load_fleet_data
+from db_source import (
+    DatabaseNotConfigured,
+    get_fleet_last_sync,
+    get_fleet_sync_warnings,
+    load_fleet_data,
+)
 
 
 def _render_data_quality(df) -> None:
@@ -70,6 +75,18 @@ def _render_data_quality(df) -> None:
                 f"⚠️ {suspicious} chuyến có giờ lái đáng ngờ — nhiều khả năng tài xế "
                 "nhập nhầm giờ bắt đầu/kết thúc. Xem cột *Cách tính giờ* bên dưới."
             )
+
+        # Vấn đề chỉ thấy ở tầng ingestion: chuyến bị loại trước khi ghi vào DB
+        # nên không còn dấu vết trong bảng chuyến xe.
+        try:
+            warnings = get_fleet_sync_warnings()
+        except Exception:
+            warnings = []
+        ingestion_notes = [w for w in warnings if 'nghi trùng' in w or 'không rõ người nhập' in w]
+        if ingestion_notes:
+            st.markdown("**Ghi nhận khi đồng bộ**")
+            for note in ingestion_notes:
+                st.caption(f"• {note}")
 
         if 'odometer_status' in df.columns:
             odo_labels = {
@@ -1555,15 +1572,35 @@ def create_overload_analysis_tab(df):
     # =================== XE VƯỢT NGƯỠNG GIỜ LÀM VIỆC - FIXED ===================
     
     st.markdown("#### 🚨 Xe vượt ngưỡng giờ làm việc")
-    
+
+    # Loại chuyến có giờ lái đáng ngờ trước khi cộng dồn.
+    #
+    # Chuyến bị gắn cờ duration_suspicious là chuyến pipeline không tin được giờ
+    # lái (tin cậy thấp, hoặc >16h). Chúng chỉ chiếm 0,8% tổng giờ nhưng dồn vào
+    # một ngày thì làm hỏng cảnh báo quá tải: xe 50A-019.90 ngày 03/06 báo 23,8
+    # giờ mà TOÀN BỘ đến từ chuyến đáng ngờ — không xe nào chạy 23,8 giờ/ngày.
+    df_reliable = df
+    excluded_trips = 0
+    if 'duration_suspicious' in df.columns:
+        mask = df['duration_suspicious'].fillna(False).astype(bool)
+        excluded_trips = int(mask.sum())
+        if excluded_trips:
+            df_reliable = df[~mask]
+
+    if excluded_trips:
+        st.caption(
+            f"Đã loại {excluded_trips} chuyến có giờ lái không đáng tin khỏi phép tính này. "
+            "Xem chi tiết ở mục 🔍 Chất lượng dữ liệu."
+        )
+
     # Tính toán workload hàng ngày cho từng xe
-    vehicle_daily = df.groupby(['vehicle_id', 'date']).agg({
+    vehicle_daily = df_reliable.groupby(['vehicle_id', 'date']).agg({
         'duration_hours': 'sum',
         'distance_km': 'sum', 
         'vehicle_type': 'first'
     }).reset_index()
     vehicle_daily.columns = ['vehicle_id', 'date', 'daily_hours', 'daily_distance', 'vehicle_type']
-    vehicle_daily['daily_trips'] = df.groupby(['vehicle_id', 'date']).size().values
+    vehicle_daily['daily_trips'] = df_reliable.groupby(['vehicle_id', 'date']).size().values
     
     # Xe vượt ngưỡng
     vehicle_overload = vehicle_daily[
