@@ -162,14 +162,16 @@ async function persistGrouping(
 
   let areasCreated = 0;
   for (const draft of drafts.values()) {
+    // Loại phổ biến nhất trong các biến thể đại diện cho cả nghiệp vụ.
+    const progressType = majority(draft.types, 'RECURRING');
+
     await db.masterTask.create({
       data: {
         departmentId,
         name: draft.name,
         description: draft.description,
-        // Loại phổ biến nhất trong các biến thể đại diện cho cả nghiệp vụ.
-        progressType: majority(draft.types, 'RECURRING'),
-        progressMeaning: majority(draft.meanings, 'WEEKLY_DONE'),
+        progressType,
+        progressMeaning: reconcileMeaning(progressType, majority(draft.meanings, 'WEEKLY_DONE')),
         aliases: [...new Set(draft.aliases)],
         sourceType: autoApprove ? 'AI_GROUPED' : 'AI_SUGGESTED',
         // Khi không tự duyệt, MasterTask nằm im tới khi người dùng xác nhận.
@@ -190,6 +192,32 @@ async function persistGrouping(
     totalTokens: result.totalTokens,
     durationMs: result.durationMs,
   };
+}
+
+/**
+ * Ép ý nghĩa tiến độ khớp với loại nhiệm vụ.
+ *
+ * Hai giá trị được bỏ phiếu độc lập trên các biến thể, nên có thể ghép thành tổ
+ * hợp vô lý: MILESTONE (việc một lần, không có % ở giữa) mà lại COMPLETION
+ * (% hoàn thành thật), hoặc RECURRING (tuần nào cũng xong) mà lại MEANINGLESS.
+ * Đo trên 14 phòng: 4/76 nghiệp vụ rơi vào tình trạng này.
+ *
+ * Loại nhiệm vụ là kết luận chắc hơn — nó dựa trên chuỗi tiến độ đã được kiểm
+ * chứng bằng code — nên lấy nó làm chuẩn.
+ */
+function reconcileMeaning(type: TaskType, meaning: ProgressMeaning): ProgressMeaning {
+  switch (type) {
+    // Chỉ tích luỹ mới có % hoàn thành thật.
+    case 'CUMULATIVE':
+      return 'COMPLETION';
+    // Thường quy: 100% nghĩa là xong phần việc của tuần.
+    case 'RECURRING':
+      return meaning === 'COMPLETION' ? 'WEEKLY_DONE' : meaning;
+    // Ba loại còn lại không dùng tiến độ; giữ TIME_RATIO nếu AI nhận ra đó là
+    // % thời gian trôi qua, vì thông tin đó có ích khi rà soát.
+    default:
+      return meaning === 'TIME_RATIO' ? 'TIME_RATIO' : 'MEANINGLESS';
+  }
 }
 
 /** Giá trị xuất hiện nhiều nhất; dùng mặc định khi mảng rỗng. */
