@@ -1,5 +1,6 @@
 import { deptReportOnedrive } from './sources/dept-report-onedrive';
 import { fleetGoogleSheets } from './sources/fleet-google-sheets';
+import { hospitalAiImport } from './sources/hospital-ai-import';
 import { hospitalReportOnedrive } from './sources/hospital-report-onedrive';
 import type { Connector } from './types';
 
@@ -12,6 +13,7 @@ import type { Connector } from './types';
 const connectors: readonly Connector[] = [
   deptReportOnedrive,
   hospitalReportOnedrive,
+  hospitalAiImport,
   fleetGoogleSheets,
   // Sắp tới: hcOfficeApi
 ];

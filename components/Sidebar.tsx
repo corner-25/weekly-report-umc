@@ -114,8 +114,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/dashboard/reports/metrics', label: 'Phân tích nhiệm vụ', icon: LineChart, exact: true },
       { href: '/dashboard/reports/metrics-data', label: 'Bảng số liệu', icon: Table2, exact: true },
-      { href: '/dashboard/reports/phong-hc-native', label: 'Dashboard Phòng HC', icon: Gauge, exact: true },
-      { href: '/dashboard/reports/phong-hc', label: 'Dashboards Streamlit', icon: Monitor, exact: true },
+      { href: '/dashboard/reports/dashboards', label: 'Dashboard', icon: Gauge, exact: false },
     ],
   },
   {

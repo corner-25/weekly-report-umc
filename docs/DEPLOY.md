@@ -30,7 +30,8 @@ Toàn bộ việc lấy và làm sạch dữ liệu nằm ở ingestion layer tr
 
 Streamlit gửi header chống nhúng và giữ kết nối websocket riêng cho mỗi phiên. Nhúng trong
 iframe hay mất session, vỡ layout, và người dùng không dùng được nút back. Mở tab mới ổn định
-hơn hẳn — trang `/dashboard/reports/phong-hc` giờ là trang thẻ liên kết.
+hơn hẳn — trang `/dashboard/reports/dashboards` gom mọi dashboard về một chỗ, bảng số liệu
+Phòng HC hiển thị trong ứng dụng, hai dashboard chuyên sâu mở tab mới.
 
 ## Bố cục repo
 
@@ -41,9 +42,10 @@ weekly-report-umc/
 ├── prisma/schema.prisma        # Schema dùng chung
 ├── dashboards/                 # Streamlit — hai dashboard
 │   ├── app_toxe.py             # entrypoint Tổ Xe
-│   ├── app_phonghc.py          # entrypoint Hành chính
+│   ├── app_phonghc.py          # entrypoint Hành chính (dùng bản v2)
 │   ├── dash_toxe.py            # mã dashboard (159KB)
-│   ├── dash_phonghc_old.py     # mã dashboard (141KB)
+│   ├── dash_phonghc_v2/        # bản Hành chính đang dùng — 13 tab nghiệp vụ
+│   ├── dash_phonghc_old.py     # bản cũ, giữ tham chiếu, KHÔNG deploy
 │   ├── fleet_cleaning.py       # làm sạch dữ liệu xe (bản Python gốc)
 │   ├── fleet_validators.py
 │   ├── fleet_evaluation.py     # đánh giá tài xế
@@ -103,6 +105,10 @@ PORT=8080
 ### Service 3 — Dashboard Hành chính
 
 Giống service 2, chỉ khác `DASHBOARD_APP=app_phonghc.py`.
+
+Entrypoint này chạy `dash_phonghc_v2/` — bản lấy dữ liệu từ HC OfficeAPI và trực quan hoá
+theo 13 tab (văn bản đến/đi, công việc, phòng họp, lịch họp, tổng đài, bãi xe, thư ký,
+sự kiện, tổ xe…). Bản `dash_phonghc_old.py` giữ trong repo làm tham chiếu nhưng không deploy.
 
 ### Ba cạm bẫy đã gặp khi thiết lập
 

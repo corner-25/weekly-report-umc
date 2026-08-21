@@ -35,13 +35,26 @@ const SOURCES: SourceSeed[] = [
   },
   {
     id: 'hospital-report-onedrive',
-    name: 'Báo cáo bệnh viện (OneDrive, cần AI + người duyệt)',
+    // Luồng CŨ: chỉ tách sheet rồi xếp hàng chờ người duyệt qua AiReportImportPanel.
+    // Giữ làm dự phòng; luồng chính nay là 'hospital-ai-import'.
+    name: 'Báo cáo bệnh viện (xếp hàng chờ duyệt thủ công)',
     kind: SyncSourceKind.ONEDRIVE_SHARE,
     config: {
       shareUrlEnv: 'ONEDRIVE_HOSPITAL_REPORT_SHARE_URL',
       year: null,
     },
     cronEnabled: false, // Giai đoạn 4
+  },
+  {
+    id: 'hospital-ai-import',
+    name: 'Báo cáo bệnh viện — tự động nạp bằng AI',
+    kind: SyncSourceKind.ONEDRIVE_SHARE,
+    config: {
+      shareUrlEnv: 'ONEDRIVE_HOSPITAL_REPORT_SHARE_URL',
+      // Đặt false khi chỉ muốn khớp nhiệm vụ, chưa cần trích số liệu.
+      extractMetrics: true,
+    },
+    cronEnabled: false, // bật sau khi đã gom nghiệp vụ cho đủ 14 phòng
   },
   {
     id: 'fleet-google-sheets',
