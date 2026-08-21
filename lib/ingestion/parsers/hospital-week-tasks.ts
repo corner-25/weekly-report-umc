@@ -15,6 +15,11 @@ export interface DepartmentWeekTasks {
     resultText: string;
     parentGroup: string | null;
     progress: number | null;
+    /**
+     * Dòng trong sheet gốc. Nhiều dòng con không có tên nên đều mang tên nhóm
+     * cha; không có định danh riêng thì chúng đè lên nhau khi tra cứu.
+     */
+    sourceRow: number;
   }>;
 }
 
@@ -58,6 +63,7 @@ export function extractWeekTasksByDepartment(sheet: HospitalWeekSheet): Departme
       resultText: row.result,
       parentGroup: currentParent,
       progress: row.progress,
+      sourceRow: row.sourceRow,
     });
     byDept.set(row.department, entry);
   });

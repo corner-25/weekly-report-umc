@@ -19,6 +19,34 @@ import {
 
 const DEFAULT_MODEL = 'glm-4.5';
 
+/** Nhiều dòng Excel cùng thuộc một nghiệp vụ, gộp lại trước khi ghi. */
+interface MergedTask {
+  masterTaskId: string;
+  results: string[];
+  subjects: string[];
+  rawNames: string[];
+  progress: number | null;
+  confidence: number;
+  reasonings: string[];
+  flags: Set<string>;
+}
+
+function mergeInto(
+  target: MergedTask,
+  match: { subject: string | null; reasoning: string; confidence: number },
+  source: { resultText: string; progress?: number | null },
+  flags: string[],
+): void {
+  if (source.resultText) target.results.push(source.resultText);
+  if (match.subject) target.subjects.push(match.subject);
+  if (match.reasoning) target.reasonings.push(match.reasoning);
+  for (const f of flags) target.flags.add(f);
+
+  target.confidence = Math.min(target.confidence, match.confidence);
+  // Tiến độ: giữ giá trị đầu tiên có thật, tránh null xoá mất số đã ghi nhận.
+  if (target.progress === null && source.progress != null) target.progress = source.progress;
+}
+
 /** Số tuần lịch sử dùng để phát hiện số liệu bất thường. */
 const HISTORY_WEEKS = 4;
 
@@ -88,51 +116,82 @@ export async function importWeekForDepartment(
       input.tasks,
     );
 
-    const taskByName = new Map(input.tasks.map((t) => [t.rawName, t]));
-    let tasksMatched = 0;
-    let orderNumber = 0;
+    // Tra theo dòng gốc, KHÔNG theo tên: nhiều dòng con không có tên nên đều
+    // mang tên nhóm cha, tra theo tên sẽ lấy nhầm cùng một nguồn cho tất cả.
+    const taskByRow = new Map(input.tasks.map((t, i) => [t.sourceRow ?? i, t]));
+
+    // Nhiều dòng Excel có thể cùng thuộc một nghiệp vụ — đó là mục đích của
+    // việc gom. Nhưng khoá (masterTaskId, weekId) là duy nhất, nên phải GỘP nội
+    // dung thay vì ghi đè, nếu không các dòng sau xoá mất dòng trước.
+    //
+    // Ví dụ thật: tuần 17 của Quản trị Toà nhà có 4 dòng thuộc nghiệp vụ "Phòng
+    // cháy chữa cháy" (một dòng có tên, ba dòng con chỉ có kết quả). Ghi đè làm
+    // mất 3 dòng nội dung.
+    const merged = new Map<string, MergedTask>();
 
     for (const match of matchResult.matches) {
-      const source = taskByName.get(match.rawName);
+      const source = taskByRow.get(match.sourceRow ?? -1);
       if (!source || !match.masterTaskId) continue;
-
-      orderNumber += 1;
-      tasksMatched += 1;
 
       const flags = [...match.flags];
       if (match.confidence < MATCH_CONFIDENCE_THRESHOLD) flags.push('LOW_CONFIDENCE');
 
+      const existing = merged.get(match.masterTaskId);
+      if (existing) {
+        existing.rawNames.push(match.rawName);
+        mergeInto(existing, match, source, flags);
+      } else {
+        merged.set(match.masterTaskId, {
+          masterTaskId: match.masterTaskId,
+          results: source.resultText ? [source.resultText] : [],
+          subjects: match.subject ? [match.subject] : [],
+          rawNames: [match.rawName],
+          progress: source.progress ?? null,
+          // Giữ mức tin cậy THẤP NHẤT trong nhóm — một dòng khớp mơ hồ đủ để
+          // cả nghiệp vụ đáng rà soát.
+          confidence: match.confidence,
+          reasonings: match.reasoning ? [match.reasoning] : [],
+          flags: new Set(flags),
+        });
+      }
+    }
+
+    let tasksMatched = 0;
+    let orderNumber = 0;
+
+    for (const item of merged.values()) {
+      orderNumber += 1;
+      tasksMatched += item.rawNames.length;
+
+      const result = item.results.join('\n\n');
+      const flags = [...item.flags];
+      if (item.rawNames.length > 1) flags.push('MERGED_ROWS');
+
+      const data = {
+        result,
+        progress: item.progress,
+        subject: item.subjects.length > 0 ? [...new Set(item.subjects)].join(' · ') : null,
+        rawTaskName: item.rawNames.join(' · '),
+        rawResultText: result,
+        extractionModel: model,
+        matchConfidence: item.confidence,
+        matchReasoning: item.reasonings.join(' | '),
+        reviewFlags: flags,
+      };
+
       await db.weekTaskProgress.upsert({
         where: {
-          masterTaskId_weekId: { masterTaskId: match.masterTaskId, weekId: week.id },
+          masterTaskId_weekId: { masterTaskId: item.masterTaskId, weekId: week.id },
         },
         create: {
-          masterTaskId: match.masterTaskId,
+          masterTaskId: item.masterTaskId,
           weekId: week.id,
           orderNumber,
-          result: source.resultText,
           timePeriod: '',
-          progress: source.progress ?? null,
           nextWeekPlan: '',
-          subject: match.subject,
-          rawTaskName: match.rawName,
-          rawResultText: source.resultText,
-          extractionModel: model,
-          matchConfidence: match.confidence,
-          matchReasoning: match.reasoning,
-          reviewFlags: flags,
+          ...data,
         },
-        update: {
-          result: source.resultText,
-          progress: source.progress ?? null,
-          subject: match.subject,
-          rawTaskName: match.rawName,
-          rawResultText: source.resultText,
-          extractionModel: model,
-          matchConfidence: match.confidence,
-          matchReasoning: match.reasoning,
-          reviewFlags: flags,
-        },
+        update: data,
       });
     }
 
@@ -216,9 +275,15 @@ async function extractMetricsForWeek(
     where: { weekId, masterTask: { departmentId: input.departmentId } },
     select: { masterTaskId: true, rawTaskName: true },
   });
-  const masterByRawName = new Map(
-    progressRows.filter((r) => r.rawTaskName).map((r) => [r.rawTaskName!, r.masterTaskId]),
-  );
+  // rawTaskName có thể là nhiều tên nối bằng ' · ' khi nhiều dòng Excel cùng
+  // thuộc một nghiệp vụ, nên tách ra để tra theo từng tên gốc.
+  const masterByRawName = new Map<string, string>();
+  for (const row of progressRows) {
+    if (!row.rawTaskName) continue;
+    for (const name of row.rawTaskName.split(' · ')) {
+      masterByRawName.set(name, row.masterTaskId);
+    }
+  }
 
   let extracted = 0;
   let flagged = 0;

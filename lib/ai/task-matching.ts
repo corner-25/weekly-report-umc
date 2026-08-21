@@ -30,10 +30,14 @@ export interface WeekTaskInput {
   resultText: string;
   parentGroup?: string | null;
   progress?: number | null;
+  /** Dòng trong sheet gốc — định danh duy nhất khi nhiều dòng trùng tên. */
+  sourceRow?: number;
 }
 
 export interface TaskMatch {
   rawName: string;
+  /** Dòng gốc, để nơi gọi tra đúng nguồn khi nhiều dòng cùng tên. */
+  sourceRow?: number;
   masterTaskId: string | null;
   masterTaskName: string | null;
   subject: string | null;
@@ -93,6 +97,7 @@ export async function matchWeekTasks(
     return {
       matches: tasks.map((t) => ({
         rawName: t.rawName,
+        sourceRow: t.sourceRow,
         masterTaskId: null,
         masterTaskName: null,
         subject: null,
@@ -215,6 +220,7 @@ export async function matchWeekTasks(
       if (handled.has(idx)) return;
       matches.push({
         rawName: task.rawName,
+        sourceRow: task.sourceRow,
         masterTaskId: null,
         masterTaskName: null,
         subject: null,
@@ -238,6 +244,7 @@ function toMatch(
 ): TaskMatch {
   return {
     rawName: task.rawName,
+    sourceRow: task.sourceRow,
     masterTaskId: master.id,
     masterTaskName: master.name,
     // Tên gốc khác tên nghiệp vụ nghĩa là nó nói về một đối tượng cụ thể.
