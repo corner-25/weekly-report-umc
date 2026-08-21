@@ -4,8 +4,9 @@
  * Nối các giai đoạn lại và ghi kết quả vào database, có ghi vết mọi lần gọi AI
  * vào `AiExtractionRun` để so sánh chất lượng khi đổi model hoặc sửa prompt.
  *
- * Nguyên tắc bất di bất dịch: AI KHÔNG BAO GIỜ ghi thẳng vào Week/WeekTaskProgress.
- * Mọi kết quả đều ở trạng thái chờ người duyệt.
+ * Mặc định kết quả AI ở trạng thái chờ người duyệt (`isActive = false`). Người
+ * vận hành có thể bật `autoApprove` để kích hoạt ngay — xem RunGroupingOptions
+ * để biết rủi ro.
  *
  * Xem docs/HOSPITAL-REPORT-PIPELINE.md.
  */
@@ -23,6 +24,20 @@ import {
 /** Model mặc định — đã đo là cho kết quả tốt nhất ở tác vụ phân loại. */
 const DEFAULT_MODEL = 'glm-4.5';
 
+export interface RunGroupingOptions {
+  model?: string;
+  db?: PrismaClient;
+  /**
+   * Kích hoạt MasterTask ngay thay vì chờ người duyệt.
+   *
+   * Mặc định false — AI có thể sai theo cách không tự phát hiện được. Đo trên
+   * dữ liệu thật: prompt v1 gán sai 43/50 nhiệm vụ CUMULATIVE; lỗi đó bắt được
+   * nhờ kiểm chứng bằng code, nhưng việc gom nghiệp vụ thì không có cách kiểm
+   * tự động nào. Bật true khi người vận hành chấp nhận rủi ro đó.
+   */
+  autoApprove?: boolean;
+}
+
 export interface GroupingSummary {
   departmentId: string;
   departmentName: string;
@@ -37,15 +52,14 @@ export interface GroupingSummary {
 /**
  * Gom nhiệm vụ của một phòng thành nghiệp vụ rồi lưu thành MasterTask.
  *
- * MasterTask tạo ra mang `sourceType = 'AI_SUGGESTED'` và `isActive = false` —
- * chưa dùng cho tới khi người duyệt xác nhận. Mọi biến thể tên gốc được ghi vào
- * `aliases` để lần sau khớp ngay không cần gọi AI.
+ * Mọi biến thể tên gốc được ghi vào `aliases` để lần sau khớp ngay không cần
+ * gọi AI — đây là cơ chế học dần, chi phí giảm theo thời gian.
  */
 export async function runGroupingForDepartment(
   departmentId: string,
   departmentName: string,
   tasks: readonly TaskContext[],
-  options: { model?: string; db?: PrismaClient } = {},
+  options: RunGroupingOptions = {},
 ): Promise<GroupingSummary> {
   const db = options.db ?? prisma;
   const model = options.model ?? DEFAULT_MODEL;
@@ -62,7 +76,9 @@ export async function runGroupingForDepartment(
 
   try {
     const result = await groupDepartmentTasks(departmentName, tasks);
-    const summary = await persistGrouping(db, departmentId, departmentName, tasks, result, model);
+    const summary = await persistGrouping(
+      db, departmentId, departmentName, tasks, result, options.autoApprove ?? false,
+    );
 
     await db.aiExtractionRun.update({
       where: { id: run.id },
@@ -91,7 +107,7 @@ async function persistGrouping(
   departmentName: string,
   tasks: readonly TaskContext[],
   result: GroupingResult,
-  model: string,
+  autoApprove: boolean,
 ): Promise<GroupingSummary> {
   const classificationByName = new Map(result.classifications.map((c) => [c.taskName, c]));
   const taskByName = new Map(tasks.map((t) => [t.name, t]));
@@ -155,9 +171,9 @@ async function persistGrouping(
         progressType: majority(draft.types, 'RECURRING'),
         progressMeaning: majority(draft.meanings, 'WEEKLY_DONE'),
         aliases: [...new Set(draft.aliases)],
-        sourceType: 'AI_SUGGESTED',
-        // Chưa kích hoạt cho tới khi người duyệt xác nhận.
-        isActive: false,
+        sourceType: autoApprove ? 'AI_GROUPED' : 'AI_SUGGESTED',
+        // Khi không tự duyệt, MasterTask nằm im tới khi người dùng xác nhận.
+        isActive: autoApprove,
         lastSeenWeek: draft.lastWeek,
       },
     });
