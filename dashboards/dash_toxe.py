@@ -28,7 +28,6 @@ from fleet_cleaning import (
     remove_vn_accents,
     infer_area_type,
     compute_driving_hours,
-    parse_fuel_liters,
 )
 
 # Validator chuyên dụng cho từng trường nhập liệu
@@ -37,6 +36,64 @@ from fleet_evaluation import render_driver_evaluation
 
 # Nguồn dữ liệu: Postgres (ingestion layer ghi vào), không còn đọc GitHub.
 from db_source import DatabaseNotConfigured, get_fleet_last_sync, load_fleet_data
+
+
+def _render_data_quality(df) -> None:
+    """Hiện mức tin cậy của dữ liệu đã qua pipeline làm sạch.
+
+    Ingestion layer tính giờ lái bằng suy luận: chuyến nhầm AM/PM được cộng 12h,
+    chuyến qua đêm cộng 24h, thiếu giờ thì ước từ quãng đường. Quãng đường lỗi
+    được sửa bằng odometer hoặc suy từ giờ. Người xem cần biết bao nhiêu chuyến
+    là số đo thật, bao nhiêu là số suy ra.
+    """
+    if df.empty or 'duration_confidence' not in df.columns:
+        return
+
+    total = len(df)
+    high = int((df['duration_confidence'] == 'high').sum())
+    low = int((df['duration_confidence'] == 'low').sum())
+    suspicious = int(df['duration_suspicious'].sum()) if 'duration_suspicious' in df.columns else 0
+
+    fixed_distance = 0
+    if 'distance_fix_method' in df.columns:
+        fixed_distance = int((~df['distance_fix_method'].isin(['NONE', ''])).sum())
+
+    with st.expander(f"🔍 Chất lượng dữ liệu — {high}/{total} chuyến đo trực tiếp", expanded=False):
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Tin cậy cao", f"{high:,}", f"{high / total * 100:.0f}%" if total else "")
+        c2.metric("Tin cậy thấp", f"{low:,}",
+                  f"-{low / total * 100:.0f}%" if total else "", delta_color="inverse")
+        c3.metric("Quãng đường đã sửa", f"{fixed_distance:,}")
+
+        if suspicious:
+            st.warning(
+                f"⚠️ {suspicious} chuyến có giờ lái đáng ngờ — nhiều khả năng tài xế "
+                "nhập nhầm giờ bắt đầu/kết thúc. Xem cột *Cách tính giờ* bên dưới."
+            )
+
+        if 'duration_method' in df.columns:
+            method_labels = {
+                'normal': 'Bình thường (end − start)',
+                'fixed_ampm': 'Đã sửa nhầm AM/PM (+12h)',
+                'fixed_ampm_km_capped': 'Sửa AM/PM, giới hạn theo quãng đường',
+                'overnight': 'Chuyến qua đêm (+24h)',
+                'overnight_long': 'Qua đêm, quãng đường dài',
+                'overnight_suspicious': 'Qua đêm nhưng quãng đường ngắn — đáng ngờ',
+                'estimated_no_time': 'Ước từ quãng đường (thiếu giờ)',
+                'estimated_zero_diff': 'Ước từ quãng đường (giờ bắt đầu = kết thúc)',
+                'estimated_invalid_clock': 'Ước từ quãng đường (giờ không hợp lệ)',
+            }
+            counts = df['duration_method'].value_counts()
+            st.markdown("**Cách tính giờ lái**")
+            st.dataframe(
+                pd.DataFrame({
+                    'Cách tính': [method_labels.get(m, m) for m in counts.index],
+                    'Số chuyến': counts.values,
+                    'Tỷ lệ': [f"{v / total * 100:.1f}%" for v in counts.values],
+                }),
+                hide_index=True,
+                use_container_width=True,
+            )
 
 
 def _render_sync_status() -> None:
@@ -113,45 +170,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # COLUMN MAPPING - Vietnamese to English
-COLUMN_MAPPING = {
-    # Drop these columns (set to None to ignore)
-    'Column 1': None,  # Rác từ Google Sheets
-    'Ghi chú': None,  # Notes - not used for KPI
-
-    # Giữ lại để dùng cho cleaning
-    'Timestamp': 'timestamp',  # Dùng để fallback khi Ngày ghi nhận rỗng
-    'Email Address': 'email',  # Dùng để suy luận Tên tài xế khi rỗng
-    'Chỉ số đồng hồ sau khi kết thúc chuyến xe': 'odometer',  # Dùng để sửa quãng đường lỗi
-
-    # Core time fields
-    'start_time': 'start_time',
-    'end_time': 'end_time',
-    # LƯU Ý: KHÔNG map 'Thời gian' → duration_hours nữa.
-    # Cột 'Thời gian' của Google Sheets bị format sai (12:40 AM = 40 phút
-    # bị đọc nhầm thành 12h40). Giờ lái CHUẨN được tính = end_time - start_time
-    # trong bước cleaning (compute_driving_hours).
-    'Thời gian': 'duration_raw',  # giữ làm cột tham khảo, KHÔNG dùng để tính
-
-    # Location and classification
-    'Điểm đến': 'destination',
-    'Phân loại công tác': 'work_category',
-    'Nội thành/Ngoại thành': 'area_type',  # Urban/suburban (chú ý: 'Nội/Ngoại' đều viết hoa)
-
-    # Date and numeric metrics
-    'Ngày ghi nhận': 'record_date',  # mm/dd/yyyy format
-    'Quãng đường': 'distance_km',
-    'Quãng đường_raw': 'distance_km_raw',
-    'Đổ nhiên liệu': 'fuel_liters',
-
-    # Revenue (ambulance only)
-    'Doanh thu': 'revenue_vnd',
-    'Chi tiết chuyến xe': 'trip_details',
-
-    # Vehicle and driver info (added during sync)
-    'Mã xe': 'vehicle_id',
-    'Tên tài xế': 'driver_name',
-    'Loại xe': 'vehicle_type'  # 'Hành chính' or 'Cứu thương'
-}
 
 # ─────────────────────────────────────────────────────────────────────
 # DATA CLEANING — import từ module dùng chung `fleet_cleaning.py`
@@ -189,72 +207,6 @@ EMAIL_TO_DRIVER = {
     'nguyenngochai709749@gmail.com':   'Ngọc Hải',
 }
 
-
-def get_github_token():
-    """Get GitHub token for private repo access"""
-    # Priority 1: Read from sync_config.json
-    try:
-        import streamlit as st
-        if hasattr(st, 'secrets') and 'GITHUB_TOKEN' in st.secrets:
-            return st.secrets['GITHUB_TOKEN']
-    except:
-        pass
-    
-    # Priority 2: Environment variable (.env file)
-    token = os.getenv('GITHUB_TOKEN')
-    if token and len(token) > 10:
-        return token
-    
-    # Priority 3: File (backward compatibility)
-    if os.path.exists("github_token.txt"):
-        try:
-            with open("github_token.txt", 'r') as f:
-                token = f.read().strip()
-            if token and token != "YOUR_TOKEN_HERE" and len(token) > 10:
-                return token
-        except:
-            pass
-    
-    return None
-
-def parse_duration_to_hours(duration_str):
-    """
-    Chuyển đổi thời gian từ format h:mm sang số giờ (float)
-    
-    Args:
-        duration_str (str): Thời gian format h:mm hoặc h:mm:ss
-    
-    Returns:
-        float: Số giờ
-    """
-    if not duration_str or duration_str == "":
-        return 0.0
-    
-    # Loại bỏ khoảng trắng và các ký tự không mong muốn
-    duration_str = str(duration_str).strip()
-    
-    # Xử lý các format khác nhau
-    # Format: "2:20:00 AM" -> chỉ lấy phần thời gian
-    if "AM" in duration_str or "PM" in duration_str:
-        duration_str = duration_str.split()[0]
-    
-    try:
-        # Split theo dấu ":"
-        parts = duration_str.split(":")
-        
-        if len(parts) == 2:  # h:mm
-            hours = int(parts[0])
-            minutes = int(parts[1])
-            return hours + minutes / 60.0
-        elif len(parts) == 3:  # h:mm:ss
-            hours = int(parts[0])
-            minutes = int(parts[1])
-            seconds = int(parts[2])
-            return hours + minutes / 60.0 + seconds / 3600.0
-        else:
-            return 0.0
-    except (ValueError, IndexError):
-        return 0.0
 
 def ensure_duration_parsed(df):
     """
@@ -326,135 +278,6 @@ def parse_distance(distance_str):
     return round(dist, 2)
 
 @st.cache_data(ttl=60)
-def load_data_from_github():
-    """Load data from GitHub repository - Large file support"""
-    github_token = get_github_token()
-    
-    if not github_token:
-        st.sidebar.error("❌ Cần GitHub token để truy cập private repo")
-        return pd.DataFrame()
-    
-    headers = {
-        'Authorization': f'token {github_token}',
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Fleet-Dashboard-App'
-    }
-    
-    # Try Contents API first
-    api_url = "https://api.github.com/repos/corner-25/vehicle-storage/contents/data/latest/fleet_data_latest.json"
-    
-    try:
-        response = requests.get(api_url, headers=headers, timeout=30)
-        
-        if response.status_code == 200:
-            api_response = response.json()
-            
-            # Check if file is too large for Contents API (>1MB)
-            if api_response.get('size', 0) > 1000000:
-                return load_large_file_via_git_api(headers)
-            
-            # Normal Contents API flow
-            content = base64.b64decode(api_response['content']).decode('utf-8')
-            
-            if not content.strip():
-                return load_large_file_via_git_api(headers)
-            
-            data = json.loads(content)
-            df = pd.DataFrame(data)
-            return process_dataframe(df)
-        else:
-            return load_large_file_via_git_api(headers)
-            
-    except Exception:
-        return load_large_file_via_git_api(headers)
-
-def load_large_file_via_git_api(headers):
-    """Load large file using Git API"""
-    try:
-        # Get latest commit
-        commits_url = "https://api.github.com/repos/corner-25/vehicle-storage/commits/main"
-        commits_response = requests.get(commits_url, headers=headers, timeout=30)
-        
-        if commits_response.status_code != 200:
-            return pd.DataFrame()
-        
-        latest_commit = commits_response.json()
-        tree_sha = latest_commit['commit']['tree']['sha']
-        
-        # Navigate to data/latest/fleet_data_latest.json via tree API
-        tree_url = f"https://api.github.com/repos/corner-25/vehicle-storage/git/trees/{tree_sha}"
-        tree_response = requests.get(tree_url, headers=headers, timeout=30)
-        
-        if tree_response.status_code != 200:
-            return pd.DataFrame()
-        
-        # Find data folder
-        tree_data = tree_response.json()
-        data_folder = None
-        for item in tree_data.get('tree', []):
-            if item['path'] == 'data' and item['type'] == 'tree':
-                data_folder = item['sha']
-                break
-        
-        if not data_folder:
-            return pd.DataFrame()
-        
-        # Get data folder tree
-        data_tree_url = f"https://api.github.com/repos/corner-25/vehicle-storage/git/trees/{data_folder}"
-        data_tree_response = requests.get(data_tree_url, headers=headers, timeout=30)
-        
-        if data_tree_response.status_code != 200:
-            return pd.DataFrame()
-        
-        # Find latest folder
-        data_tree_data = data_tree_response.json()
-        latest_folder = None
-        for item in data_tree_data.get('tree', []):
-            if item['path'] == 'latest' and item['type'] == 'tree':
-                latest_folder = item['sha']
-                break
-        
-        if not latest_folder:
-            return pd.DataFrame()
-        
-        # Get latest folder tree
-        latest_tree_url = f"https://api.github.com/repos/corner-25/vehicle-storage/git/trees/{latest_folder}"
-        latest_tree_response = requests.get(latest_tree_url, headers=headers, timeout=30)
-        
-        if latest_tree_response.status_code != 200:
-            return pd.DataFrame()
-        
-        # Find JSON file
-        latest_tree_data = latest_tree_response.json()
-        file_blob = None
-        for item in latest_tree_data.get('tree', []):
-            if item['path'] == 'fleet_data_latest.json' and item['type'] == 'blob':
-                file_blob = item['sha']
-                break
-        
-        if not file_blob:
-            return pd.DataFrame()
-        
-        # Get file content via blob API
-        blob_url = f"https://api.github.com/repos/corner-25/vehicle-storage/git/blobs/{file_blob}"
-        blob_response = requests.get(blob_url, headers=headers, timeout=60)
-        
-        if blob_response.status_code != 200:
-            return pd.DataFrame()
-        
-        blob_data = blob_response.json()
-        content = base64.b64decode(blob_data['content']).decode('utf-8')
-        
-        if not content.strip():
-            return pd.DataFrame()
-        
-        data = json.loads(content)
-        df = pd.DataFrame(data)
-        return process_dataframe(df)
-        
-    except Exception:
-        return pd.DataFrame()
-
 def parse_revenue(revenue_str):
     """
     Parse revenue string and handle both formats: 600000 and 600,000
@@ -486,238 +309,6 @@ def parse_revenue(revenue_str):
         # If conversion fails, return 0
         return 0.0
         
-def process_dataframe(df):
-    """Process DataFrame - Apply column mapping and clean data"""
-    if df.empty:
-        return df
-    
-    try:
-        
-        # STEP 1: Apply column mapping
-        # Create a reverse mapping for flexibility
-        reverse_mapping = {}
-        for viet_col, eng_col in COLUMN_MAPPING.items():
-            if eng_col is not None:  # Only map non-None columns
-                # Handle partial matches for long Vietnamese column names
-                for col in df.columns:
-                    if viet_col in col:
-                        reverse_mapping[col] = eng_col
-                        break
-        
-        # Rename columns
-        df = df.rename(columns=reverse_mapping)
-        
-        # STEP 2: Drop unnecessary columns (those mapped to None)
-        drop_columns = []
-        for viet_col in COLUMN_MAPPING.keys():
-            if COLUMN_MAPPING[viet_col] is None:
-                # Find columns that contain this Vietnamese text
-                for col in df.columns:
-                    if viet_col in col:
-                        drop_columns.append(col)
-        
-        df = df.drop(columns=drop_columns, errors='ignore')
-        
-        # STEP 3: Handle duplicate columns by merging them
-        df = df.loc[:, ~df.columns.duplicated()]
-        
-        # STEP 4: Process data types
-
-        # Process distance - tạm parse cơ bản; sẽ sửa lại bằng ODO/giờ ở STEP 5e
-        if 'distance_km' in df.columns:
-            df['distance_km'] = pd.to_numeric(df['distance_km'], errors='coerce')
-
-        # Process revenue - Convert to numeric but keep all rows
-        if 'revenue_vnd' in df.columns:
-            df['revenue_vnd'] = df['revenue_vnd'].apply(parse_revenue)
-
-        # Process fuel consumption — dùng parse_fuel_liters để xử lý input tự do
-        # ("50 lít xăng", "50lx-km 520121", "60/20500", "K", "Không"...)
-        if 'fuel_liters' in df.columns:
-            df['fuel_liters_raw'] = df['fuel_liters']  # giữ bản gốc để truy vết
-            df['fuel_liters'] = df['fuel_liters'].apply(parse_fuel_liters)
-
-        # Process datetime columns - Handle mm/dd/yyyy format
-        if 'record_date' in df.columns:
-            df['record_date'] = pd.to_datetime(df['record_date'], errors='coerce')  # Tự động detect format
-            # Fallback: nếu record_date rỗng, lấy từ timestamp
-            if 'timestamp' in df.columns:
-                ts = pd.to_datetime(df['timestamp'], errors='coerce')
-                df['record_date'] = df['record_date'].fillna(ts)
-            # Create helper columns
-            df['date'] = df['record_date'].dt.date
-            df['month'] = df['record_date'].dt.to_period('M').astype(str)
-
-        # ─────────────────────────────────────────────────────────────
-        # STEP 5: DATA CLEANING — chuẩn hoá các trường text + sửa lỗi
-        # ─────────────────────────────────────────────────────────────
-
-        # 5a. Suy luận Tên tài xế từ Email nếu rỗng/là email
-        if 'driver_name' in df.columns and 'email' in df.columns:
-            df['driver_name'] = df.apply(
-                lambda r: fix_driver_name_from_email(
-                    r['driver_name'], r['email'], EMAIL_TO_DRIVER
-                ),
-                axis=1
-            )
-
-        # Không đưa tài xế chưa xác định vào bất kỳ thành phần nào của dashboard.
-        # Chỉ lọc lớp hiển thị; dữ liệu nguồn trên GitHub vẫn được giữ nguyên.
-        if 'driver_name' in df.columns:
-            unknown_driver_names = {
-                'không xác định', 'khong xac dinh', 'unknown', 'không rõ', 'khong ro'
-            }
-            normalized_driver = (
-                df['driver_name'].fillna('').astype(str).str.strip().str.casefold()
-            )
-            df = df[~normalized_driver.isin(unknown_driver_names)].copy()
-
-        # 5b. Chuẩn hoá Phân loại công tác (893 typo → 12 nhóm)
-        if 'work_category' in df.columns:
-            df['work_category_raw'] = df['work_category']  # giữ bản gốc
-            df['work_category'] = df['work_category'].apply(classify_work_category)
-
-        # 5c. Chuẩn hoá Điểm đến (TPHCM → TP. HCM, Q5 → Q.5, title-case)
-        if 'destination' in df.columns:
-            df['destination_raw'] = df['destination']  # giữ bản gốc
-            df['destination'] = df['destination'].apply(normalize_destination)
-
-        # 5d. Suy luận Nội/Ngoại thành từ Điểm đến khi rỗng
-        if 'area_type' in df.columns and 'destination' in df.columns:
-            df['area_type'] = df.apply(
-                lambda r: infer_area_type(r, area_col='area_type',
-                                              dest_col='destination'),
-                axis=1
-            )
-
-        # 5d-bis. TÍNH GIỜ LÁI THÔNG MINH (auto-detect lỗi)
-        #         Pipeline: clock-first, km là sanity check.
-        if 'start_time' in df.columns and 'end_time' in df.columns:
-            # Xoá các cột sẽ tạo mới (đề phòng file GitHub đã có sẵn — sync clean
-            # cũng tạo các cột này → tránh duplicate columns khi concat).
-            for _c in ('duration_hours', 'duration_confidence',
-                       'duration_method', 'duration_suspicious'):
-                if _c in df.columns:
-                    df = df.drop(columns=[_c])
-
-            def _compute(row):
-                return compute_driving_hours(
-                    row['start_time'], row['end_time'],
-                    distance_km=row.get('distance_km'),
-                    area_type=row.get('area_type'),
-                    return_meta=True,
-                )
-            meta = df.apply(_compute, axis=1, result_type='expand')
-            meta.columns = ['duration_hours', 'duration_confidence', 'duration_method']
-            df = pd.concat([df, meta], axis=1)
-            df['duration_suspicious'] = (
-                (df['duration_confidence'] == 'low') |
-                (df['duration_hours'] > 16)
-            )
-        elif 'duration_hours' not in df.columns:
-            df['duration_hours'] = np.nan
-            df['duration_confidence'] = 'low'
-            df['duration_method'] = 'invalid_no_time'
-            df['duration_suspicious'] = True
-
-        # 5e. Sửa Quãng đường lỗi bằng ODO hoặc giờ × vận tốc
-        if 'distance_km' in df.columns:
-            if 'distance_km_raw' not in df.columns:
-                df['distance_km_raw'] = df['distance_km']
-            # File mới đã được chốt km khi sync: không sửa lần thứ hai.
-            # File cũ chưa có metadata thì chạy fallback cùng một rule.
-            if 'distance_method' not in df.columns:
-                df = fix_distance_outliers(
-                    df,
-                    distance_col='distance_km',
-                    odo_col='odometer',
-                    vehicle_col='vehicle_id',
-                    timestamp_col='timestamp',
-                    hours_col='duration_hours',
-                    area_col='area_type',
-                    vehicle_type_col='vehicle_type',
-                )
-
-        # 5f. Đánh cờ chuyến nghi TRÙNG (cùng tài xế/xe/ngày/giờ/điểm đến)
-        _dup_cols = [c for c in ['driver_name', 'vehicle_id', 'record_date',
-                                 'start_time', 'end_time', 'destination']
-                     if c in df.columns]
-        if len(_dup_cols) >= 4:
-            df['is_duplicate'] = df.duplicated(subset=_dup_cols, keep='first')
-        else:
-            df['is_duplicate'] = False
-
-        # STEP 6: Prefix vehicle_id based on vehicle_type
-        if 'vehicle_id' in df.columns and 'vehicle_type' in df.columns:
-            def _add_prefix(vid, vtype):
-                """Return vehicle_id with type prefix (HC_ or CT_)."""
-                if pd.isna(vid):
-                    return vid
-                vid_str = str(vid)
-                if vtype == 'Hành chính' and not vid_str.startswith('HC_'):
-                    return f'HC_{vid_str}'
-                if vtype == 'Cứu thương' and not vid_str.startswith('CT_'):
-                    return f'CT_{vid_str}'
-                return vid_str
-            # Apply prefixing
-            df['vehicle_id'] = df.apply(lambda r: _add_prefix(r['vehicle_id'], r['vehicle_type']), axis=1)
-        return df
-        
-    except Exception as e:
-        st.sidebar.error(f"❌ Error processing data: {e}")
-        return df
-
-def run_sync_script():
-    """Execute sync script"""
-    try:
-        if not os.path.exists("manual_fleet_sync.py"):
-            st.error("❌ Không tìm thấy file manual_fleet_sync.py")
-            return False
-        
-        token = get_github_token()
-        if not token:
-            st.error("❌ Không tìm thấy GitHub token!")
-            return False
-        
-        with st.spinner("🔄 Đang chạy sync script..."):
-            try:
-                if 'manual_fleet_sync' in sys.modules:
-                    del sys.modules['manual_fleet_sync']
-                
-                import manual_fleet_sync
-                sync_engine = manual_fleet_sync.ManualFleetSync()
-                
-                if sync_engine.config['github']['token'] == "YOUR_TOKEN_HERE":
-                    st.error("❌ GitHub token chưa được load!")
-                    return False
-                
-                success = sync_engine.sync_now()
-                
-                if success:
-                    st.success("✅ Sync hoàn thành!")
-                    st.session_state.last_sync = datetime.now()
-                    return True
-                else:
-                    st.error("❌ Sync thất bại!")
-                    return False
-                    
-            except Exception:
-                result = subprocess.run([
-                    sys.executable, "manual_fleet_sync.py", "--sync-only"
-                ], capture_output=True, text=True, timeout=300)
-                
-                if result.returncode == 0:
-                    st.success("✅ Sync hoàn thành!")
-                    st.session_state.last_sync = datetime.now()
-                    return True
-                else:
-                    st.error(f"❌ Sync thất bại: {result.stderr}")
-                    return False
-                    
-    except Exception as e:
-        st.error(f"❌ Lỗi chạy sync: {e}")
-        return False
-
 def filter_data_by_date_range(df, start_date, end_date):
     """Filter dataframe by date range - FIXED to not drop invalid dates"""
     if df.empty or 'record_date' not in df.columns:
@@ -3740,28 +3331,10 @@ def main():
     # Sidebar controls
     st.sidebar.markdown("## 🔧 Điều khiển Dashboard")
     
-    # Show column mapping info
-    with st.sidebar.expander("📋 Column Mapping Guide"):
-        st.write("**Vietnamese → English:**")
-        for viet, eng in COLUMN_MAPPING.items():
-            if eng is not None:
-                st.write(f"• {viet} → `{eng}`")
-            else:
-                st.write(f"• ~~{viet}~~ → Dropped")
-    
-    # Sync button
-    if st.sidebar.button("🔄 Sync dữ liệu mới", type="primary", use_container_width=True):
-        success = run_sync_script()
-        if success:
-            st.cache_data.clear()
-            st.rerun()
-    
-    # Last sync info
-    if 'last_sync' in st.session_state:
-        st.sidebar.success(f"🕐 Sync cuối: {st.session_state.last_sync.strftime('%H:%M:%S %d/%m/%Y')}")
-    
-    # Manual refresh button
-    if st.sidebar.button("🔄 Làm mới Dashboard", help="Reload dữ liệu từ GitHub"):
+    # Dữ liệu được đồng bộ tự động hằng ngày lúc 07:00 bởi ingestion layer của
+    # ứng dụng chính. Nút sync thủ công cũ đã bỏ vì nó gọi manual_fleet_sync.py —
+    # script đó không còn trong hệ thống.
+    if st.sidebar.button("🔄 Làm mới Dashboard", help="Đọc lại dữ liệu mới nhất từ hệ thống"):
         # Clear date filters when refreshing data
         if 'date_filter_start' in st.session_state:
             del st.session_state.date_filter_start
@@ -3786,6 +3359,8 @@ def main():
         vehicles_count = df_final['vehicle_id'].nunique() if 'vehicle_id' in df_final.columns else 0
         drivers_count = df_final['driver_name'].nunique() if 'driver_name' in df_final.columns else 0
         
+        _render_data_quality(df_final)
+
         st.sidebar.metric("📈 Tổng chuyến", f"{len(df_final):,}")
         st.sidebar.metric("🚗 Số xe", f"{vehicles_count}")
         st.sidebar.metric("👨‍💼 Số tài xế", f"{drivers_count}")

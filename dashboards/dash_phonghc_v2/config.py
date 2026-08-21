@@ -133,36 +133,3 @@ def render_date_range(df, date_col='datetime', record_label='ngày'):
         pass
 
 
-def render_header():
-    """Render header with logo"""
-    try:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        # Go up one level to find logo in parent directory
-        parent_dir = os.path.dirname(script_dir)
-        logo_base64 = ""
-        for p in [
-            os.path.join(parent_dir, "logo.png"),
-            os.path.join(parent_dir, "assets", "logo.png"),
-            os.path.join(script_dir, "logo.png"),
-            os.path.join(script_dir, "assets", "logo.png"),
-        ]:
-            if os.path.exists(p):
-                with open(p, "rb") as f:
-                    logo_base64 = base64.b64encode(f.read()).decode()
-                break
-    except Exception:
-        logo_base64 = ""
-
-    if logo_base64:
-        logo_html = f"<img src='data:image/png;base64,{logo_base64}' style='height:80px; width:auto;' />"
-    else:
-        logo_html = "<span style='font-size:80px;'>🏢</span>"
-
-    st.markdown(f"""
-<div class="header-container">
-    {logo_html}
-    <div class="header-text" style="margin-left: 20px;">
-        Dashboard Phòng Hành chính
-    </div>
-</div>
-""", unsafe_allow_html=True)
