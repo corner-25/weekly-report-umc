@@ -516,3 +516,83 @@ Với `glm-4.5` đây là chi phí nhỏ, và phần gom nghiệp vụ chỉ ch�
    Đây là việc tốn thời gian nhất nhưng làm một lần dùng mãi.
 4. **Metric tích luỹ**: "Tính đến ngày 18/4 đã có 09 ca ghép tim" — lưu là giá trị tại thời
    điểm, hay quy về số phát sinh trong tuần?
+
+---
+
+## 6. Kết quả chạy thật — phòng CNTT (2026-08-21)
+
+Chạy trọn 4 giai đoạn trên 141 nhiệm vụ của CNTT qua 33 tuần.
+
+| Chỉ số | Kết quả |
+|---|---|
+| Nghiệp vụ gom được | 6 |
+| Nhiệm vụ xếp được | **141/141** — không sót, không bịa |
+| Cặp bất nhất GĐ4 sửa | 2 |
+| Tin cậy thấp cần duyệt | 2 |
+| Tokens | 95.406 |
+| Thời gian | 569s |
+
+Phân bố: Vận hành phần mềm lõi 67 · Hạ tầng 43 · Mở rộng mạng 14 · Hỗ trợ người dùng 6 ·
+Sự kiện & ngoại viện 6 · Phân tích số liệu 5
+
+### Các mục từng gây khó — đã gom đúng
+
+| Tên gốc | Nghiệp vụ | Tin cậy |
+|---|---|---|
+| Phần mềm Chỉ định CLS | Vận hành hệ thống phần mềm lõi | 1.0 |
+| Phần mềm Quản lý Kho | Vận hành hệ thống phần mềm lõi | 1.0 |
+| Ứng dụng di động **-** UMC Care | Vận hành hệ thống phần mềm lõi | 1.0 |
+| Ứng dụng di động **–** UMC Care | Vận hành hệ thống phần mềm lõi | 1.0 |
+| Hỗ trợ mạng | Hỗ trợ kỹ thuật & vận hành hạ tầng | 1.0 |
+| Hỗ trợ về mạng | Hỗ trợ kỹ thuật & vận hành hạ tầng | 0.9 |
+
+`subject` giữ đối tượng cụ thể nên không mất chi tiết khi gom.
+
+### Một lỗi lớn đã phát hiện và sửa: AI lạm dụng CUMULATIVE
+
+Prompt v1 để AI phân loại theo *bản chất công việc*. Kết quả: **50 nhiệm vụ gán CUMULATIVE,
+trong đó 43 không hề có tiến độ tăng dần** — nhiều mục chỉ có đúng một con số.
+
+```
+Triển khai dự án Core Switch    [100]              ← tên nghe như dự án
+Hệ thống CNTT/ Hệ thống máy chủ [85]               ← chỉ 1 giá trị
+Phần mềm Hội nghị hội thảo      [100,100,100,100]  ← cố định
+```
+
+AI thấy tên có chữ "dự án", "triển khai" là gán CUMULATIVE mà không kiểm chuỗi tiến độ.
+
+**Sửa bằng hai lớp:**
+
+1. **Prompt v2** thêm quy tắc quyết định — xét chuỗi tiến độ TRƯỚC, tên nhiệm vụ sau:
+   ```
+   Chuỗi rỗng                    → MILESTONE / MONITORING / RECURRING
+   Chỉ 1 giá trị                 → KHÔNG được chọn CUMULATIVE
+   Cố định ≥5 tuần (5,5,5)       → UNRELIABLE
+   Tăng đều lượng cố định (2,4,6)→ UNRELIABLE (% thời gian trôi qua)
+   Toàn 100 nhiều tuần           → RECURRING
+   ≥3 giá trị khác nhau, tăng dần→ CUMULATIVE
+   ```
+
+2. **Kiểm chứng bằng code** (`verifyClassification`) — không chỉ tin prompt. Chuỗi số là bằng
+   chứng kiểm chứng được, nên kiểm lại và tự sửa khi AI vi phạm. Đã test 9/9 ca biên.
+
+**Kết quả v1 → v2:**
+
+| Loại | v1 | v2 |
+|---|---|---|
+| CUMULATIVE | 50 (**43 sai**) | 0 (0 sai) |
+| RECURRING | 63 | 90 |
+| MILESTONE | 19 | 29 |
+| UNRELIABLE | 6 | 18 |
+| MONITORING | 3 | 4 |
+
+CUMULATIVE = 0 nghe lạ nhưng đúng: kiểm tra độc lập trên dữ liệu cho thấy **CNTT không có
+nhiệm vụ nào tiến độ tăng dần thật sự**. Phòng này không quản lý theo kiểu dự án tích luỹ —
+mọi việc đều là vận hành thường quy hoặc việc một lần.
+
+`UNRELIABLE` tăng từ 6 lên 18 phản ánh đúng thực tế: nhiều ô tiến độ được điền cho có.
+
+### Bài học
+
+Không thể chỉ tin prompt cho những kết luận **kiểm chứng được bằng dữ liệu**. Prompt hướng
+dẫn, code kiểm tra lại — hai lớp mới đủ.

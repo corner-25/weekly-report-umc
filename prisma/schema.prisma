@@ -59,10 +59,11 @@ model Week {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  createdBy    User               @relation(fields: [createdById], references: [id])
-  tasks        Task[] // DEPRECATED
-  taskProgress WeekTaskProgress[] // NEW
-  metricValues WeekMetricValue[] // NEW - Số liệu định lượng
+  createdBy        User               @relation(fields: [createdById], references: [id])
+  tasks            Task[] // DEPRECATED
+  taskProgress     WeekTaskProgress[] // NEW
+  metricValues     WeekMetricValue[] // NEW - Số liệu định lượng
+  extractedMetrics ExtractedMetric[]
 
   @@unique([weekNumber, year])
   @@index([createdById])
@@ -87,28 +88,51 @@ model Department {
   secretaryApplications SecretaryApplication[] @relation("ApplicationDesiredDept")
   licenses              License[]
   mous                  MOU[]
+  extractedMetrics      ExtractedMetric[]
 
   @@map("departments")
 }
 
 // MasterTask - Danh sách nhiệm vụ chung của mỗi phòng
 model MasterTask {
-  id                String       @id @default(cuid())
+  id                String          @id @default(cuid())
   departmentId      String
-  name              String       @db.Text
-  description       String?      @db.Text
+  name              String          @db.Text
+  description       String?         @db.Text
   estimatedDuration Int? // Số tuần dự kiến hoàn thành (DEPRECATED - dùng startDate/endDate)
-  progressType      ProgressType @default(RECURRING) // Loại tiến độ
+  progressType      ProgressType    @default(RECURRING)
+  /// Con số tiến độ của nhiệm vụ này nghĩa là gì. Dashboard chỉ tính "tiến độ
+  /// trung bình" trên các nhiệm vụ có COMPLETION.
+  progressMeaning   ProgressMeaning @default(WEEKLY_DONE)
   startDate         DateTime? // Ngày bắt đầu nhiệm vụ
   endDate           DateTime? // Ngày kết thúc nhiệm vụ
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
 
-  department   Department         @relation(fields: [departmentId], references: [id])
-  weekProgress WeekTaskProgress[]
+  /// Nghiệp vụ cha. Ví dụ "Ghép gan" thuộc "Ghép tạng".
+  parentId String?
+  parent   MasterTask?  @relation("TaskTree", fields: [parentId], references: [id])
+  children MasterTask[] @relation("TaskTree")
+
+  /// Mọi cách viết khác của cùng nghiệp vụ này trong file Excel.
+  /// Mỗi lần người duyệt xác nhận, cách viết đó được thêm vào đây — lần sau
+  /// khớp ngay không cần gọi AI. Đây là cơ chế học dần của pipeline.
+  aliases String[] @default([])
+
+  /// MANUAL (người tạo) | AI_GROUPED (AI gom từ dữ liệu cũ) | AI_SUGGESTED (chờ duyệt)
+  sourceType    String  @default("MANUAL")
+  firstSeenWeek Int? /// Tuần đầu xuất hiện, phục vụ phân loại
+  lastSeenWeek  Int?
+  isActive      Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  department       Department         @relation(fields: [departmentId], references: [id])
+  weekProgress     WeekTaskProgress[]
+  extractedMetrics ExtractedMetric[]
 
   @@index([departmentId])
   @@index([createdAt])
+  @@index([parentId])
   @@map("master_tasks")
 }
 
@@ -124,8 +148,23 @@ model WeekTaskProgress {
   nextWeekPlan String    @db.Text
   isImportant  Boolean   @default(false)
   completedAt  DateTime? // Ngày hoàn thành (nếu progress = 100)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+
+  /// Đối tượng cụ thể của tuần này. Nhiệm vụ là "Vận hành hệ thống phần mềm",
+  /// subject là "Phần mềm Chỉ định CLS" — gom về một nghiệp vụ mà không mất chi tiết.
+  subject       String? @db.Text
+  /// Tên nhiệm vụ y như trong file Excel, giữ để đối chiếu khi nghi ngờ khớp sai.
+  rawTaskName   String? @db.Text
+  /// Ô "Kết quả thực hiện" gốc, trước khi AI xử lý.
+  rawResultText String? @db.Text
+
+  extractionModel String? /// Model đã trích (glm-4.5…), để so sánh chất lượng
+  matchConfidence Float? /// Độ tin cậy khớp MasterTask, 0-1
+  matchReasoning  String?  @db.Text /// AI giải thích vì sao khớp, giúp người duyệt nhanh
+  /// Cờ cần rà soát: LOW_CONFIDENCE, METRIC_ANOMALY, PROGRESS_REGRESSION…
+  reviewFlags     String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   masterTask MasterTask @relation(fields: [masterTaskId], references: [id], onDelete: Cascade)
   week       Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
@@ -829,9 +868,24 @@ enum ClauseStatus {
   CANCELLED // Đã hủy
 }
 
+/// Bản chất của nhiệm vụ — quyết định cách hiểu con số tiến độ.
+/// Đo trên 411 nhiệm vụ thật của 33 tuần, xem docs/HOSPITAL-REPORT-PIPELINE.md
 enum ProgressType {
-  RECURRING // Công việc thường quy, lặp lại hàng tuần
-  CUMULATIVE // Nhiệm vụ có tiến độ tích lũy, có điểm kết thúc
+  RECURRING /// Nghiệp vụ thường quy, tuần nào cũng làm (Tổng đài, Hỗ trợ máy in)
+  CUMULATIVE /// Dự án có đích, tiến độ tích luỹ tới 100% — loại DUY NHẤT tiến độ có nghĩa
+  MILESTONE /// Việc một lần có mốc hoàn thành (họp, tiếp đoàn, ban hành quyết định)
+  MONITORING /// Theo dõi chỉ số, giá trị nằm ở metric chứ không phải tiến độ
+  UNRELIABLE /// Con số cố định vô nghĩa (5,5,5 hoặc 90,90,90) — loại khỏi thống kê
+}
+
+/// Con số trong cột "Tiến độ (%)" thực chất nghĩa là gì.
+/// Tách khỏi ProgressType vì đây là hai câu hỏi khác nhau: nhiệm vụ thuộc loại gì,
+/// và con số người ta điền vào có tin được không.
+enum ProgressMeaning {
+  COMPLETION /// % hoàn thành thật của toàn bộ công việc
+  WEEKLY_DONE /// "Đã xong phần việc của tuần này", không phải xong hẳn
+  TIME_RATIO /// % thời gian đã trôi qua trong năm (2%, 4%, 6%...)
+  MEANINGLESS /// Điền cho có, không phản ánh gì
 }
 
 enum ClauseType {
@@ -1148,4 +1202,90 @@ model FleetTrip {
   @@index([vehicleId, recordDate])
   @@index([driverName])
   @@map("fleet_trips")
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TRÍCH XUẤT BẰNG AI — báo cáo tuần bệnh viện
+// Xem docs/HOSPITAL-REPORT-PIPELINE.md
+// ═══════════════════════════════════════════════════════════════════════
+
+/// Kỳ của một số liệu trích từ văn bản.
+enum MetricPeriod {
+  WEEK /// Số liệu riêng tuần này ("65 văn bản")
+  CUMULATIVE /// Luỹ kế từ đầu ("Tính đến ngày 18/4 đã có 09 ca")
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EDITED /// Người duyệt đã sửa giá trị trước khi chấp nhận
+}
+
+/// Số liệu định lượng trích từ ô "Kết quả thực hiện".
+///
+/// Không dùng MetricDefinition/WeekMetricValue sẵn có vì: tên chưa chuẩn hoá,
+/// có độ tin cậy, cần đối chiếu văn bản gốc, và phải qua người duyệt. Sau khi
+/// một metric ổn định tên qua nhiều tuần, có thể thăng cấp thành MetricDefinition.
+model ExtractedMetric {
+  id           String  @id @default(cuid())
+  weekId       String
+  departmentId String
+  masterTaskId String?
+
+  name     String       @db.Text /// "Hồ sơ bệnh án tiếp nhận"
+  value    Float
+  unit     String? /// "HSBA", "ca", "văn bản", "%"
+  period   MetricPeriod @default(WEEK)
+  asOfDate DateTime? /// Với CUMULATIVE: luỹ kế tính đến ngày nào
+
+  /// Đoạn văn gốc sinh ra số này, để đối chiếu khi nghi ngờ.
+  sourceText    String       @db.Text
+  confidence    Float        @default(0)
+  reviewStatus  ReviewStatus @default(PENDING)
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  /// Giá trị AI trích ban đầu, giữ lại khi người duyệt sửa.
+  originalValue Float?
+
+  extractionModel String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  week       Week        @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  department Department  @relation(fields: [departmentId], references: [id])
+  masterTask MasterTask? @relation(fields: [masterTaskId], references: [id])
+
+  @@index([weekId, departmentId])
+  @@index([name])
+  @@index([reviewStatus])
+  @@map("extracted_metrics")
+}
+
+/// Một lần chạy trích xuất AI. Cần bảng này vì model và prompt sẽ đổi nhiều lần —
+/// không có nó thì không biết phiên bản nào cho kết quả tốt hơn.
+model AiExtractionRun {
+  id           String  @id @default(cuid())
+  stage        String /// GROUP_TASKS | CLASSIFY | MATCH | EXTRACT_METRICS | RECONCILE
+  departmentId String?
+  year         Int?
+  week         Int?
+
+  model         String /// "glm-4.5"
+  promptVersion String /// "v1", "v2"… để so sánh chất lượng giữa các lần sửa prompt
+
+  itemsInput   Int      @default(0)
+  itemsOutput  Int      @default(0)
+  flagged      Int      @default(0)
+  tokensUsed   Int?
+  durationMs   Int?
+  errorMessage String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([stage, createdAt])
+  @@index([departmentId, year, week])
+  @@map("ai_extraction_runs")
 }
