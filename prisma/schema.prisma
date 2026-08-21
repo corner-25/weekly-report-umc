@@ -1185,22 +1185,32 @@ model FleetTrip {
   durationConfidence String   @default("medium") // high|medium|low
   durationMethod     String   @default("normal") // normal|fixed_ampm|overnight|estimated_*
   durationSuspicious Boolean  @default(false) // tin cậy thấp hoặc > 16h
-  distanceKm         Float?
-  distanceFixMethod  String? // NONE|ODO_DELTA|ESTIMATED_FROM_HOURS|UNFIXABLE
-  fuelLiters         Float?
-  revenueVnd         Float?
-  destination        String   @db.Text
-  workCategory       String
-  areaType           String
-  tripDetails        String?  @db.Text
-  sourceId           String
-  syncRunId          String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  /// Chỉ số công-tơ-mét sau khi kết thúc chuyến, đọc từ ô tài xế nhập.
+  /// null khi không nhập hoặc nhập nội dung không phải số.
+  odometer           Int?
+  /// Kết quả kiểm tra tính hợp lý của odometer so với chuyến trước cùng xe:
+  /// OK | DECREASED | BIG_JUMP | NO_PREVIOUS | UNPARSED
+  odometerStatus     String   @default("OK")
+  /// Chênh lệch so với chuyến trước cùng xe (km). null khi không so được.
+  odometerDelta      Int?
+
+  distanceKm        Float?
+  distanceFixMethod String? // NONE|ODO_DELTA|ESTIMATED_FROM_HOURS|UNFIXABLE
+  fuelLiters        Float?
+  revenueVnd        Float?
+  destination       String   @db.Text
+  workCategory      String
+  areaType          String
+  tripDetails       String?  @db.Text
+  sourceId          String
+  syncRunId         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([recordDate])
   @@index([vehicleId, recordDate])
   @@index([driverName])
+  @@index([odometerStatus])
   @@map("fleet_trips")
 }
 

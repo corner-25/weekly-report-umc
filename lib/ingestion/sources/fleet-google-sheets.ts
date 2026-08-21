@@ -94,6 +94,21 @@ export const fleetGoogleSheets: Connector<SheetData[], FleetParseResult> = {
       await ctx.log('warn', `${unfixable} chuyến không sửa được quãng đường, để trống chờ rà soát`);
     }
 
+    // Chỉ số đồng hồ: đối chiếu với chuyến trước cùng xe.
+    const odoIssues = new Map<string, number>();
+    for (const r of result.rows) {
+      if (r.odometerStatus === 'OK' || r.odometerStatus === 'NO_PREVIOUS') continue;
+      odoIssues.set(r.odometerStatus, (odoIssues.get(r.odometerStatus) ?? 0) + 1);
+    }
+    const odoLabels: Record<string, string> = {
+      DECREASED: 'nhỏ hơn chuyến trước (công-tơ-mét không lùi được)',
+      BIG_JUMP: 'tăng vọt bất thường, nghi nhập thừa/thiếu chữ số',
+      UNPARSED: 'ô có nội dung nhưng không đọc ra số',
+    };
+    for (const [status, count] of odoIssues) {
+      await ctx.log('warn', `${count} chuyến có chỉ số đồng hồ ${odoLabels[status] ?? status}`);
+    }
+
     if (result.rows.length === 0) {
       throw new Error('Không có chuyến hợp lệ nào — kiểm tra lại quyền truy cập hoặc cấu trúc sheet');
     }

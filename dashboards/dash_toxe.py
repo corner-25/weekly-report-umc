@@ -71,6 +71,36 @@ def _render_data_quality(df) -> None:
                 "nhập nhầm giờ bắt đầu/kết thúc. Xem cột *Cách tính giờ* bên dưới."
             )
 
+        if 'odometer_status' in df.columns:
+            odo_labels = {
+                'OK': 'Hợp lệ',
+                'DECREASED': 'Nhỏ hơn chuyến trước — công-tơ-mét không lùi được',
+                'BIG_JUMP': 'Tăng vọt bất thường — nghi thừa/thiếu chữ số',
+                'UNPARSED': 'Ô có nội dung nhưng không đọc ra số',
+                'NO_PREVIOUS': 'Chuyến đầu của xe, không có gì để so',
+            }
+            issues = df[~df['odometer_status'].isin(['OK', 'NO_PREVIOUS'])]
+            if not issues.empty:
+                st.markdown("**Chỉ số công-tơ-mét cần rà soát**")
+                counts = issues['odometer_status'].value_counts()
+                st.dataframe(
+                    pd.DataFrame({
+                        'Vấn đề': [odo_labels.get(k, k) for k in counts.index],
+                        'Số chuyến': counts.values,
+                    }),
+                    hide_index=True,
+                    use_container_width=True,
+                )
+                with st.expander(f"Xem {len(issues)} chuyến cụ thể"):
+                    cols = [c for c in ['record_date', 'vehicle_id', 'driver_name',
+                                        'odometer', 'odometer_delta', 'odometer_status']
+                            if c in issues.columns]
+                    st.dataframe(
+                        issues[cols].sort_values('record_date', ascending=False),
+                        hide_index=True,
+                        use_container_width=True,
+                    )
+
         if 'duration_method' in df.columns:
             method_labels = {
                 'normal': 'Bình thường (end − start)',

@@ -7,9 +7,14 @@ import {
   inferAreaType,
   normalizeDestination,
   parseFuelLiters,
+  parseClockToMinutes,
+  parseOdometer,
+  checkOdometerSequence,
   toNumber,
   type DistanceFixInput,
   type DrivingHoursResult,
+  type OdometerCheckInput,
+  type OdometerStatus,
 } from '@/lib/fleet/cleaning';
 import { ADMIN_VEHICLES, SUSPICIOUS_TRIP_HOURS, UNKNOWN_DRIVER } from '@/lib/fleet/cleaning-rules';
 import type { SheetData } from '../fetchers/google-sheets';
@@ -90,6 +95,12 @@ export interface FleetTripRow {
   durationConfidence: DrivingHoursResult['confidence'];
   durationMethod: DrivingHoursResult['method'];
   durationSuspicious: boolean;
+  /** Chỉ số công-tơ-mét sau chuyến, đọc từ ô tài xế nhập. */
+  odometer: number | null;
+  /** Kết quả đối chiếu với chuyến trước cùng xe. */
+  odometerStatus: OdometerStatus;
+  /** Chênh lệch odometer so với chuyến trước (km). */
+  odometerDelta: number | null;
   distanceKm: number | null;
   distanceFixMethod: string;
   fuelLiters: number | null;
@@ -195,6 +206,17 @@ function parseRecordDate(dateRaw: string, timestampRaw: string): Date | null {
 }
 
 /**
+ * Ghép giờ bắt đầu vào ngày ghi nhận để có mốc thời gian đầy đủ.
+ *
+ * Trả về chính ngày đó khi không đọc được giờ — vẫn hơn là bỏ chuyến khỏi chuỗi.
+ */
+function withStartTime(recordDate: Date, startTime: string): Date {
+  const minutes = parseClockToMinutes(startTime);
+  if (minutes === null) return recordDate;
+  return new Date(recordDate.getTime() + minutes * 60_000);
+}
+
+/**
  * Khoá định danh một chuyến.
  *
  * Nguồn không có ID nên hash các trường tài xế nhập. Hai chuyến giống hệt nhau
@@ -241,6 +263,8 @@ export function parseFleetSheets(sheets: readonly SheetData[]): FleetParseResult
     areaType: string;
     distanceKm: number | null;
     duration: DrivingHoursResult;
+    odometer: number | null;
+    hasOdometerText: boolean;
   }> = [];
 
   for (const raw of rawRows) {
@@ -269,19 +293,40 @@ export function parseFleetSheets(sheets: readonly SheetData[]): FleetParseResult
       areaType,
     );
 
-    staged.push({ raw, recordDate, areaType, distanceKm: rawDistanceKm, duration });
+    staged.push({
+      raw,
+      recordDate,
+      areaType,
+      distanceKm: rawDistanceKm,
+      duration,
+      odometer: parseOdometer(pick(v, COL.odometer)),
+      hasOdometerText: pick(v, COL.odometer).trim() !== '',
+    });
   }
 
   // Sửa quãng đường cần nhìn toàn bộ chuyến của cùng một xe theo thứ tự thời gian.
   const distanceInputs: DistanceFixInput[] = staged.map((s) => ({
     vehicleId: s.raw.vehicleId,
-    timestamp: s.recordDate,
+    timestamp: withStartTime(s.recordDate, pick(s.raw.values, COL.startTime)),
     distanceKm: s.distanceKm,
-    odometer: toNumber(pick(s.raw.values, COL.odometer)),
+    odometer: s.odometer,
     durationHours: s.duration.hours,
     areaType: s.areaType,
   }));
   const distanceFixes = fixDistanceOutliers(distanceInputs);
+
+  // Công-tơ-mét chỉ tăng, nên đối chiếu từng chuyến với chuyến trước của cùng xe
+  // để bắt lỗi nhập liệu. Không tự sửa — chỉ gắn nhãn cho người vận hành.
+  // Dùng THỨ TỰ DÒNG trong sheet, không phải ngày ghi nhận. Google Form ghi
+  // theo thứ tự submit nên đó là trình tự thực tế; sắp lại theo ngày làm tăng
+  // số cảnh báo giả (1,9% → 2,1%) vì recordDate không có giờ.
+  const odometerInputs: OdometerCheckInput[] = staged.map((s) => ({
+    vehicleId: s.raw.vehicleId,
+    sequence: s.raw.rowNumber,
+    odometer: s.odometer,
+    hasRawValue: s.hasOdometerText,
+  }));
+  const odometerChecks = checkOdometerSequence(odometerInputs);
 
   const seenHashes = new Set<string>();
   const rows: FleetTripRow[] = [];
@@ -328,6 +373,9 @@ export function parseFleetSheets(sheets: readonly SheetData[]): FleetParseResult
       durationSuspicious:
         s.duration.confidence === 'low' ||
         (s.duration.hours !== null && s.duration.hours > SUSPICIOUS_TRIP_HOURS),
+      odometer: s.odometer,
+      odometerStatus: odometerChecks[i].status,
+      odometerDelta: odometerChecks[i].delta,
       distanceKm: distanceFixes[i].distanceKm,
       distanceFixMethod: distanceFixes[i].method,
       fuelLiters: parseFuelLiters(pick(v, COL.fuel)),

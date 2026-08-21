@@ -334,6 +334,148 @@ export function inferAreaType(currentArea: unknown, destination: unknown): strin
   return isInnerCity ? 'Nội thành' : 'Ngoại thành';
 }
 
+/**
+ * Chênh lệch odometer lớn nhất còn hợp lý giữa hai chuyến liên tiếp.
+ *
+ * Đo trên 14.114 chuyến thật: p50 = 10km, p90 = 57km, p99 = 374km, lớn nhất
+ * hợp lệ 1.859km (chuyến đi tỉnh dài ngày). Vượt 2.000km gần như chắc chắn là
+ * nhập thừa/thiếu chữ số.
+ */
+const MAX_ODOMETER_DELTA_KM = 2000;
+
+/**
+ * Số lần giảm liên tiếp thì coi như xe đã được thay/reset công-tơ-mét.
+ *
+ * Giữ mốc cũ mãi sẽ khiến MỌI chuyến sau đó bị gắn cờ sai, biến một lần đổi
+ * cách nhập thành hàng trăm cảnh báo giả.
+ */
+const CONSECUTIVE_DROPS_TO_ACCEPT = 3;
+
+/** Kết quả kiểm tra tính hợp lý của chỉ số đồng hồ. */
+export type OdometerStatus =
+  | 'OK'           /// Tăng so với chuyến trước, mức tăng hợp lý
+  | 'DECREASED'    /// Nhỏ hơn chuyến trước — công-tơ-mét không lùi được
+  | 'BIG_JUMP'     /// Tăng quá lớn, nghi nhập thừa/thiếu chữ số
+  | 'NO_PREVIOUS'  /// Chuyến đầu tiên của xe, không có gì để so
+  | 'UNPARSED';    /// Ô có nội dung nhưng không đọc ra số
+
+export interface OdometerCheckInput {
+  vehicleId: string;
+  /**
+   * Thứ tự dòng trong sheet gốc.
+   *
+   * Google Form ghi mỗi lần submit thành một dòng mới, nên thứ tự dòng chính là
+   * trình tự tài xế báo cáo chuyến — sát thực tế nhất.
+   *
+   * Đã đo bốn cách sắp trên 14.114 chuyến, đếm số lần odo giảm ngược:
+   *
+   *   thứ tự dòng sheet      272  (1,93%)  ← dùng cách này
+   *   Timestamp submit       559  (3,96%)
+   *   ngày ghi nhận        1.219  (8,64%)
+   *   ngày + giờ bắt đầu   1.719  (12,18%)
+   *
+   * Ngày + giờ bắt đầu nghe hợp lý nhất nhưng lại tệ nhất. Không phải vì thứ tự
+   * sai — kiểm tra thấy các ca đảo đều là odo giảm trong khi giờ tăng
+   * ("5:00 AM odo=22872 → 12:00 odo=19551"), tức tài xế nhập odo sai. Sắp theo
+   * giờ làm lộ thêm lỗi nhập, nhưng ta cần trình tự CHUYẾN chứ không phải bộ dò
+   * lỗi nhập liệu, nên lấy thứ tự submit làm chuẩn.
+   */
+  sequence: number;
+  /** Giá trị đã parse; null khi ô trống hoặc không đọc được. */
+  odometer: number | null;
+  /** Ô có nội dung hay không — phân biệt "bỏ trống" với "nhập sai". */
+  hasRawValue: boolean;
+}
+
+export interface OdometerCheckResult {
+  status: OdometerStatus;
+  /** Chênh lệch với chuyến trước cùng xe; null khi không so được. */
+  delta: number | null;
+}
+
+/**
+ * Kiểm tra chỉ số đồng hồ bằng cách đối chiếu với chuyến TRƯỚC của cùng xe.
+ *
+ * Công-tơ-mét chỉ tăng, nên chuỗi giá trị của một xe phải đơn điệu tăng. Tài xế
+ * nhập sai theo ba kiểu, đo trên dữ liệu thật:
+ *   - 272 chuyến giảm ngược (gõ nhầm chữ số)
+ *   - 89 chuyến nhảy >2.000km (thừa/thiếu chữ số)
+ *   - 20 ô không đọc ra số (nhập biển số, địa điểm vào nhầm cột)
+ *
+ * KHÔNG tự sửa giá trị — chỉ gắn nhãn. Odometer là số đọc từ đồng hồ thật, đoán
+ * lại sẽ tạo dữ liệu giả. Chuyến bị gắn nhãn vẫn giữ nguyên giá trị gốc để người
+ * vận hành đối chiếu.
+ *
+ * Mảng đầu vào được sắp theo (xe, thời gian) bên trong; thứ tự đầu ra khớp thứ
+ * tự đầu vào.
+ */
+export function checkOdometerSequence(
+  rows: readonly OdometerCheckInput[],
+): OdometerCheckResult[] {
+  const order = rows.map((_, i) => i);
+  order.sort((a, b) => {
+    const rowA = rows[a];
+    const rowB = rows[b];
+    if (rowA.vehicleId !== rowB.vehicleId) return rowA.vehicleId < rowB.vehicleId ? -1 : 1;
+    return rowA.sequence - rowB.sequence;
+  });
+
+  const results: OdometerCheckResult[] = rows.map(() => ({ status: 'OK', delta: null }));
+  const lastValidByVehicle = new Map<string, number>();
+  // Đếm số lần giảm liên tiếp để nhận ra xe thay công-tơ-mét.
+  const consecutiveDrops = new Map<string, number>();
+
+  for (const idx of order) {
+    const row = rows[idx];
+
+    if (row.odometer === null) {
+      // Ô trống là chuyện bình thường; ô có chữ mà không ra số mới đáng chú ý.
+      results[idx] = { status: row.hasRawValue ? 'UNPARSED' : 'OK', delta: null };
+      continue;
+    }
+
+    const previous = lastValidByVehicle.get(row.vehicleId);
+    if (previous === undefined) {
+      results[idx] = { status: 'NO_PREVIOUS', delta: null };
+      lastValidByVehicle.set(row.vehicleId, row.odometer);
+      continue;
+    }
+
+    const delta = row.odometer - previous;
+
+    if (delta < 0) {
+      const drops = (consecutiveDrops.get(row.vehicleId) ?? 0) + 1;
+      consecutiveDrops.set(row.vehicleId, drops);
+
+      if (drops >= CONSECUTIVE_DROPS_TO_ACCEPT) {
+        // Nhiều lần giảm liên tiếp không còn là gõ nhầm — xe đã thay hoặc reset
+        // công-tơ-mét. Nhận mốc mới, đánh dấu OK, để chuỗi tiếp tục bình thường.
+        consecutiveDrops.set(row.vehicleId, 0);
+        lastValidByVehicle.set(row.vehicleId, row.odometer);
+        results[idx] = { status: 'OK', delta: null };
+        continue;
+      }
+
+      // Một hai lần lẻ tẻ thì là gõ nhầm: giữ mốc cũ để các chuyến sau vẫn so
+      // với giá trị đúng gần nhất.
+      results[idx] = { status: 'DECREASED', delta };
+      continue;
+    }
+
+    consecutiveDrops.set(row.vehicleId, 0);
+
+    if (delta > MAX_ODOMETER_DELTA_KM) {
+      results[idx] = { status: 'BIG_JUMP', delta };
+      continue;
+    }
+
+    results[idx] = { status: 'OK', delta };
+    lastValidByVehicle.set(row.vehicleId, row.odometer);
+  }
+
+  return results;
+}
+
 /** Một chuyến ở dạng tối thiểu cần cho bước sửa quãng đường. */
 export interface DistanceFixInput {
   vehicleId: string;
@@ -418,4 +560,52 @@ export function toNumber(input: unknown): number | null {
   if (s === '' || ['nan', 'none', 'null'].includes(s.toLowerCase())) return null;
   const n = Number(s.replace(/,/g, ''));
   return Number.isFinite(n) ? n : null;
+}
+
+/** Chỉ số đồng hồ nhỏ nhất còn hợp lý — dưới ngưỡng này là nhập nhầm. */
+const MIN_ODOMETER = 1;
+
+/** Chỉ số đồng hồ lớn nhất còn hợp lý cho xe trong đội. */
+const MAX_ODOMETER = 2_000_000;
+
+/**
+ * Chỉ số đồng hồ (odometer) từ ô nhập tự do.
+ *
+ * Phần lớn ô chỉ chứa số thuần, nhưng có tài xế viết kèm biển số hoặc đơn vị:
+ *   "433"                → 433
+ *   "86km 50A03281"      → 86      (số đầu là odo, phần sau là biển số nhập nhầm)
+ *   "294 ( xe 50A-03280)" → 294
+ *   "xe 50A03281"        → null    (bắt đầu bằng chữ — không có odo)
+ *   "Tphcm-q5"           → null    (nhập nhầm cột điểm đến)
+ *
+ * Chỉ nhận số ĐỨNG ĐẦU chuỗi. Lấy "số đầu tiên bất kỳ" sẽ moi nhầm chữ số từ
+ * biển số ("xe 50A03280" → 50) hoặc tên quận ("Tphcm-q5" → 5).
+ *
+ * Không dùng `toNumber` chung vì hàm đó từ chối mọi chuỗi có chữ — đúng cho các
+ * cột khác nhưng làm mất giá trị odo đọc được.
+ */
+export function parseOdometer(input: unknown): number | null {
+  if (input === null || input === undefined) return null;
+
+  if (typeof input === 'number') {
+    return Number.isFinite(input) && input >= MIN_ODOMETER && input <= MAX_ODOMETER
+      ? input
+      : null;
+  }
+
+  const s = String(input).trim();
+  if (s === '' || ['nan', 'none', 'null'].includes(s.toLowerCase())) return null;
+
+  // Số phải đứng NGAY ĐẦU chuỗi. Odometer luôn được ghi trước phần chú thích
+  // thêm ("86km 50A03281"). Nếu chuỗi bắt đầu bằng chữ thì đó là nội dung khác
+  // bị nhập nhầm cột — "xe 50A03280" hay "Tphcm-q5" không chứa odometer nào.
+  const match = /^(\d[\d.,]*)/.exec(s);
+  if (!match) return null;
+
+  // Bỏ dấu phân cách nghìn; odometer luôn là số nguyên km.
+  const n = Number(match[1].replace(/[.,]/g, ''));
+  if (!Number.isFinite(n)) return null;
+
+  // Biển số như "50A03281" lọt vào đây sẽ là số rất lớn — chặn bằng ngưỡng.
+  return n >= MIN_ODOMETER && n <= MAX_ODOMETER ? n : null;
 }
