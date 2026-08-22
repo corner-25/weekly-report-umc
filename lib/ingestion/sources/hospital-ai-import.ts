@@ -228,6 +228,9 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
         continue;
       }
 
+      /** Có phòng nào lỗi không — quyết định tuần này đã xong hẳn chưa. */
+      let weekHadError = false;
+
       for (const deptTasks of extractWeekTasksByDepartment(sheet)) {
         const match = matchDepartment(deptTasks.departmentName, departments);
         if (!match.departmentId) {
@@ -273,7 +276,17 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
           const message = error instanceof Error ? error.message : 'Lỗi không xác định';
           await ctx.log('error', `Tuần ${sheet.week} · ${match.dbName}: ${message}`);
           skipped += deptTasks.tasks.length;
+          weekHadError = true;
         }
+      }
+
+      // Đánh dấu đã xử lý để trang quản trị không báo "chờ duyệt" mãi. Tuần có
+      // phòng lỗi thì giữ PENDING — còn việc phải làm lại.
+      if (!weekHadError) {
+        await ctx.prisma.pendingAiImport.updateMany({
+          where: { year: sheet.year, week: sheet.week, status: 'PENDING' },
+          data: { status: 'APPROVED', reviewedAt: new Date() },
+        });
       }
     }
 
