@@ -19,6 +19,8 @@ import { PrismaClient } from '@prisma/client';
 /** Hệ số quy đổi mỗi đơn vị về VND. */
 const TO_VND: Record<string, number> = {
   'vnd': 1,
+  'vnđ': 1,
+  'đ': 1,
   'đồng': 1,
   'nghìn đồng': 1_000,
   'triệu': 1_000_000,
