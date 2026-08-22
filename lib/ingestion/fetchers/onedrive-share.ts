@@ -13,6 +13,9 @@
 /** Giới hạn kích thước file, chặn nguồn hỏng làm cạn bộ nhớ container. */
 const MAX_FILE_BYTES = 50 * 1024 * 1024;
 
+/** Số lần thử lại khi lỗi mạng tạm thời. */
+const MAX_RETRIES = 3;
+
 /** Content-Type mà SharePoint trả về cho file xlsx. */
 const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
@@ -75,6 +78,39 @@ export async function downloadSharedFile(shareUrl: string): Promise<DownloadedFi
   const link = parseShareUrl(shareUrl);
   const downloadUrl = buildDownloadUrl(link);
 
+  // Mạng chập chờn làm cả loạt tuần fail cùng lúc mà không thử lại lần nào —
+  // đã gặp trên thực tế: 4 tuần fail trong cùng một phút vì mất mạng thoáng qua.
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
+    try {
+      return await attemptDownload(downloadUrl);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      // Lỗi nội dung (link mất công khai, file rỗng) thì thử lại vô ích.
+      if (!isTransientError(lastError) || attempt === MAX_RETRIES) throw lastError;
+
+      // Lùi dần: 2s, 4s
+      await new Promise((r) => setTimeout(r, 2000 * 2 ** (attempt - 1)));
+    }
+  }
+  throw lastError ?? new Error('Tải file thất bại không rõ lý do');
+}
+
+/** Lỗi mạng tạm thời thì đáng thử lại; lỗi nội dung thì không. */
+function isTransientError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
+    message.includes('fetch failed') ||
+    message.includes('timeout') ||
+    message.includes('econnreset') ||
+    message.includes('enotfound') ||
+    /http 5\d\d/.test(message) ||
+    message.includes('http 429')
+  );
+}
+
+async function attemptDownload(downloadUrl: string): Promise<DownloadedFile> {
   const res = await fetch(downloadUrl, {
     redirect: 'follow',
     headers: {
