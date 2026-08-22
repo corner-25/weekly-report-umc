@@ -2,7 +2,11 @@
 
 import { Select } from '@/components/ui/Select';
 import type { ProgressMeaning, ProgressType } from '@prisma/client';
-import { countsTowardProgressStats } from '@/lib/task-type';
+import {
+  countsTowardProgressStats,
+  countsTowardWeeklyCompletion,
+  WEEKLY_DONE_THRESHOLD,
+} from '@/lib/task-type';
 import { useState } from 'react';
 import { LineChart } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -44,6 +48,10 @@ interface DepartmentMetrics {
   avgProgress: number;
   /** Số nhiệm vụ thực sự có tiến độ đo được — mẫu số của avgProgress. */
   measurableTasks: number;
+  /** % nhiệm vụ thường quy đã xong phần việc của tuần gần nhất. */
+  weeklyDoneRate: number;
+  /** Mẫu số của weeklyDoneRate. */
+  weeklyTasks: number;
   totalWeeks: number;
   completionRate: number;
 }
@@ -88,6 +96,13 @@ export default function MetricsPage() {
     const totalProgress = measurable.reduce((sum, t) => sum + t.latestProgress, 0);
     const avgProgress = measurable.length > 0 ? Math.round(totalProgress / measurable.length) : 0;
 
+    // Nhiệm vụ thường quy không có "% hoàn thành" — chúng chỉ xong hoặc chưa
+    // xong phần việc của tuần. Đếm tỷ lệ xong thay vì lấy trung bình cộng.
+    const weeklyTasksList = deptTasks.filter((t) => countsTowardWeeklyCompletion(t.progressMeaning));
+    const weeklyDone = weeklyTasksList.filter((t) => t.latestProgress >= WEEKLY_DONE_THRESHOLD).length;
+    const weeklyDoneRate =
+      weeklyTasksList.length > 0 ? Math.round((weeklyDone / weeklyTasksList.length) * 100) : 0;
+
     const totalWeeks = deptTasks.reduce((sum, t) => sum + t.weekCount, 0);
     const completionRate = deptTasks.length > 0 ? Math.round((completed / deptTasks.length) * 100) : 0;
 
@@ -99,6 +114,8 @@ export default function MetricsPage() {
       notStartedTasks: notStarted,
       avgProgress,
       measurableTasks: measurable.length,
+      weeklyDoneRate,
+      weeklyTasks: weeklyTasksList.length,
       totalWeeks,
       completionRate,
     };
@@ -122,6 +139,13 @@ export default function MetricsPage() {
         : 0;
     })(),
     measurableTasks: filteredTasks.filter((t) => countsTowardProgressStats(t.progressType, t.progressMeaning)).length,
+    weeklyDoneRate: (() => {
+      const weekly = filteredTasks.filter((t) => countsTowardWeeklyCompletion(t.progressMeaning));
+      if (weekly.length === 0) return 0;
+      const done = weekly.filter((t) => t.latestProgress >= WEEKLY_DONE_THRESHOLD).length;
+      return Math.round((done / weekly.length) * 100);
+    })(),
+    weeklyTasks: filteredTasks.filter((t) => countsTowardWeeklyCompletion(t.progressMeaning)).length,
     totalWeeks: filteredTasks.reduce((sum, t) => sum + t.weekCount, 0),
     avgWeeksPerTask: filteredTasks.length > 0
       ? Math.round(filteredTasks.reduce((sum, t) => sum + t.weekCount, 0) / filteredTasks.length)
@@ -153,19 +177,22 @@ export default function MetricsPage() {
              t.isCompleted;
     }).length;
 
-    const avgProgress = monthTasks.length > 0
-      ? Math.round(monthTasks.reduce((sum, t) => {
-          const weeklyProgress = t.weeklyProgress || [];
-          const monthProgress = weeklyProgress.filter(wp => {
-            const date = new Date(wp.startDate);
-            return date.getFullYear() === selectedYear && date.getMonth() + 1 === month;
-          });
-          const avg = monthProgress.length > 0
-            ? monthProgress.reduce((s, p) => s + p.progress, 0) / monthProgress.length
-            : 0;
-          return sum + avg;
-        }, 0) / monthTasks.length)
-      : 0;
+    // Chỉ đếm nhiệm vụ thường quy. Gộp cả loại MEANINGLESS (tuần nào cũng ghi
+    // 100% dù công việc không "xong" được) sẽ đẩy con số lên ~90% một cách ảo.
+    const weeklyTasksInMonth = monthTasks.filter((t) =>
+      countsTowardWeeklyCompletion(t.progressMeaning),
+    );
+    let weekSlots = 0;
+    let weekSlotsDone = 0;
+    for (const t of weeklyTasksInMonth) {
+      for (const wp of t.weeklyProgress || []) {
+        const date = new Date(wp.startDate);
+        if (date.getFullYear() !== selectedYear || date.getMonth() + 1 !== month) continue;
+        weekSlots++;
+        if (wp.progress >= WEEKLY_DONE_THRESHOLD) weekSlotsDone++;
+      }
+    }
+    const avgProgress = weekSlots > 0 ? Math.round((weekSlotsDone / weekSlots) * 100) : 0;
 
     monthlyMetrics.push({
       month: `T${month}`,
@@ -258,10 +285,13 @@ export default function MetricsPage() {
             <p className="text-2xl font-bold text-slate-600">{overallMetrics.notStartedTasks}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">TB Tiến độ</p>
-            <p className="text-2xl font-bold text-blue-600">{overallMetrics.avgProgress}%</p>
-            <p className="text-xs text-slate-400 mt-0.5" title="Chỉ tính nhiệm vụ tích luỹ — nhiệm vụ thường quy luôn 100% nên không phản ánh tiến độ">
-              trên {overallMetrics.measurableTasks} nhiệm vụ tích luỹ
+            <p className="text-sm text-slate-600">Hoàn tất tuần</p>
+            <p className="text-2xl font-bold text-blue-600">{overallMetrics.weeklyDoneRate}%</p>
+            <p
+              className="text-xs text-slate-400 mt-0.5"
+              title="Tỷ lệ nhiệm vụ thường quy đã xong phần việc của tuần. Không phải % hoàn thành dự án — nhiệm vụ thường quy không bao giờ 'kết thúc'."
+            >
+              trên {overallMetrics.weeklyTasks} nhiệm vụ thường quy
             </p>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
@@ -302,7 +332,7 @@ export default function MetricsPage() {
                   Chưa bắt đầu
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  TB Tiến độ
+                  Hoàn tất tuần
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Tổng tuần
@@ -331,7 +361,10 @@ export default function MetricsPage() {
                     {metric.notStartedTasks}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                    <span className="font-bold text-blue-600">{metric.avgProgress}%</span>
+                    <span className="font-bold text-blue-600">{metric.weeklyDoneRate}%</span>
+                    <span className="block text-xs text-slate-400">
+                      /{metric.weeklyTasks} NV
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-purple-600">
                     {metric.totalWeeks}
@@ -377,7 +410,7 @@ export default function MetricsPage() {
                   Hoàn thành
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  TB Tiến độ
+                  Hoàn tất tuần
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Biểu đồ

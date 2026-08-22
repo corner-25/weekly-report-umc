@@ -104,3 +104,22 @@ export function countsTowardProgressStats(
   if (meaning) return meaning === 'COMPLETION';
   return getTaskTypeInfo(type).countsTowardStats;
 }
+
+/**
+ * Nhiệm vụ thường quy có tiến độ đọc được theo cách khác: không phải "% hoàn
+ * thành" mà là "tuần này xong hay chưa".
+ *
+ * Cần tách riêng vì `countsTowardProgressStats` chỉ nhận COMPLETION, mà trên dữ
+ * liệu thật KHÔNG có nhiệm vụ nào thuộc loại đó — 81 nhiệm vụ là WEEKLY_DONE,
+ * 42 MEANINGLESS, 3 TIME_RATIO. Nếu chỉ dựa vào hàm kia thì mẫu số bằng 0 và
+ * dashboard hiện "tiến độ trung bình 0%", khiến người xem tưởng công việc đình
+ * trệ trong khi thực tế ~70% nhiệm vụ tuần nào cũng hoàn tất.
+ */
+export function countsTowardWeeklyCompletion(
+  meaning?: ProgressMeaning | null,
+): boolean {
+  return meaning === 'WEEKLY_DONE';
+}
+
+/** Ngưỡng coi một nhiệm vụ thường quy là đã xong phần việc của tuần. */
+export const WEEKLY_DONE_THRESHOLD = 100;
