@@ -29,6 +29,103 @@ import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types
  */
 const MAX_WEEKS_PER_RUN = 3;
 
+/**
+ * Mốc neo để suy ngày của một tuần báo cáo, đo từ dữ liệu đã có.
+ *
+ * Bệnh viện đánh số tuần theo lịch riêng, không dùng được ISO week. Tuần chạy
+ * từ Thứ Bảy đến Thứ Sáu, nhưng hai tuần đầu năm đều lệch nhịp:
+ *
+ *   tuần 1:  28/12 Chủ Nhật → 03/01 Thứ Bảy
+ *   tuần 2:  02/01 Thứ Sáu  → 08/01 Thứ Năm
+ *   tuần 3:  10/01 Thứ Bảy  → 16/01 Thứ Sáu   ← nhịp chuẩn bắt đầu từ đây
+ *
+ * Nên neo vào tuần 3. Đã đối chiếu với 9 tuần có thật trải từ tháng 1 đến tháng
+ * 5 trong hệ thống: khớp toàn bộ.
+ */
+const WEEK_ANCHOR: Record<number, { weekNumber: number; startIso: string }> = {
+  2026: { weekNumber: 3, startIso: '2026-01-10' },
+};
+
+/** Một tuần báo cáo dài 7 ngày: Thứ Bảy đến Thứ Sáu. */
+const DAYS_PER_WEEK = 7;
+
+/**
+ * Suy ngày bắt đầu và kết thúc của một tuần báo cáo.
+ *
+ * Dùng Date.UTC chứ không phải `new Date(y, m, d)`: hàm sau tính theo múi giờ
+ * máy chủ, ở Việt Nam (UTC+7) sẽ lưu lệch về ngày hôm trước.
+ */
+function computeWeekDates(
+  weekNumber: number,
+  year: number,
+): { startDate: Date; endDate: Date } | null {
+  const anchor = WEEK_ANCHOR[year];
+  if (!anchor) return null;
+
+  const base = new Date(`${anchor.startIso}T00:00:00.000Z`);
+  const offset = (weekNumber - anchor.weekNumber) * DAYS_PER_WEEK * 86_400_000;
+  const startDate = new Date(base.getTime() + offset);
+  const endDate = new Date(startDate.getTime() + (DAYS_PER_WEEK - 1) * 86_400_000);
+  return { startDate, endDate };
+}
+
+/**
+ * Lấy bản ghi tuần, tạo mới nếu chưa có.
+ *
+ * Trước đây connector chỉ tìm chứ không tạo, với lý do "bản ghi tuần là dữ liệu
+ * nghiệp vụ". Nhưng không có bước nào khác tạo chúng, nên pipeline bế tắc: 12
+ * tuần nằm chờ và mỗi ngày cron lại ghi warn rồi bỏ qua. Nay tự tạo ở trạng thái
+ * DRAFT để người phụ trách vẫn duyệt trước khi công bố.
+ */
+async function findOrCreateWeek(
+  sheet: HospitalWeekSheet,
+  ctx: SyncContext,
+): Promise<string | null> {
+  const existing = await ctx.prisma.week.findUnique({
+    where: { weekNumber_year: { weekNumber: sheet.week, year: sheet.year } },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+
+  const dates = computeWeekDates(sheet.week, sheet.year);
+  if (!dates) {
+    await ctx.log(
+      'warn',
+      `Tuần ${sheet.week}/${sheet.year}: chưa biết mốc tuần của năm ${sheet.year}, bỏ qua`,
+    );
+    return null;
+  }
+
+  // Gán cho người đã tạo tuần gần nhất — họ là người phụ trách báo cáo.
+  const lastWeek = await ctx.prisma.week.findFirst({
+    orderBy: [{ year: 'desc' }, { weekNumber: 'desc' }],
+    select: { createdById: true },
+  });
+  if (!lastWeek) {
+    await ctx.log('warn', `Tuần ${sheet.week}/${sheet.year}: hệ thống chưa có tuần nào để lấy người phụ trách`);
+    return null;
+  }
+
+  const created = await ctx.prisma.week.create({
+    data: {
+      weekNumber: sheet.week,
+      year: sheet.year,
+      startDate: dates.startDate,
+      endDate: dates.endDate,
+      createdById: lastWeek.createdById,
+      status: 'DRAFT',
+    },
+    select: { id: true },
+  });
+
+  const fmt = (d: Date) => d.toISOString().slice(0, 10).split('-').reverse().join('/');
+  await ctx.log(
+    'info',
+    `Tạo tuần ${sheet.week}/${sheet.year} (${fmt(dates.startDate)} - ${fmt(dates.endDate)})`,
+  );
+  return created.id;
+}
+
 interface HospitalAiConfig {
   shareUrlEnv: string;
   /** Bỏ qua trích số liệu khi chỉ muốn khớp nhiệm vụ (tiết kiệm token). */
@@ -125,16 +222,8 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
     let skipped = 0;
 
     for (const sheet of sheets) {
-      // Bản ghi tuần là dữ liệu nghiệp vụ; pipeline không tự tạo tuần mới.
-      const week = await ctx.prisma.week.findUnique({
-        where: { weekNumber_year: { weekNumber: sheet.week, year: sheet.year } },
-        select: { id: true },
-      });
-      if (!week) {
-        await ctx.log(
-          'warn',
-          `Tuần ${sheet.week}/${sheet.year}: chưa có bản ghi tuần trong hệ thống, bỏ qua`,
-        );
+      const weekId = await findOrCreateWeek(sheet, ctx);
+      if (!weekId) {
         skipped += 1;
         continue;
       }
