@@ -5,7 +5,7 @@
  * lượng khi sửa prompt. Đổi nội dung prompt thì tăng version.
  */
 
-export const PROMPT_VERSION = 'v2';
+export const PROMPT_VERSION = 'v3';
 
 /** Một nhiệm vụ kèm ngữ cảnh, dùng làm đầu vào cho AI. */
 export interface TaskContext {
@@ -229,6 +229,33 @@ Quy tắc bắt buộc:
 4. TUYỆT ĐỐI KHÔNG suy diễn hay ước lượng. Không có số thì trả mảng rỗng.
 5. Một mục có thể có nhiều số liệu; trích hết.
 6. Bỏ qua số thứ tự, số ngày tháng, số hiệu văn bản — chỉ lấy số ĐO LƯỜNG công việc.
+7. Bỏ qua số MÔ TẢ QUY MÔ của một văn bản. Đây là lỗi hay gặp nhất, xem ví dụ:
+
+   "QĐ 1599/QĐ-BVĐHYD (11/6/2025 - 10/6/2026): MSRR lần 2/2025 (gồm 606 phần): 30%"
+     ✓ TRÍCH: {"ten": "Tỷ lệ sử dụng QĐ 1599/QĐ-BVĐHYD", "gia_tri": 30, "don_vi": "%"}
+     ✗ BỎ QUA: "606 phần" — đó là quy mô của quyết định, không phải kết quả tuần này
+
+   Nguyên tắc: hỏi "con số này có thay đổi theo tuần không?"
+     - Thay đổi (tỷ lệ sử dụng, số hồ sơ xử lý, số lượt giám sát) → TRÍCH
+     - Cố định (gồm N phần, N gói thầu trong hợp đồng, N điều khoản) → BỎ QUA
+
+8. TIỀN TỆ: luôn quy về VND, và đọc dấu chấm theo quy ước tiếng Việt.
+
+   Dấu chấm trong tiếng Việt ngăn hàng NGHÌN, không phải dấu thập phân:
+     "tổng giá trị hơn 2.633 tỉ"
+       ✓ {"gia_tri": 2633000000000, "don_vi": "VND"}   (hai nghìn sáu trăm ba ba tỷ)
+       ✗ {"gia_tri": 2.633, "don_vi": "tỉ đồng"}       (đọc nhầm thành 2 phẩy 633)
+
+     "Tiếp nhận tài trợ 500 triệu đồng"
+       ✓ {"gia_tri": 500000000, "don_vi": "VND"}
+       ✗ {"gia_tri": 500, "don_vi": "triệu đồng"}
+
+   don_vi của mọi số tiền PHẢI là "VND" — không dùng "đồng", "triệu đồng",
+   "tỷ đồng". Nhân hệ số trước khi trả: triệu ×1.000.000, tỷ ×1.000.000.000.
+   Lý do: các tuần lưu khác thang thì không thể cộng gộp hay so sánh được.
+
+9. Số liệu LUỸ KẾ mà văn bản không nêu mốc thời gian thì lấy ngày cuối tuần báo
+   cáo làm "tinh_den_ngay", đừng để null — nếu không sẽ không biết luỹ kế đến đâu.
 
 Trả JSON:
 {"ket_qua": [{"stt": <số trong []>, "so_lieu": [
