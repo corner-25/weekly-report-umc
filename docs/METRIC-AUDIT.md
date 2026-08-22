@@ -67,10 +67,41 @@ các tuần thì không biết mốc, dễ hiểu nhầm.
 **Chưa xử lý** — cần bảng ánh xạ tên chuẩn, giống `aliases` của `MasterTask`.
 Đề xuất làm ở bước sau khi biết chỉ số nào thực sự cần theo dõi lâu dài.
 
-## 4. Trùng lặp còn sót
+## 4. Trùng lặp và thông số kỹ thuật — đã xử lý
 
-15 nhóm (cùng tuần + phòng + tên + giá trị). Nguyên nhân: một ô kết quả nhắc lại
-cùng số liệu ở hai chỗ. Không sai dữ liệu, nhưng làm đếm lệch.
+**16 bản trùng thật:** cùng tuần, phòng ban, tên, giá trị VÀ cùng câu văn gốc.
+Một ô kết quả nhắc lại số liệu ở hai chỗ, AI trích cả hai lần. Đã giữ bản cũ
+nhất, xoá phần còn lại.
+
+**3 thông số kỹ thuật:** cùng loại lỗi với "gồm 606 phần" — số mô tả quy cách,
+không phải kết quả tuần:
+
+```
+"Hỗ trợ 16 KB memory page sizes"                 → 16 KB   (quy cách Android)
+"thông báo khi user up hình có dung lượng trên 5MB" → 5 MB  (ngưỡng cấu hình)
+```
+
+Không lọc GB/TB vì dung lượng lưu trữ đã dùng CÓ tăng theo tuần, là chỉ số thật.
+
+## 5. Tên trùng nhưng số liệu khác nhau — nguyên nhân đã rõ
+
+Ban đầu tưởng là trùng lặp. Truy về văn bản gốc thì **AI trích hoàn toàn đúng**:
+
+```
+- Tổng số đề nghị và công văn: 35 ... Luỹ kế đã giải quyết từ đầu năm: 80
+- Công việc thực hiện: 42 ...         Luỹ kế đã giải quyết từ đầu năm: 103
+```
+
+Hai mảng công việc riêng của cùng một phòng, nhưng câu luỹ kế cuối dòng viết
+giống hệt nhau. Tách khỏi ngữ cảnh thì trông như một chỉ số có hai giá trị mâu
+thuẫn; thực ra là hai chỉ số khác nhau.
+
+**Hệ quả:** biểu đồ gộp nhầm hai đường thành một, giá trị nhảy loạn.
+
+**Đã sửa ở prompt v3 (quy tắc 3):** khi một ô có nhiều dòng cùng nhắc một cụm
+chữ, phải lấy chủ thể ở đầu dòng để đặt tên phân biệt.
+
+**Dữ liệu 21 tuần cũ chưa đổi tên** — cần chạy lại trích xuất mới sửa được.
 
 ## Không phải lỗi — đã kiểm chứng
 
@@ -92,9 +123,16 @@ cùng số liệu ở hai chỗ. Không sai dữ liệu, nhưng làm đếm lệ
 | Việc | Kết quả |
 |---|---|
 | Xoá metric mô tả quy mô văn bản | 46 |
-| Chuẩn hoá đơn vị tiền tệ về VND | xem mục 1 |
-| Prompt v3: cấm trích số mô tả quy mô | đã cập nhật |
-| Prompt v3: luỹ kế thiếu ngày → lấy cuối tuần | đã cập nhật |
+| Chuẩn hoá đơn vị tiền tệ về VND | 235 metric, 29 sửa lỗi dấu chấm |
+| Xoá bản trùng + thông số kỹ thuật | 19 |
+| Điền mốc ngày cho số liệu luỹ kế | 301 — còn thiếu 0 |
+| Prompt v3: cấm trích số mô tả quy mô | quy tắc 7 |
+| Prompt v3: tiền tệ luôn quy về VND | quy tắc 8 |
+| Prompt v3: luỹ kế phải có mốc ngày | quy tắc 9 |
+| Prompt v3: đặt tên phân biệt theo đầu dòng | quy tắc 3 |
+| Dashboard: sửa lỗi hiện "tiến độ 0%" | xem dưới |
+
+Tổng: **6.053 → 6.034 metric**, đơn vị tiền tệ còn duy nhất `VND`.
 
 ---
 
@@ -158,3 +196,34 @@ vô nghĩa.
 `MEANINGLESS` vào bất kỳ phép tính trung bình "tỷ lệ hoàn thành" nào, nếu không
 sẽ báo cáo lên Ban Giám đốc một con số ảo. Với nhiệm vụ theo dõi, chỉ nên hiển
 thị số liệu nghiệp vụ (lượt KCB, số sự cố) — không hiển thị %.
+
+---
+
+# Lỗi dashboard phát hiện khi audit
+
+Trang chỉ số lọc tiến độ qua `countsTowardProgressStats`, hàm này chỉ nhận
+`progressMeaning = COMPLETION`. Nhưng trên dữ liệu thật **không có nhiệm vụ nào
+thuộc loại đó**:
+
+| progressMeaning | Số nhiệm vụ |
+|---|---|
+| WEEKLY_DONE | 81 |
+| MEANINGLESS | 42 |
+| TIME_RATIO | 3 |
+| COMPLETION | **0** |
+
+Mẫu số bằng 0 nên mọi ô tiến độ hiện **0%** — người xem tưởng công việc đình trệ.
+Bảng theo tháng thì ngược lại: gộp cả nhiệm vụ `MEANINGLESS` nên đẩy con số lên
+khoảng 90% một cách ảo.
+
+**Đã sửa.** Nhiệm vụ thường quy không có "% hoàn thành" — chúng chỉ xong hoặc
+chưa xong phần việc của tuần. Thay trung bình cộng bằng tỷ lệ hoàn tất:
+
+```
+Tuần 22:  21/30 nhiệm vụ xong  =  70%
+Tuần 21:  22/32 nhiệm vụ xong  =  69%
+Tuần 20:  21/32 nhiệm vụ xong  =  66%
+```
+
+Con số ổn định 66-70% suốt các tuần, phản ánh đúng nhịp làm việc thực tế.
+Tiêu đề cột đổi từ "TB Tiến độ" thành "Hoàn tất tuần" cho khớp nghĩa.

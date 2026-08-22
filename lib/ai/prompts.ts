@@ -225,7 +225,18 @@ Quy tắc bắt buộc:
    - CUMULATIVE: luỹ kế từ đầu ("Tính đến ngày 18/4/2026 đã triển khai 09 ca ghép tim")
      → khi là CUMULATIVE, ghi "tinh_den_ngay" theo định dạng YYYY-MM-DD nếu văn bản có nêu
 2. Giữ nguyên đơn vị tiếng Việt trong văn bản (HSBA, ca, văn bản, lượt, người, %)
-3. Tên số liệu phải rõ nghĩa khi đứng một mình — "Hồ sơ bệnh án tiếp nhận", không phải "Tiếp nhận"
+3. Tên số liệu phải rõ nghĩa khi đứng một mình — "Hồ sơ bệnh án tiếp nhận", không phải "Tiếp nhận".
+
+   Khi một ô kết quả có NHIỀU DÒNG cùng nhắc một cụm chữ giống nhau, phải lấy
+   chủ thể ở ĐẦU DÒNG để đặt tên phân biệt — nếu không, hai số liệu khác nhau sẽ
+   mang cùng một tên và bị gộp nhầm thành một đường trên biểu đồ:
+
+     "- Tổng số đề nghị và công văn: 35 ... Luỹ kế đã giải quyết từ đầu năm: 80
+      - Công việc thực hiện: 42 ...        Luỹ kế đã giải quyết từ đầu năm: 103"
+
+       ✓ "Luỹ kế đề nghị và công văn đã giải quyết"    → 80
+       ✓ "Luỹ kế công việc thực hiện đã giải quyết"    → 103
+       ✗ cả hai đều đặt "Luỹ kế công việc đã giải quyết từ đầu năm"
 4. TUYỆT ĐỐI KHÔNG suy diễn hay ước lượng. Không có số thì trả mảng rỗng.
 5. Một mục có thể có nhiều số liệu; trích hết.
 6. Bỏ qua số thứ tự, số ngày tháng, số hiệu văn bản — chỉ lấy số ĐO LƯỜNG công việc.
