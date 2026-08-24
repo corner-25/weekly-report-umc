@@ -82,8 +82,17 @@ export default function MetricsPage() {
     return hasProgressInYear || createdInYear || weeklyProgress.length === 0;
   });
 
+  // Chỉ giữ phòng ban thật sự có nhiệm vụ.
+  //
+  // Hệ thống có 61 phòng ban nhưng chỉ 14 phòng nộp báo cáo tuần dạng này —
+  // 47 khoa lâm sàng còn lại không có nhiệm vụ nào. Hiện chúng với toàn số 0
+  // làm bảng dài gấp bốn lần mà không thêm thông tin gì.
+  const activeDepartments = departments.filter((dept) =>
+    filteredTasks.some((t) => t.department.id === dept.id),
+  );
+
   // Department-level metrics
-  const departmentMetrics: DepartmentMetrics[] = departments.map(dept => {
+  const departmentMetrics: DepartmentMetrics[] = activeDepartments.map(dept => {
     const deptTasks = filteredTasks.filter(t => t.department.id === dept.id);
     const completed = deptTasks.filter(t => t.isCompleted).length;
     const inProgress = deptTasks.filter(t => !t.isCompleted && t.weekCount > 0).length;
@@ -254,7 +263,7 @@ export default function MetricsPage() {
               className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả phòng</option>
-              {departments.map((dept) => (
+              {activeDepartments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
                 </option>

@@ -12,11 +12,21 @@ interface Department {
   name: string;
 }
 
-interface Metric {
+/**
+ * Một số liệu AI trích được từ báo cáo tuần.
+ *
+ * Khác `WeekMetricValue` cũ: không trỏ tới danh mục chỉ số dựng sẵn mà mang
+ * thẳng tên và đơn vị. Nên khoá nhận dạng một chỉ số ở đây là TÊN, không phải id.
+ */
+interface ExtractedMetric {
   id: string;
   name: string;
-  unit?: string;
+  value: number;
+  unit?: string | null;
+  sourceText: string;
+  confidence: number;
   department: Department;
+  week: Week;
 }
 
 interface Week {
@@ -27,13 +37,7 @@ interface Week {
   endDate: string;
 }
 
-interface MetricValue {
-  id: string;
-  value: number;
-  note?: string;
-  metric: Metric;
-  week: Week;
-}
+
 
 function formatValue(value: number): string {
   if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
@@ -44,9 +48,8 @@ function formatValue(value: number): string {
 }
 
 export default function MetricsDataPage() {
-  const [metricValues, setMetricValues] = useState<MetricValue[]>([]);
+  const [metricValues, setMetricValues] = useState<ExtractedMetric[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [metrics, setMetrics] = useState<Metric[]>([]);
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,15 +64,13 @@ export default function MetricsDataPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [valuesRes, deptsRes, metricsRes, weeksRes] = await Promise.all([
-        fetch('/api/week-metrics'),
+      const [valuesRes, deptsRes, weeksRes] = await Promise.all([
+        fetch(`/api/extracted-metrics?year=${selectedYear}`),
         fetch('/api/departments'),
-        fetch('/api/metrics'),
         fetch(`/api/weeks?year=${selectedYear}`),
       ]);
       if (valuesRes.ok) setMetricValues(await valuesRes.json());
       if (deptsRes.ok) setDepartments(await deptsRes.json());
-      if (metricsRes.ok) setMetrics(await metricsRes.json());
       if (weeksRes.ok) {
         const data: Week[] = await weeksRes.json();
         setWeeks(data.sort((a, b) => b.weekNumber - a.weekNumber));
@@ -83,8 +84,8 @@ export default function MetricsDataPage() {
 
   const filteredValues = metricValues.filter((mv) => {
     if (mv.week.year !== selectedYear) return false;
-    if (selectedDept !== 'all' && mv.metric.department.id !== selectedDept) return false;
-    if (selectedMetric !== 'all' && mv.metric.id !== selectedMetric) return false;
+    if (selectedDept !== 'all' && mv.department.id !== selectedDept) return false;
+    if (selectedMetric !== 'all' && mv.name !== selectedMetric) return false;
     return true;
   });
 
@@ -96,29 +97,66 @@ export default function MetricsDataPage() {
     return wb.weekNumber - wa.weekNumber;
   });
 
-  const metricIds = [...new Set(filteredValues.map((mv) => mv.metric.id))];
+  // Khoá là tên + phòng ban: hai phòng có thể cùng theo dõi "Tổng viện phí"
+  // nhưng đó là hai chỉ số riêng.
+  const metricKey = (m: { name: string; department: Department }) =>
+    `${m.department.id}::${m.name}`;
+  const metricIds = [...new Set(filteredValues.map(metricKey))];
 
-  // Group by department
+  // Gom thành lưới: mỗi hàng một chỉ số, mỗi cột một tuần.
+  //
+  // Dựng bằng một lượt quét thay vì tìm kiếm lồng nhau — trước đây mỗi ô gọi
+  // `find` trên toàn bộ mảng, với 8.600 bản ghi × 30 tuần thì trình duyệt đứng
+  // hình vài giây.
   const deptOrder: string[] = [];
-  const groupedRows: Record<string, { dept: Department; rows: { metricId: string; metric: Metric; values: Record<string, MetricValue | undefined> }[] }> = {};
-  metricIds.forEach((metricId) => {
-    const metric = metrics.find((m) => m.id === metricId);
-    if (!metric) return;
-    const deptId = metric.department.id;
+  const groupedRows: Record<
+    string,
+    {
+      dept: Department;
+      rows: Array<{
+        metricId: string;
+        metric: { name: string; unit?: string | null; department: Department };
+        values: Record<string, ExtractedMetric | undefined>;
+      }>;
+    }
+  > = {};
+  const rowByKey = new Map<string, (typeof groupedRows)[string]['rows'][number]>();
+
+  for (const mv of filteredValues) {
+    const key = metricKey(mv);
+    const deptId = mv.department.id;
+
     if (!groupedRows[deptId]) {
       deptOrder.push(deptId);
-      groupedRows[deptId] = { dept: metric.department, rows: [] };
+      groupedRows[deptId] = { dept: mv.department, rows: [] };
     }
-    const values: Record<string, MetricValue | undefined> = {};
-    weekIds.forEach((wId) => {
-      values[wId] = filteredValues.find((mv) => mv.metric.id === metricId && mv.week.id === wId);
-    });
-    groupedRows[deptId].rows.push({ metricId, metric, values });
-  });
 
-  const availableMetrics = selectedDept === 'all'
-    ? metrics
-    : metrics.filter((m) => m.department.id === selectedDept);
+    let row = rowByKey.get(key);
+    if (!row) {
+      row = {
+        metricId: key,
+        metric: { name: mv.name, unit: mv.unit, department: mv.department },
+        values: {},
+      };
+      rowByKey.set(key, row);
+      groupedRows[deptId].rows.push(row);
+    }
+
+    // Một tuần có thể trích cùng tên nhiều lần; giữ bản tin cậy cao hơn.
+    const current = row.values[mv.week.id];
+    if (!current || mv.confidence > current.confidence) {
+      row.values[mv.week.id] = mv;
+    }
+  }
+
+  // Danh sách chỉ số cho ô lọc, dựng từ chính dữ liệu đang có.
+  const availableMetrics = [
+    ...new Map(
+      filteredValues
+        .filter((mv) => selectedDept === 'all' || mv.department.id === selectedDept)
+        .map((mv) => [mv.name, { id: mv.name, name: mv.name, unit: mv.unit }]),
+    ).values(),
+  ].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
 
   if (loading) {
     return (
@@ -268,9 +306,12 @@ export default function MetricsDataPage() {
                                   <span className={`font-semibold tabular-nums ${isLatest ? 'text-blue-700' : 'text-slate-800'}`}>
                                     {formatValue(mv.value)}
                                   </span>
-                                  {mv.note && (
-                                    <div className="text-xs text-slate-400 truncate max-w-[80px]" title={mv.note}>
-                                      {mv.note}
+                                  {mv.unit && (
+                                    <div
+                                      className="text-xs text-slate-400 truncate max-w-[80px]"
+                                      title={`${mv.sourceText}\n\nĐộ tin cậy: ${Math.round(mv.confidence * 100)}%`}
+                                    >
+                                      {mv.unit}
                                     </div>
                                   )}
                                 </div>

@@ -93,7 +93,11 @@ export async function GET(request: Request) {
       const taskWeekKeys = (task.weekProgress as Array<{ week?: { weekNumber: number; year: number } | null }>)
         .map((wp) => wp.week)
         .filter((w): w is { weekNumber: number; year: number } => Boolean(w));
-      const status: MasterTaskStatus = classifyMasterTask({ weekKeys: windowWeeks, taskWeekKeys });
+      const status: MasterTaskStatus = classifyMasterTask({
+        weekKeys: windowWeeks,
+        taskWeekKeys,
+        progressType: task.progressType,
+      });
 
       const baseData = {
         ...task,
