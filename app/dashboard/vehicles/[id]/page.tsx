@@ -50,7 +50,6 @@ interface Vehicle {
   status: string;
   rawHistory: string | null;
   sourceFile: string | null;
-  license: { id: string; name: string; licenseNumber: string | null; expiryDate: string | null; fileUrl: string | null } | null;
   maintenanceLogs: MaintenanceLog[];
   relatedLicenses: Array<{ id: string; name: string; licenseNumber: string | null; category: string; expiryDate: string | null; issuedDate: string | null; scope: string | null; fileUrl: string | null }>;
 }

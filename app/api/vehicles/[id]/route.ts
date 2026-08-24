@@ -8,29 +8,28 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const vehicle = await prisma.vehicle.findFirst({
       where: { id, deletedAt: null },
       include: {
-        license: { select: { id: true, name: true, licenseNumber: true, expiryDate: true, fileUrl: true } },
+        // Giấy tờ nay nối thẳng qua vehicleId. Trước đây phải dò tên giấy phép
+        // theo ba biến thể cách viết biển số vì hai bảng không có quan hệ nào.
+        licenses: {
+          select: {
+            id: true,
+            name: true,
+            licenseNumber: true,
+            category: true,
+            expiryDate: true,
+            issuedDate: true,
+            scope: true,
+            fileUrl: true,
+          },
+          orderBy: { expiryDate: 'asc' },
+        },
         maintenanceLogs: { orderBy: { date: 'desc' } },
       },
     });
     if (!vehicle) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    // Also pull related Licenses by license plate (đèn còi, kiểm định...)
-    // so the detail page can show every paper that mentions this plate.
-    // Try multiple plate formats: 50A-007-20, 50A-007.20, 50A 007 20.
-    const plateRaw = vehicle.licensePlate.replace(/\s+/g, '').toUpperCase();
-    const platePatterns = [
-      plateRaw,
-      plateRaw.replace(/-/g, '.'),
-      plateRaw.replace(/\./g, '-'),
-    ];
-    const relatedLicenses = await prisma.license.findMany({
-      where: {
-        OR: platePatterns.map((p) => ({ name: { contains: p, mode: 'insensitive' as const } })),
-      },
-      select: { id: true, name: true, licenseNumber: true, category: true, expiryDate: true, issuedDate: true, scope: true, fileUrl: true },
-    });
-
-    return NextResponse.json({ ...vehicle, relatedLicenses });
+    // `relatedLicenses` giữ tên cũ để trang chi tiết không phải sửa.
+    return NextResponse.json({ ...vehicle, relatedLicenses: vehicle.licenses });
   } catch (e) {
     console.error('Error fetching vehicle', e);
     return NextResponse.json({ error: 'Failed' }, { status: 500 });
