@@ -5,7 +5,7 @@
  * lượng khi sửa prompt. Đổi nội dung prompt thì tăng version.
  */
 
-export const PROMPT_VERSION = 'v3';
+export const PROMPT_VERSION = 'v4';
 
 /** Một nhiệm vụ kèm ngữ cảnh, dùng làm đầu vào cho AI. */
 export interface TaskContext {
@@ -224,7 +224,10 @@ Quy tắc bắt buộc:
    - WEEK: số của riêng tuần này ("65 văn bản", "tiếp nhận 278 văn bản đến")
    - CUMULATIVE: luỹ kế từ đầu ("Tính đến ngày 18/4/2026 đã triển khai 09 ca ghép tim")
      → khi là CUMULATIVE, ghi "tinh_den_ngay" theo định dạng YYYY-MM-DD nếu văn bản có nêu
-2. Giữ nguyên đơn vị tiếng Việt trong văn bản (HSBA, ca, văn bản, lượt, người, %)
+2. Đơn vị là DANH TỪ ĐẾM ngắn gọn: HSBA, ca, văn bản, lượt, người, %, VND.
+   Không chép lại tên chỉ số làm đơn vị:
+     ✓ {"ten": "Tổ chức Hội nghị/Hội thảo", "don_vi": "lượt"}
+     ✗ {"ten": "Tổ chức Hội nghị/Hội thảo", "don_vi": "Hội nghị/ Hội thảo"}
 3. Tên số liệu phải rõ nghĩa khi đứng một mình — "Hồ sơ bệnh án tiếp nhận", không phải "Tiếp nhận".
 
    Khi một ô kết quả có NHIỀU DÒNG cùng nhắc một cụm chữ giống nhau, phải lấy
@@ -237,10 +240,35 @@ Quy tắc bắt buộc:
        ✓ "Luỹ kế đề nghị và công văn đã giải quyết"    → 80
        ✓ "Luỹ kế công việc thực hiện đã giải quyết"    → 103
        ✗ cả hai đều đặt "Luỹ kế công việc đã giải quyết từ đầu năm"
-4. TUYỆT ĐỐI KHÔNG suy diễn hay ước lượng. Không có số thì trả mảng rỗng.
-5. Một mục có thể có nhiều số liệu; trích hết.
-6. Bỏ qua số thứ tự, số ngày tháng, số hiệu văn bản — chỉ lấy số ĐO LƯỜNG công việc.
-7. Bỏ qua số MÔ TẢ QUY MÔ của một văn bản. Đây là lỗi hay gặp nhất, xem ví dụ:
+
+   TUYỆT ĐỐI KHÔNG đưa NGÀY THÁNG hay SỐ TUẦN vào tên. Đây là lỗi hay gặp thứ hai:
+
+     "Nhập kho hóa chất sát khuẩn từ ngày 01/01/2026 đến 08/01/2026: 319.647.925 VND"
+       ✓ "ten": "Nhập kho hóa chất sát khuẩn"
+       ✗ "ten": "Nhập kho hóa chất sát khuẩn từ ngày 01/01/2026 đến 08/01/2026"
+
+     "Tồn kho vật tư y tế đến hết ngày 20/8/2026: 745.074.658 VND"
+       ✓ "ten": "Tồn kho vật tư y tế"
+       ✗ "ten": "Tồn kho vật tư y tế đến hết ngày 20/8/2026"
+
+   Lý do: tên là danh tính của chỉ số, dùng để nối các tuần thành một đường trên
+   biểu đồ. Nhúng ngày vào thì mỗi tuần thành một chỉ số riêng chỉ có đúng một
+   điểm — không vẽ được gì. Mốc thời gian đã nằm ở "tinh_den_ngay" và ở tuần báo
+   cáo rồi.
+
+4. KHÔNG trích số liệu SO SÁNH giữa các kỳ. Hệ thống tự tính được từ chuỗi gốc.
+
+     "Số lượt KCB BHYT là 4.427 lượt (giảm 25% so với tuần trước)"
+       ✓ TRÍCH: {"ten": "Số lượt KCB BHYT", "gia_tri": 4427, "don_vi": "lượt"}
+       ✗ BỎ QUA: "giảm 25%" — đó là phép trừ giữa hai tuần, không phải số liệu mới
+
+   Chỉ trích GIÁ TRỊ TẠI KỲ NÀY. Con số so sánh vừa thừa vừa sinh ra tên mới mỗi
+   khi người viết đổi mốc so sánh ("so với tuần 12", "so với tuần 19"…).
+
+5. TUYỆT ĐỐI KHÔNG suy diễn hay ước lượng. Không có số thì trả mảng rỗng.
+6. Một mục có thể có nhiều số liệu; trích hết.
+7. Bỏ qua số thứ tự, số ngày tháng, số hiệu văn bản — chỉ lấy số ĐO LƯỜNG công việc.
+8. Bỏ qua số MÔ TẢ QUY MÔ của một văn bản. Đây là lỗi hay gặp nhất, xem ví dụ:
 
    "QĐ 1599/QĐ-BVĐHYD (11/6/2025 - 10/6/2026): MSRR lần 2/2025 (gồm 606 phần): 30%"
      ✓ TRÍCH: {"ten": "Tỷ lệ sử dụng QĐ 1599/QĐ-BVĐHYD", "gia_tri": 30, "don_vi": "%"}
@@ -250,7 +278,7 @@ Quy tắc bắt buộc:
      - Thay đổi (tỷ lệ sử dụng, số hồ sơ xử lý, số lượt giám sát) → TRÍCH
      - Cố định (gồm N phần, N gói thầu trong hợp đồng, N điều khoản) → BỎ QUA
 
-8. TIỀN TỆ: luôn quy về VND, và đọc dấu chấm theo quy ước tiếng Việt.
+9. TIỀN TỆ: luôn quy về VND, và đọc dấu chấm theo quy ước tiếng Việt.
 
    Dấu chấm trong tiếng Việt ngăn hàng NGHÌN, không phải dấu thập phân:
      "tổng giá trị hơn 2.633 tỉ"
@@ -265,7 +293,7 @@ Quy tắc bắt buộc:
    "tỷ đồng". Nhân hệ số trước khi trả: triệu ×1.000.000, tỷ ×1.000.000.000.
    Lý do: các tuần lưu khác thang thì không thể cộng gộp hay so sánh được.
 
-9. Số liệu LUỸ KẾ mà văn bản không nêu mốc thời gian thì lấy ngày cuối tuần báo
+10. Số liệu LUỸ KẾ mà văn bản không nêu mốc thời gian thì lấy ngày cuối tuần báo
    cáo làm "tinh_den_ngay", đừng để null — nếu không sẽ không biết luỹ kế đến đâu.
 
 Trả JSON:
