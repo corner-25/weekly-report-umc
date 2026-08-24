@@ -655,6 +655,13 @@ model VehicleMaintenance {
 
   date        DateTime? // Ngày thực hiện (có thể null khi text không rõ)
   odometer    Int? // Số km (cây số)
+  /// Kết quả kiểm tra số km so với lần bảo dưỡng trước cùng xe:
+  /// OK | DECREASED | BIG_JUMP | NO_PREVIOUS
+  ///
+  /// Lý lịch gốc có lỗi đánh máy thật: "170.00km" thiếu một số 0 nên đọc ra
+  /// 17.000 giữa chuỗi đang ở 165.000. Đánh dấu để người xem biết chỗ nào cần
+  /// đối chiếu lại với bản gốc, thay vì lặng lẽ để số sai nằm trong thống kê.
+  odometerStatus String @default("OK")
   category    String? // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
   description String    @db.Text // Mô tả chi tiết
   workshop    String? // Gara/đơn vị thực hiện
