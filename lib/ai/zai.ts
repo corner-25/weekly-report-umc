@@ -15,11 +15,24 @@ const DEFAULT_MODEL = 'glm-4.5';
 const DEFAULT_TEMPERATURE = 0.1;
 const DEFAULT_MAX_TOKENS = 16000;
 
-/** Gọi AI có thể chậm; giới hạn để không treo cả pipeline. */
-const REQUEST_TIMEOUT_MS = 300_000;
+/**
+ * Giới hạn mỗi lần gọi zAI.
+ *
+ * Đo trên 219 lần gọi thật: trung bình 54 giây, chậm nhất 170 giây. Mức 300s cũ
+ * quá rộng — một lần treo ăn trọn 5 phút, vừa đúng bằng `maxDuration` của route,
+ * nên tiến trình chết trước khi kịp thử lại và tuần đó nằm dở dang.
+ *
+ * 210s cho khoảng đệm rộng trên mức chậm nhất mà vẫn kịp thử lại trong route.
+ */
+const REQUEST_TIMEOUT_MS = 210_000;
 
-/** Số lần thử lại khi lỗi tạm thời (429, 5xx, timeout). */
-const MAX_RETRIES = 3;
+/**
+ * Số lần thử lại khi lỗi tạm thời (429, 5xx, timeout).
+ *
+ * Giữ ở 2: với timeout 210s thì 3 lần thử là 10 phút cho một phòng, quá lâu so
+ * với việc bỏ qua phòng đó và để lần chạy sau xử lý.
+ */
+const MAX_RETRIES = 2;
 
 export interface ZaiUsage {
   promptTokens: number;

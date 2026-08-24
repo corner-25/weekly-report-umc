@@ -7,7 +7,16 @@ import type { SyncTrigger } from '@/lib/ingestion/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // Excel lớn + nhiều nguồn chạy tuần tự
+/**
+ * Trần thời gian một lần chạy.
+ *
+ * Nạp báo cáo tuần gọi AI cho từng phòng, mỗi phòng trung bình 54 giây và có thể
+ * tới 170 giây — ba tuần × 14 phòng vượt xa 300 giây. Trước đây route hết hạn
+ * giữa chừng, để lại tuần nạp dở và client thấy "upstream error" sau đúng 5 phút.
+ *
+ * 3000 giây (50 phút) đủ cho ba tuần; connector tự giới hạn số tuần mỗi lần chạy.
+ */
+export const maxDuration = 3000;
 
 /**
  * Chạy đồng bộ dữ liệu.
