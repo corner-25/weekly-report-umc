@@ -1224,10 +1224,20 @@ def create_revenue_analysis_tab(df):
         median_revenue = revenue_data['revenue_vnd'].median()
         q75_revenue = revenue_data['revenue_vnd'].quantile(0.75)
 
-        fig_dist.add_vline(x=median_revenue, line_dash="dash", line_color="blue",
-                          annotation_text=f"Trung vị: {median_revenue:,.0f}")
-        fig_dist.add_vline(x=q75_revenue, line_dash="dash", line_color="green",
-                          annotation_text=f"Q75: {q75_revenue:,.0f}")
+        # Đặt nhãn ở hai độ cao khác nhau: trung vị và Q75 nằm sát nhau
+        # (495.000 và 650.000) nên nhãn cùng độ cao sẽ đè lên nhau.
+        fig_dist.add_vline(
+            x=median_revenue, line_dash="dash", line_color="blue",
+            annotation_text=f"Trung vị {median_revenue:,.0f}",
+            annotation_position="top left",
+            annotation_font_color="blue",
+        )
+        fig_dist.add_vline(
+            x=q75_revenue, line_dash="dash", line_color="green",
+            annotation_text=f"Q75 {q75_revenue:,.0f}",
+            annotation_position="bottom right",
+            annotation_font_color="green",
+        )
 
         fig_dist.update_layout(height=400, bargap=0.05)
         st.plotly_chart(fig_dist, use_container_width=True)
@@ -2081,10 +2091,19 @@ def create_distance_analysis_tab(df):
         median_distance = distance_data['distance_km'].median()
         q75_distance = distance_data['distance_km'].quantile(0.75)
 
-        fig_dist_hist.add_vline(x=median_distance, line_dash="dash", line_color="blue",
-                               annotation_text=f"Trung vị: {median_distance:.1f}km")
-        fig_dist_hist.add_vline(x=q75_distance, line_dash="dash", line_color="green",
-                               annotation_text=f"Q75: {q75_distance:.1f}km")
+        # Hai mốc nằm sát nhau (10km và 24km) nên tách nhãn theo chiều cao.
+        fig_dist_hist.add_vline(
+            x=median_distance, line_dash="dash", line_color="blue",
+            annotation_text=f"Trung vị {median_distance:.0f}km",
+            annotation_position="top left",
+            annotation_font_color="blue",
+        )
+        fig_dist_hist.add_vline(
+            x=q75_distance, line_dash="dash", line_color="green",
+            annotation_text=f"Q75 {q75_distance:.0f}km",
+            annotation_position="bottom right",
+            annotation_font_color="green",
+        )
         fig_dist_hist.update_layout(height=400, bargap=0.05)
         st.plotly_chart(fig_dist_hist, use_container_width=True)
 
@@ -2329,19 +2348,23 @@ def create_fuel_analysis_tab(df):
         "50A-004.55": 22,
         "50A-012.59": 10,
         "51B-330.67": 29,
-        # Ba xe dưới đây tính từ mức tiêu thụ thực tế cộng biên 15%, chờ đơn vị
-        # ban hành số chính thức.
+        # Ba xe dưới đây CHƯA có định mức bệnh viện ban hành, tạm tính từ mức
+        # tiêu thụ thực tế cộng biên 10% cho tới khi có số chính thức.
         #
-        # Biên 15% chọn theo mức chặt nhất trong dàn xe hiện có: 12 định mức
-        # đang dùng cao hơn thực tế từ 14,1% (50A-018.35) đến 31,6%
-        # (50A-007.20), trung vị 27,4%.
+        # Biên 10% chọn theo dàn xe hiện có: 12 định mức chuẩn của bệnh viện cao
+        # hơn thực tế từ 4,1% (50A-018.35) đến 23,9% (50A-007.20), trung vị 12,9%.
+        #
+        # Mức tiêu thụ thực tế phải tính từ lần đổ xăng ĐẦU TIÊN của mỗi xe.
+        # Quãng đường có từ 4/2025 nhưng nhiên liệu chỉ ghi từ 6/2025; chia cho
+        # cả quãng đường trước đó thì mức tiêu thụ bị hạ thấp giả tạo (13,2 thay
+        # vì 14,3 L/100km trên toàn đội xe).
         #
         # Hai Fortuner dùng chung một mức: xe 50A-032.80 mới chỉ có 5 lần đổ
-        # xăng, quá ít để tính riêng. Gộp hai xe cùng đời được 13,2 L/100km
-        # trên 22 lần đổ.
+        # xăng, quá ít để tính riêng. Gộp hai xe cùng đời được 13,2 L/100km trên
+        # 22 lần đổ.
         "50A-032.80": 15,
         "50A-032.81": 15,
-        # Toyota Zace, thực tế 13,6 L/100km trên 14.917 km.
+        # Toyota Zace, thực tế 14,8 L/100km trên 13.666 km kể từ 6/2025.
         "51A-1212": 16,
     }
     
