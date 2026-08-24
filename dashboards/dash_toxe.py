@@ -2329,11 +2329,10 @@ def create_fuel_analysis_tab(df):
         "50A-004.55": 22,
         "50A-012.59": 10,
         "51B-330.67": 29,
-        # Hai xe Toyota Fortuner đưa vào sử dụng từ tháng 5/2026.
-        "50A-032.80": 16,
-        "50A-032.81": 16,
-        # Toyota Zace hành chính, tiêu thụ thực tế đo được 13,6 L/100km.
-        "51A-1212": 16,
+        # Chưa có định mức: 50A-032.80, 50A-032.81 (hai Fortuner mới) và
+        # 51A-1212. Định mức do đơn vị ban hành, không suy ra từ xe cùng hãng
+        # được — bỏ trống cho tới khi có số chính thức. Các xe này vẫn hiện ở
+        # bảng tiêu thụ thực tế, chỉ không có cột so sánh định mức.
     }
     
     # Kiểm tra cột cần thiết
@@ -2529,6 +2528,18 @@ def create_fuel_analysis_tab(df):
             fig_comparison.update_xaxes(tickangle=45)
             
             st.plotly_chart(fig_comparison, use_container_width=True)
+
+            # Nêu rõ xe nào vắng mặt và vì sao, thay vì để người xem tự đoán.
+            missing = vehicle_fuel_df[
+                (vehicle_fuel_df['avg_consumption'] > 0)
+                & (vehicle_fuel_df['standard'] <= 0)
+            ]
+            if not missing.empty:
+                names = ', '.join(missing['vehicle_id'].astype(str))
+                st.caption(
+                    f"Chưa có định mức nên không so sánh được: {names}. "
+                    "Mức tiêu thụ thực tế của các xe này vẫn có ở bảng bên dưới."
+                )
         else:
             st.info("Không có xe nào có đủ dữ liệu để so sánh")
     
