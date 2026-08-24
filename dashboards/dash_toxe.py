@@ -2329,10 +2329,20 @@ def create_fuel_analysis_tab(df):
         "50A-004.55": 22,
         "50A-012.59": 10,
         "51B-330.67": 29,
-        # Chưa có định mức: 50A-032.80, 50A-032.81 (hai Fortuner mới) và
-        # 51A-1212. Định mức do đơn vị ban hành, không suy ra từ xe cùng hãng
-        # được — bỏ trống cho tới khi có số chính thức. Các xe này vẫn hiện ở
-        # bảng tiêu thụ thực tế, chỉ không có cột so sánh định mức.
+        # Ba xe dưới đây tính từ mức tiêu thụ thực tế cộng biên 15%, chờ đơn vị
+        # ban hành số chính thức.
+        #
+        # Biên 15% chọn theo mức chặt nhất trong dàn xe hiện có: 12 định mức
+        # đang dùng cao hơn thực tế từ 14,1% (50A-018.35) đến 31,6%
+        # (50A-007.20), trung vị 27,4%.
+        #
+        # Hai Fortuner dùng chung một mức: xe 50A-032.80 mới chỉ có 5 lần đổ
+        # xăng, quá ít để tính riêng. Gộp hai xe cùng đời được 13,2 L/100km
+        # trên 22 lần đổ.
+        "50A-032.80": 15,
+        "50A-032.81": 15,
+        # Toyota Zace, thực tế 13,6 L/100km trên 14.917 km.
+        "51A-1212": 16,
     }
     
     # Kiểm tra cột cần thiết
