@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { Sidebar } from '@/components/Sidebar';
 import { ChatbotFab } from '@/components/chatbot/ChatbotFab';
+import { Footer } from '@/components/Footer';
 
 export default async function DashboardLayout({
   children,
@@ -21,10 +22,11 @@ export default async function DashboardLayout({
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-x-hidden">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 overflow-x-hidden flex flex-col min-w-0">
+        <div className="flex-1 w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           {children}
         </div>
+        <Footer />
       </main>
 
       <ChatbotFab />

@@ -5,6 +5,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { MeetingRoomSelector } from '@/components/hospital-events/MeetingRoomSelector';
 import { EventTypeSelector } from '@/components/hospital-events/EventTypeSelector';
+import { VIP_STAFF } from '@/lib/vip';
 
 export default function EditHospitalEventPage({
   params,
@@ -70,8 +71,7 @@ export default function EditHospitalEventPage({
     setError('');
 
     try {
-      const dateObj = new Date(formData.date);
-      const isoDate = dateObj.toISOString();
+      const isoDate = new Date(`${formData.date}T00:00:00`).toISOString();
 
       const res = await fetch(`/api/hospital-events/${id}`, {
         method: 'PATCH',
@@ -200,19 +200,24 @@ export default function EditHospitalEventPage({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Người chủ trì
+                Nhân viên đầu mối
               </label>
-              <textarea
-                rows={2}
+              <Select
                 value={formData.chair}
                 onChange={(e) => setFormData({ ...formData, chair: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
-              />
+              >
+                <option value="">Chưa phân công</option>
+                {formData.chair && !VIP_STAFF.includes(formData.chair as typeof VIP_STAFF[number]) && (
+                  <option value={formData.chair}>{formData.chair} (dữ liệu cũ)</option>
+                )}
+                {VIP_STAFF.map((name) => <option key={name} value={name}>{name}</option>)}
+              </Select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Người/Đơn vị tham dự
+                Đơn vị, nhân sự phối hợp
               </label>
               <textarea
                 rows={3}
@@ -234,7 +239,7 @@ export default function EditHospitalEventPage({
               </label>
               <Select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'CONFIRMED' | 'UNCONFIRMED' })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
               >
                 <option value="UNCONFIRMED">Chưa xác nhận</option>

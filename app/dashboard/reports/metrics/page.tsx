@@ -37,6 +37,8 @@ interface MasterTask {
   createdAt: string;
   progressType?: ProgressType;
   progressMeaning?: ProgressMeaning;
+  /** Tuần cuối nhiệm vụ này xuất hiện trong báo cáo. */
+  lastSeenWeek?: number | null;
 }
 
 interface DepartmentMetrics {
@@ -90,6 +92,61 @@ export default function MetricsPage() {
   const activeDepartments = departments.filter((dept) =>
     filteredTasks.some((t) => t.department.id === dept.id),
   );
+
+  /** Số tuần im ắng thì coi là nhiệm vụ có nguy cơ bị bỏ quên. */
+  const STALE_WEEK_THRESHOLD = 6;
+
+  // Tuần gần nhất có dữ liệu — mốc để đo mọi thứ khác.
+  const latestWeek = filteredTasks.reduce((max, t) => {
+    const last = t.weeklyProgress?.[t.weeklyProgress.length - 1]?.weekNumber ?? 0;
+    return Math.max(max, last, t.lastSeenWeek ?? 0);
+  }, 0);
+
+  /**
+   * Nhiệm vụ im ắng: có lịch sử nhưng đã lâu không xuất hiện trong báo cáo.
+   *
+   * Đây là thứ người quản lý cần biết — khác hẳn "chưa bắt đầu", vốn chỉ đếm
+   * nhiệm vụ chưa có bản ghi nào và trên dữ liệu thật toàn là bản ghi mồ côi do
+   * bước phân nhóm AI tạo ra rồi không gắn tiến độ.
+   */
+  const staleTasks = filteredTasks.filter((t) => {
+    if (!t.lastSeenWeek || latestWeek === 0) return false;
+    return latestWeek - t.lastSeenWeek >= STALE_WEEK_THRESHOLD;
+  });
+
+  /** Nhịp hoàn tất theo từng tuần, để thấy xu hướng thay vì một con số tĩnh. */
+  const weeklyTrend = (() => {
+    const byWeek = new Map<number, { done: number; total: number }>();
+    for (const task of filteredTasks) {
+      if (!countsTowardWeeklyCompletion(task.progressMeaning)) continue;
+      for (const wp of task.weeklyProgress ?? []) {
+        if (wp.year !== selectedYear) continue;
+        const slot = byWeek.get(wp.weekNumber) ?? { done: 0, total: 0 };
+        slot.total += 1;
+        if (wp.progress >= WEEKLY_DONE_THRESHOLD) slot.done += 1;
+        byWeek.set(wp.weekNumber, slot);
+      }
+    }
+    return [...byWeek.entries()]
+      .map(([weekNumber, v]) => ({
+        weekNumber,
+        rate: v.total > 0 ? Math.round((v.done / v.total) * 100) : 0,
+        done: v.done,
+        total: v.total,
+      }))
+      .sort((a, b) => a.weekNumber - b.weekNumber);
+  })();
+
+  // Tuần cuối thường đang nạp dở nên tỷ lệ chưa phản ánh đúng; lấy tuần trước đó
+  // làm mốc "gần nhất" và so với trung bình 4 tuần trước nữa.
+  const settledTrend = weeklyTrend.slice(0, -1);
+  const currentRate = settledTrend[settledTrend.length - 1]?.rate ?? 0;
+  const priorRates = settledTrend.slice(-5, -1).map((w) => w.rate);
+  const priorAvg =
+    priorRates.length > 0
+      ? Math.round(priorRates.reduce((a, b) => a + b, 0) / priorRates.length)
+      : currentRate;
+  const rateDelta = currentRate - priorAvg;
 
   // Department-level metrics
   const departmentMetrics: DepartmentMetrics[] = activeDepartments.map(dept => {
@@ -273,50 +330,164 @@ export default function MetricsPage() {
         </div>
       </div>
 
-      {/* Overall Summary */}
+      {/* Tổng quan — bốn chỉ số trả lời bốn câu hỏi quản lý */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-4">Tổng quan năm {selectedYear}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Tổng NV</p>
-            <p className="text-2xl font-bold text-blue-600">{overallMetrics.totalTasks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Hoàn thành</p>
-            <p className="text-2xl font-bold text-emerald-600">{overallMetrics.completedTasks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Đang làm</p>
-            <p className="text-2xl font-bold text-orange-600">{overallMetrics.inProgressTasks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Chưa bắt đầu</p>
-            <p className="text-2xl font-bold text-slate-600">{overallMetrics.notStartedTasks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Hoàn tất tuần</p>
-            <p className="text-2xl font-bold text-blue-600">{overallMetrics.weeklyDoneRate}%</p>
-            <p
-              className="text-xs text-slate-400 mt-0.5"
-              title="Tỷ lệ nhiệm vụ thường quy đã xong phần việc của tuần. Không phải % hoàn thành dự án — nhiệm vụ thường quy không bao giờ 'kết thúc'."
-            >
-              trên {overallMetrics.weeklyTasks} nhiệm vụ thường quy
+        <h2 className="text-xl font-bold mb-1">Tổng quan năm {selectedYear}</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          Số liệu tính đến tuần {latestWeek}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* 1. Công việc tuần có trôi không? */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+            <p className="text-sm text-slate-600">Hoàn tất tuần gần nhất</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-3xl font-bold text-slate-900 tabular-nums">
+                {currentRate}%
+              </span>
+              {settledTrend.length > 1 && (
+                <span
+                  className={`text-sm font-medium ${
+                    rateDelta > 2
+                      ? 'text-emerald-600'
+                      : rateDelta < -2
+                        ? 'text-rose-600'
+                        : 'text-slate-400'
+                  }`}
+                >
+                  {rateDelta > 0 ? '↑' : rateDelta < 0 ? '↓' : '→'} {Math.abs(rateDelta)}đ
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              so với trung bình 4 tuần trước ({priorAvg}%)
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Tổng tuần</p>
-            <p className="text-2xl font-bold text-purple-600">{overallMetrics.totalWeeks}</p>
+
+          {/* 2. Có việc nào bị bỏ quên không? */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+            <p className="text-sm text-slate-600">Nhiệm vụ im ắng</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span
+                className={`text-3xl font-bold tabular-nums ${
+                  staleTasks.length > 0 ? 'text-amber-600' : 'text-slate-900'
+                }`}
+              >
+                {staleTasks.length}
+              </span>
+              <span className="text-sm text-slate-400">
+                / {filteredTasks.length}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              không xuất hiện ≥ {STALE_WEEK_THRESHOLD} tuần
+            </p>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">TB/NV</p>
-            <p className="text-2xl font-bold text-indigo-600">{overallMetrics.avgWeeksPerTask} tuần</p>
+
+          {/* 3. Quy mô công việc đang theo dõi */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+            <p className="text-sm text-slate-600">Nhiệm vụ thường quy</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-3xl font-bold text-slate-900 tabular-nums">
+                {overallMetrics.weeklyTasks}
+              </span>
+              <span className="text-sm text-slate-400">
+                / {filteredTasks.length} nhiệm vụ
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              phần đo được nhịp hoàn tất tuần
+            </p>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-slate-600">Tỉ lệ HT</p>
-            <p className="text-2xl font-bold text-emerald-600">{overallMetrics.completionRate}%</p>
+
+          {/* 4. Bao nhiêu phòng đang báo cáo */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+            <p className="text-sm text-slate-600">Phòng ban báo cáo</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-3xl font-bold text-slate-900 tabular-nums">
+                {activeDepartments.length}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              {settledTrend.length} tuần có dữ liệu
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Xu hướng hoàn tất tuần — một con số tĩnh không cho thấy đang lên hay xuống */}
+      {settledTrend.length > 2 && (
+        <div className="mb-6 bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-base font-semibold text-slate-900">
+              Nhịp hoàn tất theo tuần
+            </h2>
+            <span className="text-xs text-slate-400">
+              % nhiệm vụ thường quy xong phần việc của tuần
+            </span>
+          </div>
+
+          <div className="flex items-end gap-1 h-32">
+            {settledTrend.slice(-20).map((w) => (
+              <div
+                key={w.weekNumber}
+                className="flex-1 flex flex-col items-center justify-end group relative"
+                title={`Tuần ${w.weekNumber}: ${w.done}/${w.total} nhiệm vụ (${w.rate}%)`}
+              >
+                <div
+                  className={`w-full rounded-t transition-colors ${
+                    w.rate >= 75
+                      ? 'bg-emerald-400 group-hover:bg-emerald-500'
+                      : w.rate >= 60
+                        ? 'bg-sky-400 group-hover:bg-sky-500'
+                        : 'bg-amber-400 group-hover:bg-amber-500'
+                  }`}
+                  style={{ height: `${Math.max(w.rate, 3)}%` }}
+                />
+                <span className="text-[10px] text-slate-400 mt-1 tabular-nums">
+                  {w.weekNumber}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Nhiệm vụ im ắng — danh sách cụ thể để hành động, không chỉ một con số */}
+      {staleTasks.length > 0 && (
+        <div className="mb-6 bg-white rounded-xl shadow-sm border border-amber-200 p-5">
+          <h2 className="text-base font-semibold text-slate-900 mb-1">
+            Nhiệm vụ lâu không xuất hiện
+          </h2>
+          <p className="text-sm text-slate-500 mb-4">
+            Có lịch sử báo cáo nhưng đã im ắng từ {STALE_WEEK_THRESHOLD} tuần trở lên —
+            có thể đã dừng, hoặc bị bỏ sót khi làm báo cáo.
+          </p>
+          <div className="divide-y divide-slate-100">
+            {[...staleTasks]
+              .sort((a, b) => (a.lastSeenWeek ?? 0) - (b.lastSeenWeek ?? 0))
+              .slice(0, 10)
+              .map((task) => (
+                <div key={task.id} className="flex items-center justify-between py-2 gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm text-slate-800 truncate">{task.name}</p>
+                    <p className="text-xs text-slate-400 truncate">
+                      {task.department.name}
+                    </p>
+                  </div>
+                  <span className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-lg whitespace-nowrap tabular-nums">
+                    {latestWeek - (task.lastSeenWeek ?? 0)} tuần
+                  </span>
+                </div>
+              ))}
+          </div>
+          {staleTasks.length > 10 && (
+            <p className="text-xs text-slate-400 mt-3">
+              … và {staleTasks.length - 10} nhiệm vụ nữa
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Department Metrics Table */}
       <div className="mb-6">

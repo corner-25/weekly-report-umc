@@ -377,6 +377,41 @@ enum HospitalEventType {
   COLLABORATED // Phối hợp
 }
 
+// Cơ quan của khách VIP - danh mục được tái sử dụng khi nhập liệu
+model VipOrganization {
+  id             String   @id @default(cuid())
+  name           String   @unique @db.Text
+  normalizedName String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  visits VipGuestVisit[]
+
+  @@map("vip_organizations")
+}
+
+// Một lượt tiếp đón/hướng dẫn khách VIP của Phòng Hành chính
+model VipGuestVisit {
+  id             String           @id @default(cuid())
+  visitDate      DateTime
+  guestName      String           @db.Text
+  organizationId String?
+  organization   VipOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  phone          String?
+  contactInfo    String?          @db.Text
+  supportContent String           @db.Text
+  destination    String?          @db.Text
+  staffName      String
+  note           String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([visitDate])
+  @@index([staffName])
+  @@index([organizationId])
+  @@map("vip_guest_visits")
+}
+
 // ==================== SECRETARY MANAGEMENT ====================
 
 // SecretaryType - Loại thư ký

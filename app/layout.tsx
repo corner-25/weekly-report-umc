@@ -6,8 +6,8 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
-  title: "Hệ thống Quản lý Báo cáo Tuần",
-  description: "Quản lý báo cáo tuần cho các phòng ban",
+  title: "Quản lý tập trung — Phòng Hành chính",
+  description: "Hệ thống quản lý tập trung của Phòng Hành chính — Bệnh viện Đại học Y Dược TP.HCM",
 };
 
 export default function RootLayout({

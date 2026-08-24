@@ -1,10 +1,23 @@
 'use client';
 
+/**
+ * Bảng số liệu — màn hình theo dõi chỉ số của người quản lý.
+ *
+ * Trước đây trang kéo toàn bộ 8.685 bản ghi về rồi dựng lưới 2.627 hàng × 31
+ * cột. Chậm, và hầu hết ô trống: 1.701 chỉ số chỉ xuất hiện đúng MỘT lần trong
+ * cả năm — AI trích từ một câu văn rồi tuần sau không còn.
+ *
+ * Một chỉ số xuất hiện một lần thì không nói được gì về xu hướng. Nên ở đây chỉ
+ * hiện chỉ số BỀN VỮNG (đủ nhiều tuần để thấy tăng/giảm), sắp theo mức biến động
+ * — thứ đổi nhiều nhất nằm trên cùng, vì đó là chỗ cần nhìn trước.
+ *
+ * Việc gom được đẩy xuống SQL: 8.685 bản ghi thành vài trăm dòng ngay tại
+ * database, khoảng 300ms, thay vì chuyển hết qua mạng.
+ */
+
 import { Select } from '@/components/ui/Select';
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { Table2 } from 'lucide-react';
+import { Table2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Department {
@@ -12,176 +25,163 @@ interface Department {
   name: string;
 }
 
-/**
- * Một số liệu AI trích được từ báo cáo tuần.
- *
- * Khác `WeekMetricValue` cũ: không trỏ tới danh mục chỉ số dựng sẵn mà mang
- * thẳng tên và đơn vị. Nên khoá nhận dạng một chỉ số ở đây là TÊN, không phải id.
- */
-interface ExtractedMetric {
-  id: string;
+/** Một chỉ số đã gom theo tuần, kèm sẵn số liệu để so sánh. */
+interface MetricSummary {
+  departmentId: string;
+  departmentName: string;
   name: string;
-  value: number;
-  unit?: string | null;
-  sourceText: string;
-  confidence: number;
-  department: Department;
-  week: Week;
+  unit: string | null;
+  weekCount: number;
+  latestWeek: number;
+  latestValue: number;
+  previousValue: number | null;
+  minValue: number;
+  maxValue: number;
+  avgValue: number;
 }
 
-interface Week {
-  id: string;
-  weekNumber: number;
-  year: number;
-  startDate: string;
-  endDate: string;
-}
-
-
+/** Ngưỡng phần trăm để coi một thay đổi là đáng chú ý, không phải dao động thường. */
+const NOTABLE_CHANGE_PERCENT = 15;
 
 function formatValue(value: number): string {
-  if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
-  if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (value >= 10_000) return value.toLocaleString('vi-VN');
-  if (Number.isInteger(value)) return value.toString();
-  return value.toFixed(2).replace(/\.?0+$/, '');
+  if (Math.abs(value) >= 1_000_000_000) {
+    return (value / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + ' tỷ';
+  }
+  if (Math.abs(value) >= 1_000_000) {
+    return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' tr';
+  }
+  if (Number.isInteger(value)) return value.toLocaleString('vi-VN');
+  return value.toFixed(1);
+}
+
+/** Phần trăm thay đổi so với kỳ trước; null khi không so sánh được. */
+function changePercent(latest: number, previous: number | null): number | null {
+  if (previous === null || previous === 0) return null;
+  return ((latest - previous) / Math.abs(previous)) * 100;
 }
 
 export default function MetricsDataPage() {
-  const [metricValues, setMetricValues] = useState<ExtractedMetric[]>([]);
+  const [metrics, setMetrics] = useState<MetricSummary[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [weeks, setWeeks] = useState<Week[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedDept, setSelectedDept] = useState<string>('all');
-  const [selectedMetric, setSelectedMetric] = useState<string>('all');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'change' | 'name' | 'coverage'>('change');
 
   useEffect(() => {
-    fetchData();
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const [summaryRes, deptsRes] = await Promise.all([
+          fetch(`/api/extracted-metrics/summary?year=${selectedYear}`),
+          fetch('/api/departments'),
+        ]);
+        if (cancelled) return;
+        if (summaryRes.ok) setMetrics(await summaryRes.json());
+        if (deptsRes.ok) setDepartments(await deptsRes.json());
+      } catch (error) {
+        console.error('Không tải được số liệu:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedYear]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [valuesRes, deptsRes, weeksRes] = await Promise.all([
-        fetch(`/api/extracted-metrics?year=${selectedYear}`),
-        fetch('/api/departments'),
-        fetch(`/api/weeks?year=${selectedYear}`),
-      ]);
-      if (valuesRes.ok) setMetricValues(await valuesRes.json());
-      if (deptsRes.ok) setDepartments(await deptsRes.json());
-      if (weeksRes.ok) {
-        const data: Week[] = await weeksRes.json();
-        setWeeks(data.sort((a, b) => b.weekNumber - a.weekNumber));
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Chỉ liệt kê phòng thật sự có chỉ số bền vững.
+  const activeDepartments = departments.filter((d) =>
+    metrics.some((m) => m.departmentId === d.id),
+  );
 
-  const filteredValues = metricValues.filter((mv) => {
-    if (mv.week.year !== selectedYear) return false;
-    if (selectedDept !== 'all' && mv.department.id !== selectedDept) return false;
-    if (selectedMetric !== 'all' && mv.name !== selectedMetric) return false;
+  const filtered = metrics.filter((m) => {
+    if (selectedDept !== 'all' && m.departmentId !== selectedDept) return false;
+    if (search && !m.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
-  // weekIds sorted newest first
-  const weekIds = [...new Set(filteredValues.map((mv) => mv.week.id))].sort((a, b) => {
-    const wa = weeks.find((w) => w.id === a);
-    const wb = weeks.find((w) => w.id === b);
-    if (!wa || !wb) return 0;
-    return wb.weekNumber - wa.weekNumber;
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === 'name') return a.name.localeCompare(b.name, 'vi');
+    if (sortBy === 'coverage') return b.weekCount - a.weekCount;
+
+    // Mặc định: biến động mạnh nhất lên đầu — đó là chỗ cần nhìn trước.
+    const ca = Math.abs(changePercent(a.latestValue, a.previousValue) ?? 0);
+    const cb = Math.abs(changePercent(b.latestValue, b.previousValue) ?? 0);
+    return cb - ca;
   });
 
-  // Khoá là tên + phòng ban: hai phòng có thể cùng theo dõi "Tổng viện phí"
-  // nhưng đó là hai chỉ số riêng.
-  const metricKey = (m: { name: string; department: Department }) =>
-    `${m.department.id}::${m.name}`;
-  const metricIds = [...new Set(filteredValues.map(metricKey))];
-
-  // Gom thành lưới: mỗi hàng một chỉ số, mỗi cột một tuần.
-  //
-  // Dựng bằng một lượt quét thay vì tìm kiếm lồng nhau — trước đây mỗi ô gọi
-  // `find` trên toàn bộ mảng, với 8.600 bản ghi × 30 tuần thì trình duyệt đứng
-  // hình vài giây.
-  const deptOrder: string[] = [];
-  const groupedRows: Record<
-    string,
-    {
-      dept: Department;
-      rows: Array<{
-        metricId: string;
-        metric: { name: string; unit?: string | null; department: Department };
-        values: Record<string, ExtractedMetric | undefined>;
-      }>;
-    }
-  > = {};
-  const rowByKey = new Map<string, (typeof groupedRows)[string]['rows'][number]>();
-
-  for (const mv of filteredValues) {
-    const key = metricKey(mv);
-    const deptId = mv.department.id;
-
-    if (!groupedRows[deptId]) {
-      deptOrder.push(deptId);
-      groupedRows[deptId] = { dept: mv.department, rows: [] };
-    }
-
-    let row = rowByKey.get(key);
-    if (!row) {
-      row = {
-        metricId: key,
-        metric: { name: mv.name, unit: mv.unit, department: mv.department },
-        values: {},
-      };
-      rowByKey.set(key, row);
-      groupedRows[deptId].rows.push(row);
-    }
-
-    // Một tuần có thể trích cùng tên nhiều lần; giữ bản tin cậy cao hơn.
-    const current = row.values[mv.week.id];
-    if (!current || mv.confidence > current.confidence) {
-      row.values[mv.week.id] = mv;
-    }
-  }
-
-  // Danh sách chỉ số cho ô lọc, dựng từ chính dữ liệu đang có.
-  const availableMetrics = [
-    ...new Map(
-      filteredValues
-        .filter((mv) => selectedDept === 'all' || mv.department.id === selectedDept)
-        .map((mv) => [mv.name, { id: mv.name, name: mv.name, unit: mv.unit }]),
-    ).values(),
-  ].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+  // Ba câu trả lời nhanh ở đầu màn hình.
+  const rising = filtered.filter((m) => {
+    const c = changePercent(m.latestValue, m.previousValue);
+    return c !== null && c >= NOTABLE_CHANGE_PERCENT;
+  });
+  const falling = filtered.filter((m) => {
+    const c = changePercent(m.latestValue, m.previousValue);
+    return c !== null && c <= -NOTABLE_CHANGE_PERCENT;
+  });
+  const latestWeek = filtered.reduce((max, m) => Math.max(max, m.latestWeek), 0);
 
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-slate-500">Đang tải...</p>
+        <p className="text-slate-500">Đang tải…</p>
       </div>
     );
   }
 
   return (
     <div>
-      {/* Header */}
       <PageHeader
         icon={Table2}
-        title="Báo cáo Số liệu - Dạng Bảng"
-        description="Xem dữ liệu định lượng theo tuần và chỉ số"
+        title="Số liệu theo dõi"
+        description="Chỉ số xuất hiện đều đặn qua các tuần, sắp theo mức biến động"
         className="mb-6"
         actions={
           <span className="text-sm text-slate-500">
-            {metricIds.length} chỉ số · {weekIds.length} tuần
+            {filtered.length} chỉ số · tuần {latestWeek}
           </span>
         }
       />
 
-      {/* Filters */}
+      {/* Ba con số trả lời: có gì bất thường tuần này không? */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+          <p className="text-sm text-slate-600">Tăng đáng kể</p>
+          <p className="text-3xl font-bold text-emerald-600 tabular-nums mt-1">
+            {rising.length}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            trên {NOTABLE_CHANGE_PERCENT}% so với tuần trước
+          </p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+          <p className="text-sm text-slate-600">Giảm đáng kể</p>
+          <p className="text-3xl font-bold text-rose-600 tabular-nums mt-1">
+            {falling.length}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            giảm trên {NOTABLE_CHANGE_PERCENT}% so với tuần trước
+          </p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+          <p className="text-sm text-slate-600">Chỉ số theo dõi</p>
+          <p className="text-3xl font-bold text-slate-900 tabular-nums mt-1">
+            {filtered.length}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            xuất hiện đủ nhiều tuần để so sánh
+          </p>
+        </div>
+      </div>
+
+      {/* Bộ lọc */}
       <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200/80">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
@@ -191,139 +191,157 @@ export default function MetricsDataPage() {
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
               className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
-              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(
+                (year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ),
+              )}
             </Select>
           </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Phòng ban</label>
             <Select
               value={selectedDept}
-              onChange={(e) => { setSelectedDept(e.target.value); setSelectedMetric('all'); }}
+              onChange={(e) => setSelectedDept(e.target.value)}
               className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
               <option value="all">Tất cả phòng</option>
-              {departments.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
+              {activeDepartments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
               ))}
             </Select>
           </div>
+
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-sm font-medium text-slate-700 mb-1">Tìm chỉ số</label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Ví dụ: viện phí, hồ sơ, đào tạo…"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
+            />
+          </div>
+
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Chỉ số</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Sắp xếp</label>
             <Select
-              value={selectedMetric}
-              onChange={(e) => setSelectedMetric(e.target.value)}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             >
-              <option value="all">Tất cả chỉ số</option>
-              {availableMetrics.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}{m.unit ? ` (${m.unit})` : ''}</option>
-              ))}
+              <option value="change">Biến động mạnh nhất</option>
+              <option value="coverage">Theo dõi lâu nhất</option>
+              <option value="name">Tên chỉ số</option>
             </Select>
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      {metricIds.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <svg className="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">Chưa có dữ liệu</h3>
-          <p className="text-slate-500">Chưa có số liệu nào được nhập cho {selectedYear}</p>
+      {/* Danh sách chỉ số */}
+      {sorted.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-12 text-center">
+          <h3 className="text-lg font-medium text-slate-900 mb-2">Không có chỉ số nào</h3>
+          <p className="text-slate-500">
+            {search
+              ? `Không tìm thấy chỉ số nào khớp "${search}"`
+              : `Chưa có chỉ số nào theo dõi đủ nhiều tuần trong năm ${selectedYear}`}
+          </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="border-collapse text-sm" style={{ minWidth: `${300 + weekIds.length * 90}px` }}>
-            <thead>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-x-auto">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
               <tr>
-                <th
-                  className="sticky left-0 z-20 bg-slate-50 text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-r-2 border-slate-300"
-                  style={{ minWidth: 240, maxWidth: 320 }}
-                >
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Chỉ số
                 </th>
-                <th className="bg-slate-50 text-center px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-r border-slate-200 whitespace-nowrap w-16">
-                  ĐV
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Tuần {latestWeek}
                 </th>
-                {weekIds.map((weekId, i) => {
-                  const week = weeks.find((w) => w.id === weekId);
-                  return (
-                    <th
-                      key={weekId}
-                      className={`text-center px-3 py-3 text-xs font-medium uppercase tracking-wider border-b border-r border-slate-200 whitespace-nowrap w-24 ${
-                        i === 0
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'bg-slate-50 text-slate-500'
-                      }`}
-                    >
-                      <div>Tuần {week?.weekNumber}</div>
-                      <div className="font-normal text-slate-400">
-                        {week?.startDate && format(new Date(week.startDate), 'dd/MM', { locale: vi })}
-                      </div>
-                    </th>
-                  );
-                })}
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Thay đổi
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Trung bình
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Khoảng
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Số tuần
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
-              {deptOrder.map((deptId) => {
-                const { dept, rows } = groupedRows[deptId];
+            <tbody className="divide-y divide-slate-100">
+              {sorted.map((m) => {
+                const change = changePercent(m.latestValue, m.previousValue);
+                const notable = change !== null && Math.abs(change) >= NOTABLE_CHANGE_PERCENT;
+
                 return (
-                  <>
-                    {/* Department header row */}
-                    <tr key={`dept-${deptId}`}>
-                      <td
-                        colSpan={2 + weekIds.length}
-                        className="px-4 py-2 bg-blue-50 border-t-2 border-blue-300"
-                      >
-                        <span className="text-xs font-bold text-blue-800 uppercase tracking-wide">{dept.name}</span>
-                      </td>
-                    </tr>
-                    {rows.map(({ metricId, metric, values }, rowIdx) => (
-                      <tr key={metricId} className={rowIdx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50 hover:bg-slate-100'}>
-                        <td
-                          className="sticky left-0 z-10 px-4 py-3 text-sm font-medium text-slate-900 border-r-2 border-slate-300 bg-inherit"
-                          style={{ minWidth: 240, maxWidth: 320 }}
+                  <tr
+                    key={`${m.departmentId}::${m.name}`}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
+                    <td className="px-6 py-3">
+                      <p className="text-sm text-slate-900">{m.name}</p>
+                      <p className="text-xs text-slate-400">
+                        {m.departmentName}
+                        {m.unit ? ` · ${m.unit}` : ''}
+                      </p>
+                    </td>
+
+                    <td className="px-4 py-3 text-right">
+                      <span className="text-sm font-semibold text-slate-900 tabular-nums">
+                        {formatValue(m.latestValue)}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      {change === null ? (
+                        <span className="text-xs text-slate-300">—</span>
+                      ) : (
+                        <span
+                          className={`inline-flex items-center gap-1 text-sm tabular-nums ${
+                            !notable
+                              ? 'text-slate-400'
+                              : change > 0
+                                ? 'text-emerald-600 font-medium'
+                                : 'text-rose-600 font-medium'
+                          }`}
                         >
-                          <span className="leading-snug">{metric.name}</span>
-                        </td>
-                        <td className="px-3 py-3 text-center text-xs text-slate-400 border-r border-slate-200 whitespace-nowrap">
-                          {metric.unit || '—'}
-                        </td>
-                        {weekIds.map((weekId, wIdx) => {
-                          const mv = values[weekId];
-                          const isLatest = wIdx === 0;
-                          return (
-                            <td
-                              key={weekId}
-                              className={`px-3 py-3 text-center text-sm border-r border-slate-200 ${isLatest ? 'bg-blue-50' : ''}`}
-                            >
-                              {mv != null ? (
-                                <div>
-                                  <span className={`font-semibold tabular-nums ${isLatest ? 'text-blue-700' : 'text-slate-800'}`}>
-                                    {formatValue(mv.value)}
-                                  </span>
-                                  {mv.unit && (
-                                    <div
-                                      className="text-xs text-slate-400 truncate max-w-[80px]"
-                                      title={`${mv.sourceText}\n\nĐộ tin cậy: ${Math.round(mv.confidence * 100)}%`}
-                                    >
-                                      {mv.unit}
-                                    </div>
-                                  )}
-                                </div>
-                              ) : (
-                                <span className="text-slate-300">—</span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </>
+                          {!notable ? (
+                            <Minus className="w-3 h-3" />
+                          ) : change > 0 ? (
+                            <TrendingUp className="w-3.5 h-3.5" />
+                          ) : (
+                            <TrendingDown className="w-3.5 h-3.5" />
+                          )}
+                          {change > 0 ? '+' : ''}
+                          {change.toFixed(0)}%
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3 text-right text-sm text-slate-500 tabular-nums">
+                      {formatValue(m.avgValue)}
+                    </td>
+
+                    <td className="px-4 py-3 text-right text-xs text-slate-400 tabular-nums whitespace-nowrap">
+                      {formatValue(m.minValue)} – {formatValue(m.maxValue)}
+                    </td>
+
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-xs text-slate-500 tabular-nums">
+                        {m.weekCount}
+                      </span>
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
@@ -331,13 +349,10 @@ export default function MetricsDataPage() {
         </div>
       )}
 
-      {/* Export hint */}
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Mẹo:</strong> Bạn có thể sao chép bảng này và dán vào Excel để xuất báo cáo.
-          Chọn toàn bộ bảng, sau đó nhấn Ctrl+C (hoặc Cmd+C trên Mac) để sao chép.
-        </p>
-      </div>
+      <p className="text-xs text-slate-400 mt-4">
+        Chỉ hiện chỉ số xuất hiện từ 8 tuần trở lên. Chỉ số chỉ có một vài lần
+        không đủ dữ liệu để so sánh nên được lược bớt.
+      </p>
     </div>
   );
 }

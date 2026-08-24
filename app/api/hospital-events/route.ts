@@ -47,6 +47,7 @@ export async function GET(request: Request) {
       },
       include: {
         meetingRoom: { select: { id: true, name: true } },
+        checklistItems: { select: { id: true, isCompleted: true } },
         _count: { select: { checklistItems: true } },
       },
       orderBy: { date: 'desc' },

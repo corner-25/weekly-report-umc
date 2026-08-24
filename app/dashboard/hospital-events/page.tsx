@@ -1,249 +1,111 @@
 'use client';
 
-import { Select } from '@/components/ui/Select';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, isAfter, isBefore, startOfDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { CalendarRange } from 'lucide-react';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { ChecklistProgress } from '@/components/hospital-events/ChecklistProgress';
+import { Building2, CalendarDays, CalendarRange, CheckCircle2, ChevronRight, Clock3, Plus, Search, Trash2, UsersRound } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-
-interface MeetingRoom {
-  id: string;
-  name: string;
-  location?: string | null;
-}
-
-interface ChecklistItem {
-  id: string;
-  isCompleted: boolean;
-}
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Select } from '@/components/ui/Select';
 
 interface HospitalEvent {
-  id: string;
-  name: string;
-  date: string;
-  time?: string | null;
-  description?: string | null;
-  eventType: 'ORGANIZED' | 'COLLABORATED';
-  status: 'CONFIRMED' | 'UNCONFIRMED';
-  isEdited: boolean;
-  meetingRoom?: MeetingRoom | null;
-  checklistItems: ChecklistItem[];
+  id: string; name: string; date: string; time?: string | null; description?: string | null;
+  eventType: 'ORGANIZED' | 'COLLABORATED'; status: 'CONFIRMED' | 'UNCONFIRMED';
+  isEdited: boolean; chair?: string | null; meetingRoom?: { id: string; name: string } | null;
+  checklistItems: { id: string; isCompleted: boolean }[];
 }
 
 export default function HospitalEventsPage() {
   const [events, setEvents] = useState<HospitalEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filterType, setFilterType] = useState<string>('');
-  const [filterStatus, setFilterStatus] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [search, setSearch] = useState('');
+  const [type, setType] = useState('');
+  const [timeRange, setTimeRange] = useState('upcoming');
+  const [deleteTarget, setDeleteTarget] = useState<HospitalEvent | null>(null);
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const fetchEvents = async () => {
+  const loadEvents = async () => {
+    setLoading(true);
+    setError('');
     try {
-      setError('');
-      const res = await fetch('/api/hospital-events');
-      if (!res.ok) throw new Error('Failed to fetch events');
-      const data = await res.json();
-      setEvents(data);
-    } catch (err) {
+      const response = await fetch('/api/hospital-events');
+      if (!response.ok) throw new Error();
+      setEvents(await response.json());
+    } catch {
       setError('Không thể tải danh sách sự kiện. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => { loadEvents(); }, []);
+
+  const today = startOfDay(new Date());
+  const filteredEvents = useMemo(() => events.filter((event) => {
+    const matchesSearch = !search.trim() || [event.name, event.chair, event.meetingRoom?.name].some((value) => value?.toLocaleLowerCase('vi').includes(search.trim().toLocaleLowerCase('vi')));
+    const matchesType = !type || event.eventType === type;
+    const eventDate = startOfDay(new Date(event.date));
+    const matchesTime = timeRange === 'all' || (timeRange === 'upcoming' ? !isBefore(eventDate, today) : isBefore(eventDate, today));
+    return matchesSearch && matchesType && matchesTime;
+  }).sort((a, b) => timeRange === 'past' ? +new Date(b.date) - +new Date(a.date) : +new Date(a.date) - +new Date(b.date)), [events, search, type, timeRange, today]);
+
+  const upcoming = events.filter((event) => !isBefore(startOfDay(new Date(event.date)), today));
+  const completedTasks = upcoming.reduce((sum, event) => sum + event.checklistItems.filter((item) => item.isCompleted).length, 0);
+  const totalTasks = upcoming.reduce((sum, event) => sum + event.checklistItems.length, 0);
+
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      const res = await fetch(`/api/hospital-events/${deleteTarget.id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
+      const response = await fetch(`/api/hospital-events/${deleteTarget.id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error();
       setDeleteTarget(null);
-      await fetchEvents();
+      await loadEvents();
     } catch {
-      setError('Có lỗi xảy ra khi xóa sự kiện.');
       setDeleteTarget(null);
+      setError('Không thể xóa sự kiện.');
     }
   };
 
-  const filteredEvents = events.filter(event => {
-    const matchSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchType = !filterType || event.eventType === filterType;
-    const matchStatus = !filterStatus || event.status === filterStatus;
-    return matchSearch && matchType && matchStatus;
-  });
-
-  const getEventTypeColor = (type: string) => {
-    return type === 'ORGANIZED'
-      ? 'bg-blue-100 border-blue-300 text-blue-900'
-      : 'bg-emerald-100 border-green-300 text-green-900';
-  };
-
-  const getStatusColor = (status: string, isEdited: boolean) => {
-    if (isEdited) return 'bg-orange-100 border-orange-300 text-orange-900';
-    return status === 'CONFIRMED'
-      ? 'bg-emerald-100 border-green-300 text-green-900'
-      : 'bg-amber-100 border-yellow-300 text-yellow-900';
-  };
-
-  if (loading) return <div className="text-center py-12">Đang tải...</div>;
-
   return (
-    <div>
-      <ConfirmDialog
-        open={!!deleteTarget}
-        title="Xóa sự kiện"
-        message={`Bạn có chắc muốn xóa sự kiện "${deleteTarget?.name}"?`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
-      />
+    <div className="space-y-6">
+      <ConfirmDialog open={Boolean(deleteTarget)} title="Xóa sự kiện" message={`Bạn có chắc muốn xóa “${deleteTarget?.name ?? ''}”?`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />
+      <PageHeader icon={CalendarRange} title="Sự kiện bệnh viện" description="Theo dõi lịch, đầu mối và tiến độ tổ chức tại một nơi" actions={<Link href="/dashboard/hospital-events/new" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20"><Plus className="h-4 w-4" /> Tạo sự kiện</Link>} />
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
-      <PageHeader
-        icon={CalendarRange}
-        title="Sự kiện Bệnh viện"
-        description="Quản lý sự kiện và theo dõi tiến độ checklist"
-        className="mb-6"
-      />
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex justify-between items-center">
-          {error}
-          <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">✕</button>
-        </div>
-      )}
-
-      {/* Filters */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input
-          type="text"
-          placeholder="Tìm kiếm sự kiện..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
-        />
-
-        <Select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
-        >
-          <option value="">Tất cả loại sự kiện</option>
-          <option value="ORGANIZED">Tổ chức</option>
-          <option value="COLLABORATED">Phối hợp</option>
-        </Select>
-
-        <Select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="CONFIRMED">Đã xác nhận</option>
-          <option value="UNCONFIRMED">Chưa xác nhận</option>
-        </Select>
-
-        <Link
-          href="/dashboard/hospital-events/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 text-center"
-        >
-          + Tạo sự kiện mới
-        </Link>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Summary icon={CalendarDays} label="Sắp diễn ra" value={upcoming.length} detail="Từ hôm nay" />
+        <Summary icon={Building2} label="Phòng chủ trì" value={upcoming.filter((event) => event.eventType === 'ORGANIZED').length} detail="Sự kiện sắp tới" />
+        <Summary icon={UsersRound} label="Phòng phối hợp" value={upcoming.filter((event) => event.eventType === 'COLLABORATED').length} detail="Sự kiện sắp tới" />
+        <Summary icon={CheckCircle2} label="Tiến độ công việc" value={totalTasks ? `${Math.round(completedTasks / totalTasks * 100)}%` : '—'} detail={`${completedTasks}/${totalTasks} việc hoàn thành`} />
       </div>
 
-      {/* Events Grid */}
-      {filteredEvents.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-12 text-center">
-          <p className="text-slate-500">
-            {searchTerm || filterType || filterStatus
-              ? 'Không tìm thấy sự kiện nào'
-              : 'Chưa có sự kiện nào. Hãy tạo sự kiện đầu tiên!'}
-          </p>
+      <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+        <div className="grid gap-3 border-b border-slate-100 p-4 lg:grid-cols-[1fr_220px_220px_auto]">
+          <div className="relative"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={search} onChange={(event) => setSearch(event.target.value)} className="input pl-10" placeholder="Tìm sự kiện, phòng họp, đầu mối..." /></div>
+          <Select value={type} onChange={(event) => setType(event.target.value)} className="px-3.5 py-2.5"><option value="">Tất cả vai trò</option><option value="ORGANIZED">Phòng chủ trì</option><option value="COLLABORATED">Phòng phối hợp</option></Select>
+          <Select value={timeRange} onChange={(event) => setTimeRange(event.target.value)} className="px-3.5 py-2.5"><option value="upcoming">Sắp diễn ra</option><option value="past">Đã diễn ra</option><option value="all">Tất cả thời gian</option></Select>
+          <Link href="/dashboard/hospital-events-calendar" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"><CalendarDays className="h-4 w-4" /> Xem lịch</Link>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map(event => {
-            const completedCount = event.checklistItems.filter(item => item.isCompleted).length;
-            const totalCount = event.checklistItems.length;
 
-            return (
-              <div
-                key={event.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-200/80 hover:shadow-lg transition-shadow overflow-hidden"
-              >
-                {/* Header */}
-                <div className="p-4 border-b">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-lg text-slate-900 flex-1">
-                      {event.name}
-                    </h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium border ${getEventTypeColor(event.eventType)}`}>
-                      {event.eventType === 'ORGANIZED' ? 'Tổ chức' : 'Phối hợp'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center text-sm text-slate-600 mb-1">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {format(new Date(event.date), 'dd/MM/yyyy', { locale: vi })}
-                    {event.time && ` - ${event.time}`}
-                  </div>
-
-                  {event.meetingRoom && (
-                    <div className="flex items-center text-sm text-slate-600">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                      {event.meetingRoom.name}
-                    </div>
-                  )}
-                </div>
-
-                {/* Checklist Progress */}
-                <div className="p-4 bg-slate-50">
-                  <ChecklistProgress completed={completedCount} total={totalCount} showPercentage />
-                </div>
-
-                {/* Footer */}
-                <div className="p-4 flex items-center justify-between">
-                  <span className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(event.status, event.isEdited)}`}>
-                    {event.isEdited ? 'Đã chỉnh sửa' : event.status === 'CONFIRMED' ? 'Đã xác nhận' : 'Chưa xác nhận'}
-                  </span>
-
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/dashboard/hospital-events/${event.id}`}
-                      className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      Xem
-                    </Link>
-                    <Link
-                      href={`/dashboard/hospital-events/${event.id}/edit`}
-                      className="px-3 py-1 text-sm text-slate-600 hover:text-slate-800 font-medium"
-                    >
-                      Sửa
-                    </Link>
-                    <button
-                      onClick={() => setDeleteTarget({ id: event.id, name: event.name })}
-                      className="px-3 py-1 text-sm text-red-600 hover:text-red-800 font-medium"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
+        {loading ? <div className="p-12 text-center text-slate-500">Đang tải sự kiện...</div> : filteredEvents.length === 0 ? <div className="p-12 text-center"><CalendarRange className="mx-auto mb-3 h-12 w-12 text-slate-200" /><p className="font-semibold text-slate-700">Không có sự kiện phù hợp</p><p className="mt-1 text-sm text-slate-500">Thay đổi bộ lọc hoặc tạo sự kiện mới.</p></div> : <div className="divide-y divide-slate-100">
+          {filteredEvents.map((event) => {
+            const completed = event.checklistItems.filter((item) => item.isCompleted).length;
+            const total = event.checklistItems.length;
+            const percentage = total ? Math.round(completed / total * 100) : 0;
+            return <div key={event.id} className="group grid gap-4 p-5 transition hover:bg-slate-50/70 lg:grid-cols-[minmax(0,1fr)_180px_190px_80px] lg:items-center">
+              <div className="min-w-0"><div className="mb-2 flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${event.eventType === 'ORGANIZED' ? 'bg-cyan-50 text-cyan-700' : 'bg-violet-50 text-violet-700'}`}>{event.eventType === 'ORGANIZED' ? 'Phòng chủ trì' : 'Phòng phối hợp'}</span><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${event.status === 'CONFIRMED' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{event.status === 'CONFIRMED' ? 'Đã xác nhận lịch' : 'Chưa xác nhận lịch'}</span></div><Link href={`/dashboard/hospital-events/${event.id}`} className="text-base font-bold text-slate-900 hover:text-cyan-700">{event.name}</Link><p className="mt-1 flex flex-wrap gap-x-3 text-sm text-slate-500"><span>{format(new Date(event.date), 'EEEE, dd/MM/yyyy', { locale: vi })}{event.time && ` · ${event.time}`}</span>{event.meetingRoom && <span>{event.meetingRoom.name}</span>}</p></div>
+              <div><p className="text-xs font-medium text-slate-400">Nhân viên đầu mối</p><p className="mt-1 truncate text-sm font-semibold text-slate-700">{event.chair || 'Chưa phân công'}</p></div>
+              <div><div className="mb-1.5 flex justify-between text-xs font-semibold text-slate-500"><span>Tiến độ</span><span>{total ? `${percentage}%` : 'Chưa có việc'}</span></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-cyan-500" style={{ width: `${percentage}%` }} /></div>{total > 0 && <p className="mt-1 text-xs text-slate-400">{completed}/{total} việc hoàn thành</p>}</div>
+              <div className="flex justify-end gap-1"><button onClick={() => setDeleteTarget(event)} className="rounded-lg p-2 text-slate-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 group-hover:opacity-100" title="Xóa"><Trash2 className="h-4 w-4" /></button><Link href={`/dashboard/hospital-events/${event.id}`} className="rounded-lg p-2 text-cyan-700 hover:bg-cyan-50" title="Xem chi tiết"><ChevronRight className="h-5 w-5" /></Link></div>
+            </div>;
           })}
-        </div>
-      )}
+        </div>}
+      </section>
     </div>
   );
+}
+
+function Summary({ icon: Icon, label, value, detail }: { icon: typeof Clock3; label: string; value: string | number; detail: string }) {
+  return <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"><div className="flex items-start justify-between"><div><p className="text-xs font-medium text-slate-500 sm:text-sm">{label}</p><p className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{value}</p><p className="mt-1 text-xs text-slate-400">{detail}</p></div><div className="rounded-xl bg-cyan-50 p-2.5 text-cyan-700"><Icon className="h-5 w-5" /></div></div></div>;
 }

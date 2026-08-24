@@ -35,6 +35,7 @@ import {
   Gauge,
   ChevronDown,
   Truck,
+  Crown,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -73,6 +74,7 @@ const navGroups: NavGroup[] = [
       { href: '/dashboard/calendar', label: 'Lịch công tác', icon: CalendarDays, exact: false },
       { href: '/dashboard/hospital-events', label: 'Sự kiện bệnh viện', icon: CalendarClock, exact: false },
       { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
+      { href: '/dashboard/vip-guests', label: 'Khách VIP', icon: Crown, exact: true },
       { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen, exact: false },
     ],
   },
@@ -175,11 +177,16 @@ export function Sidebar() {
       {/* Header */}
       <div className="flex items-center justify-between h-14 px-3 bg-gradient-to-r from-cyan-600 to-blue-600">
         {!isCollapsed && (
-          <Link href="/dashboard" className="text-[15px] font-bold text-white flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-              <ClipboardCheck className="w-4 h-4" />
+          <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0">
+            <div className="w-7 h-7 shrink-0 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+              <ClipboardCheck className="w-4 h-4 text-white" />
             </div>
-            UMC Reports
+            <div className="min-w-0 leading-tight">
+              <p className="text-[13px] font-bold text-white truncate">
+                Quản lý tập trung
+              </p>
+              <p className="text-[11px] text-white/75 truncate">Phòng Hành chính</p>
+            </div>
           </Link>
         )}
         <button
