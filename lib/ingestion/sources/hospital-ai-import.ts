@@ -30,6 +30,15 @@ import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types
 const MAX_WEEKS_PER_RUN = 3;
 
 /**
+ * Tỷ lệ so với tuần trung vị để coi một tuần là nạp dở.
+ *
+ * Các tuần đầy đủ dao động 75-95 nhiệm vụ, khá đều. Một tuần đứt gánh giữa
+ * chừng chỉ có vài chục. Lấy nửa trung vị làm ranh giới: đủ rộng để không đụng
+ * vào tuần thật sự ít việc, đủ chặt để bắt được lần nạp hỏng.
+ */
+const PARTIAL_LOAD_RATIO = 0.5;
+
+/**
  * Mốc neo để suy ngày của một tuần báo cáo, đo từ dữ liệu đã có.
  *
  * Bệnh viện đánh số tuần theo lịch riêng, không dùng được ISO week. Tuần chạy
@@ -175,14 +184,77 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
       throw new Error('Không đọc được sheet tuần nào — kiểm tra lại định dạng file nguồn');
     }
 
-    const imported = await ctx.prisma.week.findMany({
+    // Một tuần coi là xong khi bản ghi chờ của nó đã chuyển APPROVED — dấu do
+    // upsert() đặt sau khi nạp trót lọt mọi phòng.
+    //
+    // Trước đây điều kiện là "tuần có ít nhất một WeekTaskProgress", nhưng
+    // `some` không phân biệt được nạp xong với nạp dở: một lần mất mạng giữa
+    // chừng để lại 18/82 nhiệm vụ, và tuần đó bị coi là đã xong rồi bỏ qua vĩnh
+    // viễn — mất 64 nhiệm vụ mà không có dấu hiệu gì.
+    const approved = await ctx.prisma.pendingAiImport.findMany({
+      where: {
+        status: 'APPROVED',
+        OR: sheets.map((s) => ({ year: s.year, week: s.week })),
+      },
+      select: { year: true, week: true },
+    });
+    const done = new Set(approved.map((p) => `${p.year}-${p.week}`));
+
+    // Tuần người dùng nhập tay không có bản ghi chờ nào, nhưng vẫn phải được
+    // tôn trọng — pipeline không ghi đè công sức nhập liệu của họ.
+    const manual = await ctx.prisma.week.findMany({
       where: {
         OR: sheets.map((s) => ({ year: s.year, weekNumber: s.week })),
-        taskProgress: { some: { extractionModel: { not: null } } },
+        taskProgress: { some: { extractionModel: null } },
       },
       select: { year: true, weekNumber: true },
     });
-    const done = new Set(imported.map((w) => `${w.year}-${w.weekNumber}`));
+    for (const w of manual) done.add(`${w.year}-${w.weekNumber}`);
+
+    // Tuần nạp dở: có dữ liệu nhưng ít bất thường so với các tuần bình thường.
+    //
+    // Không thể chỉ dựa vào "chưa có dấu APPROVED": 21 tuần nạp trước khi có cơ
+    // chế đánh dấu cũng không có dấu, và xoá chúng là mất 1.750 nhiệm vụ dữ liệu
+    // tốt. Dùng số nhiệm vụ làm bằng chứng — một tuần đầy đủ có khoảng 80 nhiệm
+    // vụ, tuần đứt gánh giữa chừng chỉ vài chục.
+    const complete = await ctx.prisma.week.findMany({
+      where: { taskProgress: { some: { extractionModel: { not: null } } } },
+      select: { year: true, weekNumber: true, _count: { select: { taskProgress: true } } },
+    });
+    const counts = complete.map((w) => w._count.taskProgress).sort((a, b) => a - b);
+    const median = counts.length > 0 ? counts[Math.floor(counts.length / 2)] : 0;
+    const partialThreshold = Math.floor(median * PARTIAL_LOAD_RATIO);
+
+    for (const w of complete) {
+      const key = `${w.year}-${w.weekNumber}`;
+      if (done.has(key)) continue;
+      if (w._count.taskProgress >= partialThreshold) {
+        // Đủ nhiều để coi là nạp xong, chỉ thiếu dấu vì nạp trước khi có cơ chế.
+        done.add(key);
+      }
+    }
+
+    // Phần còn lại mới thật sự là nạp dở — xoá để nạp lại từ đầu.
+    for (const w of complete) {
+      const key = `${w.year}-${w.weekNumber}`;
+      if (done.has(key)) continue;
+
+      const week = await ctx.prisma.week.findUnique({
+        where: { weekNumber_year: { weekNumber: w.weekNumber, year: w.year } },
+        select: { id: true },
+      });
+      if (!week) continue;
+
+      await ctx.prisma.extractedMetric.deleteMany({ where: { weekId: week.id } });
+      const removed = await ctx.prisma.weekTaskProgress.deleteMany({
+        where: { weekId: week.id },
+      });
+      await ctx.log(
+        'warn',
+        `Tuần ${w.weekNumber}/${w.year}: chỉ có ${removed.count}/${median} nhiệm vụ ` +
+          `— nạp dở ở lần trước, xoá để nạp lại`,
+      );
+    }
 
     const pending = sheets
       .filter((s) => !done.has(`${s.year}-${s.week}`))
