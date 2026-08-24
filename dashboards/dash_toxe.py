@@ -108,7 +108,9 @@ def _render_data_quality(df) -> None:
                     hide_index=True,
                     use_container_width=True,
                 )
-                with st.expander(f"Xem {len(issues)} chuyến cụ thể"):
+                # Checkbox chứ không phải expander: cả khối này đã nằm trong một
+                # expander, mà Streamlit không cho lồng expander vào nhau.
+                if st.checkbox(f"Xem {len(issues)} chuyến cụ thể", key="odo_issue_detail"):
                     cols = [c for c in ['record_date', 'vehicle_id', 'driver_name',
                                         'odometer', 'odometer_delta', 'odometer_status']
                             if c in issues.columns]
