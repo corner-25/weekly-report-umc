@@ -634,6 +634,8 @@ model Vehicle {
   licenses License[]
 
   maintenanceLogs VehicleMaintenance[]
+  /// Chuyến đi của xe này, nối từ dữ liệu tổ xe qua biển số đã chuẩn hoá.
+  trips           FleetTrip[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -1215,7 +1217,16 @@ model FleetTrip {
   id                 String   @id @default(cuid())
   // Nguồn không có ID ổn định; hash các trường định danh làm khoá.
   sourceRowHash      String   @unique
+  /// Biển số xe như tài xế nhập trên Google Sheets — KHÔNG phải id của bảng xe.
+  /// Giữ nguyên chuỗi gốc để đối chiếu khi nghi ngờ.
   vehicleId          String
+  /// Hồ sơ xe tương ứng, nối bằng biển số đã chuẩn hoá.
+  ///
+  /// Tùy chọn vì chuyến đi có thể về trước khi hồ sơ xe được lập — dữ liệu tài
+  /// xế nhập hằng ngày, còn hồ sơ do người quản lý tạo. Không để khoá ngoại bắt
+  /// buộc chặn việc nạp chuyến.
+  vehicleRefId       String?
+  vehicle            Vehicle? @relation(fields: [vehicleRefId], references: [id], onDelete: SetNull)
   driverName         String
   vehicleType        String // "Hành chính" | "Cứu thương"
   recordDate         DateTime

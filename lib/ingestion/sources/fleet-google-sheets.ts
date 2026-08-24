@@ -12,6 +12,17 @@ import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types
  * hẳn khâu trung gian đó.
  */
 
+/**
+ * Rút biển số về dạng so khớp: chỉ chữ và số, viết hoa.
+ *
+ * Tài xế nhập trên Google Sheets dùng dấu chấm ("50A-007.39"), người quản lý lập
+ * hồ sơ dùng gạch ngang ("50A-007-39"), có bản còn thừa dấu cách. So trực tiếp
+ * chỉ khớp 4/19 xe; bỏ hết ký tự ngăn cách thì khớp toàn bộ.
+ */
+function normalizePlate(plate: string): string {
+  return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
 /** Số dòng mỗi lô createMany. Lô lớn hơn ít lợi mà tốn bộ nhớ. */
 const UPSERT_BATCH_SIZE = 500;
 
@@ -136,12 +147,27 @@ export const fleetGoogleSheets: Connector<SheetData[], FleetParseResult> = {
     );
 
     const fresh = result.rows.filter((r) => !existing.has(r.sourceRowHash));
+
+    // Nối chuyến với hồ sơ xe ngay khi ghi. Tài xế và người quản lý viết biển số
+    // khác nhau ("50A-007.39" và "50A-007-39") nên phải khớp theo dạng chuẩn hoá.
+    const vehicles = await prisma.vehicle.findMany({
+      select: { id: true, licensePlate: true },
+    });
+    const vehicleByPlate = new Map(
+      vehicles.map((v) => [normalizePlate(v.licensePlate), v.id]),
+    );
+
     let upserted = 0;
+    let unlinked = 0;
 
     for (let i = 0; i < fresh.length; i += UPSERT_BATCH_SIZE) {
       const batch = fresh.slice(i, i + UPSERT_BATCH_SIZE);
       const { count } = await prisma.fleetTrip.createMany({
-        data: batch.map((row) => ({ ...row, sourceId: source.id, syncRunId: runId })),
+        data: batch.map((row) => {
+          const vehicleRefId = vehicleByPlate.get(normalizePlate(row.vehicleId)) ?? null;
+          if (!vehicleRefId) unlinked += 1;
+          return { ...row, vehicleRefId, sourceId: source.id, syncRunId: runId };
+        }),
         // Chặn trường hợp hiếm: hai lần chạy song song cùng chèn một chuyến.
         skipDuplicates: true,
       });
@@ -152,6 +178,22 @@ export const fleetGoogleSheets: Connector<SheetData[], FleetParseResult> = {
       'info',
       `Đã ghi ${upserted} chuyến mới vào fleet_trips (${existing.size} chuyến đã có sẵn)`,
     );
+
+    if (unlinked > 0) {
+      // Xe chạy thật nhưng chưa có hồ sơ — người quản lý cần lập để theo dõi
+      // giấy tờ và bảo dưỡng.
+      const plates = [
+        ...new Set(
+          fresh
+            .filter((r) => !vehicleByPlate.has(normalizePlate(r.vehicleId)))
+            .map((r) => r.vehicleId),
+        ),
+      ];
+      await ctx.log(
+        'warn',
+        `${unlinked} chuyến chưa nối được hồ sơ xe — thiếu biển số: ${plates.join(', ')}`,
+      );
+    }
 
     return {
       upserted,
