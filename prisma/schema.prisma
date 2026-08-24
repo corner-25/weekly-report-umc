@@ -630,8 +630,8 @@ model Vehicle {
   sourceFile String? // Tên file gốc
 
   // Liên kết tới License (chứng nhận đăng ký) nếu có
-  licenseId String?  @unique
-  license   License? @relation(fields: [licenseId], references: [id])
+  /// Giấy tờ của xe: cà-vẹt, giấy phép đèn còi ưu tiên, đăng kiểm…
+  licenses License[]
 
   maintenanceLogs VehicleMaintenance[]
 
@@ -792,13 +792,18 @@ model License {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  /// Xe mà giấy tờ này thuộc về. Một xe có nhiều giấy tờ: cà-vẹt, giấy đèn
+  /// còi ưu tiên, đăng kiểm — nên đây là quan hệ một-nhiều, không phải một-một.
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
   renewals LicenseRenewal[]
-  vehicle  Vehicle?
 
   @@index([category])
   @@index([departmentId])
   @@index([expiryDate])
   @@index([category, expiryDate])
+  @@index([vehicleId])
   @@map("licenses")
 }
 
