@@ -1202,55 +1202,86 @@ def create_revenue_analysis_tab(df):
     
     with col1:
         st.markdown("##### 📊 Phân bố doanh thu mỗi chuyến")
-        
-        # Create histogram with statistics
+
+        # Cắt ở phân vị 95 trước khi vẽ.
+        #
+        # Doanh thu trung vị 495.000đ nhưng có chuyến lên tới 20,3 triệu. Trải
+        # 25 khoảng đều tới giá trị lớn nhất thì mỗi khoảng rộng hơn 800.000đ,
+        # toàn bộ dữ liệu dồn vào cột đầu tiên và không thấy được hình dạng phân
+        # phối. Phần vượt ngưỡng nêu riêng bên dưới thay vì bóp méo cả biểu đồ.
+        cutoff_revenue = revenue_data['revenue_vnd'].quantile(0.95)
+        main_range = revenue_data[revenue_data['revenue_vnd'] <= cutoff_revenue]
+        outliers = revenue_data[revenue_data['revenue_vnd'] > cutoff_revenue]
+
         fig_dist = px.histogram(
-            revenue_data,
+            main_range,
             x='revenue_vnd',
-            nbins=25,
-            title="Phân bố doanh thu mỗi chuyến",
+            nbins=40,
+            title="Phân bố doanh thu mỗi chuyến (95% chuyến)",
             labels={'revenue_vnd': 'Doanh thu (VNĐ)', 'count': 'Số chuyến'}
         )
-        
-        # Add statistics lines
-        mean_revenue = revenue_data['revenue_vnd'].mean()
+
         median_revenue = revenue_data['revenue_vnd'].median()
         q75_revenue = revenue_data['revenue_vnd'].quantile(0.75)
-        
-        fig_dist.add_vline(x=mean_revenue, line_dash="dash", line_color="red",
-                          annotation_text=f"TB: {mean_revenue:,.0f}")
+
         fig_dist.add_vline(x=median_revenue, line_dash="dash", line_color="blue",
                           annotation_text=f"Trung vị: {median_revenue:,.0f}")
         fig_dist.add_vline(x=q75_revenue, line_dash="dash", line_color="green",
                           annotation_text=f"Q75: {q75_revenue:,.0f}")
-        
-        fig_dist.update_layout(height=400)
+
+        fig_dist.update_layout(height=400, bargap=0.05)
         st.plotly_chart(fig_dist, use_container_width=True)
+
+        if not outliers.empty:
+            st.caption(
+                f"Ngoài biểu đồ: {len(outliers)} chuyến trên "
+                f"{cutoff_revenue:,.0f}đ (cao nhất {outliers['revenue_vnd'].max():,.0f}đ)"
+            )
     
     with col2:
-        st.markdown("##### 🎯 Doanh thu theo loại xe")
-        if 'vehicle_type' in revenue_data.columns:
-            type_revenue = revenue_data.groupby('vehicle_type').agg({
-                'revenue_vnd': ['sum', 'mean', 'count']
-            }).round(0)
-            type_revenue.columns = ['Tổng DT', 'TB DT/chuyến', 'Số chuyến']
-            type_revenue = type_revenue.reset_index()
-            
-            # Pie chart
-            fig_type_pie = px.pie(
-                type_revenue,
-                values='Tổng DT',
-                names='vehicle_type',
-                title="Phân bố doanh thu theo loại xe",
-                color_discrete_map={'Cứu thương': '#ff6b6b', 'Hành chính': '#4ecdc4'}
+        # Trước đây chỗ này vẽ biểu đồ tròn "doanh thu theo loại xe", nhưng xe
+        # hành chính không thu tiền — 0/2.444 chuyến có doanh thu — nên biểu đồ
+        # luôn là một hình tròn đặc của riêng xe cứu thương. Thay bằng so sánh
+        # giữa các xe, thứ thật sự khác nhau.
+        st.markdown("##### 🎯 Doanh thu theo xe")
+        if 'vehicle_id' in revenue_data.columns:
+            per_vehicle = revenue_data.groupby('vehicle_id').agg(
+                tong_dt=('revenue_vnd', 'sum'),
+                tb_dt=('revenue_vnd', 'mean'),
+                so_chuyen=('revenue_vnd', 'count'),
+            ).reset_index().sort_values('tong_dt', ascending=False)
+
+            fig_vehicle = px.bar(
+                per_vehicle,
+                x='vehicle_id',
+                y='tong_dt',
+                title="Tổng doanh thu theo xe",
+                labels={'vehicle_id': 'Xe', 'tong_dt': 'Doanh thu (VNĐ)'},
+                color='tb_dt',
+                color_continuous_scale='Blues',
             )
-            fig_type_pie.update_layout(height=300)
-            st.plotly_chart(fig_type_pie, use_container_width=True)
-            
-            # Stats table
-            st.dataframe(type_revenue, use_container_width=True, hide_index=True)
+            fig_vehicle.update_layout(height=340, coloraxis_colorbar_title="TB/chuyến")
+            fig_vehicle.update_xaxes(tickangle=45)
+            st.plotly_chart(fig_vehicle, use_container_width=True)
+
+            display = per_vehicle.rename(columns={
+                'vehicle_id': 'Xe',
+                'tong_dt': 'Tổng DT',
+                'tb_dt': 'TB DT/chuyến',
+                'so_chuyen': 'Số chuyến',
+            })
+            display['Tổng DT'] = display['Tổng DT'].map(lambda v: f"{v:,.0f}")
+            display['TB DT/chuyến'] = display['TB DT/chuyến'].map(lambda v: f"{v:,.0f}")
+            st.dataframe(display, use_container_width=True, hide_index=True)
+
+            hanh_chinh = df[df['vehicle_type'] == 'Hành chính'] if 'vehicle_type' in df.columns else None
+            if hanh_chinh is not None and not hanh_chinh.empty:
+                st.caption(
+                    f"Không tính {hanh_chinh['vehicle_id'].nunique()} xe hành chính "
+                    f"({len(hanh_chinh):,} chuyến) — xe hành chính không thu tiền."
+                )
         else:
-            st.info("Không có dữ liệu loại xe")
+            st.info("Không có dữ liệu xe")
     
     # Row 4: Performance analysis
     col3, col4 = st.columns(2)
@@ -2030,24 +2061,38 @@ def create_distance_analysis_tab(df):
     
     with col5:
         st.markdown("#### 📊 Phân bố quãng đường mỗi chuyến")
+
+        # Cắt ở phân vị 95 như biểu đồ doanh thu: quãng đường trung vị 10km
+        # nhưng có chuyến đi tỉnh tới 958km. Trải đều tới giá trị lớn nhất thì
+        # mỗi khoảng rộng gần 40km, phần lớn chuyến nội thành dồn hết vào cột
+        # đầu và không phân biệt được chuyến 2km với chuyến 30km.
+        cutoff_distance = distance_data['distance_km'].quantile(0.95)
+        main_distance = distance_data[distance_data['distance_km'] <= cutoff_distance]
+        far_trips = distance_data[distance_data['distance_km'] > cutoff_distance]
+
         fig_dist_hist = px.histogram(
-            distance_data,
+            main_distance,
             x='distance_km',
-            nbins=25,
-            title="Phân bố quãng đường chuyến xe",
+            nbins=40,
+            title="Phân bố quãng đường chuyến xe (95% chuyến)",
             labels={'distance_km': 'Quãng đường (km)', 'count': 'Số chuyến'}
         )
-        
-        # Add statistics lines
-        mean_distance = distance_data['distance_km'].mean()
+
         median_distance = distance_data['distance_km'].median()
-        
-        fig_dist_hist.add_vline(x=mean_distance, line_dash="dash", line_color="red",
-                               annotation_text=f"TB: {mean_distance:.1f}km")
+        q75_distance = distance_data['distance_km'].quantile(0.75)
+
         fig_dist_hist.add_vline(x=median_distance, line_dash="dash", line_color="blue",
                                annotation_text=f"Trung vị: {median_distance:.1f}km")
-        fig_dist_hist.update_layout(height=400)
+        fig_dist_hist.add_vline(x=q75_distance, line_dash="dash", line_color="green",
+                               annotation_text=f"Q75: {q75_distance:.1f}km")
+        fig_dist_hist.update_layout(height=400, bargap=0.05)
         st.plotly_chart(fig_dist_hist, use_container_width=True)
+
+        if not far_trips.empty:
+            st.caption(
+                f"Ngoài biểu đồ: {len(far_trips)} chuyến trên "
+                f"{cutoff_distance:.0f}km (xa nhất {far_trips['distance_km'].max():.0f}km)"
+            )
     
     with col6:
         st.markdown("#### 🎯 Hiệu suất quãng đường theo xe")
@@ -2266,20 +2311,29 @@ def create_fuel_analysis_tab(df):
         st.warning("⚠️ Không có dữ liệu để phân tích")
         return
     
-    # Định mức nhiên liệu theo xe (lít/100km)
+    # Định mức nhiên liệu theo xe (lít/100km).
+    #
+    # Khoá là biển số trần. Trước đây mang tiền tố loại xe ("CT_50M-004.37")
+    # trong khi vehicle_id từ database chỉ là "50M-004.37", nên không xe nào tra
+    # được định mức và biểu đồ so sánh luôn báo "không có xe nào đủ dữ liệu".
     FUEL_STANDARDS = {
-        "CT_50M-004.37": 18,
-        "CT_50M-002.19": 18,
-        "CT_50A-009.44": 16,
-        "CT_50A-007.39": 16,
-        "CT_50A-010.67": 17,
-        "CT_50A-018.35": 15,
-        "CT_51B-509.51": 17,
-        "CT_50A-019.90": 13,
-        "HC_50A-007.20": 20,
-        "HC_50A-004.55": 22,
-        "HC_50A-012.59": 10,
-        "HC_51B-330.67": 29
+        "50M-004.37": 18,
+        "50M-002.19": 18,
+        "50A-009.44": 16,
+        "50A-007.39": 16,
+        "50A-010.67": 17,
+        "50A-018.35": 15,
+        "51B-509.51": 17,
+        "50A-019.90": 13,
+        "50A-007.20": 20,
+        "50A-004.55": 22,
+        "50A-012.59": 10,
+        "51B-330.67": 29,
+        # Hai xe Toyota Fortuner đưa vào sử dụng từ tháng 5/2026.
+        "50A-032.80": 16,
+        "50A-032.81": 16,
+        # Toyota Zace hành chính, tiêu thụ thực tế đo được 13,6 L/100km.
+        "51A-1212": 16,
     }
     
     # Kiểm tra cột cần thiết
