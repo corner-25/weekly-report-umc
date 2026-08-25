@@ -35,6 +35,8 @@ interface MetricSummaryRow {
   latestWeek: number;
   latestValue: number;
   previousValue: number | null;
+  /** Số bản ghi của chỉ số này bị đánh dấu cần rà soát. */
+  flaggedCount: number;
   minValue: number;
   maxValue: number;
   avgValue: number;
@@ -62,7 +64,8 @@ export async function GET(request: NextRequest) {
         m.name,
         m.unit,
         w."weekNumber",
-        m.value
+        m.value,
+        coalesce(array_length(m."reviewFlags", 1), 0) AS flag_count
       FROM extracted_metrics m
       JOIN weeks w ON w.id = m."weekId"
       WHERE w.year = ${year}
@@ -83,6 +86,7 @@ export async function GET(request: NextRequest) {
       max(r."weekNumber") FILTER (WHERE r.rn = 1) AS "latestWeek",
       max(r.value) FILTER (WHERE r.rn = 1) AS "latestValue",
       max(r.value) FILTER (WHERE r.rn = 2) AS "previousValue",
+      max(r.flag_count) AS "flaggedCount",
       min(r.value) AS "minValue",
       max(r.value) AS "maxValue",
       avg(r.value) AS "avgValue"

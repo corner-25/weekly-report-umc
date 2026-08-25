@@ -9,6 +9,7 @@
  */
 import type { PrismaClient } from '@prisma/client';
 import { PROMPT_VERSION } from './prompts';
+import { validateMetric, validateMetricGroup } from './metric-validation';
 import { extractMetrics, buildHistory, type MetricExtractionInput } from './metric-extraction';
 import {
   matchWeekTasks,
@@ -301,11 +302,56 @@ async function extractMetricsForWeek(
     },
   });
 
+  // Lịch sử của từng chỉ số ở các tuần trước, làm mốc phát hiện giá trị lệch.
+  //
+  // Lỗi nhập là chuyện thường xuyên chứ không phải ngoại lệ: thiếu một số 0,
+  // lấy nhầm số trong ngoặc so sánh, ghi hai dòng cùng ngày. Bắt ngay lúc trích
+  // rẻ hơn nhiều so với dọn tay sau vài chục tuần.
+  const historyRows = await db.$queryRaw<Array<{ name: string; median: number; count: bigint }>>`
+    SELECT name,
+           percentile_disc(0.5) WITHIN GROUP (ORDER BY value) AS median,
+           count(*)::bigint AS count
+    FROM extracted_metrics
+    WHERE "departmentId" = ${input.departmentId}
+      AND "weekId" <> ${weekId}
+      AND value > 0
+    GROUP BY name
+  `;
+  const history = new Map(
+    historyRows.map((r) => [r.name, { median: r.median, count: Number(r.count) }]),
+  );
+
+  // Lỗi chỉ thấy được khi so các số liệu trong cùng tuần với nhau.
+  const groupIssues = validateMetricGroup(
+    result.metrics.map((m) => ({
+      name: m.name,
+      value: m.value,
+      unit: m.unit,
+      sourceText: m.sourceText,
+      asOfDate: m.asOfDate,
+    })),
+  );
+
   let extracted = 0;
   let flagged = 0;
 
-  for (const metric of result.metrics) {
-    if (metric.flags.length > 0) flagged += 1;
+  for (const [index, metric] of result.metrics.entries()) {
+    const issues = [
+      ...validateMetric(
+        {
+          name: metric.name,
+          value: metric.value,
+          unit: metric.unit,
+          sourceText: metric.sourceText,
+          asOfDate: metric.asOfDate,
+        },
+        history.get(metric.name),
+      ),
+      ...(groupIssues.get(index) ?? []),
+    ];
+
+    const reviewFlags = [...metric.flags, ...issues.map((i) => i.flag)];
+    if (reviewFlags.length > 0) flagged += 1;
 
     await db.extractedMetric.create({
       data: {
@@ -320,6 +366,7 @@ async function extractMetricsForWeek(
         sourceText: metric.sourceText,
         confidence: metric.confidence,
         originalValue: metric.value,
+        reviewFlags,
         extractionModel: model,
       },
     });

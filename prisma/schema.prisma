@@ -1319,6 +1319,12 @@ model ExtractedMetric {
   /// Giá trị AI trích ban đầu, giữ lại khi người duyệt sửa.
   originalValue Float?
 
+  /// Dấu hiệu bất thường phát hiện khi trích: DATE_FRAGMENT, COMPARISON_VALUE,
+  /// OUTLIER_HIGH, OUTLIER_LOW, MIXED_SCALE, DUPLICATE_PERIOD…
+  ///
+  /// Chỉ đánh dấu, không tự sửa giá trị — máy đoán sai một lần là hỏng cả
+  /// chuỗi, mà người đọc câu gốc là biết ngay.
+  reviewFlags   String[] @default([])
   extractionModel String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

@@ -17,7 +17,7 @@
 
 import { Select } from '@/components/ui/Select';
 import { useEffect, useState } from 'react';
-import { Table2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Table2, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Department {
@@ -35,6 +35,8 @@ interface MetricSummary {
   latestWeek: number;
   latestValue: number;
   previousValue: number | null;
+  /** Số bản ghi bị đánh dấu cần rà soát (nhập sai, lệch bất thường…). */
+  flaggedCount: number;
   minValue: number;
   maxValue: number;
   avgValue: number;
@@ -127,6 +129,7 @@ export default function MetricsDataPage() {
     return c !== null && c <= -NOTABLE_CHANGE_PERCENT;
   });
   const latestWeek = filtered.reduce((max, m) => Math.max(max, m.latestWeek), 0);
+  const flaggedMetrics = filtered.filter((m) => m.flaggedCount > 0);
 
   if (loading) {
     return (
@@ -151,7 +154,7 @@ export default function MetricsDataPage() {
       />
 
       {/* Ba con số trả lời: có gì bất thường tuần này không? */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
           <p className="text-sm text-slate-600">Tăng đáng kể</p>
           <p className="text-3xl font-bold text-emerald-600 tabular-nums mt-1">
@@ -177,6 +180,20 @@ export default function MetricsDataPage() {
           </p>
           <p className="text-xs text-slate-400 mt-1">
             xuất hiện đủ nhiều tuần để so sánh
+          </p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+          <p className="text-sm text-slate-600">Cần rà soát</p>
+          <p
+            className={`text-3xl font-bold tabular-nums mt-1 ${
+              flaggedMetrics.length > 0 ? 'text-amber-600' : 'text-slate-900'
+            }`}
+          >
+            {flaggedMetrics.length}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            nghi nhập sai hoặc lệch bất thường
           </p>
         </div>
       </div>
@@ -289,7 +306,15 @@ export default function MetricsDataPage() {
                     className="hover:bg-slate-50/80 transition-colors"
                   >
                     <td className="px-6 py-3">
-                      <p className="text-sm text-slate-900">{m.name}</p>
+                      <p className="text-sm text-slate-900 flex items-center gap-1.5">
+                        {m.name}
+                        {m.flaggedCount > 0 && (
+                          <AlertTriangle
+                            className="w-3.5 h-3.5 text-amber-500 shrink-0"
+                            aria-label="Có số liệu cần rà soát"
+                          />
+                        )}
+                      </p>
                       <p className="text-xs text-slate-400">
                         {m.departmentName}
                         {m.unit ? ` · ${m.unit}` : ''}
@@ -347,6 +372,17 @@ export default function MetricsDataPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {flaggedMetrics.length > 0 && (
+        <p className="text-xs text-amber-700 mt-4 flex items-start gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+          <span>
+            {flaggedMetrics.length} chỉ số có số liệu nghi nhập sai — giá trị lệch
+            hẳn khỏi mức thường thấy, hoặc nhiều giá trị cho cùng một mốc thời
+            gian. Hệ thống chỉ đánh dấu, không tự sửa; cần đối chiếu báo cáo gốc.
+          </span>
+        </p>
       )}
 
       <p className="text-xs text-slate-400 mt-4">
