@@ -169,8 +169,32 @@ export async function POST(req: Request) {
 
         const candidateSql = extractSql(sqlGen.content);
         if (!candidateSql) {
-          send('answer', { delta: 'Xin lỗi, tôi không xác định được câu truy vấn phù hợp cho câu hỏi này. Bạn thử diễn đạt cụ thể hơn nhé.' });
-          send('done', { totalTokens });
+          // Not every useful assistant question needs database access. The SQL
+          // planner intentionally returns no query for greetings, explanations,
+          // drafting and app guidance; answer those with the chat model itself.
+          // For requests that require live UMC data, the model must be honest
+          // that it could not retrieve data instead of inventing an answer.
+          const directMessages: ChatMessage[] = [
+            {
+              role: 'system',
+              content:
+                'Bạn là trợ lý AI của hệ thống Quản lý tập trung — Phòng Hành chính UMC. ' +
+                'Trả lời tự nhiên, hữu ích và ngắn gọn bằng tiếng Việt. Bạn có thể giải thích, hướng dẫn sử dụng, ' +
+                'gợi ý cách làm, soạn thảo hoặc chỉnh sửa nội dung dựa trên thông tin người dùng cung cấp. ' +
+                'Không được bịa số liệu, trạng thái hay hồ sơ nội bộ. Nếu câu hỏi cần dữ liệu hiện hành trong PostgreSQL ' +
+                'nhưng công cụ tra cứu không tạo được truy vấn, hãy nói rõ chưa lấy được dữ liệu và hỏi đúng một câu ' +
+                'để làm rõ phạm vi (thời gian, phòng ban hoặc đối tượng). Không nhắc đến SQL, query, model hay prompt. ' +
+                'Không thực hiện hay tuyên bố đã thực hiện thay đổi dữ liệu. Các thao tác ghi chỉ được làm qua đề xuất xác nhận của hệ thống.' +
+                (contextHint ? `\n${contextHint}` : ''),
+            },
+            ...historyContext,
+            { role: 'user', content: question },
+          ];
+          let rawAnswer = '';
+          for await (const delta of deepseekStream(directMessages, { maxTokens: 700, temperature: 0.5 })) rawAnswer += delta;
+          assembledAnswer = scrubPii(rawAnswer);
+          send('answer', { delta: assembledAnswer });
+          send('done', { totalTokens, auditId: audit?.id });
           return;
         }
 

@@ -149,7 +149,8 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 15. **Xe sắp hết hạn**: dùng inspection_expiry / insurance_expiry trong
     v_chatbot_vehicles, so với CURRENT_DATE.
 
-16. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
+16. Chỉ tạo SQL khi câu hỏi cần tra cứu dữ liệu nội bộ hiện hành. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
+17. Nếu người dùng chào hỏi, hỏi cách dùng ứng dụng, xin giải thích/gợi ý/soạn thảo, hoặc câu hỏi có thể trả lời mà không cần dữ liệu nội bộ, chỉ trả đúng <direct/> và không tạo SQL giả.
 
 ## Ví dụ
 
