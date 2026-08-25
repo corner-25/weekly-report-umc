@@ -16,6 +16,7 @@
  *   npx tsx prisma/reextract-all-weeks.ts --confirm --from=20  # tiếp từ tuần 20
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 import { downloadSharedFile } from '@/lib/ingestion/fetchers/onedrive-share';
 import { parseHospitalReport } from '@/lib/ingestion/parsers/hospital-report';
 import { extractWeekTasksByDepartment } from '@/lib/ingestion/parsers/hospital-week-tasks';
@@ -76,6 +77,12 @@ async function main() {
     return;
   }
 
+  // Sao lưu trước khi ghi. Script này từng xoá mất hai tuần dữ liệu vì lệnh xoá
+  // theo mốc thời gian đụng cả bản ghi vừa nạp — khi đó phải trích lại từ
+  // OneDrive vài tiếng, có bản sao thì chỉ mất vài giây.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['extracted_metrics', 'week_task_progress'], 'reextract');
+
   let totalTasks = 0;
   let totalMetrics = 0;
   let totalTokens = 0;
@@ -85,6 +92,9 @@ async function main() {
   for (const sheet of targets) {
     const weekId = weekById.get(`${sheet.year}-${sheet.week}`)!;
     const started = Date.now();
+
+    // Đếm trước để nhận ra tuần bị hỏng ở lần chạy trước.
+    const beforeTasks = await prisma.weekTaskProgress.count({ where: { weekId } });
 
     let weekTasks = 0;
     let weekMetrics = 0;
@@ -122,30 +132,36 @@ async function main() {
       }
     }
 
-    // Xoá dữ liệu CŨ của tuần này, giữ lại phần vừa nạp.
+    // Xoá SỐ LIỆU cũ của tuần này, giữ lại phần vừa nạp.
     //
-    // Nhận ra bằng mốc thời gian: bản ghi tạo trước lúc script bắt đầu xử lý
-    // tuần này là của lần trích trước. `extractionModel` chỉ lưu tên model
-    // ("glm-4.5") nên không phân biệt được phiên bản prompt.
+    // Chỉ đụng tới `extractedMetric` — nó được tạo mới mỗi lần nên `createdAt`
+    // phân biệt được cũ/mới.
     //
-    // Xoá SAU khi nạp xong: nếu bước trên lỗi thì dữ liệu cũ vẫn còn nguyên,
-    // thà có dữ liệu cũ còn hơn mất trắng một tuần.
+    // KHÔNG xoá `weekTaskProgress` theo cách này: `importWeekForDepartment`
+    // dùng `upsert`, nên bản ghi cập nhật vẫn giữ `createdAt` gốc. Lệnh xoá
+    // "tạo trước mốc" vì thế xoá luôn dữ liệu vừa ghi — lần chạy trước đã làm
+    // mất trắng tuần 4 và 5, tuần 3 mất một nửa.
+    //
+    // Xoá SAU khi nạp xong: nếu bước trên lỗi thì dữ liệu cũ vẫn còn nguyên.
     if (!weekFailed) {
       const cutoff = new Date(started);
       const removed = await prisma.extractedMetric.deleteMany({
         where: { weekId, createdAt: { lt: cutoff } },
       });
-      await prisma.weekTaskProgress.deleteMany({
-        where: { weekId, createdAt: { lt: cutoff } },
-      });
       oldRemoved += removed.count;
     }
 
+    const afterTasks = await prisma.weekTaskProgress.count({ where: { weekId } });
     const seconds = Math.round((Date.now() - started) / 1000);
+
+    // `weekTasks` là số lần upsert, không phải số bản ghi còn lại — một nhiệm
+    // vụ khớp nhiều dòng sẽ được upsert nhiều lần. Báo con số thật trong
+    // database để phát hiện ngay nếu dữ liệu hụt đi.
     console.log(
-      `${String(weekTasks).padStart(3)} nhiệm vụ · ${String(weekMetrics).padStart(3)} số liệu · ` +
+      `${String(afterTasks).padStart(3)} nhiệm vụ · ${String(weekMetrics).padStart(3)} số liệu · ` +
         `${seconds}s · ${weekTokens.toLocaleString('vi-VN')} tokens` +
-        (weekFailed ? '  ← CÓ LỖI, giữ dữ liệu cũ' : ''),
+        (weekFailed ? '  ← CÓ LỖI, giữ dữ liệu cũ' : '') +
+        (afterTasks < beforeTasks ? `  ← HỤT ${beforeTasks - afterTasks} bản ghi` : ''),
     );
 
     totalTasks += weekTasks;

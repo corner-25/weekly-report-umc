@@ -17,6 +17,7 @@
  *   npx tsx prisma/clean-metric-names.ts --confirm  # ghi thật
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 
 /**
  * Các mẫu ngày tháng cần bỏ khỏi tên.
@@ -153,6 +154,10 @@ async function main() {
     await prisma.$disconnect();
     return;
   }
+
+  // Sao lưu trước khi ghi — script sửa hàng loạt không lùi được.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['extracted_metrics'], 'cleanname');
 
   const deleted = await prisma.extractedMetric.deleteMany({
     where: { name: { in: comparisons.map((c) => c.name) } },

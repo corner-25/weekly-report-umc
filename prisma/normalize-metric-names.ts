@@ -18,6 +18,7 @@
  *   npx tsx prisma/normalize-metric-names.ts --confirm  # ghi thật
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 
 /**
  * Cụm phân loại bệnh nhân, có thể đứng đầu hoặc cuối tên.
@@ -95,6 +96,10 @@ async function main() {
     await prisma.$disconnect();
     return;
   }
+
+  // Sao lưu trước khi ghi — script sửa hàng loạt không lùi được.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['extracted_metrics'], 'normname');
 
   let updated = 0;
   for (const r of renames) {

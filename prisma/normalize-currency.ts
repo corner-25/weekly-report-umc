@@ -15,6 +15,7 @@
  *   npx tsx prisma/normalize-currency.ts --confirm  # ghi thật
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 
 /** Hệ số quy đổi mỗi đơn vị về VND. */
 const TO_VND: Record<string, number> = {
@@ -133,6 +134,10 @@ async function main() {
     await prisma.$disconnect();
     return;
   }
+
+  // Sao lưu trước khi ghi — script sửa hàng loạt không lùi được.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['extracted_metrics'], 'currency');
 
   for (const c of changes) {
     await prisma.extractedMetric.update({

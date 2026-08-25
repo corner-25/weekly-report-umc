@@ -11,6 +11,7 @@
  *   npx tsx prisma/delete-retired-vehicles.ts --confirm  # xoá thật
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 
 /**
  * Biển số xe cần xoá, do người quản lý chỉ định.
@@ -82,6 +83,10 @@ async function main() {
     await prisma.$disconnect();
     return;
   }
+
+  // Sao lưu trước khi ghi — script sửa hàng loạt không lùi được.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['vehicles', 'vehicle_maintenance_logs', 'licenses'], 'delvehicle');
 
   // Giấy tờ dùng onDelete: SetNull nên không tự mất theo; gỡ liên kết trước để
   // chúng không trỏ vào xe đã biến mất.

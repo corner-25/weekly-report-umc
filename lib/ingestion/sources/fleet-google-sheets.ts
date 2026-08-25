@@ -1,4 +1,5 @@
 import { SyncSourceKind } from '@prisma/client';
+import { normalizePlate } from '@/lib/fleet/plate';
 import { computeChecksum } from '../checksum';
 import { fetchAllSheets, parseCredentials, type SheetData } from '../fetchers/google-sheets';
 import { parseFleetSheets, type FleetParseResult } from '../parsers/fleet-rows';
@@ -11,17 +12,6 @@ import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types
  * đẩy JSON qua GitHub rồi app đọc lại. Sheets API gọi được từ Railway nên bỏ
  * hẳn khâu trung gian đó.
  */
-
-/**
- * Rút biển số về dạng so khớp: chỉ chữ và số, viết hoa.
- *
- * Tài xế nhập trên Google Sheets dùng dấu chấm ("50A-007.39"), người quản lý lập
- * hồ sơ dùng gạch ngang ("50A-007-39"), có bản còn thừa dấu cách. So trực tiếp
- * chỉ khớp 4/19 xe; bỏ hết ký tự ngăn cách thì khớp toàn bộ.
- */
-function normalizePlate(plate: string): string {
-  return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
-}
 
 /** Số dòng mỗi lô createMany. Lô lớn hơn ít lợi mà tốn bộ nhớ. */
 const UPSERT_BATCH_SIZE = 500;

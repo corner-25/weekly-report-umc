@@ -24,6 +24,7 @@
  *   npx tsx prisma/dedupe-metric-values.ts --confirm  # ghi thật
  */
 import { PrismaClient } from '@prisma/client';
+import { backupBeforeWrite } from '@/lib/db-backup';
 
 interface Row {
   id: string;
@@ -214,6 +215,10 @@ async function main() {
     await prisma.$disconnect();
     return;
   }
+
+  // Sao lưu trước khi ghi — script sửa hàng loạt không lùi được.
+  console.log('Sao lưu:');
+  await backupBeforeWrite(prisma, ['extracted_metrics'], 'dedupe');
 
   const result = await prisma.extractedMetric.deleteMany({
     where: { id: { in: toDelete.map((d) => d.row.id) } },

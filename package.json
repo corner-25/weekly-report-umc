@@ -16,7 +16,9 @@
     "db:seed-sources": "tsx prisma/seed-sync-sources.ts",
     "sync:local": "curl -X POST -H \"x-cron-secret: $CRON_SECRET\" http://localhost:3000/api/cron/sync",
     "watch:import": "tsx prisma/watch-import.ts",
-    "import:week": "tsx prisma/import-hospital-week.ts"
+    "import:week": "tsx prisma/import-hospital-week.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -53,6 +55,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
     "ts-node": "^10.9.2",
+    "vitest": "^4.1.11",
     "xlsx": "^0.18.5"
   },
   "prisma": {
