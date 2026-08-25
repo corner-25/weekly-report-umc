@@ -1224,22 +1224,29 @@ def create_revenue_analysis_tab(df):
         median_revenue = revenue_data['revenue_vnd'].median()
         q75_revenue = revenue_data['revenue_vnd'].quantile(0.75)
 
-        # Đặt nhãn ở hai độ cao khác nhau: trung vị và Q75 nằm sát nhau
-        # (495.000 và 650.000) nên nhãn cùng độ cao sẽ đè lên nhau.
-        fig_dist.add_vline(
-            x=median_revenue, line_dash="dash", line_color="blue",
-            annotation_text=f"Trung vị {median_revenue:,.0f}",
-            annotation_position="top left",
-            annotation_font_color="blue",
+        # Vẽ đường mốc không kèm nhãn, rồi đặt nhãn PHÍA TRÊN vùng vẽ.
+        #
+        # Nhãn mặc định nằm bên trong biểu đồ nên bị cột dữ liệu che mất. Đặt ở
+        # yref="paper" với y > 1 thì chữ nằm hẳn ngoài khung, không cột nào che
+        # được. Hai mốc sát nhau (495.000 và 650.000) nên xếp so le hai tầng.
+        fig_dist.add_vline(x=median_revenue, line_dash="dash", line_color="blue")
+        fig_dist.add_vline(x=q75_revenue, line_dash="dash", line_color="green")
+
+        fig_dist.add_annotation(
+            x=median_revenue, y=1.14, xref="x", yref="paper",
+            text=f"Trung vị {median_revenue:,.0f}",
+            showarrow=False, font=dict(color="blue", size=11),
+            bgcolor="rgba(255,255,255,0.85)",
         )
-        fig_dist.add_vline(
-            x=q75_revenue, line_dash="dash", line_color="green",
-            annotation_text=f"Q75 {q75_revenue:,.0f}",
-            annotation_position="bottom right",
-            annotation_font_color="green",
+        fig_dist.add_annotation(
+            x=q75_revenue, y=1.04, xref="x", yref="paper",
+            text=f"Q75 {q75_revenue:,.0f}",
+            showarrow=False, font=dict(color="green", size=11),
+            bgcolor="rgba(255,255,255,0.85)",
         )
 
-        fig_dist.update_layout(height=400, bargap=0.05)
+        # Chừa chỗ phía trên cho hai tầng nhãn.
+        fig_dist.update_layout(height=400, bargap=0.05, margin=dict(t=90))
         st.plotly_chart(fig_dist, use_container_width=True)
 
         if not outliers.empty:
@@ -2091,20 +2098,24 @@ def create_distance_analysis_tab(df):
         median_distance = distance_data['distance_km'].median()
         q75_distance = distance_data['distance_km'].quantile(0.75)
 
-        # Hai mốc nằm sát nhau (10km và 24km) nên tách nhãn theo chiều cao.
-        fig_dist_hist.add_vline(
-            x=median_distance, line_dash="dash", line_color="blue",
-            annotation_text=f"Trung vị {median_distance:.0f}km",
-            annotation_position="top left",
-            annotation_font_color="blue",
+        # Nhãn đặt ngoài vùng vẽ, so le hai tầng — xem giải thích ở biểu đồ
+        # phân bố doanh thu phía trên.
+        fig_dist_hist.add_vline(x=median_distance, line_dash="dash", line_color="blue")
+        fig_dist_hist.add_vline(x=q75_distance, line_dash="dash", line_color="green")
+
+        fig_dist_hist.add_annotation(
+            x=median_distance, y=1.14, xref="x", yref="paper",
+            text=f"Trung vị {median_distance:.0f}km",
+            showarrow=False, font=dict(color="blue", size=11),
+            bgcolor="rgba(255,255,255,0.85)",
         )
-        fig_dist_hist.add_vline(
-            x=q75_distance, line_dash="dash", line_color="green",
-            annotation_text=f"Q75 {q75_distance:.0f}km",
-            annotation_position="bottom right",
-            annotation_font_color="green",
+        fig_dist_hist.add_annotation(
+            x=q75_distance, y=1.04, xref="x", yref="paper",
+            text=f"Q75 {q75_distance:.0f}km",
+            showarrow=False, font=dict(color="green", size=11),
+            bgcolor="rgba(255,255,255,0.85)",
         )
-        fig_dist_hist.update_layout(height=400, bargap=0.05)
+        fig_dist_hist.update_layout(height=400, bargap=0.05, margin=dict(t=90))
         st.plotly_chart(fig_dist_hist, use_container_width=True)
 
         if not far_trips.empty:
