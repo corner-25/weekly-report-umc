@@ -27,24 +27,70 @@ let cache: CachedEmbeddings | null = null;
 const OPENAI_MODEL = 'text-embedding-3-small';
 const GEMINI_MODEL = 'gemini-embedding-001';
 
-function getProvider(): 'openai' | 'gemini' | null {
+/**
+ * Qwen (Alibaba DashScope) — ưu tiên dùng vì hiểu tiếng Việt tốt hơn.
+ *
+ * zAI không có API embedding: thử `embedding-2`, `embedding-3` trên cả
+ * api.z.ai lẫn open.bigmodel.cn đều trả "Unknown Model", và danh sách model của
+ * key chỉ có 9 model chat GLM.
+ *
+ * DashScope dùng giao thức tương thích OpenAI nên tái sử dụng được cùng một
+ * hàm gọi, chỉ khác URL và tên model.
+ */
+const QWEN_MODEL = 'text-embedding-v4';
+const QWEN_BASE_URL =
+  process.env.DASHSCOPE_BASE_URL ??
+  'https://dashscope-intl.aliyuncs.com/compatible-mode/v1';
+
+function getProvider(): 'qwen' | 'openai' | 'gemini' | null {
+  // Qwen trước: hiểu tiếng Việt tốt hơn cho tên chỉ số bệnh viện.
+  if (process.env.DASHSCOPE_API_KEY) return 'qwen';
   if (process.env.OPENAI_API_KEY) return 'openai';
   if (process.env.GOOGLE_API_KEY) return 'gemini';
   return null;
 }
 
-async function embedOpenAi(inputs: string[]): Promise<number[][]> {
-  const res = await fetch('https://api.openai.com/v1/embeddings', {
+/**
+ * Gọi API embedding theo giao thức OpenAI.
+ *
+ * Dùng chung cho OpenAI và DashScope — hai bên cùng nhận `{model, input}` và
+ * trả `{data: [{embedding}]}`.
+ */
+async function embedOpenAiCompatible(
+  inputs: string[],
+  options: { baseUrl: string; apiKey: string; model: string; label: string },
+): Promise<number[][]> {
+  const res = await fetch(`${options.baseUrl}/embeddings`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${options.apiKey}`,
     },
-    body: JSON.stringify({ model: OPENAI_MODEL, input: inputs }),
+    body: JSON.stringify({ model: options.model, input: inputs }),
   });
-  if (!res.ok) throw new Error(`OpenAI embed ${res.status}: ${await res.text()}`);
+  if (!res.ok) {
+    throw new Error(`${options.label} embed ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  }
   const json = (await res.json()) as { data: Array<{ embedding: number[] }> };
   return json.data.map((d) => d.embedding);
+}
+
+async function embedOpenAi(inputs: string[]): Promise<number[][]> {
+  return embedOpenAiCompatible(inputs, {
+    baseUrl: 'https://api.openai.com/v1',
+    apiKey: process.env.OPENAI_API_KEY!,
+    model: OPENAI_MODEL,
+    label: 'OpenAI',
+  });
+}
+
+async function embedQwen(inputs: string[]): Promise<number[][]> {
+  return embedOpenAiCompatible(inputs, {
+    baseUrl: QWEN_BASE_URL,
+    apiKey: process.env.DASHSCOPE_API_KEY!,
+    model: QWEN_MODEL,
+    label: 'Qwen',
+  });
 }
 
 async function embedGemini(inputs: string[]): Promise<number[][]> {
@@ -73,7 +119,14 @@ async function embedGemini(inputs: string[]): Promise<number[][]> {
 
 async function embedBatch(inputs: string[]): Promise<{ vectors: number[][]; model: string }> {
   const provider = getProvider();
-  if (!provider) throw new Error('No embedding API key configured (OPENAI_API_KEY or GOOGLE_API_KEY)');
+  if (!provider) {
+    throw new Error(
+      'Chưa cấu hình key embedding (DASHSCOPE_API_KEY, OPENAI_API_KEY hoặc GOOGLE_API_KEY)',
+    );
+  }
+  if (provider === 'qwen') {
+    return { vectors: await embedQwen(inputs), model: `qwen/${QWEN_MODEL}` };
+  }
   if (provider === 'openai') {
     return { vectors: await embedOpenAi(inputs), model: `openai/${OPENAI_MODEL}` };
   }

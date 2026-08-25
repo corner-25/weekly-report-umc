@@ -7,24 +7,54 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 ## Views có sẵn
 
 ### 1. v_chatbot_metrics — Chỉ số định lượng theo tuần
-- week_number (int): số tuần ISO (1-53)
-- year (int): năm
-- week_start (date): ngày đầu tuần (thứ 2)
-- week_end (date): ngày cuối tuần (chủ nhật)
-- department_name (text): tên phòng ban (VD: "Phòng Kế hoạch Tổng hợp")
-- metric_name (text): tên chỉ số (VD: "Ghép gan", "Số lượt khám VIP", "Lượt xem YouTube")
-- metric_unit (text|null): đơn vị (VD: "ca", "lượt", "VND")
-- value (numeric): giá trị
-- note (text|null): ghi chú
+- week_number (int), year (int)
+- week_start, week_end (date): tuần báo cáo chạy Thứ Bảy → Thứ Sáu
+- department_name (text): VD "Phòng Kế hoạch Tổng hợp"
+- metric_name (text): VD "Ca ghép gan luỹ kế", "Tổng viện phí nội trú"
+- metric_unit (text|null): VD "ca", "lượt", "VND"
+- value (numeric)
+- period (text): 'WEEK'|'CUMULATIVE'|'MONTH'|'QUARTER'|'YEAR'
+- as_of_date (date|null): mốc của số liệu luỹ kế
+- source_text (text): câu văn gốc số liệu được trích ra — DÙNG ĐỂ GIẢI THÍCH
+- review_flags (text[]): dấu hiệu nghi nhập sai, rỗng = bình thường
+  'OUTLIER_HIGH' lệch cao bất thường · 'OUTLIER_LOW' lệch thấp
+  'DUPLICATE_PERIOD' nhiều giá trị cùng mốc · 'MIXED_SCALE' trộn hai thang
+  'DATE_FRAGMENT' mảnh ngày tháng · 'COMPARISON_VALUE' số ở mệnh đề so sánh
+- review_status (text): 'PENDING'|'APPROVED'|'REJECTED'
 
-### 2. v_chatbot_tasks — Nhiệm vụ thường kỳ + tiến độ tuần
-- week_number, year (int)
-- department_name (text)
-- task_name (text): tên nhiệm vụ
-- result (text): kết quả tuần đó
-- progress_percent (int): % tiến độ (0-100)
-- is_important (bool)
-- completed_at (timestamp|null)
+### 2. v_chatbot_tasks — Nhiệm vụ + tiến độ + NỘI DUNG BÁO CÁO
+- week_number, year (int), week_start, week_end (date)
+- department_name, task_name (text)
+- result_text (text): TOÀN VĂN báo cáo phòng ban viết — dùng cho câu hỏi
+  "phòng X tuần rồi làm gì", "có việc gì về Y không"
+- subject (text|null): chủ thể cụ thể của dòng báo cáo
+- progress_percent (int|null): null khi báo cáo không nêu %
+- task_type (text): 'RECURRING' thường quy · 'CUMULATIVE' có đích
+  'MILESTONE' việc một lần · 'MONITORING' theo dõi · 'UNRELIABLE' không tin được
+- progress_meaning (text): 'COMPLETION' % thật · 'WEEKLY_DONE' xong việc tuần
+  'TIME_RATIO' % thời gian trôi · 'MEANINGLESS' con số vô nghĩa
+- is_active (bool), last_seen_week (int|null): tuần cuối nhiệm vụ xuất hiện
+
+### 2b. v_chatbot_vehicles — Xe: hồ sơ, giấy tờ, bảo dưỡng
+- license_plate (text): biển số VD "50A-007.39"
+- brand, model, category, status (text)
+- manufacture_year (int|null)
+- inspection_expiry, insurance_expiry (date|null): hạn đăng kiểm, bảo hiểm
+- trip_count (int), last_trip_date (date|null)
+- license_count (int): số giấy tờ
+- maintenance_count (int), last_maintenance_date (date|null)
+
+### 2c. v_chatbot_maintenance — Lịch sử bảo dưỡng từng xe
+- license_plate (text), maintenance_date (date|null)
+- odometer (int|null): số km lúc bảo dưỡng
+- maintenance_type (text): 'BAO_DUONG'|'SUA_CHUA'|'DANG_KIEM'|'BAO_HIEM'|'KHAC'
+- description, workshop (text)
+- odometer_status (text): 'OK'|'DECREASED'|'BIG_JUMP' — số km nghi ghi sai
+
+### 2d. v_chatbot_fleet_summary — Chuyến xe (không có tên tài xế)
+- record_date (date), license_plate, vehicle_type (text)
+- distance_km, fuel_liters, revenue_vnd, duration_hours (numeric)
+- work_category, area_type (text), odometer_status (text)
 
 ### 3. v_chatbot_mou — Biên bản ghi nhớ hợp tác
 - title (text), mou_number (text|null)
@@ -83,7 +113,33 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 8. **Khi không chắc tên metric chính xác**: tìm trước bằng query phụ — query DISTINCT metric_name LIKE '%từ%' để xem có tên gì, rồi mới lọc.
 9. **Câu hỏi định lượng** ("bao nhiêu", "tổng cộng", "số lượng") về thứ KHÔNG phải tích lũy (ví dụ "có bao nhiêu khách VIP được đón") → lấy GIÁ TRỊ TUẦN MỚI NHẤT (vì value đã là tích lũy hoặc số gần nhất). Tuyệt đối không SUM trừ khi user nói "tổng tất cả các tuần".
 10. **Sự kiện "tuần này / sắp tới"**: dùng event_date >= CURRENT_DATE và <= CURRENT_DATE + interval '7 days'. Nếu không có data thì DB chưa cập nhật, không phải lỗi.
-11. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
+11. **Xu hướng / so sánh kỳ** ("chỉ số nào đang giảm", "tuần này có gì bất thường"):
+    so tuần mới nhất với các tuần trước bằng window function, đừng bắt user nêu tên chỉ số:
+    WITH s AS (
+      SELECT metric_name, department_name, value, week_number,
+             lag(value) OVER (PARTITION BY department_name, metric_name ORDER BY week_number) AS prev
+      FROM v_chatbot_metrics WHERE year = 2026
+    )
+    SELECT metric_name, department_name, prev, value,
+           round((value - prev) / nullif(prev,0) * 100) AS pct
+    FROM s WHERE prev IS NOT NULL AND week_number = (SELECT max(week_number) FROM v_chatbot_metrics)
+      AND abs(value - prev) / nullif(prev,0) > 0.2
+    ORDER BY abs(value - prev) / nullif(prev,0) DESC LIMIT 20;
+
+12. **Nội dung báo cáo tự do** ("phòng X tuần rồi làm gì"): đọc result_text, KHÔNG
+    tìm trong metric. Trả cả result_text để người đọc thấy nguyên văn.
+
+13. **Tiến độ**: KHÔNG lấy trung bình progress_percent khi progress_meaning là
+    'MEANINGLESS' hoặc 'WEEKLY_DONE' — nhiệm vụ thường quy tuần nào cũng ghi 100%.
+    Muốn đo nhịp làm việc thì đếm tỷ lệ đạt 100% trong nhóm 'WEEKLY_DONE'.
+
+14. **Số liệu nghi sai** ("có gì cần rà soát"): lọc array_length(review_flags,1) > 0,
+    trả kèm source_text để người đọc đối chiếu.
+
+15. **Xe sắp hết hạn**: dùng inspection_expiry / insurance_expiry trong
+    v_chatbot_vehicles, so với CURRENT_DATE.
+
+16. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
 
 ## Ví dụ
 
