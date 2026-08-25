@@ -6,11 +6,13 @@ const PHONE_RE = /\b0\d{9,10}\b/g;
 const EMAIL_RE = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 // CMND (9 digits) / CCCD (12 digits)
 const ID_RE = /\b\d{9,12}\b/g;
+const DOB_RE = /\b(?:0?[1-9]|[12]\d|3[01])[\/-](?:0?[1-9]|1[0-2])[\/-](?:19|20)\d{2}\b/g;
 
 export function scrubPii(text: string): string {
   return text
     .replace(PHONE_RE, '[số ĐT đã ẩn]')
     .replace(EMAIL_RE, '[email đã ẩn]')
+    .replace(DOB_RE, '[ngày sinh đã ẩn]')
     .replace(ID_RE, (match) => {
       // Only mask plausible ID numbers; leave plain "1234567890" style stats alone
       // by requiring no thousand separator nearby.

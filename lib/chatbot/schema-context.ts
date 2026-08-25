@@ -80,14 +80,24 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 - chair (text|null), participants (text|null)
 - meeting_room (text|null)
 
-### 6. v_chatbot_secretaries — Thư ký (KHÔNG có số điện thoại / email)
-- employee_code (text|null): mã NV (VD: 'J25-170')
-- full_name (text)
-- date_of_birth (date|null)
-- status (text): 'ACTIVE'|'INACTIVE'|...
-- secretary_type (text|null)
-- current_department (text|null)
-- start_date (date|null)
+### 6. v_chatbot_secretaries — Thống kê thư ký, không có danh tính
+- status, secretary_type, current_department, secretary_count
+
+### 7. Vận hành mở rộng
+- v_chatbot_meeting_rooms: record_id, name, location, capacity, các cờ thiết bị/tiện ích, is_active
+- v_chatbot_event_checklists: record_id, event_id, event_name, event_date, title, description, is_completed, completed_at
+- v_chatbot_vip_summary: record_id, visit_date, organization_name, destination, visit_count (không có tên khách/nhân viên/liên hệ)
+- v_chatbot_mou_details: record_id, mou_id, mou_title, detail_type, title, content, status, progress, deadline, result, notes
+- v_chatbot_license_renewals: record_id, license_id, license_name, license_number, renewed_date, previous_expiry, new_expiry, decision_number, notes
+- v_chatbot_sync_health: record_id, source_name, source_kind, status, trigger, started_at, finished_at, rows_read/upserted/skipped, error_message
+- v_chatbot_import_health: record_id, source_id, year, week, status, item_count, first_created_at, last_reviewed_at
+- v_chatbot_extraction_quality: record_id, extraction_model, task_count, average_confidence, flagged_count
+- v_chatbot_hc_metrics: record_id, category, content, year, week, month, value
+
+### 8. View tổng hợp nhân sự (chỉ vai trò ADMIN)
+- v_chatbot_secretary_qualifications: thống kê số thư ký/chứng chỉ/điểm trung bình theo loại và phòng
+- v_chatbot_secretary_transfers: số lượt điều chuyển theo phòng và tháng
+- v_chatbot_recruitment_summary: số ứng viên và điểm phỏng vấn trung bình theo trạng thái/vị trí
 
 ## Quy tắc khi sinh SQL (đọc kỹ!)
 
@@ -156,10 +166,10 @@ Q: Doanh thu bãi xe các tuần gần đây
 <sql>SELECT department_name, metric_name, value, metric_unit, week_number, year FROM v_chatbot_metrics WHERE metric_name ILIKE '%bãi xe%' ORDER BY year DESC, week_number DESC LIMIT 10</sql>
 
 Q: Phòng KHTH tuần 14 có nhiệm vụ gì đã hoàn thành?
-<sql>SELECT task_name, result, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND week_number = 14 AND completed_at IS NOT NULL ORDER BY task_name LIMIT 50</sql>
+<sql>SELECT task_name, result_text, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND week_number = 14 AND progress_percent = 100 ORDER BY task_name LIMIT 50</sql>
 
 Q: Phòng KHTH làm gì tuần qua / tuần mới nhất?
-<sql>SELECT task_name, result, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND (week_number, year) = (SELECT week_number, year FROM v_chatbot_tasks ORDER BY year DESC, week_number DESC LIMIT 1) LIMIT 50</sql>
+<sql>SELECT task_name, result_text, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND (week_number, year) = (SELECT week_number, year FROM v_chatbot_tasks ORDER BY year DESC, week_number DESC LIMIT 1) LIMIT 50</sql>
 
 Q: MOU nào sắp hết hạn?
 <sql>SELECT title, partner_name, expiry_date, days_until_expiry, status FROM v_chatbot_mou WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>
@@ -168,7 +178,7 @@ Q: Giấy phép xe nào sắp hết hạn?
 <sql>SELECT name, license_number, expiry_date, days_until_expiry, category FROM v_chatbot_licenses WHERE category IN ('VEHICLE', 'ADMIN_VEHICLE') AND expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>
 
 Q: Có bao nhiêu thư ký đang hoạt động?
-<sql>SELECT COUNT(*)::int AS active_secretaries FROM v_chatbot_secretaries WHERE status = 'ACTIVE'</sql>
+<sql>SELECT SUM(secretary_count)::int AS active_secretaries FROM v_chatbot_secretaries WHERE status = 'ACTIVE'</sql>
 
 Q: Sự kiện sắp tới trong 7 ngày
 <sql>SELECT name, event_date, event_time, meeting_room, status FROM v_chatbot_events WHERE event_date >= CURRENT_DATE AND event_date <= CURRENT_DATE + INTERVAL '7 days' ORDER BY event_date, event_time LIMIT 50</sql>

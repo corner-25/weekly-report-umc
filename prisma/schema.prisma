@@ -15,16 +15,27 @@ datasource db {
 
 // User model for authentication
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String      @id @default(cuid())
+  email        String      @unique
   passwordHash String
   name         String?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime    @default(now())
+  role         UserRole    @default(STAFF)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
 
-  weeks    Week[]
-  chatLogs ChatbotAuditLog[]
+  weeks                  Week[]
+  chatLogs               ChatbotAuditLog[]
+  chatbotActionProposals ChatbotActionProposal[]
 
+  @@index([departmentId])
   @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  ANALYST
+  STAFF
 }
 
 // ChatbotAuditLog - One row per chatbot exchange, used for cost tracking and abuse review.
@@ -39,11 +50,43 @@ model ChatbotAuditLog {
   totalTokens  Int?
   durationMs   Int?
   errorMessage String?  @db.Text
+  contextPath  String?
+  feedback     String?
+  actionType   String?
+  actionStatus String?
   createdAt    DateTime @default(now())
 
   @@index([userId, createdAt])
   @@index([createdAt])
   @@map("chatbot_audit_logs")
+}
+
+enum ChatbotActionStatus {
+  PENDING
+  EXECUTED
+  EXPIRED
+  REJECTED
+}
+
+// A write action prepared by AI. Payload is validated again at execution time.
+// The row is user-bound and single-use, preventing replay/double submission.
+model ChatbotActionProposal {
+  id          String              @id @default(cuid())
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
+  actionType  String
+  title       String
+  description String              @db.Text
+  payload     Json
+  status      ChatbotActionStatus @default(PENDING)
+  expiresAt   DateTime
+  executedAt  DateTime?
+  resultId    String?
+  createdAt   DateTime            @default(now())
+
+  @@index([userId, status, expiresAt])
+  @@index([expiresAt])
+  @@map("chatbot_action_proposals")
 }
 
 // Week model - represents a weekly report
@@ -89,6 +132,7 @@ model Department {
   licenses              License[]
   mous                  MOU[]
   extractedMetrics      ExtractedMetric[]
+  users                 User[]
 
   @@map("departments")
 }
@@ -653,19 +697,19 @@ model VehicleMaintenance {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  date        DateTime? // Ngày thực hiện (có thể null khi text không rõ)
-  odometer    Int? // Số km (cây số)
+  date           DateTime? // Ngày thực hiện (có thể null khi text không rõ)
+  odometer       Int? // Số km (cây số)
   /// Kết quả kiểm tra số km so với lần bảo dưỡng trước cùng xe:
   /// OK | DECREASED | BIG_JUMP | NO_PREVIOUS
   ///
   /// Lý lịch gốc có lỗi đánh máy thật: "170.00km" thiếu một số 0 nên đọc ra
   /// 17.000 giữa chuỗi đang ở 165.000. Đánh dấu để người xem biết chỗ nào cần
   /// đối chiếu lại với bản gốc, thay vì lặng lẽ để số sai nằm trong thống kê.
-  odometerStatus String @default("OK")
-  category    String? // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
-  description String    @db.Text // Mô tả chi tiết
-  workshop    String? // Gara/đơn vị thực hiện
-  costAmount  Decimal?  @db.Decimal(15, 2)
+  odometerStatus String    @default("OK")
+  category       String? // Loại: BAO_DUONG / SUA_CHUA / DANG_KIEM / BAO_HIEM / KHAC
+  description    String    @db.Text // Mô tả chi tiết
+  workshop       String? // Gara/đơn vị thực hiện
+  costAmount     Decimal?  @db.Decimal(15, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1324,7 +1368,7 @@ model ExtractedMetric {
   ///
   /// Chỉ đánh dấu, không tự sửa giá trị — máy đoán sai một lần là hỏng cả
   /// chuỗi, mà người đọc câu gốc là biết ngay.
-  reviewFlags   String[] @default([])
+  reviewFlags     String[] @default([])
   extractionModel String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

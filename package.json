@@ -18,7 +18,8 @@
     "watch:import": "tsx prisma/watch-import.ts",
     "import:week": "tsx prisma/import-hospital-week.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "chatbot:eval": "tsx prisma/eval-chatbot.ts"
   },
   "keywords": [],
   "author": "",

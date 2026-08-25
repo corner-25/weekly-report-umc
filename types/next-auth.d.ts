@@ -6,6 +6,8 @@ declare module 'next-auth' {
       id: string;
       email: string;
       name?: string | null;
+      role: 'ADMIN' | 'ANALYST' | 'STAFF';
+      departmentId: string | null;
     };
   }
 
@@ -13,11 +15,15 @@ declare module 'next-auth' {
     id: string;
     email: string;
     name?: string | null;
+    role: 'ADMIN' | 'ANALYST' | 'STAFF';
+    departmentId: string | null;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
+    role: 'ADMIN' | 'ANALYST' | 'STAFF';
+    departmentId: string | null;
   }
 }

@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Send, Sparkles, X, Code2 } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Check, Code2, ExternalLink, Loader2, Send, Sparkles, ThumbsDown, ThumbsUp, X } from 'lucide-react';
+
+interface Source { id: string; title: string; href: string }
+interface Proposal { id: string; actionType: string; title: string; description: string; expiresAt: string }
 
 interface Message {
   id: string;
@@ -10,17 +15,31 @@ interface Message {
   sql?: string;
   rowCount?: number | null;
   error?: string;
+  sources?: Source[];
+  proposal?: Proposal;
+  auditId?: string;
+  feedback?: boolean;
+  actionResultHref?: string;
 }
 
 const STORAGE_KEY = 'chatbot.conversation.v1';
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   'Hiện nay có bao nhiêu ca ghép gan?',
   'Tuần 14 phòng KHTH có nhiệm vụ gì đã hoàn thành?',
   'MOU nào sắp hết hạn trong 60 ngày tới?',
   'Có bao nhiêu thư ký đang hoạt động?',
 ];
 
+function suggestionsFor(pathname: string) {
+  if (pathname.includes('/weeks/')) return ['Tóm tắt báo cáo tuần này', 'Việc nào chậm tiến độ?', 'Soạn kế hoạch tuần tới'];
+  if (pathname.includes('/mous')) return ['MOU nào sắp hết hạn?', 'Tóm tắt MOU đang hoạt động', 'MOU nào cần chú ý?'];
+  if (pathname.includes('/hospital-events')) return ['Sự kiện nào diễn ra trong 7 ngày tới?', 'Tạo sự kiện họp giao ban ngày mai lúc 08:00', 'Sự kiện nào chưa xác nhận?'];
+  if (pathname.includes('/tasks')) return ['Tuần mới nhất các phòng làm gì?', 'Việc nào chậm tiến độ?', 'Có số liệu nào nghi nhập sai?'];
+  return DEFAULT_SUGGESTIONS;
+}
+
 export function ChatbotPanel({ onClose }: { onClose: () => void }) {
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -65,7 +84,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
       const res = await fetch('/api/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, history }),
+        body: JSON.stringify({ question: q, history, context: { pathname, title: document.title } }),
       });
 
       if (!res.ok) {
@@ -109,9 +128,16 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
                   setMessages((prev) =>
                     prev.map((m) => (m.id === assistantMsg.id ? { ...m, content: m.content + delta } : m)),
                   );
-                } else if (lastEvent === 'done' && typeof data.error === 'string') {
-                  const errMsg = data.error;
-                  setMessages((prev) => prev.map((m) => (m.id === assistantMsg.id ? { ...m, error: errMsg } : m)));
+                } else if (lastEvent === 'sources' && Array.isArray(data.sources)) {
+                  setMessages((prev) => prev.map((m) => (m.id === assistantMsg.id ? { ...m, sources: data.sources as Source[] } : m)));
+                } else if (lastEvent === 'proposal' && data.proposal) {
+                  setMessages((prev) => prev.map((m) => (m.id === assistantMsg.id ? { ...m, proposal: data.proposal as Proposal } : m)));
+                } else if (lastEvent === 'done') {
+                  setMessages((prev) => prev.map((m) => m.id === assistantMsg.id ? {
+                    ...m,
+                    auditId: typeof data.auditId === 'string' ? data.auditId : m.auditId,
+                    error: typeof data.error === 'string' ? data.error : m.error,
+                  } : m));
                 }
               } catch {
                 /* skip malformed */
@@ -138,6 +164,23 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
     } catch {
       /* ignore */
     }
+  }
+
+  async function executeProposal(messageId: string, proposalId: string) {
+    setBusy(true);
+    try {
+      const res = await fetch('/api/chatbot/actions/execute', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Không thể thực hiện đề xuất.');
+      setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, proposal: undefined, content: `${m.content}\n\n${data.message}`, actionResultHref: data.entity.href } : m));
+    } catch (error) {
+      setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, error: error instanceof Error ? error.message : 'Có lỗi xảy ra.' } : m));
+    } finally { setBusy(false); }
+  }
+
+  function sendFeedback(messageId: string, auditId: string, helpful: boolean) {
+    setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, feedback: helpful } : m));
+    void fetch('/api/chatbot/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auditId, helpful }) });
   }
 
   return (
@@ -183,7 +226,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
               Hỏi bằng tiếng Việt tự nhiên, tôi sẽ tra dữ liệu giúp.
             </p>
             <div className="space-y-1.5">
-              {SUGGESTIONS.map((s) => (
+              {suggestionsFor(pathname).map((s) => (
                 <button
                   key={s}
                   onClick={() => ask(s)}
@@ -197,7 +240,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
         )}
 
         {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
+          <MessageBubble key={m.id} message={m} busy={busy} onExecute={executeProposal} onFeedback={sendFeedback} />
         ))}
 
         {busy && messages[messages.length - 1]?.role === 'assistant' && messages[messages.length - 1]?.content === '' && (
@@ -251,7 +294,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({ message, busy, onExecute, onFeedback }: { message: Message; busy: boolean; onExecute: (messageId: string, proposalId: string) => void; onFeedback: (messageId: string, auditId: string, helpful: boolean) => void }) {
   const [showSql, setShowSql] = useState(false);
   const isUser = message.role === 'user';
 
@@ -287,6 +330,24 @@ function MessageBubble({ message }: { message: Message }) {
             )}
           </div>
         )}
+        {!isUser && message.sources && message.sources.length > 0 && (
+          <div className="mt-2 space-y-1">
+            <p className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Nguồn kiểm chứng</p>
+            {message.sources.map((source) => <Link key={source.id} href={source.href} className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] text-cyan-700 hover:bg-cyan-50"><span className="font-semibold">{source.id}</span><span className="flex-1">{source.title}</span><ExternalLink className="h-3 w-3" /></Link>)}
+          </div>
+        )}
+        {!isUser && message.proposal && (
+          <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">
+            <p className="font-semibold">{message.proposal.title}</p><p className="mt-1 leading-5">{message.proposal.description}</p>
+            <button disabled={busy} onClick={() => onExecute(message.id, message.proposal!.id)} className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-amber-600 px-3 py-2 font-semibold text-white hover:bg-amber-700 disabled:opacity-50">{busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}Xác nhận và thực hiện</button>
+            <p className="mt-1.5 text-center text-[10px] text-amber-700">Chưa ghi dữ liệu · Hết hạn sau 10 phút</p>
+          </div>
+        )}
+        {!isUser && message.actionResultHref && <Link href={message.actionResultHref} className="mt-2 flex items-center gap-1 text-xs font-medium text-cyan-700 hover:underline">Mở sự kiện vừa tạo <ExternalLink className="h-3 w-3" /></Link>}
+        {!isUser && message.auditId && (
+          <div className="mt-1 flex items-center gap-1 px-1 text-slate-400"><span className="mr-1 text-[10px]">Hữu ích?</span><button aria-label="Hữu ích" onClick={() => onFeedback(message.id, message.auditId!, true)} className={message.feedback === true ? 'text-emerald-600' : 'hover:text-emerald-600'}><ThumbsUp className="h-3 w-3" /></button><button aria-label="Không hữu ích" onClick={() => onFeedback(message.id, message.auditId!, false)} className={message.feedback === false ? 'text-red-600' : 'hover:text-red-600'}><ThumbsDown className="h-3 w-3" /></button></div>
+        )}
+        {!isUser && message.error && <p className="mt-1 px-1 text-[10px] text-red-600">{message.error}</p>}
       </div>
     </div>
   );
