@@ -108,16 +108,85 @@ def _render_data_quality(df) -> None:
                     hide_index=True,
                     use_container_width=True,
                 )
+                # Phân theo mức lệch: hai loại sai rất khác nhau nên cách sửa
+                # cũng khác. Lệch vài chục km là ghi nhầm một hai chữ số, sửa
+                # tay được. Lệch hàng nghìn km là nhập sai hẳn, phải hỏi lại
+                # tài xế mới biết số đúng.
+                if 'odometer_delta' in issues.columns:
+                    delta = issues['odometer_delta'].abs()
+                    nho = int((delta <= 50).sum())
+                    vua = int(((delta > 50) & (delta <= 1000)).sum())
+                    lon = int((delta > 1000).sum())
+
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("Lệch ≤50km", f"{nho}",
+                              help="Ghi nhầm một hai chữ số — đối chiếu chuyến "
+                                   "liền trước là sửa được")
+                    c2.metric("Lệch 51–1.000km", f"{vua}",
+                              help="Có thể quên ghi vài chuyến hoặc nhầm hàng trăm")
+                    c3.metric("Lệch >1.000km", f"{lon}",
+                              help="Nhập sai hẳn chữ số — cần hỏi lại tài xế")
+
                 # Checkbox chứ không phải expander: cả khối này đã nằm trong một
                 # expander, mà Streamlit không cho lồng expander vào nhau.
                 if st.checkbox(f"Xem {len(issues)} chuyến cụ thể", key="odo_issue_detail"):
                     cols = [c for c in ['record_date', 'vehicle_id', 'driver_name',
                                         'odometer', 'odometer_delta', 'odometer_status']
                             if c in issues.columns]
+                    # Xếp theo mức lệch giảm dần: chuyến sai nhiều nhất lên đầu
+                    # vì đó là chỗ ảnh hưởng thống kê nặng nhất.
+                    detail = issues[cols].copy()
+                    if 'odometer_delta' in detail.columns:
+                        detail = detail.assign(_abs=detail['odometer_delta'].abs())
+                        detail = detail.sort_values('_abs', ascending=False).drop(columns='_abs')
+                    else:
+                        detail = detail.sort_values('record_date', ascending=False)
+
                     st.dataframe(
-                        issues[cols].sort_values('record_date', ascending=False),
+                        detail.rename(columns={
+                            'record_date': 'Ngày',
+                            'vehicle_id': 'Xe',
+                            'driver_name': 'Tài xế',
+                            'odometer': 'Chỉ số ghi',
+                            'odometer_delta': 'Lệch (km)',
+                            'odometer_status': 'Vấn đề',
+                        }),
                         hide_index=True,
                         use_container_width=True,
+                    )
+                    st.caption(
+                        "Cách sửa: đối chiếu với chuyến liền trước của cùng xe. "
+                        "Sửa trên Google Sheets nguồn, lần đồng bộ sau sẽ cập nhật lại."
+                    )
+
+                # Tỷ lệ nhầm theo tài xế — để biết là lỗi cá nhân hay hệ thống.
+                if 'driver_name' in df.columns and st.checkbox(
+                    "Xem tỷ lệ nhầm theo tài xế", key="odo_by_driver"
+                ):
+                    by_driver = df.groupby('driver_name').agg(
+                        bat_thuong=('odometer_status',
+                                    lambda x: (~x.isin(['OK', 'NO_PREVIOUS'])).sum()),
+                        tong=('odometer_status', 'size'),
+                    ).reset_index()
+                    by_driver = by_driver[by_driver['tong'] >= 50]
+                    by_driver['ty_le'] = (
+                        by_driver['bat_thuong'] / by_driver['tong'] * 100
+                    ).round(1)
+                    by_driver = by_driver.sort_values('ty_le', ascending=False)
+
+                    st.dataframe(
+                        by_driver.rename(columns={
+                            'driver_name': 'Tài xế',
+                            'bat_thuong': 'Chuyến bất thường',
+                            'tong': 'Tổng chuyến',
+                            'ty_le': 'Tỷ lệ (%)',
+                        }),
+                        hide_index=True,
+                        use_container_width=True,
+                    )
+                    st.caption(
+                        "Tỷ lệ gần bằng nhau ở mọi tài xế nghĩa là vấn đề nằm ở "
+                        "cách ghi chép chung, không phải do một người."
                     )
 
         if 'duration_method' in df.columns:
