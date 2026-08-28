@@ -622,8 +622,9 @@ enum VehicleStatus {
 }
 
 model Vehicle {
-  id                 String          @id @default(cuid())
-  licensePlate       String          @unique // Biển số (VD: 50A-007-20)
+  id                     String          @id @default(cuid())
+  licensePlate           String          @unique // Biển số hiển thị (VD: 50A-007-20)
+  licensePlateNormalized String          @unique // Chỉ chữ/số, viết hoa (VD: 50A00720)
   brand              String? // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
   model              String? // Số loại (HIACE, FORTUNER, ...)
   category           VehicleCategory @default(OTHER)

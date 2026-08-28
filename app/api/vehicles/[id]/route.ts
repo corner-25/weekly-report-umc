@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import type { VehicleCategory, VehicleStatus } from '@prisma/client';
+import { authOptions } from '@/lib/auth';
+import { normalizePlate } from '@/lib/fleet/plate';
+import { Prisma, type VehicleCategory, type VehicleStatus } from '@prisma/client';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
     const vehicle = await prisma.vehicle.findFirst({
       where: { id, deletedAt: null },
@@ -38,12 +44,21 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
     const body = await req.json();
+    const licensePlate = body.licensePlate?.trim();
+    const licensePlateNormalized = licensePlate ? normalizePlate(licensePlate) : undefined;
+    if (licensePlate && !licensePlateNormalized) {
+      return NextResponse.json({ error: 'Biển số phải chứa chữ hoặc số' }, { status: 400 });
+    }
     const updated = await prisma.vehicle.update({
       where: { id },
       data: {
-        licensePlate: body.licensePlate?.trim() || undefined,
+        licensePlate: licensePlate || undefined,
+        licensePlateNormalized,
         brand: body.brand?.trim() ?? null,
         model: body.model?.trim() ?? null,
         category: body.category as VehicleCategory | undefined,
@@ -62,12 +77,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json(updated);
   } catch (e) {
     console.error('Error updating vehicle', e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      return NextResponse.json({ error: 'Biển số đã tồn tại trong hệ thống' }, { status: 409 });
+    }
     return NextResponse.json({ error: 'Failed' }, { status: 500 });
   }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
     await prisma.vehicle.update({
       where: { id },

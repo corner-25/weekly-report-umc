@@ -141,7 +141,10 @@ async function main() {
   }
 
   for (const f of plateFixes) {
-    await prisma.vehicle.update({ where: { id: f.id }, data: { licensePlate: f.to } });
+    await prisma.vehicle.update({
+      where: { id: f.id },
+      data: { licensePlate: f.to, licensePlateNormalized: plateKey(f.to) },
+    });
   }
   for (const l of licenseLinks) {
     await prisma.license.update({ where: { id: l.id }, data: { vehicleId: l.vehicleId } });

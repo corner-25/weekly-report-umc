@@ -11,6 +11,7 @@ describe('normalizePlate', () => {
   it('bỏ mọi ký tự ngăn cách', () => {
     expect(normalizePlate('50A-007.39')).toBe('50A00739');
     expect(normalizePlate('50A-007-39')).toBe('50A00739');
+    expect(normalizePlate('50A00739')).toBe('50A00739');
     expect(normalizePlate('50A 007 39')).toBe('50A00739');
   });
 

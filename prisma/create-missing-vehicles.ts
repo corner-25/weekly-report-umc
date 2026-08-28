@@ -12,6 +12,7 @@
  *   npx tsx prisma/create-missing-vehicles.ts --confirm  # ghi thật
  */
 import { PrismaClient } from '@prisma/client';
+import { normalizePlate } from '../lib/fleet/plate';
 
 function plateKey(plate: string): string {
   return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -94,6 +95,7 @@ async function main() {
     const created = await prisma.vehicle.create({
       data: {
         licensePlate: p.plate,
+        licensePlateNormalized: normalizePlate(p.plate),
         brand: p.brand,
         model: p.model,
         // Xe chở người của tổ xe; người quản lý chỉnh lại nếu sai.

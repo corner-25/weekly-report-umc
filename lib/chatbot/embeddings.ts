@@ -38,6 +38,15 @@ const GEMINI_MODEL = 'gemini-embedding-001';
  * hàm gọi, chỉ khác URL và tên model.
  */
 const QWEN_MODEL = 'text-embedding-v4';
+
+/**
+ * Số dòng tối đa mỗi lần gọi DashScope.
+ *
+ * Đo trực tiếp: 10 dòng chạy được, 11 trở lên trả
+ * "batch size is invalid". OpenAI không có giới hạn này nên phải chia lô riêng
+ * cho Qwen.
+ */
+const QWEN_BATCH_SIZE = 10;
 const QWEN_BASE_URL =
   process.env.DASHSCOPE_BASE_URL ??
   'https://dashscope-intl.aliyuncs.com/compatible-mode/v1';
@@ -85,12 +94,18 @@ async function embedOpenAi(inputs: string[]): Promise<number[][]> {
 }
 
 async function embedQwen(inputs: string[]): Promise<number[][]> {
-  return embedOpenAiCompatible(inputs, {
-    baseUrl: QWEN_BASE_URL,
-    apiKey: process.env.DASHSCOPE_API_KEY!,
-    model: QWEN_MODEL,
-    label: 'Qwen',
-  });
+  const out: number[][] = [];
+  for (let i = 0; i < inputs.length; i += QWEN_BATCH_SIZE) {
+    const chunk = inputs.slice(i, i + QWEN_BATCH_SIZE);
+    const vectors = await embedOpenAiCompatible(chunk, {
+      baseUrl: QWEN_BASE_URL,
+      apiKey: process.env.DASHSCOPE_API_KEY!,
+      model: QWEN_MODEL,
+      label: 'Qwen',
+    });
+    out.push(...vectors);
+  }
+  return out;
 }
 
 async function embedGemini(inputs: string[]): Promise<number[][]> {
