@@ -427,31 +427,48 @@ def parse_revenue(revenue_str):
         # If conversion fails, return 0
         return 0.0
         
+def ensure_record_date(df):
+    """Chuẩn hoá cột record_date về datetime64, an toàn khi gọi lặp.
+
+    db_source.load_fleet_data() đã trả về datetime64, nên trường hợp thường gặp
+    là no-op. Chỉ khi cột còn ở dạng chuỗi mới parse, và parse với dayfirst=True
+    vì dữ liệu nguồn là ngày kiểu Việt Nam (dd/mm/yyyy). KHÔNG ép format cứng:
+    ép '%m/%d/%Y' lên '25/12/2026' sẽ tạo NaT hàng loạt.
+    """
+    if 'record_date' not in df.columns:
+        return df
+
+    if not pd.api.types.is_datetime64_any_dtype(df['record_date']):
+        df['record_date'] = pd.to_datetime(
+            df['record_date'], errors='coerce', dayfirst=True)
+
+    return df
+
+
 def filter_data_by_date_range(df, start_date, end_date):
-    """Filter dataframe by date range - FIXED to not drop invalid dates"""
+    """Lọc dataframe theo khoảng ngày.
+
+    Dòng có record_date rỗng (NaT) bị LOẠI khỏi kết quả. Trước đây các dòng này
+    được giữ lại vô điều kiện (valid_mask | invalid_mask), khiến mọi khoảng ngày
+    đều trả về cùng một tập dữ liệu — dashboard không "nhảy" số khi đổi ngày.
+    """
     if df.empty or 'record_date' not in df.columns:
         return df
-    
+
     try:
-        # Ensure record_date is datetime
-        df['record_date'] = pd.to_datetime(df['record_date'], format='%m/%d/%Y', errors='coerce')
-        
-        # Count invalid dates for debugging
-        invalid_count = df['record_date'].isna().sum()
+        df = ensure_record_date(df)
+
+        invalid_count = int(df['record_date'].isna().sum())
         if invalid_count > 0:
-            st.sidebar.warning(f"⚠️ Found {invalid_count} records with invalid dates - keeping them!")
-        
-        # FIXED: Include records with invalid dates in filter
-        # For invalid dates, we'll keep them in the result instead of dropping
-        valid_mask = (df['record_date'].notna()) & (df['record_date'].dt.date >= start_date) & (df['record_date'].dt.date <= end_date)
-        invalid_mask = df['record_date'].isna()
-        
-        # Keep both valid dates in range AND invalid dates
-        combined_mask = valid_mask | invalid_mask
-        filtered_df = df[combined_mask].copy()
-        
-        return filtered_df
-        
+            st.sidebar.warning(
+                f"⚠️ {invalid_count} chuyến không có ngày hợp lệ — "
+                f"đã loại khỏi kết quả lọc")
+
+        mask = ((df['record_date'].dt.date >= start_date)
+                & (df['record_date'].dt.date <= end_date))
+
+        return df[mask].copy()
+
     except Exception as e:
         st.sidebar.error(f"❌ Lỗi lọc dữ liệu: {e}")
         return df
@@ -462,7 +479,7 @@ def get_date_range_from_data(df):
         return datetime.now().date(), datetime.now().date()
     
     try:
-        df['record_date'] = pd.to_datetime(df['record_date'], format='%m/%d/%Y', errors='coerce')
+        df = ensure_record_date(df)
         valid_dates = df[df['record_date'].notna()]
         
         if valid_dates.empty:
@@ -820,7 +837,7 @@ def create_frequency_metrics(df):
         return
     
     try:
-        df['record_date'] = pd.to_datetime(df['record_date'], format='%m/%d/%Y', errors='coerce')
+        df = ensure_record_date(df)
         df['date'] = df['record_date'].dt.date
         
         # Filter out invalid dates
@@ -938,7 +955,7 @@ def create_vehicle_performance_table(df):
     # Ensure datetime conversion
     try:
         if 'record_date' in df.columns:
-            df['record_date'] = pd.to_datetime(df['record_date'], format='%m/%d/%Y', errors='coerce')
+            df = ensure_record_date(df)
             df['date'] = df['record_date'].dt.date
             
             valid_dates = df[df['record_date'].notna()]
@@ -1071,8 +1088,7 @@ def create_revenue_analysis_tab(df):
     
     # Ensure date parsing with correct format
     if 'record_date' in revenue_data.columns:
-        # Parse dd/mm/yyyy format specifically
-        revenue_data['record_date'] = pd.to_datetime(revenue_data['record_date'], format='%d/%m/%Y', errors='coerce')
+        revenue_data = ensure_record_date(revenue_data)
         revenue_data['date'] = revenue_data['record_date'].dt.date
         revenue_data['parsed_date'] = revenue_data['record_date']  # Keep datetime for week calculations
     else:
@@ -1672,7 +1688,7 @@ def create_overload_analysis_tab(df):
     # Xử lý dữ liệu ngày
     if 'date' not in df.columns:
         if 'record_date' in df.columns:
-            df['record_date'] = pd.to_datetime(df['record_date'], errors='coerce')
+            df = ensure_record_date(df)
             df['date'] = df['record_date'].dt.date
         else:
             st.error("❌ Không có dữ liệu ngày để phân tích")
@@ -3410,7 +3426,7 @@ def create_driver_performance_table(df):
     # Ensure datetime conversion
     try:
         if 'record_date' in df.columns:
-            df['record_date'] = pd.to_datetime(df['record_date'], format='%m/%d/%Y', errors='coerce')
+            df = ensure_record_date(df)
             df['date'] = df['record_date'].dt.date
     except:
         pass
