@@ -502,12 +502,29 @@ model Secretary {
   transferLogs SecretaryTransferLog[]
   application  SecretaryApplication?
   examScores   SecretaryExamScore[]
+  birthdayEmailLogs BirthdayEmailLog[]
 
   @@index([secretaryTypeId])
   @@index([currentDepartmentId])
   @@index([dateOfBirth])
   @@index([deletedAt, status, secretaryTypeId])
   @@map("secretaries")
+}
+
+model BirthdayEmailLog {
+  id            String    @id @default(cuid())
+  secretaryId   String
+  secretary     Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  birthdayYear  Int
+  recipient     String
+  status        String
+  errorMessage  String?   @db.Text
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@unique([secretaryId, birthdayYear])
+  @@index([birthdayYear, status])
+  @@map("birthday_email_logs")
 }
 
 // SecretaryExamScore - Điểm các kỳ thi nghiệp vụ

@@ -80,7 +80,7 @@ function Avatar({ name, src }: { name: string; src: string | null }) {
     .join('')
     .toUpperCase();
   return (
-    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+    <div className="w-10 h-10 rounded-full bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-700 text-sm font-semibold flex-shrink-0">
       {initials}
     </div>
   );
@@ -100,19 +100,12 @@ export function SecretaryList({ secretaries, onEdit, onView, onDelete }: Props) 
   const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('vi-VN') : null;
 
   return (
-    <div className="space-y-2">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
       {secretaries.map((s) => {
-        const accent =
-          s.status === 'ACTIVE' ? 'border-l-emerald-400' :
-          s.status === 'ON_LEAVE' ? 'border-l-orange-400' :
-          'border-l-slate-300';
-
-        const typeColor = s.secretaryType?.color ?? '#06b6d4';
-
         return (
           <div
             key={s.id}
-            className={`group bg-white rounded-xl shadow-sm border border-slate-200/80 border-l-4 ${accent} hover:shadow-md hover:border-slate-300 transition-all`}
+            className="group bg-white hover:bg-slate-50/70 transition-colors"
           >
             <div className="p-3.5 flex items-center gap-3">
               <Avatar name={s.fullName} src={s.avatar} />

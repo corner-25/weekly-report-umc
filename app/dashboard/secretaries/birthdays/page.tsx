@@ -22,7 +22,7 @@ interface BirthdaySecretary {
 export default function SecretaryBirthdaysPage() {
   const [secretaries, setSecretaries] = useState<BirthdaySecretary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('month');
+  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week');
 
   const fetchBirthdays = async () => {
     setLoading(true);
@@ -54,7 +54,7 @@ export default function SecretaryBirthdaysPage() {
   const currentMonth = new Date().getMonth();
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <PageHeader
         icon={Cake}
         title="Sinh nhật thư ký"
@@ -101,17 +101,17 @@ export default function SecretaryBirthdaysPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg shadow-sm p-4 text-white">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 bg-rose-50 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
               </svg>
             </div>
             <div>
-              <div className="text-3xl font-bold">{secretaries.length}</div>
-              <div className="text-sm text-white/80">
+              <div className="text-2xl font-semibold text-slate-900">{secretaries.length}</div>
+              <div className="text-sm text-slate-500">
                 {period === 'today' && 'Sinh nhật hôm nay'}
                 {period === 'week' && 'Sinh nhật tuần này'}
                 {period === 'month' && 'Sinh nhật tháng này'}
@@ -120,15 +120,15 @@ export default function SecretaryBirthdaysPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-semibold text-slate-900">
                 {secretaries.filter(s => s.isToday).length}
               </div>
               <div className="text-sm text-slate-500">Sinh nhật hôm nay</div>
@@ -136,15 +136,15 @@ export default function SecretaryBirthdaysPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{monthNames[currentMonth]}</div>
+              <div className="text-xl font-semibold text-slate-900">{monthNames[currentMonth]}</div>
               <div className="text-sm text-slate-500">Tháng hiện tại</div>
             </div>
           </div>
@@ -165,68 +165,30 @@ export default function SecretaryBirthdaysPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
           {secretaries.map((secretary) => (
             <div
               key={secretary.id}
-              className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-all hover:shadow-md ${
-                secretary.isToday ? 'border-pink-300 ring-2 ring-pink-100' : 'border-slate-200'
-              }`}
+              className={`p-4 flex items-center gap-4 transition-colors hover:bg-slate-50 ${secretary.isToday ? 'bg-rose-50/50' : ''}`}
             >
-              {secretary.isToday && (
-                <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center py-1 text-sm font-medium">
-                  Sinh nhật hôm nay!
-                </div>
-              )}
-              <div className="p-4">
-                <div className="flex items-start gap-4">
-                  <div className="relative">
-                    <div className="w-14 h-14 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 font-bold text-xl">
+              <div className="w-14 flex-shrink-0 text-center border-r border-slate-100 pr-4">
+                <div className="text-xl font-semibold text-slate-900">{secretary.birthdayDay}</div>
+                <div className="text-xs uppercase tracking-wide text-slate-400">Tháng {secretary.birthdayMonth}</div>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-semibold flex-shrink-0">
                       {secretary.avatar ? (
-                        <img src={secretary.avatar} alt="" className="w-14 h-14 rounded-full object-cover" />
+                  <img src={secretary.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                       ) : (
                         secretary.fullName.charAt(0).toUpperCase()
                       )}
-                    </div>
-                    {secretary.isToday && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">🎂</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900">{secretary.fullName}</h3>
-                    <p className="text-sm text-slate-500">
-                      {secretary.currentDepartment?.name || 'Chưa phân công'}
-                    </p>
-                    {secretary.secretaryType && (
-                      <span
-                        className="inline-block mt-1 px-2 py-0.5 text-xs rounded-full"
-                        style={{
-                          backgroundColor: secretary.secretaryType.color ? `${secretary.secretaryType.color}20` : '#e5e7eb',
-                          color: secretary.secretaryType.color || '#374151'
-                        }}
-                      >
-                        {secretary.secretaryType.name}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div>
-                    <div className="text-lg font-bold text-slate-900">
-                      {secretary.birthdayDay}/{secretary.birthdayMonth}
-                    </div>
-                    <div className="text-sm text-slate-500">Tròn {secretary.age} tuổi</div>
-                  </div>
-                  {(secretary.phone || secretary.email) && (
-                    <div className="text-right text-sm">
-                      {secretary.phone && <div className="text-slate-600">{secretary.phone}</div>}
-                      {secretary.email && <div className="text-slate-500 text-xs">{secretary.email}</div>}
-                    </div>
-                  )}
-                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2"><h3 className="font-medium text-slate-900 truncate">{secretary.fullName}</h3>{secretary.isToday && <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-medium">Hôm nay</span>}</div>
+                <p className="text-sm text-slate-500 truncate">{secretary.currentDepartment?.name || 'Chưa phân công'} · {secretary.secretaryType?.name || 'Chưa phân loại'}</p>
+              </div>
+              <div className="hidden sm:block text-right flex-shrink-0">
+                <div className="text-sm font-medium text-slate-700">Tròn {secretary.age} tuổi</div>
+                <div className="text-xs text-slate-400">{secretary.email || 'Chưa có email'}</div>
               </div>
             </div>
           ))}

@@ -2,7 +2,7 @@
 
 import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
-import { Users } from 'lucide-react';
+import { Plus, Search, UserCheck, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { SecretaryList } from '@/components/secretaries/SecretaryList';
 import { SecretaryForm } from '@/components/secretaries/SecretaryForm';
@@ -148,7 +148,7 @@ export default function SecretariesPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
       <ConfirmDialog
         open={!!deleteTargetId}
         title="Xóa thư ký"
@@ -159,32 +159,31 @@ export default function SecretariesPage() {
 
       <PageHeader
         icon={Users}
-        title="Quản lý Thư ký"
-        description="Quản lý danh sách thư ký trong bệnh viện"
+        title="Danh sách thư ký"
+        description="Tra cứu, phân công và cập nhật hồ sơ nhân sự"
         className="mb-6"
         actions={
           <button
             onClick={handleCreate}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <Plus className="w-4 h-4" />
             Thêm thư ký
           </button>
         }
       />
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Tìm kiếm theo tên, email, SĐT..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400"
             />
           </div>
           <div>
@@ -227,28 +226,28 @@ export default function SecretariesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-          <div className="text-2xl font-bold text-cyan-600">{secretaries.length}</div>
-          <div className="text-sm text-slate-500">Tổng số thư ký</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Kết quả</span><Users className="w-4 h-4 text-slate-400" /></div>
+          <div className="mt-2 text-2xl font-semibold text-slate-900">{secretaries.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-          <div className="text-2xl font-bold text-emerald-600">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Đang hoạt động</span><UserCheck className="w-4 h-4 text-emerald-600" /></div>
+          <div className="mt-2 text-2xl font-semibold text-slate-900">
             {secretaries.filter(s => s.status === 'ACTIVE').length}
           </div>
-          <div className="text-sm text-slate-500">Đang hoạt động</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-          <div className="text-2xl font-bold text-orange-600">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="text-sm text-slate-500">Đang nghỉ phép</div>
+          <div className="mt-2 text-2xl font-semibold text-slate-900">
             {secretaries.filter(s => s.status === 'ON_LEAVE').length}
           </div>
-          <div className="text-sm text-slate-500">Đang nghỉ phép</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-          <div className="text-2xl font-bold text-slate-600">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="text-sm text-slate-500">Không hoạt động</div>
+          <div className="mt-2 text-2xl font-semibold text-slate-900">
             {secretaries.filter(s => s.status === 'INACTIVE').length}
           </div>
-          <div className="text-sm text-slate-500">Nghỉ việc</div>
         </div>
       </div>
 

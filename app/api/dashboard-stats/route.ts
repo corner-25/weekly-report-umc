@@ -5,17 +5,19 @@ import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { CACHE_TAGS } from '@/lib/cache';
 import { getMasterTaskStatusCounts } from '@/lib/master-task-status';
+import { birthdayInYear, NON_SECRETARY_TYPE, sameUtcDate, todayInAppTimeZone } from '@/lib/birthday';
 
 // Server-side cache: revalidate every 2 minutes
 const getCachedDashboardStats = unstable_cache(
   async () => {
-    const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    const now = todayInAppTimeZone();
+    const startOfToday = new Date(now);
+    const endOfToday = new Date(now);
+    endOfToday.setUTCHours(23, 59, 59, 999);
     const startOfWeek = new Date(startOfToday);
-    startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
+    startOfWeek.setUTCDate(startOfToday.getUTCDate() - startOfToday.getUTCDay());
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setUTCDate(startOfWeek.getUTCDate() + 6);
 
     const moUExpirySoon = new Date();
     moUExpirySoon.setDate(moUExpirySoon.getDate() + 90);
@@ -70,13 +72,20 @@ const getCachedDashboardStats = unstable_cache(
 
       prisma.secretary.groupBy({
         by: ['status'],
-        where: { deletedAt: null },
+        where: {
+          deletedAt: null,
+          secretaryType: { is: { name: { not: NON_SECRETARY_TYPE } } },
+        },
         _count: true,
       }),
 
       prisma.secretary.groupBy({
         by: ['secretaryTypeId'],
-        where: { deletedAt: null, status: 'ACTIVE' },
+        where: {
+          deletedAt: null,
+          status: 'ACTIVE',
+          secretaryType: { is: { name: { not: NON_SECRETARY_TYPE } } },
+        },
         _count: true,
       }),
 
@@ -85,15 +94,15 @@ const getCachedDashboardStats = unstable_cache(
         select: { id: true, name: true, color: true },
       }),
 
-      prisma.$queryRaw<{ id: string; fullName: string; dateOfBirth: Date }[]>`
-        SELECT id, "fullName", "dateOfBirth"
-        FROM secretaries
-        WHERE "deletedAt" IS NULL
-          AND status = 'ACTIVE'
-          AND "dateOfBirth" IS NOT NULL
-          AND EXTRACT(MONTH FROM "dateOfBirth") = ANY(ARRAY[${startOfWeek.getMonth() + 1}::int, ${endOfWeek.getMonth() + 1}::int])
-        LIMIT 20
-      `,
+      prisma.secretary.findMany({
+        where: {
+          deletedAt: null,
+          status: 'ACTIVE',
+          dateOfBirth: { not: null },
+          secretaryType: { is: { name: { not: NON_SECRETARY_TYPE } } },
+        },
+        select: { id: true, fullName: true, dateOfBirth: true },
+      }),
 
       prisma.secretaryTransferLog.findMany({
         take: 3,
@@ -139,21 +148,25 @@ const getCachedDashboardStats = unstable_cache(
       .filter((s) => {
         if (!s.dateOfBirth) return false;
         const dob = new Date(s.dateOfBirth);
-        const bday = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+        const bday = birthdayInYear(dob, now.getUTCFullYear());
         return bday >= startOfWeek && bday <= endOfWeek;
       })
-      .slice(0, 5)
       .map((s) => {
         const dob = new Date(s.dateOfBirth!);
-        const bday = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+        const bday = birthdayInYear(dob, now.getUTCFullYear());
         return {
           id: s.id,
           fullName: s.fullName,
-          birthdayDay: dob.getDate(),
-          birthdayMonth: dob.getMonth() + 1,
-          age: now.getFullYear() - dob.getFullYear(),
-          isToday: bday.toDateString() === startOfToday.toDateString(),
+          birthdayDay: dob.getUTCDate(),
+          birthdayMonth: dob.getUTCMonth() + 1,
+          age: now.getUTCFullYear() - dob.getUTCFullYear(),
+          isToday: sameUtcDate(bday, startOfToday),
         };
+      })
+      .sort((a, b) => {
+        const aDate = Date.UTC(now.getUTCFullYear(), a.birthdayMonth - 1, a.birthdayDay);
+        const bDate = Date.UTC(now.getUTCFullYear(), b.birthdayMonth - 1, b.birthdayDay);
+        return aDate - bDate || a.fullName.localeCompare(b.fullName, 'vi');
       });
 
     const totalSecretaries = secretaryCounts.reduce((sum, g) => sum + g._count, 0);
@@ -183,6 +196,7 @@ const getCachedDashboardStats = unstable_cache(
       activeSecretaries,
       secretariesByType,
       birthdaySecretaries: weekBirthdays,
+      birthdayPreview: weekBirthdays.slice(0, 4),
       recentTransfers,
       expiringMOUs,
     };

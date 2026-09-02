@@ -224,36 +224,36 @@ export default function Dashboard() {
         {/* Right Column - 1/3 */}
         <div className="space-y-6">
           {/* Birthday Widget */}
-          <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-sm overflow-hidden text-white">
-            <div className="px-5 py-4 flex items-center justify-between">
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center">
                   <Cake className="w-5 h-5" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Sinh nhật tuần này</h2>
-                  <p className="text-sm text-white/80">{stats.birthdaySecretaries.length} thư ký</p>
+                  <p className="text-sm text-slate-500">{stats.birthdaySecretaries.length} người · gần nhất trước</p>
                 </div>
               </div>
-              <Link href="/dashboard/secretaries/birthdays" className="text-sm text-white/90 hover:text-white flex items-center gap-1">
+              <Link href="/dashboard/secretaries/birthdays?period=week" className="text-sm text-slate-600 hover:text-slate-900 flex items-center gap-1">
                 Xem <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             <div className="px-5 pb-5">
               {stats.birthdaySecretaries.length === 0 ? (
-                <p className="text-center py-4 text-white/70">Không có sinh nhật tuần này</p>
+                <p className="text-center py-4 text-slate-500">Không có sinh nhật tuần này</p>
               ) : (
-                <div className="space-y-2">
-                  {stats.birthdaySecretaries.map((s: any) => (
-                    <div key={s.id} className="flex items-center gap-3 p-2 bg-white/10 rounded-xl backdrop-blur-sm">
-                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">
-                        {s.fullName.charAt(0)}
+                <div className="divide-y divide-slate-100">
+                  {(stats.birthdayPreview || stats.birthdaySecretaries.slice(0, 4)).map((s: any) => (
+                    <div key={s.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                      <div className="w-10 text-center flex-shrink-0">
+                        <div className="text-lg font-semibold text-slate-900 leading-none">{s.birthdayDay}</div>
+                        <div className="text-[10px] uppercase tracking-wide text-slate-400">Thg {s.birthdayMonth}</div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{s.fullName}</p>
-                        <p className="text-xs text-white/70">
-                          {s.birthdayDay}/{s.birthdayMonth} · {s.age} tuổi
-                          {s.isToday && <span className="ml-1">🎉</span>}
+                        <p className="text-sm font-medium text-slate-900 truncate">{s.fullName}</p>
+                        <p className="text-xs text-slate-500">
+                          {s.isToday ? 'Hôm nay' : `Tròn ${s.age} tuổi`}
                         </p>
                       </div>
                     </div>

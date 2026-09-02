@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NON_SECRETARY_TYPE } from '@/lib/birthday';
 
 // GET - Lấy danh sách thư ký với filter
 export async function GET(request: NextRequest) {
@@ -29,6 +30,10 @@ export async function GET(request: NextRequest) {
 
     if (typeId) {
       where.secretaryTypeId = typeId;
+    } else {
+      // The module defaults to actual secretary roles. Reception staff remain
+      // accessible by selecting their type explicitly.
+      where.secretaryType = { is: { name: { not: NON_SECRETARY_TYPE } } };
     }
 
     if (status) {
