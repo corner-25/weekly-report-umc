@@ -562,6 +562,87 @@ export function toNumber(input: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * Doanh thu VNĐ từ ô nhập tự do.
+ *
+ * `toNumber` chỉ xoá dấu phẩy nên hiểu sai định dạng số kiểu Việt Nam:
+ *   "470.000"   -> 470       (mất 3 số 0)
+ *   "1.310"     -> 1.31      (nghìn thành lẻ)
+ *   "2.000.000" -> null      (Number gặp 2 dấu chấm -> NaN)
+ *
+ * Hàm này suy ra vai trò của dấu theo hình dạng nhóm chữ số. Điểm mấu chốt:
+ * tiền VNĐ không lẻ tới phần nghìn, nên một dấu theo sau đúng 3 chữ số luôn
+ * là phân cách nghìn, không phải dấu thập phân.
+ *
+ * Chuỗi mơ hồ trả null để tầng rà soát gắn cờ, thay vì ghi âm thầm số sai.
+ */
+export function parseRevenueVnd(input: unknown): number | null {
+  if (input === null || input === undefined) return null;
+
+  if (typeof input === 'number') {
+    return Number.isFinite(input) && input >= 0 ? input : null;
+  }
+
+  let s = String(input).trim();
+  if (s === '' || ['nan', 'none', 'null', '-', 'x', 'không'].includes(s.toLowerCase())) {
+    return null;
+  }
+
+  // Bỏ ký hiệu tiền tệ ở cuối ("470000đ", "470.000 VNĐ").
+  s = s.replace(/₫/g, '').trim();
+  s = s.replace(/\s*(vnđ|vnd|đồng|dong|đ|d)\.?$/i, '').trim();
+
+  // Hậu tố viết tắt: "470k", "1.5tr"
+  const suffix = s.match(/^([\d.,\s]+)\s*(k|tr)$/i);
+  if (suffix) {
+    const base = parseNumberPart(suffix[1]);
+    if (base === null) return null;
+    return base * (suffix[2].toLowerCase() === 'k' ? 1_000 : 1_000_000);
+  }
+
+  return parseNumberPart(s);
+}
+
+function parseNumberPart(raw: string): number | null {
+  const s = raw.trim().replace(/\s/g, '');
+  if (s === '' || !/^[\d.,]+$/.test(s)) return null;
+
+  const hasDot = s.includes('.');
+  const hasComma = s.includes(',');
+
+  // Có cả hai dấu: dấu xuất hiện SAU là thập phân ("1.310,50" vs "1,310.50").
+  if (hasDot && hasComma) {
+    const decSep = s.lastIndexOf('.') > s.lastIndexOf(',') ? '.' : ',';
+    const thouSep = decSep === '.' ? ',' : '.';
+    const norm = s.split(thouSep).join('').replace(decSep, '.');
+    return safeNonNegative(norm);
+  }
+
+  if (!hasDot && !hasComma) return safeNonNegative(s);
+
+  const sep = hasDot ? '.' : ',';
+  const parts = s.split(sep);
+
+  // Lặp nhiều lần -> phân cách nghìn ("1.310.000").
+  if (parts.length > 2) {
+    return parts.slice(1).every((p) => p.length === 3)
+      ? safeNonNegative(parts.join(''))
+      : null;
+  }
+
+  const tail = parts[1];
+  if (tail.length === 3) return safeNonNegative(parts[0] + tail);      // nghìn
+  if (tail.length >= 1 && tail.length <= 2) {
+    return safeNonNegative(parts[0] + '.' + tail);                      // thập phân
+  }
+  return null;
+}
+
+function safeNonNegative(s: string): number | null {
+  const n = Number(s);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
 /** Chỉ số đồng hồ nhỏ nhất còn hợp lý — dưới ngưỡng này là nhập nhầm. */
 const MIN_ODOMETER = 1;
 

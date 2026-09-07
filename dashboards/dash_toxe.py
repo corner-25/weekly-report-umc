@@ -33,6 +33,7 @@ from fleet_cleaning import (
 # Validator chuyên dụng cho từng trường nhập liệu
 from fleet_validators import validate_row
 from fleet_evaluation import render_driver_evaluation
+from fleet_revenue import audit_revenue
 
 # Nguồn dữ liệu: Postgres (ingestion layer ghi vào), không còn đọc GitHub.
 from db_source import (
@@ -41,6 +42,54 @@ from db_source import (
     get_fleet_sync_warnings,
     load_fleet_data,
 )
+
+
+def _render_revenue_audit(df) -> None:
+    """Bảng rà soát doanh thu — bắt ca nhập sai dấu chấm/phẩy, thiếu số 0.
+
+    Chỉ xe cứu thương mới thu tiền, nên mọi doanh thu trên xe hành chính đều
+    là lỗi. Với xe cứu thương thì đối chiếu thêm doanh thu/km để bắt các ca
+    lệch hẳn một bậc 10 lần mà nhìn chuỗi nhập vẫn thấy "hợp lệ".
+    """
+    if df.empty:
+        return
+
+    audit = audit_revenue(df)
+
+    if audit.empty:
+        st.success("✅ Doanh thu: không phát hiện bất thường trong khoảng đang lọc")
+        return
+
+    n_crit = int((audit['Mức độ'] == 'critical').sum())
+    n_warn = int((audit['Mức độ'] == 'warning').sum())
+    n_trips = audit['_idx'].nunique()
+
+    with st.expander(
+            f"💰 Rà soát doanh thu — {n_trips} chuyến cần kiểm tra "
+            f"({n_crit} nghiêm trọng, {n_warn} cảnh báo)", expanded=False):
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Chuyến cần sửa", f"{n_trips:,}")
+        c2.metric("Nghiêm trọng", f"{n_crit:,}")
+        c3.metric("Cảnh báo", f"{n_warn:,}")
+
+        st.caption(
+            "Nghiêm trọng = gần như chắc chắn nhập sai (doanh thu quá nhỏ, "
+            "xe hành chính lại có doanh thu). Cảnh báo = cần người xác nhận.")
+
+        show = audit.drop(columns=['_idx']).copy()
+        if 'Ngày' in show.columns:
+            show['Ngày'] = pd.to_datetime(
+                show['Ngày'], errors='coerce').dt.strftime('%d/%m/%Y')
+        st.dataframe(show, use_container_width=True, hide_index=True)
+
+        st.download_button(
+            "📥 Tải danh sách cần sửa (CSV)",
+            data=show.to_csv(index=False).encode('utf-8-sig'),
+            file_name="ra_soat_doanh_thu.csv",
+            mime="text/csv",
+            key="dl_revenue_audit",
+        )
 
 
 def _render_data_quality(df) -> None:
@@ -3641,6 +3690,7 @@ def main():
         drivers_count = df_final['driver_name'].nunique() if 'driver_name' in df_final.columns else 0
         
         _render_data_quality(df_final)
+        _render_revenue_audit(df_final)
 
         st.sidebar.metric("📈 Tổng chuyến", f"{len(df_final):,}")
         st.sidebar.metric("🚗 Số xe", f"{vehicles_count}")
