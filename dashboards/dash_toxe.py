@@ -765,6 +765,24 @@ def create_metrics_overview(df):
         total_distance = 0
         avg_distance = 0
     
+    # Km theo loại xe + nhiên liệu — các số phòng dùng để nhập báo cáo tuần.
+    # Tính trên chính df đã lọc theo ngày nên nhảy theo bộ lọc thời gian.
+    if 'vehicle_type' in df.columns and 'distance_km' in df.columns:
+        vtype = df['vehicle_type'].astype(str).str.strip().str.lower()
+        km_hanh_chinh = df.loc[vtype.str.contains('hành chính', na=False),
+                               'distance_km'].sum()
+        km_cuu_thuong = df.loc[vtype.str.contains('cứu thương', na=False),
+                               'distance_km'].sum()
+    else:
+        km_hanh_chinh = 0
+        km_cuu_thuong = 0
+
+    if 'fuel_liters' in df.columns:
+        total_fuel = pd.to_numeric(
+            df['fuel_liters'], errors='coerce').fillna(0).clip(lower=0).sum()
+    else:
+        total_fuel = 0
+
     # Display metrics in 4-4 layout
     col1, col2, col3, col4 = st.columns(4)
     
@@ -784,9 +802,9 @@ def create_metrics_overview(df):
     
     with col3:
         st.metric(
-            label="👨‍💼 Số tài xế",
-            value=f"{total_drivers}",
-            help="Số tài xế đang làm việc"
+            label="⛽ Nhiên liệu đổ",
+            value=f"{total_fuel:,.1f} lít",
+            help="Tổng nhiên liệu đã đổ trong khoảng thời gian đang lọc"
         )
     
     with col4:
@@ -816,16 +834,16 @@ def create_metrics_overview(df):
     
     with col7:
         st.metric(
-            label="💵 TB doanh thu/chuyến",
-            value=f"{avg_revenue_per_trip:,.0f} VNĐ",
-            help="Doanh thu trung bình mỗi chuyến (xe cứu thương)"
+            label="🚙 Km xe hành chính",
+            value=f"{km_hanh_chinh:,.1f} km",
+            help="Tổng quãng đường xe hành chính trong khoảng thời gian đang lọc"
         )
     
     with col8:
         st.metric(
-            label="⏰ TB giờ/chuyến", 
-            value=f"{avg_hours_per_trip:.1f} giờ",
-            help="Thời gian trung bình mỗi chuyến"
+            label="🚑 Km xe cứu thương",
+            value=f"{km_cuu_thuong:,.1f} km",
+            help="Tổng quãng đường xe cứu thương trong khoảng thời gian đang lọc"
         )
 
 def create_frequency_metrics(df):
