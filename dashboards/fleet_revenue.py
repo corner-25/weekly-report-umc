@@ -58,14 +58,35 @@ MIN_REVENUE_VND = 10_000
 # Trên ngưỡng này là dấu hiệu thừa số 0.
 MAX_REVENUE_VND = 20_000_000
 
-# Dải doanh thu/km thực tế, lấy từ phân vị p05-p95 của xe cứu thương
-# (doanh thu >= 10.000, km > 0): p05≈12.300, median≈42.300, p95≈165.000.
-# Nới biên ra để chỉ bắt ca lệch hẳn một bậc 10 lần.
-MIN_REVENUE_PER_KM = 3_000
-MAX_REVENUE_PER_KM = 500_000
+# Doanh thu/km KHÔNG phẳng: càng đi xa đơn giá càng giảm mạnh — chuyến
+# dưới 5 km khoảng 150.000 đ/km, chuyến trên 400 km chỉ còn ~11.000 đ/km
+# (chênh hơn 13 lần). Một ngưỡng chung cho mọi cự ly vừa bỏ sót chuyến
+# ngắn nhập thiếu số 0, vừa báo nhầm chuyến dài bình thường.
+#
+# Bảng dưới là p05-p95 thực tế theo dải km (xe cứu thương, dt >= 10.000),
+# nới biên ±40% để chỉ bắt ca lệch hẳn một bậc 10 lần.
+#   (km_max, p05, p95)  — km_max là giới hạn TRÊN của dải
+REVENUE_PER_KM_BANDS = [
+    (5,          45_000, 330_000),
+    (10,         25_000, 130_000),
+    (20,         17_000,  70_000),
+    (50,          8_000,  45_000),
+    (100,         5_700,  45_000),
+    (200,         4_900,  25_000),
+    (400,         5_500,  21_000),
+    (float('inf'), 5_400,  20_000),
+]
 
 # Chuyến quá ngắn thì doanh thu/km nhiễu mạnh, không dùng để kết luận.
 MIN_KM_FOR_RATIO_CHECK = 3
+
+
+def revenue_per_km_range(km: float) -> tuple[float, float]:
+    """Dải đ/km hợp lệ cho một cự ly. Xem REVENUE_PER_KM_BANDS."""
+    for km_max, lo, hi in REVENUE_PER_KM_BANDS:
+        if km < km_max:
+            return lo, hi
+    return REVENUE_PER_KM_BANDS[-1][1], REVENUE_PER_KM_BANDS[-1][2]
 
 # Hậu tố tài xế hay gõ tắt.
 _SUFFIX_MULTIPLIER = {'k': 1_000, 'K': 1_000, 'tr': 1_000_000, 'TR': 1_000_000}
@@ -271,17 +292,20 @@ def check_revenue(revenue: Any, vehicle_type: Any = None,
 
     if is_ambulance and km and km >= MIN_KM_FOR_RATIO_CHECK:
         per_km = rev / km
-        if per_km < MIN_REVENUE_PER_KM:
+        lo, hi = revenue_per_km_range(km)
+        if per_km < lo:
             issues.append(_issue(
                 'warning',
                 f'Doanh thu {rev:,.0f} VNĐ cho {km:,.0f} km '
-                f'(chỉ {per_km:,.0f} đ/km)',
+                f'(chỉ {per_km:,.0f} đ/km, chuyến cỡ này thường '
+                f'{lo:,.0f}-{hi:,.0f})',
                 'Thấp bất thường so với mặt bằng — nghi thiếu số 0.'))
-        elif per_km > MAX_REVENUE_PER_KM:
+        elif per_km > hi:
             issues.append(_issue(
                 'warning',
                 f'Doanh thu {rev:,.0f} VNĐ cho {km:,.0f} km '
-                f'({per_km:,.0f} đ/km)',
+                f'({per_km:,.0f} đ/km, chuyến cỡ này thường '
+                f'{lo:,.0f}-{hi:,.0f})',
                 'Cao bất thường so với mặt bằng — nghi thừa số 0.'))
 
     return issues
