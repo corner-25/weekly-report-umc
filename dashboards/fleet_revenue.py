@@ -22,11 +22,13 @@ trên hình dạng nhóm chữ số, theo thứ tự ưu tiên:
   1. Có CẢ chấm và phẩy  -> dấu xuất hiện SAU là dấu thập phân
   2. Chỉ một loại dấu, lặp nhiều lần ("1.310.000")     -> phân cách nghìn
   3. Chỉ một dấu, sau nó đúng 3 chữ số ("470.000")     -> phân cách nghìn
-  4. Chỉ một dấu, sau nó 1-2 chữ số ("470.5")          -> thập phân
+  4. Chỉ một dấu, sau nó 1-2 chữ số ("470.5")          -> nghìn viết tắt
   5. Sau nó >3 chữ số ("470.0000")                     -> không rõ -> None
 
-Quy tắc 3 là điểm mấu chốt: tiền VNĐ không bao giờ lẻ tới phần nghìn,
-nên "470.000" luôn là bốn trăm bảy mươi nghìn, không phải 470 phẩy không.
+Quy tắc 3 và 4 là điểm mấu chốt. Đội xe thu chẵn tới 500đ, không bao giờ
+lẻ tới đồng, nên dấu ở đây LUÔN là phân cách nghìn:
+    "470.000" -> 470.000     (không phải 470)
+    "470.5"   -> 470.500     (không phải 470,5đ — bù 0 cho đủ 3 chữ số)
 
 CHÉO SOÁT VỚI KM
 Chỉ xe CỨU THƯƠNG mới thu tiền; xe hành chính doanh thu phải bằng 0.
@@ -44,9 +46,10 @@ import pandas as pd
 #                          NGƯỠNG
 # ═══════════════════════════════════════════════════════════════════
 
-# Doanh thu VNĐ luôn chẵn tới hàng nghìn. 8.245/8.282 chuyến trong DB
-# (99,6%) chia hết 1000 — số lẻ hơn thế gần như chắc chắn là nhập sai.
-REVENUE_ROUNDING_UNIT = 1_000
+# Đội xe thu tiền chẵn tới 500đ (có chuyến lẻ 500, không có chuyến lẻ tới
+# đồng). Đối chiếu DB: 8.245 chuyến chẵn 1000 + 1 chuyến lẻ 500 đều hợp lệ;
+# 36 chuyến còn lại không chia hết 500 đúng là nhập sai.
+REVENUE_ROUNDING_UNIT = 500
 
 # Chuyến thu phí thấp nhất còn hợp lý. Dưới ngưỡng này là dấu hiệu
 # mất số 0 ("470" đáng lẽ "470.000").
@@ -100,9 +103,11 @@ def parse_revenue(value: Any) -> float | None:
     s = re.sub(r'(?i)\s*(vnđ|vnd|đồng|dong|đ|d)\.?$', '', s).strip()
 
     # Hậu tố k / tr: "470k", "1.5tr"
+    # Có hậu tố thì phần số là bội số thật ("1.5tr" = 1,5 triệu), nên dấu ở
+    # đây là thập phân bình thường — không áp quy tắc "nghìn viết tắt".
     m = re.fullmatch(r'([\d.,\s]+)\s*(k|K|tr|TR)', s)
     if m:
-        base = _parse_number_part(m.group(1))
+        base = _safe_float(m.group(1).replace(' ', '').replace(',', '.'))
         if base is None:
             return None
         return base * _SUFFIX_MULTIPLIER[m.group(2)]
@@ -146,13 +151,15 @@ def _parse_number_part(s: str) -> float | None:
     tail = parts[1]
 
     # Đúng 3 chữ số sau dấu -> phân cách nghìn ("470.000").
-    # Tiền VNĐ không lẻ tới phần nghìn nên đây luôn là nghìn.
     if len(tail) == 3:
         return _safe_float(parts[0] + tail)
 
-    # 1-2 chữ số -> thập phân thật ("470.5")
+    # 1-2 chữ số -> viết tắt phần nghìn, KHÔNG phải thập phân.
+    # Đội xe thu chẵn tới 500đ, không bao giờ lẻ tới đồng, nên "470.5"
+    # là 470.500 (bốn trăm bảy mươi nghìn năm trăm) chứ không phải 470,5đ.
+    # Bù 0 cho đủ 3 chữ số: "470.5" -> 470500, "470.05" -> 470050.
     if 1 <= len(tail) <= 2:
-        return _safe_float(parts[0] + '.' + tail)
+        return _safe_float(parts[0] + tail.ljust(3, '0'))
 
     # >3 chữ số sau dấu -> không rõ ý định
     return None
@@ -253,7 +260,7 @@ def check_revenue(revenue: Any, vehicle_type: Any = None,
         issues.append(_issue(
             'warning',
             f'Doanh thu lẻ bất thường: {rev:,.2f} VNĐ',
-            'Doanh thu thường chẵn tới hàng nghìn — kiểm tra dấu chấm/phẩy.'))
+            'Đội xe thu chẵn tới 500đ — kiểm tra dấu chấm/phẩy.'))
 
     # Chéo soát với km (chỉ xe cứu thương, chuyến đủ dài).
     km = None

@@ -31,8 +31,17 @@ describe('parseRevenueVnd', () => {
     expect(parseRevenueVnd('1,310,000.50')).toBe(1_310_000.5);
   });
 
-  it('1-2 chữ số sau dấu là thập phân thật', () => {
-    expect(parseRevenueVnd('470.5')).toBe(470.5);
+  it('1-2 chữ số sau dấu là nghìn viết tắt, không phải thập phân', () => {
+    // Đội xe thu chẵn tới 500đ, không lẻ tới đồng: "470.5" là 470.500.
+    expect(parseRevenueVnd('470.5')).toBe(470_500);
+    expect(parseRevenueVnd('470,5')).toBe(470_500);
+    expect(parseRevenueVnd('470.50')).toBe(470_500);
+    expect(parseRevenueVnd('470.05')).toBe(470_050);
+  });
+
+  it('giữ được doanh thu lẻ 500 — mức lẻ nhỏ nhất đội xe thực thu', () => {
+    expect(parseRevenueVnd('49.500')).toBe(49_500);
+    expect(parseRevenueVnd('49500')).toBe(49_500);
   });
 
   it('đọc số thuần và số sẵn kiểu number', () => {
@@ -75,6 +84,7 @@ describe('parseRevenueVnd', () => {
     // Regression: các giá trị này từng bị ghi sai vào database.
     expect(parseRevenueVnd('470.000')).not.toBe(470);
     expect(parseRevenueVnd('1.310')).not.toBe(1.31);
+    expect(parseRevenueVnd('470.5')).not.toBe(470.5);
     expect(parseRevenueVnd('2.000.000')).not.toBeNull();
   });
 });

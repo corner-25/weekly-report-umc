@@ -571,8 +571,10 @@ export function toNumber(input: unknown): number | null {
  *   "2.000.000" -> null      (Number gặp 2 dấu chấm -> NaN)
  *
  * Hàm này suy ra vai trò của dấu theo hình dạng nhóm chữ số. Điểm mấu chốt:
- * tiền VNĐ không lẻ tới phần nghìn, nên một dấu theo sau đúng 3 chữ số luôn
- * là phân cách nghìn, không phải dấu thập phân.
+ * đội xe thu chẵn tới 500đ và không bao giờ lẻ tới đồng, nên dấu ở đây LUÔN
+ * là phân cách nghìn — kể cả khi sau nó chỉ có 1-2 chữ số:
+ *   "470.000" -> 470000
+ *   "470.5"   -> 470500   (không phải 470,5đ)
  *
  * Chuỗi mơ hồ trả null để tầng rà soát gắn cờ, thay vì ghi âm thầm số sai.
  */
@@ -593,9 +595,11 @@ export function parseRevenueVnd(input: unknown): number | null {
   s = s.replace(/\s*(vnđ|vnd|đồng|dong|đ|d)\.?$/i, '').trim();
 
   // Hậu tố viết tắt: "470k", "1.5tr"
+  // Có hậu tố thì phần số là bội số thật ("1.5tr" = 1,5 triệu), nên dấu ở
+  // đây là thập phân bình thường — không áp quy tắc "nghìn viết tắt".
   const suffix = s.match(/^([\d.,\s]+)\s*(k|tr)$/i);
   if (suffix) {
-    const base = parseNumberPart(suffix[1]);
+    const base = safeNonNegative(suffix[1].replace(/\s/g, '').replace(',', '.'));
     if (base === null) return null;
     return base * (suffix[2].toLowerCase() === 'k' ? 1_000 : 1_000_000);
   }
@@ -632,8 +636,11 @@ function parseNumberPart(raw: string): number | null {
 
   const tail = parts[1];
   if (tail.length === 3) return safeNonNegative(parts[0] + tail);      // nghìn
+
+  // 1-2 chữ số -> viết tắt phần nghìn, KHÔNG phải thập phân. Đội xe thu chẵn
+  // tới 500đ nên "470.5" là 470.500, không phải 470,5đ. Bù 0 cho đủ 3 chữ số.
   if (tail.length >= 1 && tail.length <= 2) {
-    return safeNonNegative(parts[0] + '.' + tail);                      // thập phân
+    return safeNonNegative(parts[0] + tail.padEnd(3, '0'));
   }
   return null;
 }
