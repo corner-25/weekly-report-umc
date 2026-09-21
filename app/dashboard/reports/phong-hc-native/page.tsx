@@ -54,8 +54,20 @@ export default function PhongHcNativePage() {
       setSelectedCategories(configs.map((c) => c.name));
 
       if (pkg.metadata) {
+        // upload_time nay là lần đồng bộ OneDrive gần nhất — cho người xem
+        // biết số liệu tươi tới đâu thay vì chỉ thấy tên nguồn.
+        const synced = pkg.metadata.upload_time
+          ? new Date(pkg.metadata.upload_time).toLocaleString('vi-VN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : null;
         setMetadataInfo(
-          `${pkg.metadata.filename} — Tuần ${pkg.metadata.week_number}/${pkg.metadata.year}`
+          `${pkg.metadata.filename} — Tuần ${pkg.metadata.week_number}/${pkg.metadata.year}` +
+            (synced ? ` · cập nhật ${synced}` : '')
         );
       }
     } catch (err) {
