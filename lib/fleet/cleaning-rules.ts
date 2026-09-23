@@ -43,9 +43,17 @@ export const WORK_CATEGORY_RULES: ReadonlyArray<readonly [string, readonly strin
   ['Vận chuyển trang thiết bị', ['vat tu', 'thiet bi', 'ttbyt', 'tttb']],
 ];
 
-/** Xe hành chính — phần còn lại được coi là xe cứu thương. */
+/**
+ * Xe hành chính — phần còn lại được coi là xe cứu thương.
+ *
+ * Xe mới phải được thêm vào đây, nếu không sẽ rơi vào nhánh mặc định và bị
+ * xếp nhầm là cứu thương (kéo theo doanh thu, km, tiêu hao nhiên liệu bị gộp
+ * sai nhóm). 50A-032.80 và 50A-032.81 là hai Fortuner hành chính đưa vào dùng
+ * từ tháng 5/2026, trước đó bị xếp nhầm vì thiếu ở danh sách này.
+ */
 export const ADMIN_VEHICLES: readonly string[] = [
   '51B-330.67', '50A-012.59', '50A-007.20', '51A-1212', '50A-004.55',
+  '50A-032.80', '50A-032.81',
 ];
 
 export const AMBULANCE_VEHICLES: readonly string[] = [
