@@ -8,7 +8,8 @@ import { getPrismaRo } from '@/lib/prisma-ro';
 interface MetricVector {
   metric: string;
   department: string;
-  vec: number[];
+  /** Float32 thay vì number[] — 2.544 chỉ số × 2.048 chiều chỉ còn ~20MB. */
+  vec: Float32Array;
 }
 
 interface CachedEmbeddings {
@@ -37,23 +38,29 @@ const GEMINI_MODEL = 'gemini-embedding-001';
  * DashScope dùng giao thức tương thích OpenAI nên tái sử dụng được cùng một
  * hàm gọi, chỉ khác URL và tên model.
  */
-const QWEN_MODEL = 'text-embedding-v4';
+const QWEN_API_KEY = process.env.QWEN_API_KEY || process.env.DASHSCOPE_API_KEY;
+const QWEN_MODEL = process.env.QWEN_EMBEDDING_MODEL || 'text-embedding-v4';
+/** Số chiều vector; để trống thì dùng mặc định của model (1024). */
+const QWEN_DIMENSIONS = Number(process.env.QWEN_EMBEDDING_DIMENSIONS) || undefined;
+const QWEN_TIMEOUT_MS = Number(process.env.QWEN_EMBEDDING_TIMEOUT_MS) || 60_000;
+const QWEN_MAX_RETRIES = Number(process.env.QWEN_EMBEDDING_MAX_RETRIES) || 3;
 
 /**
- * Số dòng tối đa mỗi lần gọi DashScope.
+ * Số dòng tối đa mỗi lần gọi DashScope — tuỳ model.
  *
- * Đo trực tiếp: 10 dòng chạy được, 11 trở lên trả
- * "batch size is invalid". OpenAI không có giới hạn này nên phải chia lô riêng
- * cho Qwen.
+ * Đo trực tiếp 30/09/2026: text-embedding-v4 chỉ nhận tối đa 10 dòng (11+ trả
+ * "batch size is invalid"); qwen3.7-text-embedding nhận được 20.
  */
-const QWEN_BATCH_SIZE = 10;
-const QWEN_BASE_URL =
-  process.env.DASHSCOPE_BASE_URL ??
-  'https://dashscope-intl.aliyuncs.com/compatible-mode/v1';
+const QWEN_BATCH_SIZE = Number(process.env.QWEN_EMBEDDING_BATCH) || 10;
+const QWEN_BASE_URL = (
+  process.env.QWEN_EMBEDDING_BASE_URL ||
+  process.env.DASHSCOPE_BASE_URL ||
+  'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'
+).replace(/\/$/, '');
 
 function getProvider(): 'qwen' | 'openai' | 'gemini' | null {
   // Qwen trước: hiểu tiếng Việt tốt hơn cho tên chỉ số bệnh viện.
-  if (process.env.DASHSCOPE_API_KEY) return 'qwen';
+  if (QWEN_API_KEY) return 'qwen';
   if (process.env.OPENAI_API_KEY) return 'openai';
   if (process.env.GOOGLE_API_KEY) return 'gemini';
   return null;
@@ -67,21 +74,46 @@ function getProvider(): 'qwen' | 'openai' | 'gemini' | null {
  */
 async function embedOpenAiCompatible(
   inputs: string[],
-  options: { baseUrl: string; apiKey: string; model: string; label: string },
+  options: {
+    baseUrl: string; apiKey: string; model: string; label: string;
+    dimensions?: number; timeoutMs?: number; maxRetries?: number;
+  },
 ): Promise<number[][]> {
-  const res = await fetch(`${options.baseUrl}/embeddings`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${options.apiKey}`,
-    },
-    body: JSON.stringify({ model: options.model, input: inputs }),
-  });
-  if (!res.ok) {
-    throw new Error(`${options.label} embed ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const body: Record<string, unknown> = { model: options.model, input: inputs };
+  if (options.dimensions) body.dimensions = options.dimensions;
+  const maxRetries = options.maxRetries ?? 0;
+
+  for (let attempt = 0; ; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 60_000);
+    try {
+      const res = await fetch(`${options.baseUrl}/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${options.apiKey}` },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      if (res.ok) {
+        const json = (await res.json()) as { data: Array<{ embedding: number[]; index?: number }> };
+        // Sắp theo index để chắc thứ tự vector khớp thứ tự đầu vào.
+        return [...json.data].sort((a, b) => (a.index ?? 0) - (b.index ?? 0)).map((d) => d.embedding);
+      }
+      const text = await res.text();
+      // Chỉ thử lại lỗi tạm thời (quá tải / lỗi máy chủ); lỗi 4xx khác thử lại vô ích.
+      const transient = res.status === 429 || res.status >= 500;
+      if (!transient || attempt >= maxRetries) {
+        throw new Error(`${options.label} embed ${res.status}: ${text.slice(0, 200)}`);
+      }
+    } catch (err) {
+      const aborted = err instanceof Error && err.name === 'AbortError';
+      if (!aborted || attempt >= maxRetries) {
+        throw aborted ? new Error(`${options.label} embed quá thời gian chờ`) : err;
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+    await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
   }
-  const json = (await res.json()) as { data: Array<{ embedding: number[] }> };
-  return json.data.map((d) => d.embedding);
 }
 
 async function embedOpenAi(inputs: string[]): Promise<number[][]> {
@@ -93,19 +125,35 @@ async function embedOpenAi(inputs: string[]): Promise<number[][]> {
   });
 }
 
+/** Số lô gọi song song. DashScope chịu được; tuần tự thì 2.544 chỉ số mất ~107s. */
+const QWEN_CONCURRENCY = 4;
+
 async function embedQwen(inputs: string[]): Promise<number[][]> {
-  const out: number[][] = [];
-  for (let i = 0; i < inputs.length; i += QWEN_BATCH_SIZE) {
-    const chunk = inputs.slice(i, i + QWEN_BATCH_SIZE);
-    const vectors = await embedOpenAiCompatible(chunk, {
-      baseUrl: QWEN_BASE_URL,
-      apiKey: process.env.DASHSCOPE_API_KEY!,
-      model: QWEN_MODEL,
-      label: 'Qwen',
-    });
-    out.push(...vectors);
-  }
-  return out;
+  const chunks: string[][] = [];
+  for (let i = 0; i < inputs.length; i += QWEN_BATCH_SIZE) chunks.push(inputs.slice(i, i + QWEN_BATCH_SIZE));
+  const results: number[][][] = new Array(chunks.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(QWEN_CONCURRENCY, chunks.length) }, async () => {
+      while (next < chunks.length) {
+        const idx = next++;
+        results[idx] = await embedQwenChunk(chunks[idx]);
+      }
+    }),
+  );
+  return results.flat();
+}
+
+async function embedQwenChunk(chunk: string[]): Promise<number[][]> {
+  return embedOpenAiCompatible(chunk, {
+    baseUrl: QWEN_BASE_URL,
+    apiKey: QWEN_API_KEY!,
+    model: QWEN_MODEL,
+    label: 'Qwen',
+    dimensions: QWEN_DIMENSIONS,
+    timeoutMs: QWEN_TIMEOUT_MS,
+    maxRetries: QWEN_MAX_RETRIES,
+  });
 }
 
 async function embedGemini(inputs: string[]): Promise<number[][]> {
@@ -136,7 +184,7 @@ async function embedBatch(inputs: string[]): Promise<{ vectors: number[][]; mode
   const provider = getProvider();
   if (!provider) {
     throw new Error(
-      'Chưa cấu hình key embedding (DASHSCOPE_API_KEY, OPENAI_API_KEY hoặc GOOGLE_API_KEY)',
+      'Chưa cấu hình key embedding (QWEN_API_KEY/DASHSCOPE_API_KEY, OPENAI_API_KEY hoặc GOOGLE_API_KEY)',
     );
   }
   if (provider === 'qwen') {
@@ -152,7 +200,7 @@ async function embedBatch(inputs: string[]): Promise<{ vectors: number[][]; mode
 // Cosine similarity
 // -----------------------------------------------------------------------------
 
-function cosine(a: number[], b: number[]): number {
+function cosine(a: ArrayLike<number>, b: ArrayLike<number>): number {
   let dot = 0;
   let na = 0;
   let nb = 0;
@@ -190,23 +238,49 @@ export function embeddingsAvailable(): boolean {
 export async function getMetricEmbeddings(force = false): Promise<CachedEmbeddings | null> {
   if (!embeddingsAvailable()) return null;
   if (!force && cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) return cache;
+  return buildCache();
+}
 
-  const rows = await getPrismaRo().$queryRawUnsafe<Array<{ metric_name: string; department_name: string }>>(
-    'SELECT DISTINCT metric_name, department_name FROM v_chatbot_metrics ORDER BY department_name, metric_name',
-  );
-  if (rows.length === 0) {
-    cache = { fetchedAt: Date.now(), model: 'empty', items: [] };
+/** Promise build đang chạy — nhiều câu hỏi cùng lúc chỉ build một lần. */
+let building: Promise<CachedEmbeddings> | null = null;
+
+function buildCache(): Promise<CachedEmbeddings> {
+  if (building) return building;
+  building = (async () => {
+    const t0 = Date.now();
+    const rows = await getPrismaRo().$queryRawUnsafe<Array<{ metric_name: string; department_name: string }>>(
+      'SELECT DISTINCT metric_name, department_name FROM v_chatbot_metrics ORDER BY department_name, metric_name',
+    );
+    if (rows.length === 0) {
+      cache = { fetchedAt: Date.now(), model: 'empty', items: [] };
+      return cache;
+    }
+    const inputs = rows.map((r) => `${r.metric_name} (${r.department_name})`);
+    const { vectors, model } = await embedBatch(inputs);
+    cache = {
+      fetchedAt: Date.now(),
+      model,
+      items: rows.map((r, i) => ({ metric: r.metric_name, department: r.department_name, vec: Float32Array.from(vectors[i]) })),
+    };
+    console.info(`[chatbot] embedding ${rows.length} chỉ số bằng ${model} trong ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     return cache;
-  }
+  })().finally(() => {
+    building = null;
+  });
+  return building;
+}
 
-  const inputs = rows.map((r) => `${r.metric_name} (${r.department_name})`);
-  const { vectors, model } = await embedBatch(inputs);
-  cache = {
-    fetchedAt: Date.now(),
-    model,
-    items: rows.map((r, i) => ({ metric: r.metric_name, department: r.department_name, vec: vectors[i] })),
-  };
-  return cache;
+/**
+ * Kích hoạt build nền nếu cache chưa có hoặc đã cũ — KHÔNG chờ.
+ *
+ * Lần build đầu mất vài chục giây với ~2.500 chỉ số; bắt câu hỏi đầu tiên chờ
+ * (trước đây 108s) là không chấp nhận được. Trong lúc build, câu hỏi vẫn được
+ * trả lời, chỉ thiếu phần gợi ý tên chỉ số.
+ */
+export function warmMetricEmbeddings(): void {
+  if (!embeddingsAvailable()) return;
+  if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) return;
+  buildCache().catch((err) => console.warn('[chatbot] build embedding lỗi:', err instanceof Error ? err.message : err));
 }
 
 /**
@@ -218,7 +292,9 @@ export async function findRelevantMetrics(
   question: string,
   k = 10,
 ): Promise<Array<{ metric: string; department: string; score: number }>> {
-  const cached = await getMetricEmbeddings();
+  // Không chờ build: cache cũ vẫn dùng được trong lúc làm mới; chưa có thì bỏ qua.
+  warmMetricEmbeddings();
+  const cached = cache;
   if (!cached || cached.items.length === 0) return [];
   const { vectors } = await embedBatch([question]);
   const qVec = vectors[0];

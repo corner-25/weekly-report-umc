@@ -126,8 +126,17 @@ export function guardSql(rawSql: string, allowedViews: readonly string[] = GENER
     'localtime',
     'localtimestamp',
   ]);
+  // Trong EXTRACT(MONTH FROM col), SUBSTRING(s FROM 1 FOR 3), TRIM(BOTH ' ' FROM s)
+  // thì FROM là cú pháp hàm, theo sau là CỘT chứ không phải bảng. Trước đây guard
+  // chặn nhầm EXTRACT(MONTH FROM transfer_month) vì tưởng transfer_month là bảng.
+  // Chỉ vô hiệu hoá chữ FROM ngay trong lời gọi hàm này trên BẢN SAO để quét —
+  // câu SQL chạy thật không đổi, và truy vấn con bên trong vẫn bị quét như thường.
+  const scanSql = sql
+    .replace(/\b(EXTRACT\s*\(\s*[a-zA-Z_]+)\s+FROM\b/gi, '$1 __FN_FROM__')
+    .replace(/\b(SUBSTRING\s*\([^()]*?)\bFROM\b/gi, '$1 __FN_FROM__')
+    .replace(/\b(TRIM\s*\([^()]*?)\bFROM\b/gi, '$1 __FN_FROM__');
   const referencedTables = Array.from(
-    sql.matchAll(/\b(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi),
+    scanSql.matchAll(/\b(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi),
     (m) => m[1].toLowerCase(),
   );
   const cteAliases = new Set(
