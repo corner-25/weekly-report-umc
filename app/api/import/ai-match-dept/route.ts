@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { parseExcelFile } from '@/lib/excel-parser';
 import { getDeptHint } from '@/lib/chatbot/dept-hints';
+import { llmJson } from '@/lib/chatbot/llm';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,21 +22,10 @@ interface AiOut {
   unmatched?: string[];
 }
 
-async function callDeepSeek(prompt: string): Promise<AiOut> {
-  const res = await fetch('https://api.deepseek.com/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}` },
-    body: JSON.stringify({
-      model: 'deepseek-chat',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0,
-      max_tokens: 7500,
-      response_format: { type: 'json_object' },
-    }),
-  });
-  if (!res.ok) throw new Error(`DeepSeek ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const json = (await res.json()) as { choices: Array<{ message: { content: string } }> };
-  return JSON.parse(json.choices[0].message.content) as AiOut;
+/** Gọi AI (Z.AI, dự phòng DeepSeek) và ép trả JSON — xem lib/chatbot/llm.ts. */
+async function callAi(prompt: string): Promise<AiOut> {
+  const { data } = await llmJson<AiOut>([{ role: 'user', content: prompt }], { maxTokens: 7500, temperature: 0 });
+  return data;
 }
 
 function buildPrompt(
@@ -143,7 +133,7 @@ export async function POST(req: Request) {
 
   try {
     const prompt = buildPrompt(dbDept.name, weekNumber, year, textBlob, masterTasks, metricDefs);
-    const ai = await callDeepSeek(prompt);
+    const ai = await callAi(prompt);
 
     const cleanTasks = (ai.tasks || []).filter((t) => validTaskIds.has(t.masterTaskId));
     const cleanMetrics = (ai.metrics || []).filter((m) => validMetricIds.has(m.metricId) && m.value !== null && m.value !== undefined);

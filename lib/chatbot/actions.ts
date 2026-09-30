@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { deepseekComplete } from './deepseek';
+import { llmComplete } from './llm';
 
 export const createEventPayloadSchema = z.object({
   name: z.string().trim().min(1).max(300),
@@ -52,7 +52,7 @@ function extractJson(text: string) {
 
 export async function prepareCreateEventProposal(question: string, userId: string) {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short' }).format(new Date());
-  const result = await deepseekComplete([
+  const result = await llmComplete([
     {
       role: 'system',
       content:
@@ -84,7 +84,7 @@ export async function prepareCreateEventProposal(question: string, userId: strin
 export async function prepareAddChecklistProposal(question: string, userId: string, contextPath: string | null) {
   const eventId = contextPath?.match(/^\/dashboard\/hospital-events\/([^/]+)$/)?.[1];
   if (!eventId) return { ready: false as const, missing: ['hãy mở trang chi tiết sự kiện cần thêm checklist'], tokens: 0 };
-  const result = await deepseekComplete([
+  const result = await llmComplete([
     { role: 'system', content: 'Trích xuất một mục checklist sự kiện. Chỉ trả JSON {"title":string,"description":string|null}. Không bịa nội dung không được yêu cầu.' },
     { role: 'user', content: question },
   ], { maxTokens: 250, temperature: 0 });
@@ -96,7 +96,7 @@ export async function prepareAddChecklistProposal(question: string, userId: stri
 
 export async function prepareCreateWeekDraftProposal(question: string, userId: string) {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short' }).format(new Date());
-  const result = await deepseekComplete([
+  const result = await llmComplete([
     { role: 'system', content: `Hôm nay là ${today}. Trích xuất tuần ISO và năm; tính khoảng Thứ Hai-Chủ Nhật. Chỉ trả JSON {"weekNumber":number,"year":number,"startDate":ISO8601,"endDate":ISO8601}. Không tự chọn tuần nếu yêu cầu không nói rõ.` },
     { role: 'user', content: question },
   ], { maxTokens: 250, temperature: 0 });
