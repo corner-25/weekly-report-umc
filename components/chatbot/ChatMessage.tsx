@@ -23,19 +23,66 @@ export interface Message {
   actionResultHref?: string;
   /** Câu hỏi gốc — để nút "Thử lại" hỏi lại đúng câu đó. */
   question?: string;
+  /** Các bước pipeline đã đi qua, theo thứ tự (understanding, querying, ...). */
+  stages?: string[];
+  /** Câu hỏi gợi ý tiếp theo, chọn theo loại dữ liệu vừa tra. */
+  followups?: string[];
+}
+
+/**
+ * Gom các bước kỹ thuật của pipeline thành 3 bước người dùng hiểu được.
+ * repairing / widening vẫn thuộc bước "Tra dữ liệu", chỉ đổi nhãn lúc đang chạy.
+ */
+const STEP_OF: Record<string, 'understand' | 'query' | 'write'> = {
+  understanding: 'understand', querying: 'query', repairing: 'query', widening: 'query', writing: 'write',
+};
+const STEP_LABEL = { understand: 'Hiểu câu hỏi', query: 'Tra dữ liệu', write: 'Soạn trả lời' } as const;
+const LIVE_LABEL: Record<string, string> = { repairing: 'Chỉnh truy vấn', widening: 'Tìm rộng hơn' };
+
+function Steps({ stages, streaming }: { stages: string[]; streaming: boolean }) {
+  const order: Array<'understand' | 'query' | 'write'> = [];
+  for (const st of stages) {
+    const step = STEP_OF[st];
+    if (step && !order.includes(step)) order.push(step);
+  }
+  if (order.length === 0) return null;
+  const last = stages[stages.length - 1];
+  return (
+    <div className="mb-1.5 flex flex-wrap gap-1" aria-live="polite">
+      {order.map((step, i) => {
+        const current = streaming && i === order.length - 1;
+        const label = current && LIVE_LABEL[last] ? LIVE_LABEL[last] : STEP_LABEL[step];
+        return (
+          <span
+            key={step}
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${
+              current ? 'border-cyan-300 bg-cyan-50 text-cyan-700' : 'border-slate-200 bg-white text-slate-500'
+            }`}
+          >
+            {current
+              ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-500" />
+              : <Check className="h-2.5 w-2.5 text-emerald-600" />}
+            {label}
+          </span>
+        );
+      })}
+    </div>
+  );
 }
 
 interface Props {
   message: Message;
   busy: boolean;
   streaming: boolean;
-  statusLabel: string | null;
+  /** Chỉ tin cuối cùng hiện chip gợi ý câu tiếp theo. */
+  isLast: boolean;
+  onAsk: (question: string) => void;
   onExecute: (messageId: string, proposalId: string) => void;
   onFeedback: (messageId: string, auditId: string, helpful: boolean) => void;
   onRetry: (question: string) => void;
 }
 
-export function ChatMessage({ message, busy, streaming, statusLabel, onExecute, onFeedback, onRetry }: Props) {
+export function ChatMessage({ message, busy, streaming, isLast, onAsk, onExecute, onFeedback, onRetry }: Props) {
   const [showSql, setShowSql] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -61,15 +108,13 @@ export function ChatMessage({ message, busy, streaming, statusLabel, onExecute, 
   return (
     <div className="group flex justify-start">
       <div className="w-full max-w-[92%]">
+        {message.stages && message.stages.length > 0 && <Steps stages={message.stages} streaming={streaming} />}
         <div className="rounded-2xl rounded-bl-md border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 shadow-sm">
           {waiting ? (
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span className="flex gap-1">
-                {[0, 150, 300].map((d) => (
-                  <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400" style={{ animationDelay: `${d}ms` }} />
-                ))}
-              </span>
-              {statusLabel ?? 'Đang xử lý…'}
+            <div className="flex items-center gap-1 py-1" aria-label="Đang xử lý">
+              {[0, 150, 300].map((d) => (
+                <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400" style={{ animationDelay: `${d}ms` }} />
+              ))}
             </div>
           ) : (
             <div className="break-words">
@@ -142,6 +187,21 @@ export function ChatMessage({ message, busy, streaming, statusLabel, onExecute, 
                 </button>
               </span>
             )}
+          </div>
+        )}
+
+        {isLast && !streaming && message.followups && message.followups.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {message.followups.map((f) => (
+              <button
+                key={f}
+                onClick={() => onAsk(f)}
+                disabled={busy}
+                className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 ring-1 ring-cyan-100 transition-colors hover:bg-cyan-100 disabled:opacity-40"
+              >
+                {f}
+              </button>
+            ))}
           </div>
         )}
 

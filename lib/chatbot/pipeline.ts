@@ -15,6 +15,7 @@ import { CHATBOT_SCHEMA_PROMPT } from './schema-context';
 import { guardSql } from './sql-guard';
 import { llmComplete, llmStream, extractSql, type ChatMessage } from './llm';
 import { StreamingPiiScrubber } from './pii-filter';
+import { followupsFor } from './followups';
 import { findRelevantMetrics, embeddingsAvailable } from './embeddings';
 import { addRecordSources, sourcesFromSql, type ChatbotSource } from './sources';
 import {
@@ -339,6 +340,8 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
   const sources: ChatbotSource[] = addRecordSources(sourcesFromSql(sql, contextPath), preview);
   emit('sources', { sources });
   emit('rows', { rowCount: rows.length, preview });
+  const followups = followupsFor(sql, question);
+  if (followups.length > 0) emit('followups', { items: followups });
 
   // 4. Writer.
   status('writing');

@@ -48,7 +48,6 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [streamingId, setStreamingId] = useState<string | null>(null);
-  const [statusLabel, setStatusLabel] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -89,7 +88,6 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
     if (!q || busy) return;
     setBusy(true);
     setInput('');
-    setStatusLabel(null);
 
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: q };
     const assistant: Message = { id: crypto.randomUUID(), role: 'assistant', content: '', question: q };
@@ -127,7 +125,6 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
     } finally {
       abortRef.current = null;
       setStreamingId(null);
-      setStatusLabel(null);
       setBusy(false);
       inputRef.current?.focus();
     }
@@ -136,7 +133,13 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
   function handleEvent(id: string, event: string, data: Record<string, unknown>) {
     switch (event) {
       case 'status':
-        if (typeof data.label === 'string') setStatusLabel(data.label);
+        if (typeof data.stage === 'string') {
+          const stage = data.stage;
+          patch(id, (m) => ({ ...m, stages: [...(m.stages ?? []), stage] }));
+        }
+        break;
+      case 'followups':
+        if (Array.isArray(data.items)) patch(id, (m) => ({ ...m, followups: (data.items as unknown[]).filter((x): x is string => typeof x === 'string') }));
         break;
       case 'answer':
         if (typeof data.delta === 'string') { const d = data.delta; patch(id, (m) => ({ ...m, content: m.content + d })); }
@@ -213,27 +216,27 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
       aria-label="Trợ lý AI"
       className={`fixed bottom-24 right-5 z-40 ${size} flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10 transition-[width,height] duration-200 animate-in fade-in slide-in-from-bottom-4`}
     >
-      <header className="flex items-center justify-between bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-white">
+      <header className="flex items-center justify-between border-b border-slate-100 bg-white px-3.5 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30">
             <Sparkles className="h-4 w-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-semibold leading-tight">Trợ lý AI</div>
-            <div className="truncate text-[11px] text-white/80">Tra cứu số liệu & soạn thảo · Phòng Hành chính</div>
+            <div className="text-sm font-semibold leading-tight text-slate-900">Trợ lý AI</div>
+            <div className="truncate text-[11px] text-slate-500">Tra số liệu · soạn thảo</div>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-0.5">
           {messages.length > 0 && (
-            <button onClick={newChat} title="Hội thoại mới" aria-label="Hội thoại mới" className="rounded-md p-1.5 transition-colors hover:bg-white/15">
+            <button onClick={newChat} title="Hội thoại mới" aria-label="Hội thoại mới" className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">
               <SquarePen className="h-4 w-4" />
             </button>
           )}
           <button onClick={toggleExpanded} title={expanded ? 'Thu nhỏ' : 'Phóng to'} aria-label={expanded ? 'Thu nhỏ' : 'Phóng to'}
-            className="rounded-md p-1.5 transition-colors hover:bg-white/15">
+            className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">
             {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
-          <button onClick={onClose} title="Đóng (Esc)" aria-label="Đóng" className="rounded-md p-1.5 transition-colors hover:bg-white/15">
+          <button onClick={onClose} title="Đóng (Esc)" aria-label="Đóng" className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -258,13 +261,14 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        {messages.map((m) => (
+        {messages.map((m, i) => (
           <ChatMessage
             key={m.id}
             message={m}
             busy={busy}
             streaming={m.id === streamingId}
-            statusLabel={statusLabel}
+            isLast={i === messages.length - 1}
+            onAsk={ask}
             onExecute={executeProposal}
             onFeedback={sendFeedback}
             onRetry={ask}
@@ -284,7 +288,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
                 ask(input);
               }
             }}
-            placeholder="Nhập câu hỏi…"
+            placeholder={messages.length > 0 ? 'Hỏi tiếp…' : 'Nhập câu hỏi…'}
             title="Enter để gửi · Shift+Enter xuống dòng"
             rows={1}
             maxLength={1000}
