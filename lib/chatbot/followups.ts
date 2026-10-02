@@ -25,6 +25,18 @@ const FOLLOWUPS_BY_VIEW: Record<string, string[]> = {
   v_chatbot_recruitment_summary: ['Có bao nhiêu thư ký đang hoạt động?', 'Vị trí nào có nhiều ứng viên nhất?'],
   v_chatbot_sync_health: ['Nguồn dữ liệu nào đang lỗi đồng bộ?', 'Tuần nào còn chờ duyệt nhập liệu?'],
   v_chatbot_import_health: ['Nguồn dữ liệu nào đang lỗi đồng bộ?', 'Chất lượng trích xuất AI tuần gần nhất thế nào?'],
+  v_chatbot_parking_weekly: ['So sánh doanh thu bãi xe 4 tuần gần nhất', 'Doanh thu bãi xe từng tháng năm nay', 'Lượt vé ngày tuần này so với tuần trước?'],
+  v_chatbot_fleet_report_weekly: ['Km xe hành chính và cứu thương 4 tuần gần nhất', 'Doanh thu tổ xe từng tháng năm nay', 'Tỷ lệ hài lòng khách hàng tổ xe gần đây'],
+  v_chatbot_fleet_daily: ['Xe nào chạy nhiều km nhất tháng này?', 'So sánh km xe hành chính và cứu thương từng tháng', 'Nhiên liệu tiêu thụ theo từng xe tháng này'],
+  v_chatbot_switchboard_weekly: ['Nhánh tổng đài nào nhỡ nhiều nhất tuần qua?', 'Tỷ lệ cuộc gọi nhỡ 4 tuần gần nhất'],
+  v_chatbot_switchboard_branch_weekly: ['Tổng cuộc gọi đến bệnh viện tuần qua?', 'Nhánh Cấp cứu nhỡ bao nhiêu cuộc tháng này?'],
+  v_chatbot_documents_weekly: ['Tỷ lệ văn bản đến xử lý trễ hạn từng tháng', 'Tháng này phát hành bao nhiêu quyết định, quy định?'],
+  v_chatbot_admin_activity_weekly: ['Từ đầu năm tiếp bao nhiêu lượt khách VIP?', 'Số sự kiện Phòng HC chủ trì từng tháng'],
+  v_chatbot_secretary_weekly: ['Từ đầu năm tuyển dụng và nghỉ việc bao nhiêu thư ký?', 'Số buổi tập huấn thư ký gần đây'],
+  v_chatbot_metric_catalog: ['Chỉ số nào giảm mạnh so với tuần trước?', 'Số liệu nào đang có cờ cần rà soát?'],
+  v_chatbot_metric_tree: ['Phòng Hành chính theo dõi những chỉ số nào?', 'Nhóm tổng đài gồm những chỉ số con nào?'],
+  v_chatbot_metric_facts: ['So với tháng trước thì thế nào?', 'Chỉ số con nào đóng góp nhiều nhất?'],
+  v_chatbot_weeks: ['Tuần này các phòng làm gì?', 'Chỉ số nào giảm mạnh so với tuần trước?'],
   v_chatbot_extraction_quality: ['Tuần nào còn chờ duyệt nhập liệu?', 'Số liệu nào đang có cờ cần rà soát?'],
 };
 

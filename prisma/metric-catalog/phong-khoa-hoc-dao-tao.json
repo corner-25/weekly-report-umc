@@ -1,0 +1,1602 @@
+{
+ "department": "Phòng Khoa học và Đào tạo",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "nodes": [
+  {
+   "code": "khdt",
+   "parent": null,
+   "name": "Phòng Khoa học và Đào tạo",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hoi_ngh_hoi_thao",
+   "parent": "khdt",
+   "name": "Hội nghị / Hội thảo",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hoi_ngh_hoi_thao.to_chuc",
+   "parent": "khdt.hoi_ngh_hoi_thao",
+   "name": "Sự kiện Hội nghị/Hội thảo tổ chức",
+   "kind": "METRIC",
+   "unit": "sự kiện",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hoi_ngh_hoi_thao.bao_cao_vien_nn",
+   "parent": "khdt.hoi_ngh_hoi_thao",
+   "name": "Báo cáo viên nước ngoài tham dự",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hop_tac_quoc_te",
+   "parent": "khdt",
+   "name": "Hợp tác quốc tế",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hop_tac_quoc_te.ky_ket",
+   "parent": "khdt.hop_tac_quoc_te",
+   "name": "Ký kết hợp tác",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.hop_tac_quoc_te.tiep_khach_nn",
+   "parent": "khdt.hop_tac_quoc_te",
+   "name": "Tiếp khách nước ngoài đến làm việc",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv",
+   "parent": "khdt",
+   "name": "Đào tạo tại Bệnh viện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.lop_dang_mo",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Lớp học đang tổ chức tại Bệnh viện",
+   "kind": "METRIC",
+   "unit": "lớp",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.hoc_vien_lop_hoc",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Học viên các lớp học đang tổ chức",
+   "kind": "METRIC",
+   "unit": "học viên",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh_gp_hanh_nghe",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Học viên thực hành xin cấp giấy phép hành nghề",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_tap",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Sinh viên/học viên thực tập",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.tong_so",
+   "parent": "khdt.dao_tao_tai_bv.thuc_tap",
+   "name": "Tổng số sinh viên/học viên thực tập",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.uyd",
+   "parent": "khdt.dao_tao_tai_bv.thuc_tap",
+   "name": "ĐH Y Dược TP.HCM",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.co_so_khac_trong_nuoc",
+   "parent": "khdt.dao_tao_tai_bv.thuc_tap",
+   "name": "Cơ sở y tế/Trường ĐH khác (trong nước)",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.truong_nn",
+   "parent": "khdt.dao_tao_tai_bv.thuc_tap",
+   "name": "Trường ĐH nước ngoài",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Sinh viên/học viên thực hành",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.tong_so",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh",
+   "name": "Tổng số sinh viên/học viên thực hành",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh",
+   "name": "ĐH Y Dược TP.HCM",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.co_so_khac",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh",
+   "name": "Cơ sở y tế/Trường ĐH khác",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh",
+   "name": "ĐH Y Dược TP.HCM (chi tiết)",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.bs_noi_tru",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Bác sĩ nội trú",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.ck1",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Chuyên khoa 1",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.ck2",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Chuyên khoa 2",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.nghien_cuu_sinh",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Nghiên cứu sinh",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.thac_si",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Thạc sĩ",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_y",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Trường Y",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_duoc",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Trường Dược",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_yte_cong_cong",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Khoa Y tế công cộng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.truong_dieu_duong",
+   "parent": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet",
+   "name": "Trường Điều dưỡng - Kỹ thuật YH",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_tai_bv.tiep_nhan_sv_nn",
+   "parent": "khdt.dao_tao_tai_bv",
+   "name": "Tiếp nhận sinh viên nước ngoài",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai",
+   "parent": "khdt",
+   "name": "Đào tạo nước ngoài",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay",
+   "parent": "khdt.dao_tao_nuoc_ngoai",
+   "name": "Đi đào tạo nước ngoài (< 10 ngày)",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.luot_moi",
+   "parent": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay",
+   "name": "Lượt đi mới trong tuần",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.so_nguoi",
+   "parent": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay",
+   "name": "Số người đi đào tạo",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay",
+   "parent": "khdt.dao_tao_nuoc_ngoai",
+   "name": "Đi đào tạo nước ngoài (>= 10 ngày)",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.luot_moi",
+   "parent": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay",
+   "name": "Lượt đi mới trong tuần",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.so_nguoi",
+   "parent": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay",
+   "name": "Số người đi đào tạo",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_trong_nuoc",
+   "parent": "khdt",
+   "name": "Đào tạo trong nước",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_trong_nuoc.dang_hoc",
+   "parent": "khdt.dao_tao_trong_nuoc",
+   "name": "Gửi đi đào tạo (đang học)",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.dao_tao_trong_nuoc.chuyen_mon_nghiep_vu",
+   "parent": "khdt.dao_tao_trong_nuoc",
+   "name": "Đào tạo chuyên môn, nghiệp vụ",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_dang_thuc_hien",
+   "parent": "khdt",
+   "name": "Đề tài NCKH đang thực hiện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_dang_thuc_hien.cap_co_so",
+   "parent": "khdt.nckh_dang_thuc_hien",
+   "name": "Cấp cơ sở",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_dang_thuc_hien.cap_tinh",
+   "parent": "khdt.nckh_dang_thuc_hien",
+   "name": "Cấp tỉnh (Sở KHCN TP.HCM)",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_dang_thuc_hien.thu_thuoc_lam_sang",
+   "parent": "khdt.nckh_dang_thuc_hien",
+   "name": "Thử thuốc lâm sàng",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu",
+   "parent": "khdt",
+   "name": "Cung cấp số liệu NCKH",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.tong_so",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Tổng số đề tài cung cấp số liệu",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Tiến sĩ",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Thạc sĩ",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Bác sĩ CKII",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Bác sĩ nội trú",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "parent": "khdt.nckh_cung_cap_so_lieu",
+   "name": "Sinh viên - khác",
+   "kind": "METRIC",
+   "unit": "đề tài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Đi đào tạo nước ngoài (< 10 ngày)",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 29
+  },
+  {
+   "name": "Đi đào tạo nước ngoài (< 10 ngày) lượt mới trong tuần",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Đi đào tạo nước ngoài dưới 10 ngày",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đi đào tạo nước ngoài (< 10 ngày)",
+   "unit": "người",
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Đi đào tạo nước ngoài dưới 10 ngày",
+   "unit": "người",
+   "code": "khdt.dao_tao_nuoc_ngoai.duoi_10_ngay.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đi đào tạo nước ngoài (>= 10 ngày)",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 29
+  },
+  {
+   "name": "Đi đào tạo nước ngoài (>= 10 ngày) lượt mới trong tuần",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Đi đào tạo nước ngoài từ 10 ngày trở lên",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.luot_moi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đi đào tạo nước ngoài (>= 10 ngày)",
+   "unit": "người",
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Đi đào tạo nước ngoài từ 10 ngày trở lên",
+   "unit": "người",
+   "code": "khdt.dao_tao_nuoc_ngoai.tu_10_ngay.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên các lớp học đang được tổ chức tại bệnh viện",
+   "unit": "học viên",
+   "code": "khdt.dao_tao_tai_bv.hoc_vien_lop_hoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Các lớp học đang được tổ chức tại bệnh viện",
+   "unit": "lớp",
+   "code": "khdt.dao_tao_tai_bv.lop_dang_mo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Khai giảng lớp học",
+   "unit": "Lớp",
+   "code": "khdt.dao_tao_tai_bv.lop_dang_mo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Khai giảng lớp học",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_tai_bv.lop_dang_mo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.co_so_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác đang thực hành",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.co_so_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác đang thực hành tại bệnh viện",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.co_so_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sinh viên, học viên đang thực hành tại bệnh viện",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Sinh viên, học viên Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Sinh viên, học viên Đại học Y Dược TP. Hồ Chí Minh đang thực hành",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Sinh viên, học viên Đại học Y Dược TP. Hồ Chí Minh đang thực hành tại bệnh viện",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Bác sĩ nội trú - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.bs_noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Chuyên khoa 1 - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.ck1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Chuyên khoa 2 - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.ck2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sinh viên Trường Dược - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_duoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sinh viên Trường Y - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_y",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sinh viên Khoa Y tế công cộng - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.khoa_yte_cong_cong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Nghiên cứu sinh - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.nghien_cuu_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Thạc sĩ - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sinh viên Trường Điều dưỡng - Kỹ thuật y học - Đại học Y Dược TP. Hồ Chí Minh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh.uyd_chi_tiet.truong_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Học viên đang thực hành để đủ điều kiện xin cấp giấy phép hành nghề",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh_gp_hanh_nghe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên đang thực hành để đủ điều kiện xin cấp giấy phép hành nghề khám bệnh, chữa bệnh",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_hanh_gp_hanh_nghe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 31
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác (trong nước)",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.co_so_khac_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác (trong nước) đang thực tập",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.co_so_khac_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác trong nước",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.co_so_khac_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên, học viên từ các cơ sở y tế, trường Đại học khác đang thực tập",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.co_so_khac_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên, học viên đang thực tập tại bệnh viện",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Sinh viên từ các trường Đại học nước ngoài",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.truong_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sinh viên từ các trường Đại học nước ngoài đang thực tập",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.truong_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Sinh viên, học viên Đại học Y Dược TP. Hồ Chí Minh đang thực tập",
+   "unit": "người",
+   "code": "khdt.dao_tao_tai_bv.thuc_tap.uyd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tiếp nhận sinh viên nước ngoài",
+   "unit": "lượt",
+   "code": "khdt.dao_tao_tai_bv.tiep_nhan_sv_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 38
+  },
+  {
+   "name": "Gửi đi đào tạo chuyên môn trong nước",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.chuyen_mon_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Gửi đi đào tạo trong nước (chuyên môn, nghiệp vụ)",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.chuyen_mon_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Đi đào tạo trong nước (chuyên môn, nghiệp vụ)",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.chuyen_mon_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Đi đào tạo trong nước chuyên môn nghiệp vụ",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.chuyen_mon_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cán bộ đi đào tạo (đang học)",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.dang_hoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Gửi đi đào tạo (đang học)",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.dang_hoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Gửi đi đào tạo đang học",
+   "unit": "người",
+   "code": "khdt.dao_tao_trong_nuoc.dang_hoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo viên nước ngoài tham dự sự kiện",
+   "unit": "lượt",
+   "code": "khdt.hoi_ngh_hoi_thao.bao_cao_vien_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Báo cáo viên nước ngoài tham dự sự kiện đào tạo, hội nghị, hội thảo",
+   "unit": "lượt",
+   "code": "khdt.hoi_ngh_hoi_thao.bao_cao_vien_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo viên nước ngoài tham dự trong sự kiện đào tạo, hội nghị, hội thảo",
+   "unit": "lượt",
+   "code": "khdt.hoi_ngh_hoi_thao.bao_cao_vien_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Sự kiện tổ chức Hội nghị/ Hội thảo",
+   "unit": "Hội nghị/ Hội thảo",
+   "code": "khdt.hoi_ngh_hoi_thao.to_chuc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổ chức Hội nghị/ Hội thảo",
+   "unit": "Hội nghị/ Hội thảo",
+   "code": "khdt.hoi_ngh_hoi_thao.to_chuc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Tổ chức Hội nghị/ Hội thảo",
+   "unit": "lượt",
+   "code": "khdt.hoi_ngh_hoi_thao.to_chuc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tổ chức Hội nghị/Hội thảo",
+   "unit": "lượt",
+   "code": "khdt.hoi_ngh_hoi_thao.to_chuc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ký kết hợp tác",
+   "unit": "đoàn",
+   "code": "khdt.hop_tac_quoc_te.ky_ket",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Ký kết hợp tác quốc tế",
+   "unit": "đoàn",
+   "code": "khdt.hop_tac_quoc_te.ky_ket",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp khách nước ngoài đến làm việc",
+   "unit": "đoàn",
+   "code": "khdt.hop_tac_quoc_te.tiep_khach_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp khách nước ngoài đến làm việc tại Bệnh viện",
+   "unit": "đoàn",
+   "code": "khdt.hop_tac_quoc_te.tiep_khach_nn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - BS CKII",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Bác sĩ CKII",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Bác sĩ Chuyên khoa II",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH cho Bác sĩ chuyên khoa II",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH (BS CKII)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Bác sĩ CKII",
+   "unit": "BS CKII",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Bác sĩ Chuyên khoa 2",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (BS CKII)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ CKII)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ CKII)",
+   "unit": "BS CKII",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ Chuyên khoa II)",
+   "unit": "BS CKII",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ chuyên khoa)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Bác sĩ CKII",
+   "unit": "BS CKII",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Bác sĩ Chuyên khoa 2",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Bác sĩ Chuyên khoa II",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bs_ckii",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - BSNT",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Bác sĩ nội trú",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cung cấp số liệu NCKH cho Bác sĩ nội trú",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH (BSNT)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Bác sĩ chuyên ngành",
+   "unit": "BSNT",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Bác sĩ nội trú",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (BSNT)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ Nghiên cứu)",
+   "unit": "BSNT",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ chuyên khoa I)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ chuyên ngành)",
+   "unit": "BSNT",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Bác sĩ chuyên ngành",
+   "unit": "BSNT",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Bác sĩ nội trú",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.bsnt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - SV-khác",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Sinh viên khác",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cung cấp số liệu NCKH cho Sinh viên và khác",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH (SV-khác)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Sinh viên khác",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Sinh viên khác",
+   "unit": "SV-khác",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (SV-khác)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Sinh viên và khác)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Sinh viên và khác)",
+   "unit": "SV-khác",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Sinh viên và đối tượng khác)",
+   "unit": "SV-khác",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Sinh viên-khác)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Sinh viên-khác)",
+   "unit": "SV-khác",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Sinh viên khác",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Sinh viên khác",
+   "unit": "SV-khác",
+   "code": "khdt.nckh_cung_cap_so_lieu.sv_khac",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - ThS",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Thạc sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cung cấp số liệu NCKH cho Thạc sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH (ThS)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Thạc sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Thạc sĩ",
+   "unit": "ThS",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (ThS)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Thạc sĩ)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Thạc sĩ)",
+   "unit": "ThS",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Thạc sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Thạc sĩ",
+   "unit": "ThS",
+   "code": "khdt.nckh_cung_cap_so_lieu.thac_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - TS",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH - Tiến sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cung cấp số liệu NCKH cho Tiến sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH (TS)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Tiến sĩ",
+   "unit": "TS",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH - Tiến sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (TS)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Tiến sĩ)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Tiến sĩ)",
+   "unit": "TS",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Tiến sĩ",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số liệu NCKH cung cấp - Tiến sĩ",
+   "unit": "TS",
+   "code": "khdt.nckh_cung_cap_so_lieu.tien_si",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cung cấp số liệu NCKH",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Số liệu NCKH cung cấp",
+   "unit": "đề tài",
+   "code": "khdt.nckh_cung_cap_so_lieu.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 25
+  },
+  {
+   "name": "Đề tài NCKH cấp cơ sở",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.cap_co_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Đề tài NCKH cấp cơ sở đang thực hiện",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.cap_co_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 30
+  },
+  {
+   "name": "Đề tài NCKH cấp tỉnh (Sở KHCN TPHCM)",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.cap_tinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Đề tài NCKH cấp tỉnh (Sở KHCN TPHCM) đang thực hiện",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.cap_tinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 29
+  },
+  {
+   "name": "Đề tài NCKH cấp tỉnh Sở KHCN TPHCM đang thực hiện",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.cap_tinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thử thuốc trên lâm sàng",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.thu_thuoc_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề tài thử thuốc trên lâm sàng",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.thu_thuoc_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Đề tài thử thuốc trên lâm sàng đang thực hiện",
+   "unit": "đề tài",
+   "code": "khdt.nckh_dang_thuc_hien.thu_thuoc_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 29
+  },
+  {
+   "name": "Chuỗi chương trình Care Talk: Điều dưỡng kể chuyện (Đợt 1)",
+   "unit": "số quay",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu NCKH cung cấp (Bác sĩ chuyên ngành)",
+   "unit": "đề tài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 8
+  }
+ ]
+}

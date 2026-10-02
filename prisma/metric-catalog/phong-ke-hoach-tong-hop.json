@@ -1,0 +1,2324 @@
+{
+ "department": "Phòng Kế hoạch Tổng hợp",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.6%.",
+ "nodes": [
+  {
+   "code": "khth",
+   "parent": null,
+   "name": "Phòng Kế hoạch Tổng hợp",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.van_ban",
+   "parent": "khth",
+   "name": "Văn bản hành chính",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.van_ban.den_ngoai_vien",
+   "parent": "khth.van_ban",
+   "name": "Văn bản đến ngoại viện",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.van_ban.di_ngoai_vien",
+   "parent": "khth.van_ban",
+   "name": "Văn bản đi ngoại viện",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.van_ban.noi_bo",
+   "parent": "khth.van_ban",
+   "name": "Văn bản nội bộ",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hsba",
+   "parent": "khth",
+   "name": "Hồ sơ bệnh án",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "parent": "khth.hsba",
+   "name": "HSBA kiểm tra tiếp nhận",
+   "kind": "METRIC",
+   "unit": "HSBA",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hsba.in_ma_luu_tru",
+   "parent": "khth.hsba",
+   "name": "HSBA in mã lưu trữ",
+   "kind": "METRIC",
+   "unit": "HSBA",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep",
+   "parent": "khth",
+   "name": "Ca ghép tạng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep.gan",
+   "parent": "khth.ca_ghep",
+   "name": "Ca ghép gan",
+   "kind": "METRIC",
+   "unit": "ca",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep.than",
+   "parent": "khth.ca_ghep",
+   "name": "Ca ghép thận",
+   "kind": "METRIC",
+   "unit": "ca",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep.than_nguoi_hien_song",
+   "parent": "khth.ca_ghep",
+   "name": "Ca ghép thận từ người hiến sống",
+   "kind": "METRIC",
+   "unit": "ca",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep.tim",
+   "parent": "khth.ca_ghep",
+   "name": "Ca ghép tim",
+   "kind": "METRIC",
+   "unit": "ca",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "parent": "khth.ca_ghep",
+   "name": "Ca ghép tim từ người hiến chết não",
+   "kind": "METRIC",
+   "unit": "ca",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dmkt",
+   "parent": "khth",
+   "name": "Danh mục kỹ thuật",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "parent": "khth.dmkt",
+   "name": "DMKT đề xuất xin phép phê duyệt bổ sung",
+   "kind": "METRIC",
+   "unit": "DMKT",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dmkt.da_phe_duyet",
+   "parent": "khth.dmkt",
+   "name": "DMKT được phê duyệt bổ sung trong TT 43-21",
+   "kind": "METRIC",
+   "unit": "DMKT",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "parent": "khth.dmkt",
+   "name": "DMKT ngoài TT43-21 chưa nhận phản hồi",
+   "kind": "METRIC",
+   "unit": "DMKT",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt",
+   "parent": "khth",
+   "name": "Hướng dẫn chẩn đoán và điều trị",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.tong_so",
+   "parent": "khth.hdcd_dt",
+   "name": "Tổng số HDCĐ&ĐT xây dựng/cập nhật",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.dang_soat_xet",
+   "parent": "khth.hdcd_dt",
+   "name": "Số HDCĐ&ĐT đang soát xét",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.gui_file_word",
+   "parent": "khth.hdcd_dt",
+   "name": "Số HDCĐ&ĐT gửi file word về Phòng KHTH",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.trinh_ban_giay",
+   "parent": "khth.hdcd_dt",
+   "name": "Số HDCĐ&ĐT trình bản giấy về Phòng KHTH",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "parent": "khth.hdcd_dt",
+   "name": "Số HDCĐ&ĐT trình Hội đồng khoa học qua email",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "parent": "khth.hdcd_dt",
+   "name": "Số HDCĐ&ĐT trình Ban Giám đốc ban hành",
+   "kind": "METRIC",
+   "unit": "HDCĐ&ĐT",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.ty_le_gui_file_word",
+   "parent": "khth.hdcd_dt",
+   "name": "Tỷ lệ gửi file word về Phòng KHTH",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.ty_le_trinh_ban_giay",
+   "parent": "khth.hdcd_dt",
+   "name": "Tỷ lệ trình bản giấy về Phòng KHTH",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.ty_le_trinh_hdkh",
+   "parent": "khth.hdcd_dt",
+   "name": "Tỷ lệ trình Hội đồng khoa học qua email",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.hdcd_dt.ty_le_trinh_bgd",
+   "parent": "khth.hdcd_dt",
+   "name": "Tỷ lệ trình Ban Giám đốc ban hành",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dinh_muc",
+   "parent": "khth",
+   "name": "Định mức lao động và VTYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "parent": "khth.dinh_muc",
+   "name": "Định mức lao động trực tiếp và VTYT chi tiết DVKT toàn viện",
+   "kind": "METRIC",
+   "unit": "định mức",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.bieu_mau",
+   "parent": "khth",
+   "name": "Biểu mẫu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "parent": "khth.bieu_mau",
+   "name": "Biểu mẫu đề nghị phòng CNTT xây dựng/ điều chỉnh",
+   "kind": "METRIC",
+   "unit": "biểu mẫu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Biểu mẫu rà soát nghiên cứu chỉnh sửa đề nghị xây dựng điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu rà soát, nghiên cứu, chỉnh sửa và đề nghị phòng CNTT xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Biểu mẫu rà soát, nghiên cứu, chỉnh sửa và đề nghị xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu rà soát, nghiên cứu, chỉnh sửa và đề nghị xây dựng/điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Biểu mẫu đề nghị phòng CNTT xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Biểu mẫu đề nghị xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số biểu mẫu rà soát, nghiên cứu, chỉnh sửa và đề nghị phòng CNTT xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số biểu mẫu đề nghị phòng CNTT xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số biểu mẫu đề nghị xây dựng/ điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số biểu mẫu đề nghị xây dựng/điều chỉnh",
+   "unit": "biểu mẫu",
+   "code": "khth.bieu_mau.de_nghi_xay_dung_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Ca ghép gan",
+   "unit": "ca",
+   "code": "khth.ca_ghep.gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca ghép gan luỹ kế",
+   "unit": "ca",
+   "code": "khth.ca_ghep.gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 33
+  },
+  {
+   "name": "Ca ghép gan trong tuần",
+   "unit": "ca",
+   "code": "khth.ca_ghep.gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số ca ghép gan",
+   "unit": "ca",
+   "code": "khth.ca_ghep.gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Ca ghép thận",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Ca ghép thận triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số ca ghép thận",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số ca ghép thận thực hiện",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép thận triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép thận triển khai lũy kế",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép thận từ người hiến chết não",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép thận từ người hiến chết não triển khai trong tuần",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép thận đã triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca ghép thận",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Tổng số ca ghép thận triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số ca ghép thận từ người hiến sống",
+   "unit": "ca",
+   "code": "khth.ca_ghep.than_nguoi_hien_song",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Ca ghép tim",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép tim",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số ca ghép tim thực hiện",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép tim triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số ca ghép tim",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số ca ghép tim luỹ kế",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca ghép tim triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "ca ghép tim",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca ghép tim từ người hiến chết não",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số ca ghép tim từ người hiến chết não",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số ca ghép tim từ người hiến chết não thực hiện trong tuần",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép tim từ người hiến chết não triển khai lũy kế",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca ghép tim từ người hiến chết não đã triển khai",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng ca ghép tim từ người hiến chết não",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca ghép tim từ người hiến chết não",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số ca ghép tim từ người hiến chết não triển khai lũy kế",
+   "unit": "ca",
+   "code": "khth.ca_ghep.tim_nguoi_hien_chet_nao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Định mức VTYT chi tiết của tất cả các DVKT toàn viện",
+   "unit": "định mức",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Định mức lao động trực tiếp và định mức VTYT chi tiết DVKT",
+   "unit": "định mức",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Định mức lao động trực tiếp và định mức VTYT chi tiết DVKT",
+   "unit": "DVKT",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Định mức lao động trực tiếp và định mức VTYT chi tiết DVKT toàn viện",
+   "unit": "định mức",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Định mức lao động trực tiếp và định mức VTYT chi tiết DVKT toàn viện",
+   "unit": "",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Định mức lao động trực tiếp và định mức VTYT chi tiết của tất cả các DVKT toàn viện",
+   "unit": "định mức",
+   "code": "khth.dinh_muc.dvkt_toan_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "DMKT chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT ngoài TT43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục kỹ thuật ngoài TT 43-21 chưa phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục kỹ thuật ngoài TT43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số DMKT ngoài TT43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số DMKT ngoài TT43-21 chưa nhận được phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số danh mục kỹ thuật chưa nhận được phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật chưa nhận được phản hồi",
+   "unit": "danh mục",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật chưa nhận được phản hồi",
+   "unit": "Danh mục kỹ thuật",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài TT 43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài TT43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài TT43-21 chưa nhận được phản hồi từ Bộ Y tế",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài Thông tư 43-21 chưa nhận phản hồi",
+   "unit": "danh mục",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài Thông tư 43-21 chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng danh mục dịch vụ chưa nhận phản hồi",
+   "unit": "DMKT",
+   "code": "khth.dmkt.chua_nhan_phan_hoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT trong TT 43-21 phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục kỹ thuật bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Danh mục kỹ thuật phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số DMKT trong TT 43-21 được phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT được Bộ Y tế phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật phê duyệt bổ sung trong Thông tư 43-21",
+   "unit": "danh mục",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số danh mục kỹ thuật được Bộ Y tế phê duyệt bổ sung",
+   "unit": "danh mục",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật được Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật được Bộ Y tế phê duyệt bổ sung",
+   "unit": "Danh mục kỹ thuật",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật được Bộ Y tế phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật được Bộ Y tế phê duyệt bổ sung trong Thông tư 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật được phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số danh mục kỹ thuật được phê duyệt bổ sung trong TT 43-21",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng danh mục kỹ thuật được phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.da_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT xin phép phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT đề xuất xin phép phê duyệt bổ sung theo Thông tư 23",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục kỹ thuật xin phép Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số DMKT xin phép Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT xin phép Bộ Y tế phê duyệt bổ sung theo Thông tư 23",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số DMKT xin phép Bộ Y tế phê duyệt bổ sung theo Thông tư 23/2024/TT-BYT",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số DMKT đề xuất xin phép Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT đề xuất xin phép Bộ Y tế phê duyệt bổ sung theo Thông tư 23/2024/TT-BYT",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT đề xuất xin phép phê duyệt bổ sung theo Thông tư 23",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật xin phép Bộ Y tế phê duyệt bổ sung theo Thông tư 23/2024/TT-BYT",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật xin phép phê duyệt bổ sung theo Thông tư 23",
+   "unit": "danh mục",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép Bộ Y tế phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép Bộ Y tế phê duyệt bổ sung theo Thông tư 23/2024/TT-BYT",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt bổ sung",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt bổ sung",
+   "unit": "danh mục",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt bổ sung",
+   "unit": "Danh mục kỹ thuật",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt bổ sung theo Thông tư 23",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật đề xuất xin phép phê duyệt bổ sung theo Thông tư 23",
+   "unit": "danh mục",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng danh mục kỹ thuật đề xuất xin phép phê duyệt",
+   "unit": "DMKT",
+   "code": "khth.dmkt.de_xuat_phe_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HDCĐ ĐT đang soát xét",
+   "unit": "HDCĐ ĐT",
+   "code": "khth.hdcd_dt.dang_soat_xet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hướng dẫn chẩn đoán và điều trị đang soát xét",
+   "unit": "HDCĐ ĐT",
+   "code": "khth.hdcd_dt.dang_soat_xet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số HDCĐ ĐT đang soát xét",
+   "unit": "HDCĐ ĐT",
+   "code": "khth.hdcd_dt.dang_soat_xet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số hướng dẫn chẩn đoán và điều trị đang soát xét",
+   "unit": "HDCĐ ĐT",
+   "code": "khth.hdcd_dt.dang_soat_xet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "HDCĐ&ĐT gửi file word về Phòng KHTH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.gui_file_word",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT gửi file word về Phòng KHTH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.gui_file_word",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "HDCĐ&ĐT xây dựng/cập nhật",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT xây dựng/cập nhật",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số hướng dẫn chẩn đoán và điều trị xây dựng/cập nhật",
+   "unit": "hướng dẫn",
+   "code": "khth.hdcd_dt.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số HDCĐ&ĐT xây dựng/cập nhật",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "HDCĐ&ĐT trình bản giấy về Phòng KHTH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_ban_giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT trình bản giấy về Phòng KHTH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_ban_giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "HDCĐ&ĐT ban hành",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "HDCĐ&ĐT trình Ban Giám đốc ban hành",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chẩn đoán và điều trị ban hành",
+   "unit": "Hướng dẫn chẩn đoán và điều trị",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chẩn đoán và điều trị ban hành",
+   "unit": "Hướng dẫn",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT trình Ban Giám đốc ban hành",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số HDCĐ&ĐT đạt trình Ban Giám đốc ban hành",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chẩn đoán và điều trị trình Ban Giám đốc ban hành",
+   "unit": "hướng dẫn",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chẩn đoán và điều đạt trình Ban Giám đốc ban hành",
+   "unit": "hướng dẫn",
+   "code": "khth.hdcd_dt.trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HDCĐ&ĐT trình Hội đồng khoa học qua email",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HDCĐ&ĐT trình ký HĐKH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "HDCĐ&ĐT trình ký Hội đồng khoa học",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT trình Hội đồng khoa học qua email",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số HDCĐ&ĐT trình ký HĐKH",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số HDCĐ&ĐT trình ký Hội đồng khoa học",
+   "unit": "HDCĐ&ĐT",
+   "code": "khth.hdcd_dt.trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ gửi file word về Phòng KHTH",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_gui_file_word",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tỷ lệ trình bản giấy về Phòng KHTH",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_ban_giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tỷ lệ HDCĐ&ĐT trình Ban Giám đốc ban hành",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ hướng dẫn chẩn đoán và điều trị trình Ban Giám đốc ban hành",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ trình Ban Giám đốc ban hành",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tỷ lệ trình Hội đồng khoa học qua email",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tỷ lệ trình ký HĐKH",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Tỷ lệ trình ký Hội đồng khoa học",
+   "unit": "%",
+   "code": "khth.hdcd_dt.ty_le_trinh_hdkh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "HSBA in mã lưu trữ",
+   "unit": "HSBA",
+   "code": "khth.hsba.in_ma_luu_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ bệnh án in mã lưu trữ",
+   "unit": "HSBA",
+   "code": "khth.hsba.in_ma_luu_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 34
+  },
+  {
+   "name": "In mã lưu trữ Hồ sơ bệnh án",
+   "unit": "HSBA",
+   "code": "khth.hsba.in_ma_luu_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HSBA in mã lưu trữ",
+   "unit": "HSBA",
+   "code": "khth.hsba.in_ma_luu_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HSBA kiểm tra, tiếp nhận",
+   "unit": "HSBA",
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ bệnh án kiểm tra tiếp nhận",
+   "unit": "HSBA",
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Hồ sơ bệnh án kiểm tra, tiếp nhận",
+   "unit": "HSBA",
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Kiểm tra, tiếp nhận Hồ sơ bệnh án",
+   "unit": "HSBA",
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HSBA kiểm tra, tiếp nhận",
+   "unit": "HSBA",
+   "code": "khth.hsba.kiem_tra_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số văn bản đến ngoại viện",
+   "unit": "văn bản",
+   "code": "khth.van_ban.den_ngoai_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đến ngoại viện",
+   "unit": "văn bản",
+   "code": "khth.van_ban.den_ngoai_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 38
+  },
+  {
+   "name": "Số văn bản đi ngoại viện",
+   "unit": "văn bản",
+   "code": "khth.van_ban.di_ngoai_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đi ngoại viện",
+   "unit": "văn bản",
+   "code": "khth.van_ban.di_ngoai_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Số văn bản nội bộ",
+   "unit": "văn bản",
+   "code": "khth.van_ban.noi_bo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản nội bộ",
+   "unit": "văn bản",
+   "code": "khth.van_ban.noi_bo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Văn bản nội2nội bộ",
+   "unit": "văn bản",
+   "code": "khth.van_ban.noi_bo",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ Mắt trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ RHM/TMH trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ ngoại trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ nội trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ sản trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ trong tổ khám",
+   "unit": "BS",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca thí điểm phẫu thuật gây sang thương bó gai đồi thị qua da bằng sóng cao tần",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMDV trong Phụ lục",
+   "unit": "DMDV",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT ngoài TT43-21 có trong Phụ lục Thông tư 23",
+   "unit": "DMKT",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hệ thống X-quang kỹ thuật số",
+   "unit": "hệ thống",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hệ thống phẫu thuật nội soi",
+   "unit": "hệ thống",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hệ thống phẫu thuật nội soi đề án trang bị",
+   "unit": "hệ thống",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ bệnh án chuyển kho Thành Khánh",
+   "unit": "HSBA",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa học công nghệ thông qua",
+   "unit": "KTM",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy chụp CT >= 64 lát cắt trang bị",
+   "unit": "lát cắt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nội dung thông qua Hội đồng khoa học",
+   "unit": "nội dung",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phòng mổ ưu tiên khoa Ngoại TK và khoa CTCH",
+   "unit": "phòng mổ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phòng mổ ưu tiên khoa THTM và khoa PTTM-RHM",
+   "unit": "phòng mổ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMDV có trong Phụ lục 1 và 2 của Thông tư 23",
+   "unit": "DMDV",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT ngoài TT43-21 có trong Phụ lục Thông tư 23",
+   "unit": "DMKT",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số ca phẫu thuật hủy vùng sinh động kinh bằng sóng cao tần đề xuất triển khai thí điểm",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số danh mục kỹ thuật ngoài Thông tư 43-21 có trong Thông tư 23",
+   "unit": "danh mục",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng danh mục dịch vụ trong Phụ lục",
+   "unit": "DMDV",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Bình Cơ",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Bến Thành",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Chợ Lớn",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Sài Gòn",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Tân Hưng",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn P.Tân Hải",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khám theo đoàn Xã Nhà Bè",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng mảnh ghép",
+   "unit": "mảnh ghép",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được khám sức khỏe tại phường Bình Cơ",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được khám sức khỏe tại phường Sài Gòn",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được khám sức khỏe tại phường Tân Hưng",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được khám sức khỏe tại xã Nhà Bè",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "DMKT của CĐHA nộp BYT theo hồ sơ KTM",
+   "unit": "DMKT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Dịch vụ kỹ thuật đề nghị điều chỉnh hoặc bổ sung vào Phụ lục 3",
+   "unit": "dịch vụ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hạn mức mua sắm hàng hóa trình Hội đồng khoa học",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hạn mức mua sắm hàng hóa trình Hội đồng khoa học sau thay đổi",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân tại P.Bình Cơ",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân tại P.Chợ Lớn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân tại P.Sài Gòn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân tại P.Tân Hưng",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế lượt khám sức khỏe toàn dân tại Xã Nhà Bè",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Bình Cơ",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Bến Thành",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Chợ Lớn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Sài Gòn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Tân Hưng",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân P.Tân Hải",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế người được khám sức khỏe toàn dân Xã Nhà Bè",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ngày-buổi khám sức khỏe toàn dân trong tuần",
+   "unit": "ngày-buổi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người dân khám sức khỏe toàn dân trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại P.Bình Cơ trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại P.Chợ Lớn trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại P.Sài Gòn trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại P.Tân Hưng trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại P.Tân Hải trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người khám sức khỏe toàn dân tại Xã Nhà Bè trong tuần",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Bình Cơ",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Bến Thành",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Chợ Lớn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Sài Gòn",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Tân Hưng",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân P.Tân Hải",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe toàn dân Xã Nhà Bè",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe tại Phường Bình Cơ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe tại Phường Sài Gòn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe tại Phường Tân Hưng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe tại Phường Tân Hải",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người được khám sức khỏe tại Xã Nhà Bè",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật",
+   "unit": "Quy trình kỹ thuật",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật ban hành",
+   "unit": "Quy trình kỹ thuật",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật ban hành",
+   "unit": "QTKT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số DMKT của CĐHA nộp BYT",
+   "unit": "DMKT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCĐ&ĐT đạt",
+   "unit": "HDCĐ&ĐT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng ca ghép thận từ người hiến chết não",
+   "unit": "ca",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được KSK tại các Xã, Phường",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng người được khám sức khỏe tại các xã, phường",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật ban hành",
+   "unit": "QTKT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trung bình người/ngày-buổi khám sức khỏe toàn dân",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trường hợp bệnh viện quản lý điều trị lao 6 tháng đầu năm 2026",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca ghép thận luỹ kế",
+   "unit": "ca",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca ghép thận triển khai lũy kế",
+   "unit": "ca",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ngày-buổi khám sức khỏe toàn dân luỹ kế",
+   "unit": "ngày-buổi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ mất dấu người bệnh phát hiện lao",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ đạt chỉ tiêu kế hoạch KSK",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ đạt chỉ tiêu kế hoạch khám sức khỏe toàn dân",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "ca ghép thận thực hiện",
+   "unit": "ca",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

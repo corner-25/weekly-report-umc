@@ -1,0 +1,1200 @@
+{
+ "department": "Đơn vị Quản lý Đấu thầu",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "nodes": [
+  {
+   "code": "qldt",
+   "parent": null,
+   "name": "Đơn vị Quản lý Đấu thầu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach",
+   "parent": "qldt",
+   "name": "Kế hoạch & Hồ sơ đang thực hiện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach.so_ho_so_dang_thuc_hien",
+   "parent": "qldt.ke_hoach",
+   "name": "Số hồ sơ mua sắm đang thực hiện",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach.gia_tri_ho_so_dang_thuc_hien",
+   "parent": "qldt.ke_hoach",
+   "name": "Tổng giá trị dự toán hồ sơ đang thực hiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach.so_goi_dang_xay_dung_ke_hoach",
+   "parent": "qldt.ke_hoach",
+   "name": "Số gói thầu đang xây dựng kế hoạch và YCKT",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach.so_goi_dang_lua_chon_nha_thau",
+   "parent": "qldt.ke_hoach",
+   "name": "Số gói thầu đang lựa chọn nhà thầu",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "parent": "qldt.ke_hoach",
+   "name": "Số gói thầu đang thực hiện",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ket_qua",
+   "parent": "qldt",
+   "name": "Kết quả thực hiện mua sắm",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "parent": "qldt.ket_qua",
+   "name": "Tổng số gói thầu đã thực hiện",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "parent": "qldt.ket_qua",
+   "name": "Tổng giá trị gói thầu đã thực hiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "parent": "qldt.ket_qua",
+   "name": "Số gói thầu đã hoàn thành",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.ket_qua.so_goi_huy_thau",
+   "parent": "qldt.ket_qua",
+   "name": "Số gói thầu hủy thầu",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.mua_sam_nho",
+   "parent": "qldt",
+   "name": "Mua sắm 20-50 triệu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.mua_sam_nho.so_noi_dung",
+   "parent": "qldt.mua_sam_nho",
+   "name": "Số nội dung mua sắm 20-50 triệu",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.mua_sam_nho.gia_tri",
+   "parent": "qldt.mua_sam_nho",
+   "name": "Tổng giá trị mua sắm 20-50 triệu",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.tuy_chon_mua_them",
+   "parent": "qldt",
+   "name": "Tùy chọn mua thêm",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.tuy_chon_mua_them.so_du_toan",
+   "parent": "qldt.tuy_chon_mua_them",
+   "name": "Số dự toán áp dụng tùy chọn mua thêm",
+   "kind": "METRIC",
+   "unit": "dự toán",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.tuy_chon_mua_them.so_phu_luc",
+   "parent": "qldt.tuy_chon_mua_them",
+   "name": "Số phụ lục hợp đồng tùy chọn mua thêm",
+   "kind": "METRIC",
+   "unit": "phụ lục hợp đồng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.tuy_chon_mua_them.gia_tri",
+   "parent": "qldt.tuy_chon_mua_them",
+   "name": "Giá trị tùy chọn mua thêm đã thực hiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.soat_xet",
+   "parent": "qldt",
+   "name": "Soát xét & Rà soát",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "parent": "qldt.soat_xet",
+   "name": "Số hồ sơ Tổ nghiệp vụ soát xét",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.soat_xet.so_goi_tiep_nhan_ra_soat",
+   "parent": "qldt.soat_xet",
+   "name": "Số gói thầu tiếp nhận rà soát",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.soat_xet.so_danh_muc_tiep_nhan_ra_soat",
+   "parent": "qldt.soat_xet",
+   "name": "Số danh mục gói thầu tiếp nhận rà soát",
+   "kind": "METRIC",
+   "unit": "danh mục",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.hoi_dong",
+   "parent": "qldt",
+   "name": "Hội đồng mua sắm & Hội đồng Thuốc",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam",
+   "parent": "qldt.hoi_dong",
+   "name": "Số gói thầu Hội đồng mua sắm thông qua",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "parent": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam",
+   "name": "Số gói thầu thông qua tại cuộc họp",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "parent": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam",
+   "name": "Số gói thầu xin ý kiến qua email",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "parent": "qldt.hoi_dong",
+   "name": "Số hồ sơ Hội đồng Thuốc và điều trị",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.giam_sat",
+   "parent": "qldt",
+   "name": "Giám sát & Nội bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.giam_sat.so_goi_co_nhan_su_tcg",
+   "parent": "qldt.giam_sat",
+   "name": "Số gói thầu có nhân sự tham gia TCG, TTĐ",
+   "kind": "METRIC",
+   "unit": "gói thầu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "parent": "qldt.giam_sat",
+   "name": "Số quy định nội bộ điều chỉnh",
+   "kind": "METRIC",
+   "unit": "quy định",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Gói thầu có nhân sự tham gia TCG, TTĐ",
+   "unit": "gói thầu",
+   "code": "qldt.giam_sat.so_goi_co_nhan_su_tcg",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng gói thầu có nhân sự tham gia TCG, TTĐ",
+   "unit": "gói thầu",
+   "code": "qldt.giam_sat.so_goi_co_nhan_su_tcg",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổng số lượng gói thầu có nhân sự tham gia TCG, TTĐ",
+   "unit": "gói thầu",
+   "code": "qldt.giam_sat.so_goi_co_nhan_su_tcg",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Số lượng quy trình nội bộ điều chỉnh các nội dung có thay đổi",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng quy trình nội bộ đã ban hành đang điều chỉnh",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng quy định nội bộ điều chỉnh",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượng quy định nội bộ điều chỉnh các nội dung có thay đổi",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng quy định nội bộ đã ban hành đang điều chỉnh",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng quy định nội bộ đã ban hành điều chỉnh",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng quy định nội bộ đã điều chỉnh",
+   "unit": "quy định",
+   "code": "qldt.giam_sat.so_quy_dinh_noi_bo_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng gói thầu thông qua Hội đồng mua sắm",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Gói thầu Hội đồng mua sắm thông qua tại cuộc họp",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gói thầu thông qua tại cuộc họp Hội đồng mua sắm",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số gói thầu Hội đồng mua sắm thông qua tại cuộc họp",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số lượng gói thầu Hội đồng mua sắm thông qua tại cuộc họp",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 18
+  },
+  {
+   "name": "Số lượng gói thầu thông qua Hội đồng mua sắm tại cuộc họp",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng gói thầu thông qua tại cuộc họp Hội đồng mua sắm",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_cuoc_hop",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gói thầu Hội đồng mua sắm xin ý kiến qua email",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gói thầu xin ý kiến qua email Hội đồng mua sắm",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số gói thầu Hội đồng mua sắm xin ý kiến qua email",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số lượng gói thầu Hội đồng mua sắm xin ý kiến qua email",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượng hồ sơ Hội đồng mua sắm xin ý kiến qua email",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số lượng hồ sơ xin ý kiến Hội đồng mua sắm qua email",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng hồ sơ xin ý kiến qua email Hội đồng mua sắm",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_goi_hoi_dong_mua_sam_email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Gói thầu Hội đồng Thuốc và điều trị",
+   "unit": "gói thầu",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ mua sắm Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ mua sắm",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng hồ sơ Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng hồ sơ mua sắm Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ mua sắm",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số lượng hồ sơ mua sắm Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng hồ sơ rà soát Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng hồ sơ rà soát trình Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": "qldt.hoi_dong.so_ho_so_hoi_dong_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng giá trị dự toán hồ sơ mua sắm đang thực hiện",
+   "unit": "VND",
+   "code": "qldt.ke_hoach.gia_tri_ho_so_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Gói thầu đang trong quá trình lựa chọn nhà thầu",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_lua_chon_nha_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng gói thầu đang trong quá trình lựa chọn nhà thầu",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_lua_chon_nha_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Gói thầu đang thực hiện từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số gói thầu đang thực hiện",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gói thầu đang thực hiện từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số gói thầu đang thực hiện từ tháng 1 năm 2026",
+   "unit": "gói",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng gói thầu đang thực hiện",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng gói thầu đang thực hiện từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Số lượng gói thầu đang thực hiện từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng gói thầu đang thực hiện từ tháng 1 năm 2026",
+   "unit": "gói thầu",
+   "code": "qldt.ke_hoach.so_goi_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Gói thầu đang xây dựng kế hoạch lựa chọn nhà thầu và yêu cầu kỹ thuật",
+   "unit": "hồ sơ",
+   "code": "qldt.ke_hoach.so_goi_dang_xay_dung_ke_hoach",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng gói thầu đang trong quá trình xây dựng kế hoạch lựa chọn nhà thầu và yêu cầu kỹ thuật",
+   "unit": "hồ sơ",
+   "code": "qldt.ke_hoach.so_goi_dang_xay_dung_ke_hoach",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Số lượng gói thầu đang xây dựng kế hoạch lựa chọn nhà thầu và yêu cầu kỹ thuật",
+   "unit": "hồ sơ",
+   "code": "qldt.ke_hoach.so_goi_dang_xay_dung_ke_hoach",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổng số hồ sơ mua sắm đang thực hiện",
+   "unit": "hồ sơ",
+   "code": "qldt.ke_hoach.so_ho_so_dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Gói thầu đã hoàn thành từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số gói thầu đã hoàn thành",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gói thầu đã hoàn thành từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số gói thầu đã hoàn thành từ tháng 1 năm 2026",
+   "unit": "gói",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng gói thầu đã hoàn thành",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng gói thầu đã hoàn thành từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Số lượng gói thầu đã hoàn thành từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng gói thầu đã hoàn thành từ tháng 1 năm 2026",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng gói thầu hủy thầu",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_huy_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng gói thầu hủy thầu từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ket_qua.so_goi_huy_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số lượng gói thầu hủy thầu từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_huy_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng gói thầu hủy thầu từ tháng 1 năm 2026",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.so_goi_huy_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng giá trị gói thầu BV đã thực hiện từ tháng 1 năm 2025",
+   "unit": "VND",
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Tổng giá trị gói thầu Bệnh viện đã thực hiện",
+   "unit": "VND",
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổng giá trị gói thầu Bệnh viện đã thực hiện từ tháng 1 năm 2025",
+   "unit": "VND",
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Tổng giá trị gói thầu Bệnh viện đã thực hiện từ tháng 1 năm 2026",
+   "unit": "VND",
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổng giá trị gói thầu thực hiện từ tháng 1 năm 2025",
+   "unit": "VND",
+   "code": "qldt.ket_qua.tong_gia_tri_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số gói thầu BV đã thực hiện từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổng số gói thầu BV đã thực hiện từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng số gói thầu Bệnh viện đã thực hiện",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổng số gói thầu Bệnh viện đã thực hiện từ tháng 1 năm 2025",
+   "unit": "gói",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Tổng số gói thầu Bệnh viện đã thực hiện từ tháng 1 năm 2026",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng số gói thầu Bệnh viện đã thực hiện từ tháng 1 năm 2026",
+   "unit": "gói",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số gói thầu thực hiện từ tháng 1 năm 2025",
+   "unit": "gói thầu",
+   "code": "qldt.ket_qua.tong_so_goi_da_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng giá trị nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng",
+   "unit": "VND",
+   "code": "qldt.mua_sam_nho.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Tổng giá trị nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng trong toàn viện",
+   "unit": "VND",
+   "code": "qldt.mua_sam_nho.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng giá trị nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng trong toàn viện từ tháng 1 năm 2026 đến nay",
+   "unit": "VND",
+   "code": "qldt.mua_sam_nho.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng",
+   "unit": "hồ sơ",
+   "code": "qldt.mua_sam_nho.so_noi_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng số nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng",
+   "unit": "hồ sơ",
+   "code": "qldt.mua_sam_nho.so_noi_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng trong toàn viện",
+   "unit": "hồ sơ",
+   "code": "qldt.mua_sam_nho.so_noi_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số nội dung mua sắm từ 20 triệu đến không quá 50 triệu đồng trong toàn viện từ tháng 1 năm 2026 đến nay",
+   "unit": "hồ sơ",
+   "code": "qldt.mua_sam_nho.so_noi_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số danh mục gói thầu tiếp nhận và rà soát",
+   "unit": "danh mục",
+   "code": "qldt.soat_xet.so_danh_muc_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng danh mục gói thầu tiếp nhận và rà soát",
+   "unit": "danh mục",
+   "code": "qldt.soat_xet.so_danh_muc_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Tổng số danh mục gói thầu tiếp nhận và rà soát",
+   "unit": "danh mục",
+   "code": "qldt.soat_xet.so_danh_muc_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Gói thầu tiếp nhận và rà soát",
+   "unit": "gói thầu",
+   "code": "qldt.soat_xet.so_goi_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số gói thầu tiếp nhận và rà soát",
+   "unit": "gói thầu",
+   "code": "qldt.soat_xet.so_goi_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Tổng số gói thầu tiếp nhận và rà soát trình các Hội đồng",
+   "unit": "gói thầu",
+   "code": "qldt.soat_xet.so_goi_tiep_nhan_ra_soat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Hồ sơ do Tổ nghiệp vụ tiếp nhận và thực hiện soát xét",
+   "unit": "hồ sơ",
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng hồ sơ Tổ nghiệp vụ tiếp nhận và thực hiện soát xét",
+   "unit": "hồ sơ",
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng hồ sơ do Tổ nghiệp vụ tiếp nhận và thực hiện soát xét",
+   "unit": "hồ sơ",
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số lượng hồ sơ Tổ nghiệp vụ tiếp nhận và thực hiện soát xét",
+   "unit": "hồ sơ",
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng số lượng hồ sơ do Tổ nghiệp vụ tiếp nhận và thực hiện soát xét",
+   "unit": "hồ sơ",
+   "code": "qldt.soat_xet.so_ho_so_to_nghiep_vu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Giá trị phụ lục hợp đồng áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "VND",
+   "code": "qldt.tuy_chon_mua_them.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "VND",
+   "code": "qldt.tuy_chon_mua_them.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Tổng giá trị dự toán áp dụng tùy chọn mua thêm",
+   "unit": "VND",
+   "code": "qldt.tuy_chon_mua_them.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng giá trị áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "VND",
+   "code": "qldt.tuy_chon_mua_them.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giá trị dự toán áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "VND",
+   "code": "qldt.tuy_chon_mua_them.so_du_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng dự toán áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "dự toán",
+   "code": "qldt.tuy_chon_mua_them.so_du_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Số lượng phụ lục hợp đồng áp dụng tùy chọn mua thêm",
+   "unit": "phụ lục hợp đồng",
+   "code": "qldt.tuy_chon_mua_them.so_phu_luc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượng phụ lục hợp đồng áp dụng tùy chọn mua thêm đã thực hiện",
+   "unit": "phụ lục hợp đồng",
+   "code": "qldt.tuy_chon_mua_them.so_phu_luc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Gói thầu trình Hội đồng Thuốc và điều trị",
+   "unit": "gói thầu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gói thầu Hội đồng Thuốc và điều trị",
+   "unit": "gói thầu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gói thầu Hội đồng Thuốc và điều trị thông qua",
+   "unit": "gói thầu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ có kết quả lựa chọn nhà thầu",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ hủy thầu được tổ chức đấu thầu lại",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ hủy thầu, hủy thông báo mời thầu",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ mua sắm Hội đồng Thuốc và điều trị tại nhà thuốc Cơ sở 3",
+   "unit": "hồ sơ mua sắm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ mua sắm tại nhà thuốc Cơ sở 3 trình Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng hồ sơ mua sắm Hội đồng Thuốc và điều trị tại nhà thuốc Cơ sở 3",
+   "unit": "hồ sơ mua sắm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng hồ sơ mua sắm tại nhà thuốc Cơ sở 3 trình Hội đồng Thuốc và điều trị",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng giá dự toán được phê duyệt",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng giá trị trúng thầu",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số lượng hồ sơ mua sắm đã thực hiện",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ giá trị trúng thầu so với tổng giá trị kế hoạch được duyệt",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

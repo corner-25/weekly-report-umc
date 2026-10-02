@@ -5,10 +5,15 @@
  * workbook, so với những gì đã nạp, và bỏ qua phần không đổi. Nhờ vậy chạy mỗi
  * ngày mà chi phí gần bằng không khi chưa có tuần mới.
  *
- * Ba tầng bỏ qua, rẻ tới đắt:
+ * Bốn tầng bỏ qua, rẻ tới đắt:
  *   1. Checksum workbook không đổi → runner bỏ qua trước cả khi vào đây
- *   2. Tuần đã nạp đủ → không gọi AI cho tuần đó
- *   3. Nhiệm vụ khớp được bằng alias → không gọi AI cho dòng đó
+ *   2. Tuần cũ đã nạp đủ → không gọi AI cho tuần đó
+ *   3. Tuần gần đây: phòng có nội dung không đổi so với lần nạp trước → bỏ qua
+ *   4. Nhiệm vụ khớp được bằng alias → không gọi AI cho dòng đó
+ *
+ * Tầng 3 tồn tại vì sheet tuần mới được CHÉP từ tuần trước rồi các phòng sửa
+ * dần. Trước đây tuần đã nạp thì đóng băng, nên tuần 35-39 giữ nguyên bản chép
+ * — số liệu lệch đúng một tuần. Xem `parsers/department-snapshot.ts`.
  *
  * Xem docs/HOSPITAL-REPORT-PIPELINE.md.
  */
@@ -18,6 +23,7 @@ import { downloadSharedFile } from '../fetchers/onedrive-share';
 import { parseHospitalReport, type HospitalWeekSheet } from '../parsers/hospital-report';
 import { extractWeekTasksByDepartment } from '../parsers/hospital-week-tasks';
 import { matchDepartment } from '../parsers/department-matcher';
+import { departmentContentHash, isUneditedCopy } from '../parsers/department-snapshot';
 import { importWeekForDepartment } from '@/lib/ai/week-import';
 import { computeWeekDates } from '@/lib/report-week';
 import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types';
@@ -38,6 +44,57 @@ const MAX_WEEKS_PER_RUN = 3;
  * vào tuần thật sự ít việc, đủ chặt để bắt được lần nạp hỏng.
  */
 const PARTIAL_LOAD_RATIO = 0.5;
+
+/**
+ * Số tuần gần nhất được xét lại mỗi lần chạy để bắt nội dung sửa sau khi nạp.
+ *
+ * Phòng thường sửa báo cáo trong vòng 1-2 tuần; 6 tuần đủ rộng cho trường hợp
+ * bổ sung muộn. Xét lại chỉ tốn hash, chỉ phòng có đổi mới gọi AI.
+ */
+const RECHECK_RECENT_WEEKS = 6;
+
+/**
+ * Số lượt nạp (phòng × tuần) tối đa mỗi lần chạy, cùng lý do với MAX_WEEKS_PER_RUN:
+ * một bệnh viện có 14 phòng, nên 3 tuần ≈ 42 lượt.
+ */
+const MAX_DEPARTMENT_IMPORTS_PER_RUN = 42;
+
+/** Một sheet cần xử lý, kèm hash từng phòng ở sheet tuần trước để nhận ra bản chép. */
+interface HospitalWeekJob {
+  sheet: HospitalWeekSheet;
+  previousHashes: Map<string, string>;
+}
+
+function weekKey(year: number, week: number): string {
+  return `${year}-${week}`;
+}
+
+/** Hash từng phòng của một sheet, theo tên phòng ghi trong sheet. */
+function departmentHashes(sheet: HospitalWeekSheet | undefined): Map<string, string> {
+  const hashes = new Map<string, string>();
+  if (!sheet) return hashes;
+  for (const dept of extractWeekTasksByDepartment(sheet)) {
+    hashes.set(dept.departmentName, departmentContentHash(dept.tasks));
+  }
+  return hashes;
+}
+
+/**
+ * Gỡ dữ liệu AI đã nạp của một phòng trong một tuần mà sheet còn là bản chép
+ * tuần trước — dữ liệu đó là số tuần trước dán nhãn tuần này.
+ *
+ * Chỉ xoá dòng AI tạo (extractionModel khác null) và số liệu chưa duyệt —
+ * phần người làm giữ nguyên.
+ */
+async function clearDepartmentWeek(ctx: SyncContext, weekId: string, departmentId: string): Promise<number> {
+  const metrics = await ctx.prisma.extractedMetric.deleteMany({
+    where: { weekId, departmentId, reviewStatus: 'PENDING' },
+  });
+  const tasks = await ctx.prisma.weekTaskProgress.deleteMany({
+    where: { weekId, extractionModel: { not: null }, masterTask: { departmentId } },
+  });
+  return metrics.count + tasks.count;
+}
 
 /**
  * Lấy bản ghi tuần, tạo mới nếu chưa có.
@@ -113,7 +170,7 @@ function readConfig(ctx: SyncContext): HospitalAiConfig {
   };
 }
 
-export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
+export const hospitalAiImport: Connector<Buffer, HospitalWeekJob> = {
   id: 'hospital-ai-import',
   name: 'Báo cáo bệnh viện — tự động nạp bằng AI',
   kind: SyncSourceKind.ONEDRIVE_SHARE,
@@ -129,13 +186,13 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
   },
 
   /**
-   * Lọc ra các tuần CHƯA nạp.
+   * Chọn các tuần cần xử lý: tuần CHƯA nạp, cộng với các tuần gần đây để xét lại.
    *
    * Một tuần coi là đã nạp khi bản ghi `Week` tồn tại và đã có `WeekTaskProgress`
    * mang dấu vết trích xuất AI. Tuần người dùng nhập tay cũng được tôn trọng:
-   * pipeline không ghi đè công sức nhập liệu của họ.
+   * pipeline không ghi đè công sức nhập liệu của họ — kể cả khi xét lại.
    */
-  async parse(buffer: Buffer, ctx: SyncContext): Promise<HospitalWeekSheet[]> {
+  async parse(buffer: Buffer, ctx: SyncContext): Promise<HospitalWeekJob[]> {
     const { sheets, skippedSheets } = parseHospitalReport(buffer);
 
     for (const s of skippedSheets) {
@@ -159,18 +216,30 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
       },
       select: { year: true, week: true },
     });
-    const done = new Set(approved.map((p) => `${p.year}-${p.week}`));
+    const done = new Set(approved.map((p) => weekKey(p.year, p.week)));
 
     // Tuần người dùng nhập tay không có bản ghi chờ nào, nhưng vẫn phải được
     // tôn trọng — pipeline không ghi đè công sức nhập liệu của họ.
-    const manual = await ctx.prisma.week.findMany({
+    const manualWeeks = await ctx.prisma.week.findMany({
       where: {
         OR: sheets.map((s) => ({ year: s.year, weekNumber: s.week })),
         taskProgress: { some: { extractionModel: null } },
       },
       select: { year: true, weekNumber: true },
     });
-    for (const w of manual) done.add(`${w.year}-${w.weekNumber}`);
+    const manual = new Set(manualWeeks.map((w) => weekKey(w.year, w.weekNumber)));
+    for (const key of manual) done.add(key);
+
+    // Tuần có dấu vân tay được theo dõi từng phòng: phòng chưa cập nhật bản chép
+    // thì cố ý chưa nạp, nên tuần TRÔNG như nạp dở. Không để bước dưới xoá nhầm —
+    // đã xảy ra: tuần 40 có 1/14 phòng thật, bị xoá sạch rồi hash "không đổi"
+    // nên không nạp lại. Việc xét lại tuần này do upsert() lo theo từng phòng.
+    const tracked = await ctx.prisma.hospitalImportSnapshot.findMany({
+      where: { OR: sheets.map((s) => ({ year: s.year, week: s.week })) },
+      select: { year: true, week: true },
+      distinct: ['year', 'week'],
+    });
+    for (const t of tracked) done.add(weekKey(t.year, t.week));
 
     // Tuần nạp dở: có dữ liệu nhưng ít bất thường so với các tuần bình thường.
     //
@@ -217,30 +286,39 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
       );
     }
 
-    const pending = sheets
-      .filter((s) => !done.has(`${s.year}-${s.week}`))
-      .sort((a, b) => a.year - b.year || a.week - b.week);
-
-    await ctx.log(
-      'info',
-      `${sheets.length} tuần trong file · ${done.size} đã nạp · ${pending.length} cần xử lý`,
-    );
-
-    if (pending.length === 0) return [];
-
+    const ordered = [...sheets].sort((a, b) => a.year - b.year || a.week - b.week);
+    const pending = ordered.filter((s) => !done.has(weekKey(s.year, s.week)));
     const batch = pending.slice(0, MAX_WEEKS_PER_RUN);
     if (pending.length > batch.length) {
       await ctx.log(
         'info',
-        `Xử lý ${batch.length} tuần lần này (tuần ${batch.map((s) => s.week).join(', ')}); ` +
+        `Xử lý ${batch.length} tuần mới lần này (tuần ${batch.map((s) => s.week).join(', ')}); ` +
           `${pending.length - batch.length} tuần còn lại chạy ở lần sau`,
       );
     }
-    return batch;
+
+    // Tuần gần đây đã nạp: xét lại theo hash từng phòng ở upsert().
+    const recheck = ordered
+      .slice(-RECHECK_RECENT_WEEKS)
+      .filter((s) => done.has(weekKey(s.year, s.week)) && !manual.has(weekKey(s.year, s.week)));
+
+    await ctx.log(
+      'info',
+      `${sheets.length} tuần trong file · ${done.size} đã nạp · ${pending.length} chưa nạp · ` +
+        `xét lại ${recheck.length} tuần gần nhất`,
+    );
+
+    const bySheetKey = new Map(sheets.map((s) => [weekKey(s.year, s.week), s]));
+    return [...batch, ...recheck]
+      .sort((a, b) => a.year - b.year || a.week - b.week)
+      .map((sheet) => ({
+        sheet,
+        previousHashes: departmentHashes(bySheetKey.get(weekKey(sheet.year, sheet.week - 1))),
+      }));
   },
 
-  async upsert(sheets: HospitalWeekSheet[], ctx: SyncContext): Promise<UpsertResult> {
-    if (sheets.length === 0) {
+  async upsert(jobs: HospitalWeekJob[], ctx: SyncContext): Promise<UpsertResult> {
+    if (jobs.length === 0) {
       await ctx.log('info', 'Không có tuần mới — dữ liệu đã cập nhật');
       return { upserted: 0, skipped: 0 };
     }
@@ -253,15 +331,22 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
 
     let upserted = 0;
     let skipped = 0;
+    let importsLeft = MAX_DEPARTMENT_IMPORTS_PER_RUN;
 
-    for (const sheet of sheets) {
+    for (const { sheet, previousHashes } of jobs) {
       const weekId = await findOrCreateWeek(sheet, ctx);
       if (!weekId) {
         skipped += 1;
         continue;
       }
 
-      /** Có phòng nào lỗi không — quyết định tuần này đã xong hẳn chưa. */
+      const snapshots = await ctx.prisma.hospitalImportSnapshot.findMany({
+        where: { year: sheet.year, week: sheet.week },
+        select: { departmentId: true, contentHash: true },
+      });
+      const snapshotHash = new Map(snapshots.map((s) => [s.departmentId, s.contentHash]));
+
+      /** Có phòng nào lỗi hoặc còn dở không — quyết định tuần này đã xong hẳn chưa. */
       let weekHadError = false;
 
       for (const deptTasks of extractWeekTasksByDepartment(sheet)) {
@@ -274,40 +359,90 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekSheet> = {
           skipped += 1;
           continue;
         }
+        const departmentId = match.departmentId;
+        const label = `Tuần ${sheet.week} · ${match.dbName}`;
+        const contentHash = departmentContentHash(deptTasks.tasks);
+
+        // Nội dung không đổi so với lần nạp trước — không tốn gì.
+        if (snapshotHash.get(departmentId) === contentHash) continue;
+
+        // Phòng chưa sửa sheet chép từ tuần trước: nạp bây giờ là ghi số tuần
+        // trước dưới nhãn tuần này. Gỡ bản đã lỡ nạp, chờ phòng cập nhật.
+        const previousHash = previousHashes.get(deptTasks.departmentName);
+        if (isUneditedCopy(contentHash, previousHash, deptTasks.tasks.length)) {
+          const removed = await clearDepartmentWeek(ctx, weekId, departmentId);
+          await ctx.prisma.hospitalImportSnapshot.deleteMany({
+            where: { year: sheet.year, week: sheet.week, departmentId },
+          });
+          await ctx.log(
+            'warn',
+            `${label}: nội dung y hệt tuần ${sheet.week - 1} — phòng chưa cập nhật, chưa nạp` +
+              (removed > 0 ? ` (gỡ ${removed} dòng đã nạp nhầm)` : ''),
+          );
+          skipped += deptTasks.tasks.length;
+          continue;
+        }
+
+        if (importsLeft <= 0) {
+          weekHadError = true; // còn việc, giữ tuần ở trạng thái chưa xong
+          continue;
+        }
+        importsLeft -= 1;
 
         try {
+          // Nạp TRƯỚC, dọn SAU: AI lỗi giữa chừng (hết tiền, mất mạng) thì bản cũ
+          // vẫn còn nguyên. Trích số liệu tự thay bản cũ của phòng sau khi AI trả
+          // về; chỉ còn nhiệm vụ AI cũ không xuất hiện lại là phải dọn.
+          const importStartedAt = new Date();
           const summary = await importWeekForDepartment(
             ctx.prisma,
             {
               year: sheet.year,
               week: sheet.week,
-              departmentId: match.departmentId,
+              departmentId,
               departmentName: match.dbName ?? deptTasks.departmentName,
               tasks: deptTasks.tasks,
             },
             { extractMetricsEnabled: extractMetrics },
           );
 
+          const stale = await ctx.prisma.weekTaskProgress.deleteMany({
+            where: {
+              weekId,
+              extractionModel: { not: null },
+              masterTask: { departmentId },
+              updatedAt: { lt: importStartedAt },
+            },
+          });
+          if (stale.count > 0) {
+            await ctx.log('info', `${label}: nội dung đã thay đổi, gỡ ${stale.count} nhiệm vụ không còn trong báo cáo`);
+          }
+
+          // Ghi dấu SAU khi nạp trót lọt: nạp lỗi giữa chừng thì lần sau thử lại.
+          const snapshot = { contentHash, taskCount: deptTasks.tasks.length, importedAt: new Date() };
+          await ctx.prisma.hospitalImportSnapshot.upsert({
+            where: { year_week_departmentId: { year: sheet.year, week: sheet.week, departmentId } },
+            create: { year: sheet.year, week: sheet.week, departmentId, ...snapshot },
+            update: snapshot,
+          });
+
           upserted += summary.tasksMatched;
           skipped += summary.tasksUnmatched;
 
           await ctx.log(
             'info',
-            `Tuần ${sheet.week} · ${match.dbName}: ${summary.tasksMatched} nhiệm vụ ` +
+            `${label}: ${summary.tasksMatched} nhiệm vụ ` +
               `(${summary.freeMatches} khớp không tốn token) · ` +
               `${summary.metricsExtracted} số liệu · ${summary.totalTokens.toLocaleString('vi-VN')} tokens`,
           );
 
           if (summary.metricsFlagged > 0) {
-            await ctx.log(
-              'warn',
-              `Tuần ${sheet.week} · ${match.dbName}: ${summary.metricsFlagged} số liệu cần rà soát`,
-            );
+            await ctx.log('warn', `${label}: ${summary.metricsFlagged} số liệu cần rà soát`);
           }
         } catch (error) {
           // Một phòng lỗi không nên chặn các phòng còn lại.
           const message = error instanceof Error ? error.message : 'Lỗi không xác định';
-          await ctx.log('error', `Tuần ${sheet.week} · ${match.dbName}: ${message}`);
+          await ctx.log('error', `${label}: ${message}`);
           skipped += deptTasks.tasks.length;
           weekHadError = true;
         }

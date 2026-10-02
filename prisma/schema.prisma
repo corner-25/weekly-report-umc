@@ -1259,6 +1259,85 @@ model PendingAiImport {
   @@map("pending_ai_imports")
 }
 
+// Dấu vân tay nội dung báo cáo của từng phòng mỗi tuần, ghi lúc nạp bằng AI.
+// Sheet tuần mới được chép từ tuần trước rồi sửa dần; so hash để nạp lại đúng
+// phòng có thay đổi thay vì đóng băng bản nạp đầu tiên.
+model HospitalImportSnapshot {
+  id           String   @id @default(cuid())
+  year         Int
+  week         Int
+  departmentId String
+  contentHash  String
+  taskCount    Int
+  importedAt   DateTime @default(now())
+
+  @@unique([year, week, departmentId])
+  @@map("hospital_import_snapshots")
+}
+
+// Danh mục chỉ số chuẩn — cây cha/con theo từng phòng.
+//
+// AI trích báo cáo tuần ra hàng nghìn tên (một chỉ số có tới 8 cách viết).
+// Cây này là "bản đồ" chính thức: mỗi chỉ số một mã, một đơn vị, một cách cộng
+// dồn; các cách viết khác nằm ở MetricAlias. Nạp từ prisma/metric-catalog/*.json
+// (bản đã duyệt) bằng prisma/load-metric-catalog.ts.
+model MetricNode {
+  /// Mã phân cấp, vd "hc.switchboard.tong_so_cuoc_goi_den_benh_vien"
+  code         String   @id
+  departmentId String
+  parentCode   String?
+  name         String
+  /// GROUP: nhóm, không có số | METRIC: chỉ số có số
+  kind         String
+  unit         String?
+  /// SUM: cộng theo kỳ | LAST: lấy cuối kỳ (số tồn) | AVG: trung bình (tỷ lệ)
+  aggregation  String?
+  /// Nguồn chính thức từ báo cáo Excel của phòng (hc_metrics), nếu có.
+  hcCategory   String?
+  hcContent    String?
+  /// EXCEL (từ file số liệu) | REPORT (từ báo cáo tuần, AI đề xuất, người duyệt)
+  origin       String
+  orderNumber  Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  parent   MetricNode?   @relation("MetricTree", fields: [parentCode], references: [code])
+  children MetricNode[]  @relation("MetricTree")
+  aliases  MetricAlias[]
+
+  @@index([departmentId])
+  @@index([parentCode])
+  @@map("metric_nodes")
+}
+
+// Một cách viết tên chỉ số (như trong extracted_metrics) và nó thuộc chỉ số chuẩn nào.
+model MetricAlias {
+  id           String   @id @default(cuid())
+  departmentId String
+  aliasName    String
+  /// Đơn vị AI ghi kèm, '' nếu không có — cùng tên khác đơn vị có thể khác nghĩa.
+  unit         String   @default("")
+  nodeCode     String?
+  /// MAPPED: thuộc nodeCode | VALUE: tên dùng chung, phân giải từng tuần theo giá
+  /// trị khớp Excel trong candidates | SPORADIC: con số rời, chưa đủ tuần để
+  /// thành chỉ số | NOISE: không phải chỉ số theo dõi
+  status       String
+  candidates   String[] @default([])
+  /// AI | HUMAN | RULE — ai quyết định cách gắn này
+  decidedBy    String
+  model        String?
+  weeksSeen    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  node MetricNode? @relation(fields: [nodeCode], references: [code])
+
+  @@unique([departmentId, aliasName, unit])
+  @@index([nodeCode])
+  @@map("metric_aliases")
+}
+
 // HcMetric - Số liệu tuần của báo cáo phòng, nạp từ OneDrive.
 // Nguồn: sheet "Số liệu tuần (<năm>)" — xem docs/ONEDRIVE-DATA-ANALYSIS.md
 model HcMetric {

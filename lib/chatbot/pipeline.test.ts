@@ -49,3 +49,10 @@ describe('serialize — an toàn khi dùng trong Array.map', () => {
     expect(serialize(new Date('không phải ngày'), 'expiry_date', NOW)).toBeNull();
   });
 });
+
+describe('serialize — kiểu Decimal của Prisma', () => {
+  it('đổi Decimal thành số thay vì {"s":1,"e":0,"d":[...]}', () => {
+    const fakeDecimal = { s: 1, e: 0, d: [5, 6000000], toNumber: () => 5.6 };
+    expect(serialize({ change_pct: fakeDecimal })).toEqual({ change_pct: 5.6 });
+  });
+});

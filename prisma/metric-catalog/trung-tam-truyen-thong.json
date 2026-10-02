@@ -1,0 +1,1314 @@
+{
+ "department": "Trung tâm Truyền thông",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.4%.",
+ "nodes": [
+  {
+   "code": "tttt",
+   "parent": null,
+   "name": "Trung tâm Truyền thông",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.website",
+   "parent": "tttt",
+   "name": "Website",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.website.luot_truy_cap",
+   "parent": "tttt.website",
+   "name": "Lượt truy cập",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.website.luot_truy_cap_tang",
+   "parent": "tttt.website",
+   "name": "Lượt truy cập tăng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.website.bai_dang",
+   "parent": "tttt.website",
+   "name": "Bài đăng",
+   "kind": "METRIC",
+   "unit": "bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi",
+   "parent": "tttt",
+   "name": "Mạng xã hội",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook",
+   "parent": "tttt.mang_xa_hoi",
+   "name": "Facebook",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.bai_dang",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Bài đăng",
+   "kind": "METRIC",
+   "unit": "bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.tin_nhan_tra_loi",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Tin nhắn trả lời",
+   "kind": "METRIC",
+   "unit": "tin nhắn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Lượt theo dõi",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Lượt theo dõi tăng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.luot_xem_bai_viet_video",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Lượt xem bài viết, video",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.facebook.luot_tuong_tac_bai_viet",
+   "parent": "tttt.mang_xa_hoi.facebook",
+   "name": "Lượt tương tác bài viết",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.zalo",
+   "parent": "tttt.mang_xa_hoi",
+   "name": "Zalo",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "parent": "tttt.mang_xa_hoi.zalo",
+   "name": "Bài đăng",
+   "kind": "METRIC",
+   "unit": "bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam",
+   "parent": "tttt.mang_xa_hoi.zalo",
+   "name": "Người quan tâm",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam_tang",
+   "parent": "tttt.mang_xa_hoi.zalo",
+   "name": "Người quan tâm tăng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube",
+   "parent": "tttt.mang_xa_hoi",
+   "name": "YouTube",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube.video_dang_tai",
+   "parent": "tttt.mang_xa_hoi.youtube",
+   "name": "Video đăng tải",
+   "kind": "METRIC",
+   "unit": "video",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem",
+   "parent": "tttt.mang_xa_hoi.youtube",
+   "name": "Lượt xem",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem_tang",
+   "parent": "tttt.mang_xa_hoi.youtube",
+   "name": "Lượt xem tăng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky",
+   "parent": "tttt.mang_xa_hoi.youtube",
+   "name": "Người đăng ký",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky_tang",
+   "parent": "tttt.mang_xa_hoi.youtube",
+   "name": "Người đăng ký tăng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.tiktok",
+   "parent": "tttt.mang_xa_hoi",
+   "name": "TikTok",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.tiktok.video",
+   "parent": "tttt.mang_xa_hoi.tiktok",
+   "name": "Video",
+   "kind": "METRIC",
+   "unit": "video",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.tiktok.luot_xem",
+   "parent": "tttt.mang_xa_hoi.tiktok",
+   "name": "Lượt xem",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.tiktok.luot_thich",
+   "parent": "tttt.mang_xa_hoi.tiktok",
+   "name": "Lượt thích",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.mang_xa_hoi.tiktok.nguoi_theo_doi",
+   "parent": "tttt.mang_xa_hoi.tiktok",
+   "name": "Người theo dõi",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.bao_chi",
+   "parent": "tttt",
+   "name": "Báo chí",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.bao_chi.tin_bai_dang",
+   "parent": "tttt.bao_chi",
+   "name": "Tin bài đăng",
+   "kind": "METRIC",
+   "unit": "tin bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "parent": "tttt.bao_chi",
+   "name": "Chủ đề phỏng vấn, ghi hình",
+   "kind": "METRIC",
+   "unit": "chủ đề",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.bao_chi.bao_phong_van",
+   "parent": "tttt.bao_chi",
+   "name": "Báo phỏng vấn, ghi hình",
+   "kind": "METRIC",
+   "unit": "báo",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.bao_chi.dai_phong_van",
+   "parent": "tttt.bao_chi",
+   "name": "Đài phỏng vấn, ghi hình",
+   "kind": "METRIC",
+   "unit": "đài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.thu_vien_suc_khoe",
+   "parent": "tttt",
+   "name": "Thư viện sức khỏe",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "parent": "tttt.thu_vien_suc_khoe",
+   "name": "Bài viết",
+   "kind": "METRIC",
+   "unit": "bài viết",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.noi_dung_noi_bo",
+   "parent": "tttt",
+   "name": "Nội dung nội bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "parent": "tttt.noi_dung_noi_bo",
+   "name": "Truyền thông - Marketing",
+   "kind": "METRIC",
+   "unit": "nội dung",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.noi_dung_noi_bo.su_kien_hoi_thao",
+   "parent": "tttt.noi_dung_noi_bo",
+   "name": "Sự kiện, hội nghị, hội thảo",
+   "kind": "METRIC",
+   "unit": "nội dung",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.hinh_anh_su_kien",
+   "parent": "tttt",
+   "name": "Hình ảnh sự kiện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tttt.hinh_anh_su_kien.chup_hinh",
+   "parent": "tttt.hinh_anh_su_kien",
+   "name": "Chụp hình",
+   "kind": "METRIC",
+   "unit": "sự kiện",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Số báo phỏng vấn, ghi hình",
+   "unit": "báo",
+   "code": "tttt.bao_chi.bao_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng Báo phỏng vấn, ghi hình",
+   "unit": "Báo",
+   "code": "tttt.bao_chi.bao_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Báo phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo/ Đài phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Số chủ đề Báo/Đài phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số chủ đề báo/đài phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số lượng báo/ đài phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đài phỏng vấn, ghi hình",
+   "unit": "chủ đề",
+   "code": "tttt.bao_chi.chu_de_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng Đài phỏng vấn, ghi hình",
+   "unit": "Đài",
+   "code": "tttt.bao_chi.dai_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số đài phỏng vấn, ghi hình",
+   "unit": "đài",
+   "code": "tttt.bao_chi.dai_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Báo/ Đài đăng tin",
+   "unit": "tin bài",
+   "code": "tttt.bao_chi.tin_bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Số lượng báo/ đài đăng tin",
+   "unit": "tin bài",
+   "code": "tttt.bao_chi.tin_bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tin bài Báo/Đài đăng tin",
+   "unit": "tin",
+   "code": "tttt.bao_chi.tin_bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số tin bài báo/đài đăng tin",
+   "unit": "tin bài",
+   "code": "tttt.bao_chi.tin_bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Chụp hình sự kiện",
+   "unit": "sự kiện",
+   "code": "tttt.hinh_anh_su_kien.chup_hinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Chụp hình sự kiện, chân dung cá nhân",
+   "unit": "sự kiện, chân dung cá nhân",
+   "code": "tttt.hinh_anh_su_kien.chup_hinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài viết đăng trên Fanpage Facebook",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.facebook.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số lượng bài viết đăng trên Fanpage Facebook",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.facebook.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đăng bài viết trên Fanpage",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.facebook.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 21
+  },
+  {
+   "name": "Đăng bài viết trên Fanpage Facebook",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.facebook.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt theo dõi trang",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Số lượt theo dõi trang Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Số lượt theo dõi trang Facebook tăng",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt theo dõi trang Facebook tăng trong tuần",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt theo dõi trang tăng",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt tăng theo dõi trang Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tăng lượt theo dõi trang Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tăng số lượt theo dõi trang",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 18
+  },
+  {
+   "name": "Tăng số lượt theo dõi trang Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_theo_doi_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượt tương tác bài viết Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_tuong_tac_bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Tương tác bài viết",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_tuong_tac_bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Tương tác bài viết Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_tuong_tac_bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Tổng số lượt xem bài viết, video",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_xem_bai_viet_video",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Tổng số lượt xem bài viết, video Facebook",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.facebook.luot_xem_bai_viet_video",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Số lượng tin nhắn trả lời trên Fanpage Facebook",
+   "unit": "tin nhắn",
+   "code": "tttt.mang_xa_hoi.facebook.tin_nhan_tra_loi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tin nhắn trả lời trên Fanpage Facebook",
+   "unit": "tin nhắn",
+   "code": "tttt.mang_xa_hoi.facebook.tin_nhan_tra_loi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Trả lời tin nhắn trên Fanpage",
+   "unit": "tin nhắn",
+   "code": "tttt.mang_xa_hoi.facebook.tin_nhan_tra_loi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 21
+  },
+  {
+   "name": "Trả lời tin nhắn trên Fanpage Facebook",
+   "unit": "tin nhắn",
+   "code": "tttt.mang_xa_hoi.facebook.tin_nhan_tra_loi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt thích TikTok",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.tiktok.luot_thich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "TikTok số lượt thích",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.tiktok.luot_thich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt xem TikTok",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.tiktok.luot_xem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "TikTok số lượt xem",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.tiktok.luot_xem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người theo dõi TikTok",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.tiktok.nguoi_theo_doi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "TikTok số người theo dõi",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.tiktok.nguoi_theo_doi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số video TikTok",
+   "unit": "video",
+   "code": "tttt.mang_xa_hoi.tiktok.video",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "TikTok số video",
+   "unit": "video",
+   "code": "tttt.mang_xa_hoi.tiktok.video",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lượt xem Youtube",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Số lượt xem Youtube",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Youtube lượt xem",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lượt xem Youtube tăng",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số lượt xem Youtube tăng trong tuần",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tăng lượt xem Youtube",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Youtube tăng lượt xem",
+   "unit": "lượt",
+   "code": "tttt.mang_xa_hoi.youtube.luot_xem_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người đăng ký theo dõi Youtube",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Youtube số người đăng ký theo dõi",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người đăng ký theo dõi Youtube tăng",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số người đăng ký theo dõi Youtube tăng trong tuần",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tăng số người đăng ký theo dõi Youtube",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Youtube tăng số người đăng ký theo dõi",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.youtube.nguoi_dang_ky_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số video đăng tải Youtube",
+   "unit": "video",
+   "code": "tttt.mang_xa_hoi.youtube.video_dang_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Số video đăng tải Youtube",
+   "unit": "vid",
+   "code": "tttt.mang_xa_hoi.youtube.video_dang_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Youtube số video đăng tải",
+   "unit": "video",
+   "code": "tttt.mang_xa_hoi.youtube.video_dang_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài viết đăng trên Zalo",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài đăng Zalo",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số bài đăng trên Zalo",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng bài đăng Zalo",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Zalo đăng bài",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Đăng bài Zalo",
+   "unit": "bài",
+   "code": "tttt.mang_xa_hoi.zalo.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Số người quan tâm Zalo",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Zalo số người quan tâm",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người quan tâm Zalo tăng",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số người quan tâm Zalo tăng trong tuần",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tăng số người quan tâm Zalo",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Zalo tăng số người quan tâm",
+   "unit": "người",
+   "code": "tttt.mang_xa_hoi.zalo.nguoi_quan_tam_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Bài viết về sự kiện, hội nghị, hội thảo",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.su_kien_hoi_thao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số bài viết truyền thông về sự kiện, hội nghị, hội thảo",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.su_kien_hoi_thao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nội dung truyền thông - Marketing nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Nội dung truyền thông nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượng nội dung",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số lượng nội dung Truyền thông - Marketing nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượng nội dung truyền thông - Marketing nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượng nội dung truyền thông nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Thiết kế nội dung",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Truyền thông - Marketing nội bộ",
+   "unit": "nội dung",
+   "code": "tttt.noi_dung_noi_bo.truyen_thong_marketing",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài viết Thư viện sức khỏe",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Số bài viết Thư viện sức khỏe",
+   "unit": "bài",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng bài viết Thư viện sức khỏe",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư viện sức khỏe",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thư viện sức khỏe Website",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư viện sức khỏe bài viết",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư viện sức khỏe số bài viết",
+   "unit": "bài viết",
+   "code": "tttt.thu_vien_suc_khoe.bai_viet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài viết đăng trên Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài đăng Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số bài đăng trên Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng bài đăng Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Website đăng bài",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Đăng bài Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Đăng bài trên Website",
+   "unit": "bài",
+   "code": "tttt.website.bai_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt truy cập Website",
+   "unit": "lượt",
+   "code": "tttt.website.luot_truy_cap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 33
+  },
+  {
+   "name": "Website số lượt truy cập",
+   "unit": "lượt",
+   "code": "tttt.website.luot_truy_cap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tăng số lượt truy cập Website",
+   "unit": "lượt",
+   "code": "tttt.website.luot_truy_cap_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Chuyên gia, bác sĩ cập nhật xu hướng đưa AI vào điều trị tim mạch",
+   "unit": "chuyên gia, bác sĩ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoảng cách ghép tim xuyên Việt",
+   "unit": "km",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khám tầm soát miễn phí cho người dân tại xã Tài Văn",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Năm Tết cổ truyền Chol Chnam Thmay",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng y bác sĩ",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm hành trình UMC",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm hình thành và phát triển UMC",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số năm đồng hành cùng bệnh nhân",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đại biểu dự Hội nghị khoa học thường niên Bệnh viện Đại học Y Dược Buôn Ma Thuột",
+   "unit": "đại biểu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian thực hiện ca ghép tim",
+   "unit": "phút",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tuổi bệnh nhi ghép tim xuyên Việt",
+   "unit": "tuổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vật tư y tế cần mua",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

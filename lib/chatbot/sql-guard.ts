@@ -55,6 +55,23 @@ export const GENERAL_CHATBOT_VIEWS = [
   'v_chatbot_import_health',
   'v_chatbot_extraction_quality',
   'v_chatbot_hc_metrics',
+  // Tầng dữ liệu cho AI (migration 20261001090000_chatbot_semantic_layer):
+  // số liệu đã xoay ngang theo chủ đề — mỗi tuần / mỗi ngày-xe một dòng.
+  'v_chatbot_parking_weekly',
+  'v_chatbot_fleet_report_weekly',
+  'v_chatbot_fleet_daily',
+  'v_chatbot_switchboard_weekly',
+  'v_chatbot_switchboard_branch_weekly',
+  'v_chatbot_documents_weekly',
+  'v_chatbot_admin_activity_weekly',
+  // Số liệu tổng hợp theo tuần từ báo cáo Phòng HC, không chứa hồ sơ cá nhân
+  // nên mở cho mọi vai trò (khác các view nhân sự ở PERSONNEL_CHATBOT_VIEWS).
+  'v_chatbot_secretary_weekly',
+  'v_chatbot_metric_catalog',
+  'v_chatbot_weeks',
+  // Danh mục chỉ số chuẩn cây cha/con + số liệu hợp nhất (migration 20261001110000_metric_catalog).
+  'v_chatbot_metric_tree',
+  'v_chatbot_metric_facts',
 ];
 
 export const PERSONNEL_CHATBOT_VIEWS = [

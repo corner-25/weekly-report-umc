@@ -1,0 +1,1154 @@
+{
+ "department": "Phòng Quản lý Chất lượng Bệnh viện",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 1.4%.",
+ "nodes": [
+  {
+   "code": "qlcl",
+   "parent": null,
+   "name": "Phòng Quản lý Chất lượng Bệnh viện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo",
+   "parent": "qlcl",
+   "name": "Kiểm tra đánh giá nội bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_doan",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo",
+   "name": "Số đoàn kiểm tra đánh giá CLNB",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo",
+   "name": "Tổng số tổ kiểm tra nội bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra",
+   "name": "Số tổ kiểm tra Đoàn 1",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_2",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra",
+   "name": "Số tổ đánh giá Đoàn 2",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "name": "Số tổ kiểm tra Đoàn 1 Cơ sở 1",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "name": "Số tổ kiểm tra Đoàn 1 Cơ sở 2",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "name": "Số tổ kiểm tra Đoàn 1 Cơ sở 3",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo",
+   "name": "Số đơn vị đánh giá thực tế",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.khoa_lam_sang",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia",
+   "name": "Số khoa lâm sàng đánh giá",
+   "kind": "METRIC",
+   "unit": "khoa",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.can_lam_sang",
+   "parent": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia",
+   "name": "Số cận lâm sàng đánh giá",
+   "kind": "METRIC",
+   "unit": "cận lâm sàng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat",
+   "parent": "qlcl",
+   "name": "Giám sát tuân thủ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.dot_xuat",
+   "parent": "qlcl.giam_sat",
+   "name": "Số lần giám sát đột xuất",
+   "kind": "METRIC",
+   "unit": "lần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.5s",
+   "parent": "qlcl.giam_sat",
+   "name": "Số lần giám sát 5S định kỳ",
+   "kind": "METRIC",
+   "unit": "lần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.uu_tien_atnb",
+   "parent": "qlcl.giam_sat",
+   "name": "Số lần giám sát ưu tiên ATNB",
+   "kind": "METRIC",
+   "unit": "lần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.uu_tien_atnb.so_uu_tien",
+   "parent": "qlcl.giam_sat.uu_tien_atnb",
+   "name": "Số ưu tiên ATNB giám sát",
+   "kind": "METRIC",
+   "unit": "ưu tiên",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.qtkt_dieu_duong",
+   "parent": "qlcl.giam_sat",
+   "name": "Số lần giám sát QTKT điều dưỡng",
+   "kind": "METRIC",
+   "unit": "lần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.giam_sat.qtkt_dieu_duong.so_quy_trinh",
+   "parent": "qlcl.giam_sat.qtkt_dieu_duong",
+   "name": "Số quy trình kỹ thuật giám sát",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_y_khoa",
+   "parent": "qlcl",
+   "name": "Sự cố y khoa",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_y_khoa.tong_so",
+   "parent": "qlcl.su_co_y_khoa",
+   "name": "Tổng số sự cố y khoa",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_y_khoa.tong_so.te_nga_noi_tru",
+   "parent": "qlcl.su_co_y_khoa.tong_so",
+   "name": "Sự cố y khoa té ngã nội trú",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_y_khoa.tong_so.xac_minh",
+   "parent": "qlcl.su_co_y_khoa.tong_so",
+   "name": "Sự cố y khoa đã xác minh",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_ngoai_y_khoa",
+   "parent": "qlcl",
+   "name": "Sự cố ngoài y khoa",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so",
+   "parent": "qlcl.su_co_ngoai_y_khoa",
+   "name": "Tổng số sự cố ngoài y khoa",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so.xac_minh",
+   "parent": "qlcl.su_co_ngoai_y_khoa.tong_so",
+   "name": "Sự cố ngoài y khoa đã xác minh",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.chung_nhan_iso",
+   "parent": "qlcl",
+   "name": "Chứng nhận ISO",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.chung_nhan_iso.don_vi_duy_tri",
+   "parent": "qlcl.chung_nhan_iso",
+   "name": "Số đơn vị duy trì ISO 9001:2015",
+   "kind": "METRIC",
+   "unit": "đơn vị",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.de_an_ctcl",
+   "parent": "qlcl",
+   "name": "Đề án CTCL",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.de_an_ctcl.ty_le_don_vi_nop_bao_cao",
+   "parent": "qlcl.de_an_ctcl",
+   "name": "Tỷ lệ đơn vị nộp báo cáo",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.hoat_dong_khac",
+   "parent": "qlcl",
+   "name": "Hoạt động khác",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "parent": "qlcl.hoat_dong_khac",
+   "name": "Số khoa nội trú lắp bảng đầu giường",
+   "kind": "METRIC",
+   "unit": "khoa",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Số đơn vị duy trì chứng nhận ISO 9001:2015",
+   "unit": "đơn vị",
+   "code": "qlcl.chung_nhan_iso.don_vi_duy_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Đơn vị duy trì chứng nhận ISO 9001:2015",
+   "unit": "đơn vị",
+   "code": "qlcl.chung_nhan_iso.don_vi_duy_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tỷ lệ đơn vị nộp báo cáo sau 6 tháng áp dụng đề án CTCL",
+   "unit": "%",
+   "code": "qlcl.de_an_ctcl.ty_le_don_vi_nop_bao_cao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ đơn vị nộp báo cáo sau 6 tháng áp dụng đề án CTCL năm 2025",
+   "unit": "%",
+   "code": "qlcl.de_an_ctcl.ty_le_don_vi_nop_bao_cao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lần giám sát đánh giá 5S định kỳ",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lần giám sát đánh giá 5S định kỳ",
+   "unit": "lần/năm",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lần giám sát đánh giá 5S định kỳ mỗi năm",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số lần giám sát đánh giá thực hiện 5S định kỳ",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lần giám sát, đánh giá các đơn vị thực hiện 5S định kỳ",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số lần giám sát, đánh giá thực hiện 5S định kỳ",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.5s",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lần giám sát đột xuất hàng tuần",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.dot_xuat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lần giám sát đột xuất hàng tuần",
+   "unit": "lần/năm",
+   "code": "qlcl.giam_sat.dot_xuat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lần giám sát đột xuất hàng tuần tại mỗi đơn vị",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.dot_xuat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số lần giám sát đột xuất hàng tuần tại mỗi đơn vị mỗi năm",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.dot_xuat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lần giám sát đột xuất mỗi đơn vị mỗi năm",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.dot_xuat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Lần giám sát quy trình kỹ thuật điều dưỡng đã thực hiện",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.qtkt_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Lần giám sát quy trình kỹ thuật điều dưỡng đã thực hiện báo cáo thống kê",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.qtkt_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật của khối Điều dưỡng giám sát",
+   "unit": "quy trình",
+   "code": "qlcl.giam_sat.qtkt_dieu_duong.so_quy_trinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật giám sát",
+   "unit": "quy trình",
+   "code": "qlcl.giam_sat.qtkt_dieu_duong.so_quy_trinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số quy trình kỹ thuật điều dưỡng giám sát lần 2",
+   "unit": "quy trình",
+   "code": "qlcl.giam_sat.qtkt_dieu_duong.so_quy_trinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Lần giám sát 6 ưu tiên ATNB đã thực hiện",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.uu_tien_atnb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lần giám sát 6 ưu tiên An toàn người bệnh đã thực hiện",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.uu_tien_atnb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Lần giám sát 6 ưu tiên An toàn người bệnh đã thực hiện báo cáo thống kê",
+   "unit": "lần",
+   "code": "qlcl.giam_sat.uu_tien_atnb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ưu tiên An toàn người bệnh giám sát",
+   "unit": "ưu tiên",
+   "code": "qlcl.giam_sat.uu_tien_atnb.so_uu_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số ưu tiên An toàn người bệnh xây dựng kế hoạch giám sát",
+   "unit": "ưu tiên",
+   "code": "qlcl.giam_sat.uu_tien_atnb.so_uu_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa nội trú lắp đặt bảng đầu giường",
+   "unit": "khoa",
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Khoa nội trú phát bảng đầu giường",
+   "unit": "khoa",
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa nội trú lắp đặt bảng đầu giường",
+   "unit": "khoa",
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số khoa nội trú phát bảng đầu giường các vấn đề cần theo dõi cho người bệnh",
+   "unit": "khoa",
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khoa nội trú phát bảng đầu giường các vấn đề cần theo dõi cho người bệnh",
+   "unit": "khoa",
+   "code": "qlcl.hoat_dong_khac.khoa_noi_tru_bang_dau_giuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cận lâm sàng đánh giá thực tế",
+   "unit": "cận lâm sàng",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.can_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số cận lâm sàng đánh giá thực tế",
+   "unit": "cận lâm sàng",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.can_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số khoa cận lâm sàng đánh giá thực tế",
+   "unit": "khoa",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.can_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Khoa lâm sàng đánh giá thực tế",
+   "unit": "khoa",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số khoa lâm sàng đánh giá thực tế",
+   "unit": "khoa",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.don_vi_danh_gia.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Số đoàn kiểm tra đánh giá chất lượng nội bộ",
+   "unit": "đoàn",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_doan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số đoàn kiểm tra đánh giá chất lượng nội bộ",
+   "unit": "Đoàn",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_doan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đoàn kiểm tra đánh giá chất lượng nội bộ",
+   "unit": "Đoàn",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_doan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Đoàn kiểm tra đánh giá chất lượng nội bộ",
+   "unit": "đoàn",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_doan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Đoàn 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Cơ sở 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 Cơ sở 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Cơ sở 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 1",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Cơ sở 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 Cơ sở 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Cơ sở 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Cơ sở 3",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 Cơ sở 3",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 3",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Cơ sở 3",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tổ kiểm tra nội bộ Đoàn 1 tại Cơ sở 3",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_1.co_so_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tổ đánh giá thực tế Đoàn 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Tổ đánh giá thực tế Đoàn 2",
+   "unit": "tổ",
+   "code": "qlcl.kiem_tra_danh_gia_noi_bo.so_to_kiem_tra.doan_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số trường hợp sự cố ngoài y khoa",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Sự cố ngoài y khoa",
+   "unit": "ca",
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số trường hợp sự cố ngoài y khoa xác minh",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_ngoai_y_khoa.tong_so.xac_minh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số trường hợp sự cố y khoa",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_y_khoa.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_y_khoa.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sự cố y khoa té ngã",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_y_khoa.tong_so.te_nga_noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố y khoa té ngã nội trú",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_y_khoa.tong_so.te_nga_noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số trường hợp sự cố y khoa xác minh",
+   "unit": "trường hợp",
+   "code": "qlcl.su_co_y_khoa.tong_so.xac_minh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Lần giám sát 6 ưu tiên An toàn người bệnh dự kiến thực hiện",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lần giám sát tuân thủ bảng kiểm ATTT tại DSA dự kiến thực hiện",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lần tham gia cuộc thi Cơ sở y tế không khói thuốc lá",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lần thi Cơ sở y tế không khói thuốc lá",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật điều dưỡng giám sát lần 2 dự kiến",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật điều dưỡng giám sát lần 2 dự kiến thực hiện",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố ngoài y khoa tại Khoa Da liễu - Thẩm mỹ da",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố ngoài y khoa tại Khoa Khám bệnh",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố ngoài y khoa tại khu vực ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố té ngã tại khoa Ngoại Gan Mật Tụy",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố y khoa tại khoa Nội thận - Thận nhân tạo",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa (liên quan đến thái độ giao tiếp) tại khu vực ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa (thái độ giao tiếp) tại khu vực ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa phản ánh về thái độ giao tiếp của NVYT tại khoa CĐHA",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa tại Khoa Da liễu - Thẩm mỹ da",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa tại Khoa Khám bệnh",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa tại vị trí Thu Ngân khu B, Xét nghiệm khu A",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố suất ăn người bệnh",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố té ngã tại khoa Ngoại Gan Mật Tụy",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố y khoa té ngã tại khoa Chấn thương chỉnh hình",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố y khoa té ngã tại khoa LNMM",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố y khoa tại khoa Nội thận - Thận nhân tạo",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số đơn vị yêu cầu nộp báo cáo sau 6 tháng áp dụng đề án CTCL năm 2025",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vòng thi Cơ sở y tế không khói thuốc lá dự kiến tham dự",
+   "unit": "vòng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vòng thi Cơ sở y tế không khói thuốc lá đã hoàn thành",
+   "unit": "vòng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố y khoa nội trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số trường hợp sự cố y khoa té ngã được xác minh",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị nộp báo cáo sau 6 tháng áp dụng đề án CTCL năm 2025",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sự cố ngoài y khoa ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố ngoài y khoa tại khu vực ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố suýt xảy ra tại khu vực ngoại trú",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa hít sặc",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa hít sặc được xác minh",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa near miss",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa near miss té ngã",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sự cố y khoa near-miss",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

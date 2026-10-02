@@ -32,6 +32,24 @@ const MAX_HISTORY = 6;
 /** Ngưỡng độ tương đồng embedding để đưa tên chỉ số vào gợi ý. */
 const METRIC_HINT_MIN_SCORE = 0.45;
 
+/**
+ * Cấm bảng thô cho phòng đã chuẩn hoá có mặt trong gợi ý.
+ *
+ * Gợi ý đúng chỉ số chuẩn mà model vẫn quay về v_chatbot_metrics: bảng thô
+ * không có cột tháng nên model tự đoán "tháng 8" là tuần 31-34 (đúng là 32-35),
+ * và cộng lẫn các cách viết trùng nhau.
+ */
+function standardDepartmentsRule(hints: ReadonlyArray<{ department: string; standard: boolean }>): string {
+  const departments = [...new Set(hints.filter((h) => h.standard).map((h) => h.department))];
+  if (departments.length === 0) return '';
+  // Chỉ cấm bảng thô — view chuyên đề (bãi xe, văn bản, tổng đài…) vẫn là lựa
+  // chọn tốt hơn khi có: bắt buộc "chỉ facts" làm câu văn bản đến sai (model
+  // SUM gộp chỉ số cha với con).
+  return `\n${departments.join(', ')} đã có danh mục chuẩn: chỉ số có trong danh mục KHÔNG lấy từ v_chatbot_metrics — ` +
+    'dùng view chuyên đề nếu bản đồ chủ đề có, nếu không thì v_chatbot_metric_facts (có sẵn cột month). ' +
+    'v_chatbot_metrics chỉ dùng cho con số rời không có trong danh mục.';
+}
+
 export type Emit = (event: string, data: unknown) => void;
 
 export type Stage = 'understanding' | 'querying' | 'repairing' | 'widening' | 'writing';
@@ -104,6 +122,11 @@ export function serialize(value: unknown, key = '', now = new Date()): unknown {
     return `${iso} (${rel})`;
   }
   if (Array.isArray(value)) return value.map((v) => serialize(v, key, now));
+  // Prisma trả cột numeric dạng Decimal (decimal.js). JSON hoá thẳng ra
+  // {"s":1,"e":0,"d":[...]} — model không đọc được là số nào.
+  if (typeof value === 'object' && typeof (value as { toNumber?: unknown }).toNumber === 'function') {
+    return (value as { toNumber: () => number }).toNumber();
+  }
   if (typeof value === 'object') {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = serialize(v, k, now);
@@ -217,8 +240,22 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
       if (strong.length > 0) {
         metricHints =
           '\n\n## Metric có khả năng liên quan đến câu hỏi (sắp theo độ tương đồng):\n' +
-          strong.map((h) => `- "${h.metric}" thuộc ${h.department} (score ${h.score.toFixed(2)})`).join('\n') +
-          '\nƯu tiên dùng đúng tên đầy đủ trong ILIKE để tránh nhầm sang metric khác.';
+          strong.map((h) => {
+            if (h.standard) {
+              return `- "${h.metric}" thuộc ${h.department} (độ khớp ${h.score.toFixed(2)}) — CHỈ SỐ CHUẨN: ` +
+                `lấy số ở v_chatbot_metric_facts, lọc metric_path = '${h.metric.replace(/'/g, "''")}'`;
+            }
+            const span = h.weeks
+              ? `, ${h.weeks} tuần dữ liệu${h.lastYearWeek ? `, mới nhất tuần ${h.lastYearWeek % 100}/${Math.floor(h.lastYearWeek / 100)}` : ''}`
+              : '';
+            return `- "${h.metric}" thuộc ${h.department} (độ khớp ${h.score.toFixed(2)}${span})`;
+          }).join('\n') +
+          '\nChỉ số chuẩn: dùng v_chatbot_metric_facts (đã gộp mọi cách viết, mỗi tuần một số) và lọc metric_path = đúng ' +
+          'đường dẫn ở trên — KHÔNG lọc theo tiền tố nhóm khi SUM, vì một nhóm chứa nhiều đại lượng khác nhau ' +
+          '(lượt, số khoa, tỷ lệ %) cộng vào nhau là sai. Tên thường: dùng đúng tên đầy đủ trong ILIKE. ' +
+          'Ưu tiên chỉ số có nhiều tuần dữ liệu (chuỗi theo dõi thật) ' +
+          'và có tuần mới nhất gần đây; chỉ số 1 tuần thường là con số nhắc thoáng qua.' +
+          standardDepartmentsRule(strong);
       }
     } catch (err) {
       // Embedding lỗi không chặn câu trả lời — chỉ mất phần gợi ý.
@@ -343,6 +380,11 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
   const followups = followupsFor(sql, question);
   if (followups.length > 0) emit('followups', { items: followups });
 
+  // Kết quả chạm đúng LIMIT gần như chắc chắn đã bị cắt — model không được tự
+  // cộng thành tổng (từng báo "nhiên liệu tháng 9: 160 lít" chỉ từ 50 dòng đầu).
+  const limitMatch = sql.match(/\bLIMIT\s+(\d+)\s*$/i);
+  const truncated = !!limitMatch && rows.length >= Number(limitMatch[1]) && rows.length > 1;
+
   // 4. Writer.
   status('writing');
   const writerMessages: ChatMessage[] = [
@@ -358,7 +400,11 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
         'Nếu không liệt kê hết, ghi đúng câu "Tổng cộng N mục" với N lấy nguyên từ "Tổng số dòng thực tế" — ' +
         'KHÔNG tự trừ để ra "và N mục khác".\n' +
         '- Ít dòng: dùng câu văn hoặc gạch đầu dòng. Không lặp lại toàn bộ dữ liệu thô.\n' +
+        '- KHÔNG tự cộng, trừ, chia hay tính phần trăm. Chỉ dùng con số có sẵn trong dữ liệu (hệ thống đã ' +
+        'tính tổng, chênh lệch, % trong cột riêng nếu cần). Nếu dữ liệu không có sẵn con số người dùng hỏi, ' +
+        'nói rõ và trình bày các dòng hiện có.\n' +
         '- Số có dấu chấm phân cách hàng nghìn kiểu Việt Nam (1.234.567). Ngày viết dd/mm/yyyy.\n' +
+        '- Dữ liệu theo tuần của Phòng Hành chính: ghi "tuần X (tháng Y)" vì số tuần theo file Phòng HC.\n' +
         '- Hạn/ngày so với HÔM NAY: ngày đã qua ghi rõ "đã quá hạn N ngày", ngày chưa tới ghi "còn N ngày". ' +
         'Không gọi một mốc đã qua là "sắp hết hạn".\n' +
         '- So sánh xu hướng: xếp các kỳ theo thời gian TĂNG DẦN rồi mới so kỳ sau với kỳ ngay trước; ' +
@@ -376,6 +422,10 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
         `Câu hỏi: ${question}\n\n` +
         `Kết quả (JSON, tối đa ${MAX_ROWS_PREVIEW} dòng):\n${JSON.stringify(preview)}\n\n` +
         `Tổng số dòng thực tế: ${rows.length}\n` +
+        (truncated
+          ? `LƯU Ý: kết quả bị CẮT ở ${rows.length} dòng đầu (giới hạn LIMIT). KHÔNG được cộng các dòng này ` +
+            'thành "tổng" — nói rõ đây là danh sách một phần và gợi ý người dùng hỏi tổng để hệ thống tính.\n'
+          : '') +
         `Nguồn: ${JSON.stringify(sources)}`,
     },
   ];

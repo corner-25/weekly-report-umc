@@ -1,0 +1,1668 @@
+{
+ "department": "Phòng Công nghệ Thông tin",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 2.1%.",
+ "nodes": [
+  {
+   "code": "cntt",
+   "parent": null,
+   "name": "Phòng Công nghệ Thông tin",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro",
+   "parent": "cntt",
+   "name": "Hỗ trợ người dùng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.phan_mem",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ phần mềm",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.may_tinh_bang",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ máy tính, máy tính bảng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.may_in",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ máy in",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.may_scan",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ máy scan",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.tivi_may_chieu",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ tivi, máy chiếu",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.mang",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ mạng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.server",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ server",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.email",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ email",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.chu_ky_so",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ chữ ký số",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.hoi_nghi",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ hội nghị, CME, họp trực tuyến",
+   "kind": "METRIC",
+   "unit": "lần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.thong_ke",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ thống kê số liệu chuyên môn",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.kham_suc_khoe",
+   "parent": "cntt.ho_tro",
+   "name": "Hỗ trợ khám sức khỏe ngoại viện",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.ho_tro.tong",
+   "parent": "cntt.ho_tro",
+   "name": "Tổng số lượt hỗ trợ",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.nghiep_vu",
+   "parent": "cntt",
+   "name": "Nghiệp vụ chuyên môn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "cntt.nghiep_vu.khau_tru_thue_tncn",
+   "parent": "cntt.nghiep_vu",
+   "name": "Tiến độ CT khấu trừ thuế TNCN vãng lai",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Hỗ trợ chữ ký số",
+   "unit": "lần",
+   "code": "cntt.ho_tro.chu_ky_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Hỗ trợ chữ ký số",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.chu_ky_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Hỗ trợ email",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Hỗ trợ email",
+   "unit": "lần",
+   "code": "cntt.ho_tro.email",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hỗ trợ hội nghị hội thảo, CME, họp trực tuyến",
+   "unit": "lần",
+   "code": "cntt.ho_tro.hoi_nghi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 29
+  },
+  {
+   "name": "Hỗ trợ hội nghị hội thảo, CME, họp trực tuyến",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.hoi_nghi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hỗ trợ khám sức khỏe ngoại viện",
+   "unit": "lần",
+   "code": "cntt.ho_tro.kham_suc_khoe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Hỗ trợ khám sức khỏe ngoại viện",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.kham_suc_khoe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hỗ trợ đoàn khám sức khỏe ngoại viện/ đoàn khám sức khỏe cộng đồng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.kham_suc_khoe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hỗ trợ đoàn khám sức khỏe ngoại viện/ đoàn khám sức khỏe cộng đồng",
+   "unit": "đoàn",
+   "code": "cntt.ho_tro.kham_suc_khoe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ mạng",
+   "unit": "lần",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Hỗ trợ mạng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hỗ trợ về mạng",
+   "unit": "",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Hỗ trợ về mạng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Switch 10 port lắp đặt cho phòng khám 51A, trệt B",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Switch 24 port lắp đặt cho tổ Sinh hóa miễn dịch khoa xét nghiệm",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phòng chức năng thi công, cân chỉnh sóng wifi tại lầu 14 UMP",
+   "unit": "phòng chức năng",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thiết bị cân bằng tải đường truyền Peplink nâng cấp Firmware",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thiết bị tường lửa ngoài cập nhật hotfix",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thiết bị tường lửa ngoài cập nhật hotfix vá lỗ hổng bảo mật IKEv2 trên VPN",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thiết bị AccessPoint lắp thêm",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thiết bị Switch lắp đặt",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thiết bị tường lửa ngoài cập nhật hotfix",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.mang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ máy in",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số lượng hỗ trợ máy in",
+   "unit": "",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy in laser trắng đen lắp đặt",
+   "unit": "máy",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy in laser trắng đen lắp đặt tại Nhà thuốc A và Nhà thuốc B",
+   "unit": "máy in",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy in mã vạch không dây cấp cho Khoa HMTT",
+   "unit": "máy",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy in nhiệt lắp đặt tại Phòng BS Tư Vấn - Trệt B",
+   "unit": "máy",
+   "code": "cntt.ho_tro.may_in",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ máy scan",
+   "unit": "lần",
+   "code": "cntt.ho_tro.may_scan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 30
+  },
+  {
+   "name": "Hỗ trợ máy scan",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.may_scan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Hỗ trợ máy tính, máy tính bảng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.may_tinh_bang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số lượng hỗ trợ máy tính, máy tính bảng",
+   "unit": "",
+   "code": "cntt.ho_tro.may_tinh_bang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ phần mềm",
+   "unit": "lần",
+   "code": "cntt.ho_tro.phan_mem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Hỗ trợ phần mềm",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.phan_mem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số máy PC cài đặt phần mềm client tại khoa Nội tim mạch",
+   "unit": "máy",
+   "code": "cntt.ho_tro.phan_mem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ về server",
+   "unit": "lần",
+   "code": "cntt.ho_tro.server",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Hỗ trợ về server",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.server",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thiết bị lưu trữ Netapp FAS50 tiếp nhận và lắp đặt",
+   "unit": "thiết bị",
+   "code": "cntt.ho_tro.server",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ thống kê số liệu chuyên môn",
+   "unit": "lần",
+   "code": "cntt.ho_tro.thong_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Hỗ trợ thống kê số liệu chuyên môn",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.thong_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số liệu chuyên môn hỗ trợ thống kê",
+   "unit": "",
+   "code": "cntt.ho_tro.thong_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ tivi, máy chiếu",
+   "unit": "lần",
+   "code": "cntt.ho_tro.tivi_may_chieu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 32
+  },
+  {
+   "name": "Hỗ trợ tivi, máy chiếu",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.tivi_may_chieu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Hỗ trợ người dùng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Số lượt hỗ trợ người dùng",
+   "unit": "lượt",
+   "code": "cntt.ho_tro.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ bổ sung luồng quy trình phát hành chứng từ thay thế",
+   "unit": "%",
+   "code": "cntt.nghiep_vu.khau_tru_thue_tncn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ nghiệp vụ Chứng từ khấu trừ Thuế thu nhập cá nhân vãng lai",
+   "unit": "%",
+   "code": "cntt.nghiep_vu.khau_tru_thue_tncn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ nghiệp vụ Chứng từ khấu trừ thuế Thu nhập cá nhân vãng lai",
+   "unit": "%",
+   "code": "cntt.nghiep_vu.khau_tru_thue_tncn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Báo cáo thống kê hoàn tiền bỏ khám",
+   "unit": "báo cáo",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đặt khám tối đa",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy chủ ký số mới",
+   "unit": "máy chủ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy chủ ký số mới cài đặt dịch vụ Visnam Signing Gateway",
+   "unit": "máy chủ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy in MV không dây cấp cho Khoa Chấn thương chỉnh hình",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy in MV không dây cấp cho Khoa Ngoại thần kinh",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy in nhiệt lắp đặt tại CSKH Trệt B",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy in nhiệt lắp đặt tại Khoa Dược - Nhà thuốc B",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "PC lắp mới kết nối mạng",
+   "unit": "PC",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiên bản Android nâng cấp",
+   "unit": "",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiên bản ứng dụng UMC Care",
+   "unit": "phiên bản",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu khám tối đa",
+   "unit": "phiếu khám",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chỉ số hiển thị biểu đồ cột chồng",
+   "unit": "chỉ số",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chỉ số hoạt động không hiển thị biểu đồ đã hoàn thành xử lý",
+   "unit": "chỉ số",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cột bổ sung",
+   "unit": "cột",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hiệu văn bản điều chỉnh tính năng giới hạn số lượng kê đơn thuốc BHYT",
+   "unit": "ĐN-KD",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ quyết toán bảo hiểm kiểm tra",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hộp thuốc chống sốc phòng khám Tai mũi họng thiết lập tủ thuốc trực mới",
+   "unit": "hộp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lần kết toán BHYT thực hiện trong ngày",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy chủ dịch vụ triển khai hệ thống ký số mới",
+   "unit": "máy chủ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy chủ ký số mới cài đặt dịch vụ Visnam Signing Gateway",
+   "unit": "máy chủ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy chủ thiết lập môi trường lab diễn tập",
+   "unit": "máy chủ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim tại Khoa Gây mê hồi sức đã hoàn thành kết nối",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim tại Khoa Khám bệnh đã hoàn thành kết nối",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim tại Khoa Thần kinh đã hoàn thành kết nối",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim tại Đơn vị GMHS – PTTM đã hoàn thành kết nối",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim đã hoàn thành kết nối Wi-Fi tại Khoa Khám bệnh",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim đã hoàn thành kết nối Wi-Fi tại Khoa Thần kinh",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim đã hoàn thành kết nối Wi-Fi tại Đơn vị GMHS – PTTM",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ngày chặn thanh toán mã QRCode dịch vụ chốt BHYT",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ngày lọc các phiếu khám cần lập phiếu theo dõi trước ngày hiện tại",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đầu quét mã vạch có dây lắp đặt tại Nhà thuốc A và Nhà thuốc B",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đầu quét mã vạch có dây lắp đặt tại khu vực Khoa Da Liễu - Thẩm mỹ da",
+   "unit": "đầu quét",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số đầu quét mã vạch có dây lắp đặt tại khu vực Khoa Nội tim mạch",
+   "unit": "đầu quét",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thời gian baseline học hành vi user",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian cảnh báo và chặn bảo hiểm y tế quá hạn y lệnh",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian thanh toán hồ sơ Bảo hiểm y tế",
+   "unit": "phút",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian tự động hủy kết toán",
+   "unit": "phút",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ đề nghị số 28/ĐN-HATM",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài khoản đặt khám tối đa trong ngày",
+   "unit": "tài khoản",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số máy điện tim cần triển khai",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số máy điện tim cần triển khai kết nối Wi-Fi",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều chỉnh các báo cáo thống kê đối chiếu tiền đăng ký khám bệnh",
+   "unit": "báo cáo",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đầu quét mã vạch có dây cấp cho Khoa Giải phẫu bệnh",
+   "unit": "đầu quét",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đầu quét mã vạch có dây cấp cho Khoa Vi sinh",
+   "unit": "đầu quét",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đầu quét mã vạch có dây cấp cho Khoa Xét nghiệm",
+   "unit": "đầu quét",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đầu quét mã vạch có dây lắp đặt tại Khoa Khám bệnh",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị cấp cơ số mới tủ cấp cứu phản vệ",
+   "unit": "đề nghị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị tạo trường ghi chú và chỉnh sửa phiếu chỉ định CLS",
+   "unit": "đề nghị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Case cảnh báo ATTT xử lý",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số case cảnh báo ATTT phối hợp HSoC xử lý",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số case cảnh báo ATTT xử lý",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số case cảnh báo an toàn thông tin",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số case cảnh báo an toàn thông tin thông tin xử lý",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số case cảnh báo an toàn thông tin xử lý",
+   "unit": "case",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lỗ hổng bảo mật nguy hiểm cập nhật bản vá khẩn cấp",
+   "unit": "lỗ hổng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim đã hoàn thành kết nối",
+   "unit": "máy",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy điện tim đã hoàn thành kết nối Wi-Fi",
+   "unit": "máy",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị kiểm kê tài sản",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đường truyền mới phối hợp VNPT thi công",
+   "unit": "đường truyền",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ bổ sung chức năng Xuất hóa đơn tự động",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ bổ sung chức năng Xác nhận dịch vụ chưa thực hiện và Xác nhận đi lệnh hoàn tiền cho đối tượng đăng ký CLS trên UMC Care",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ bộ chỉ số hoạt động",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ chức năng áp dụng phác đồ điều trị",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ cũ tính năng Kết quả CLS bổ sung tab Theo dõi sức khỏe",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ cập nhật màn hình Xác nhận các dị tật và xây dựng trang thống kê",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ giải pháp quản lý thuốc nhập khẩu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ hoàn thành xuất kho và hủy xuất kho luồng theo gói",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ hoàn thành xuất kho và hủy xuất kho vật tư đích danh theo luồng Kết hợp dịch vụ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ hoàn thành xuất kho và hủy xuất kho vật tư đích danh theo luồng Thanh toán tiền, Giam tồn",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kiểm kê tài sản",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ kiểm thử tính năng hỗ trợ 16 KB memory page sizes trên Android",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kết nối Kho Vật tư, Kho Dược",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kết nối Wi-Fi máy điện tim",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kết nối lấy dữ liệu chỉ số hiển thị Báo cáo hằng ngày",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình bổ sung mẫu báo cáo B04/BCTC Thuyết minh báo cáo tài chính theo thông tư 24",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình kết nối luồng thu tiền thanh toán từ phần mềm Đăng ký hội nghị, hội thảo sang phần mềm kế toán FCare",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ lập trình màn hình Báo cáo hằng ngày",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình nghiệp vụ Nộp dữ liệu định kỳ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Bàn tay sạch",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Báo cáo hằng ngày",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Bệnh án",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Chỉ định cận lâm sàng",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Hướng dẫn thực hành",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Kết quả CLS",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Người bệnh",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Quản lý tập tin đính kèm",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Thiết bị đăng nhập bằng Sinh trắc học",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Tiếp nhận",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Xác nhận thực hiện thuốc uống/tiêm",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ lập trình tính năng Đăng nhập bổ sung xác nhận sinh trắc học",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình điều chỉnh tính năng Thêm mới yêu cầu, Xem chi tiết công việc, bổ sung màn hình Điều phối thực hiện",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ lập trình điều chỉnh xuất hóa đơn",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ màn hình Tra cứu văn bản",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ nghiên cứu tính năng đăng nhập bằng Sinh trắc học",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ nâng cấp hệ thống cơ sở dữ liệu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ phân tích chức năng thiết lập phác đồ tiêm chủng cho từng đối tượng",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ phân tích thiết kế chức năng Lập phác đồ tiêm chủng cho trẻ em và chức năng hẹn mũi tiêm tiếp theo",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ phân tích thiết kế chức năng để người dùng nhập thầu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ phân tích, thiết kế chức năng Lập phác đồ tiêm chủng cho trẻ em và chức năng hẹn mũi tiêm tiếp theo",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ thêm thông tin chẩn đoán đơn thuốc xuất viện",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ thống kê sàng lọc sơ sinh, trước sinh",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ thống kê số liệu bác sĩ giới thiệu Tiêm chủng",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ thống kê trị giá tồn kho chi tiết theo chứng từ nhập kho",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ thực hiện chức năng xuất hóa đơn tự động cho đối tượng bệnh nhân nội trú cuối ngày",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ thực hiện ký số phiếu chỉ định dịch vụ CLS đăng ký trên app UMC Care",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tích hợp gọi API của Công ty TNHH phát triển công nghệ Thái Sơn",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Bệnh án",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Kết quả CLS",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Người bệnh",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Quản lý tập tin đính kèm",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Theo dõi chăm sóc: bổ sung nút lọc những phiếu chưa ký số",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Thiết bị: đăng nhập bằng sinh trắc học",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Tiếp nhận",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Tạo phiếu yêu cầu khám chuyên khoa",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng hỗ trợ 16 KB memory page sizes trên Android",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng thẻ phân loại văn bản",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ tính năng Đăng nhập",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ viết tài liệu phân tích thiết kế chức năng Nhập thông tin thầu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ viết tài liệu phân tích thiết kế chức năng Nhập thông tin thầu gói thầu trên 50 triệu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ viết tài liệu phân tích, thiết kế API kết nối Ngân hàng Vietcombank",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ viết tài liệu phân tích, thiết kế chức năng Tóm tắt quá trình điều trị ngoại trú",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ viết tài liệu phân tích, thiết kế kết nối mã QRCode",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xuất kho và hủy xuất kho luồng theo gói",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xuất kho và hủy xuất kho vật tư đích danh",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xuất kho và hủy xuất kho vật tư đích danh theo luồng Kết hợp dịch vụ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xuất kho và hủy xuất kho vật tư đích danh theo luồng Thanh toán tiền, Giam tồn",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xuất kho và hủy xuất kho vật tư đích danh theo luồng trong gói đối với vật tư tái sử dụng",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xây dựng chức năng Theo dõi thực hiện kế hoạch mua sắm",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xây dựng chức năng nhập thầu",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xây dựng chức năng theo dõi điều trị Lao",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý kết quả trả về từ Cơ quan thuế",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý tình trạng lồng thời gian điều trị nội trú, ngoại trú đối với hồ sơ thanh quyết toán BHYT",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ điều chỉnh chức năng Thống kê nội trú đã xuất hóa đơn",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ điều chỉnh kết nối hoá đơn hoạt động đào tạo",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ phát triển tính năng đối soát tự động dịch vụ Chi hộ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị kiểm kê tài sản",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

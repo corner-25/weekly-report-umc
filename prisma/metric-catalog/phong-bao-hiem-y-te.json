@@ -1,0 +1,794 @@
+{
+ "department": "Phòng Bảo hiểm Y tế",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 1.5%.",
+ "nodes": [
+  {
+   "code": "bhyt",
+   "parent": null,
+   "name": "Phòng Bảo hiểm Y tế",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt",
+   "parent": "bhyt",
+   "name": "Khám chữa bệnh BHYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.noi_tru",
+   "parent": "bhyt.kcb_bhyt",
+   "name": "Nội trú BHYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.noi_tru.so_luot",
+   "parent": "bhyt.kcb_bhyt.noi_tru",
+   "name": "Số lượt KCB BHYT nội trú",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.noi_tru.chi_phi",
+   "parent": "bhyt.kcb_bhyt.noi_tru",
+   "name": "Chi phí KCB BHYT thanh toán nội trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.ngoai_tru",
+   "parent": "bhyt.kcb_bhyt",
+   "name": "Ngoại trú BHYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.ngoai_tru.so_luot",
+   "parent": "bhyt.kcb_bhyt.ngoai_tru",
+   "name": "Số lượt KCB BHYT ngoại trú",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.ngoai_tru.chi_phi",
+   "parent": "bhyt.kcb_bhyt.ngoai_tru",
+   "name": "Chi phí KCB BHYT thanh toán ngoại trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.truyen_du_lieu",
+   "parent": "bhyt.kcb_bhyt",
+   "name": "Truyền dữ liệu BHYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.kcb_bhyt.truyen_du_lieu.ty_le_xml",
+   "parent": "bhyt.kcb_bhyt.truyen_du_lieu",
+   "name": "Tỷ lệ truyền dữ liệu XML hồ sơ KCB BHYT",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_lanh",
+   "parent": "bhyt",
+   "name": "Bảo lãnh viện phí",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_lanh.noi_tru",
+   "parent": "bhyt.bao_lanh",
+   "name": "Bảo lãnh nội trú",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_lanh.noi_tru.so_tien",
+   "parent": "bhyt.bao_lanh.noi_tru",
+   "name": "Số tiền được bảo lãnh nội trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_lanh.ngoai_tru",
+   "parent": "bhyt.bao_lanh",
+   "name": "Bảo lãnh ngoại trú",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_lanh.ngoai_tru.so_tien",
+   "parent": "bhyt.bao_lanh.ngoai_tru",
+   "name": "Số tiền được bảo lãnh ngoại trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.vien_phi",
+   "parent": "bhyt",
+   "name": "Tổng viện phí",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.vien_phi.noi_tru",
+   "parent": "bhyt.vien_phi",
+   "name": "Tổng viện phí nội trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.vien_phi.ngoai_tru",
+   "parent": "bhyt.vien_phi",
+   "name": "Tổng viện phí ngoại trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.chi_phi_quan_ly",
+   "parent": "bhyt",
+   "name": "Chi phí quản lý",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.chi_phi_quan_ly.noi_tru",
+   "parent": "bhyt.chi_phi_quan_ly",
+   "name": "Chi phí quản lý nội trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.chi_phi_quan_ly.ngoai_tru",
+   "parent": "bhyt.chi_phi_quan_ly",
+   "name": "Chi phí quản lý ngoại trú",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai",
+   "parent": "bhyt",
+   "name": "Bảo hiểm thương mại",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru",
+   "parent": "bhyt.bao_hiem_thuong_mai",
+   "name": "Nội trú BHTM",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_luot",
+   "parent": "bhyt.bao_hiem_thuong_mai.noi_tru",
+   "name": "Số lượt nội trú BHTM",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.tong_vien_phi",
+   "parent": "bhyt.bao_hiem_thuong_mai.noi_tru",
+   "name": "Tổng viện phí nội trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.chi_phi_quan_ly",
+   "parent": "bhyt.bao_hiem_thuong_mai.noi_tru",
+   "name": "Chi phí quản lý nội trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_tien_bao_lanh",
+   "parent": "bhyt.bao_hiem_thuong_mai.noi_tru",
+   "name": "Số tiền được bảo lãnh nội trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru",
+   "parent": "bhyt.bao_hiem_thuong_mai",
+   "name": "Ngoại trú BHTM",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "parent": "bhyt.bao_hiem_thuong_mai.ngoai_tru",
+   "name": "Số lượt ngoại trú BHTM",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.tong_vien_phi",
+   "parent": "bhyt.bao_hiem_thuong_mai.ngoai_tru",
+   "name": "Tổng viện phí ngoại trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.chi_phi_quan_ly",
+   "parent": "bhyt.bao_hiem_thuong_mai.ngoai_tru",
+   "name": "Chi phí quản lý ngoại trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_tien_bao_lanh",
+   "parent": "bhyt.bao_hiem_thuong_mai.ngoai_tru",
+   "name": "Số tiền được bảo lãnh ngoại trú BHTM",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Chi phí quản lý bảo hiểm thương mại ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.chi_phi_quan_ly",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chi phí quản lý ngoại trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.chi_phi_quan_ly",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Lượt ngoại trú bảo hiểm thương mại",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ngoại trú",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Ngoại trú bảo hiểm thương mại",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt bảo hiểm thương mại ngoại trú",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt ngoại trú bảo hiểm thương mại",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số tiền được bảo lãnh bảo hiểm thương mại ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_tien_bao_lanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tiền được bảo lãnh ngoại trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.so_tien_bao_lanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Tổng viện phí bảo hiểm thương mại ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.tong_vien_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng viện phí ngoại trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.ngoai_tru.tong_vien_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Chi phí quản lý bảo hiểm thương mại nội trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.chi_phi_quan_ly",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chi phí quản lý nội trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.chi_phi_quan_ly",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Lượt nội trú bảo hiểm thương mại",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nội trú",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Số lượt bảo hiểm thương mại nội trú",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt nội trú bảo hiểm thương mại",
+   "unit": "lượt",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số tiền được bảo lãnh bảo hiểm thương mại nội trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_tien_bao_lanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tiền được bảo lãnh nội trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.so_tien_bao_lanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Tổng viện phí bảo hiểm thương mại nội trú",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.tong_vien_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng viện phí nội trú bảo hiểm thương mại",
+   "unit": "VND",
+   "code": "bhyt.bao_hiem_thuong_mai.noi_tru.tong_vien_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số tiền được bảo lãnh Ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.bao_lanh.ngoai_tru.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tiền được bảo lãnh ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.bao_lanh.ngoai_tru.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 25
+  },
+  {
+   "name": "Số tiền được bảo lãnh Nội trú",
+   "unit": "VND",
+   "code": "bhyt.bao_lanh.noi_tru.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tiền được bảo lãnh nội trú",
+   "unit": "VND",
+   "code": "bhyt.bao_lanh.noi_tru.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Chi phí quản lý Ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.chi_phi_quan_ly.ngoai_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chi phí quản lý ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.chi_phi_quan_ly.ngoai_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 25
+  },
+  {
+   "name": "Chi phí quản lý Nội trú",
+   "unit": "VND",
+   "code": "bhyt.chi_phi_quan_ly.noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chi phí quản lý nội trú",
+   "unit": "VND",
+   "code": "bhyt.chi_phi_quan_ly.noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Chi phí KCB BHYT thanh toán Ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.kcb_bhyt.ngoai_tru.chi_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Chi phí KCB BHYT thanh toán ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.kcb_bhyt.ngoai_tru.chi_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Lượt ngoại trú",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượt KCB BHYT Ngoại trú",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Số lượt KCB BHYT ngoại trú",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.ngoai_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Chi phí KCB BHYT thanh toán Nội trú",
+   "unit": "VND",
+   "code": "bhyt.kcb_bhyt.noi_tru.chi_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Chi phí KCB BHYT thanh toán nội trú",
+   "unit": "VND",
+   "code": "bhyt.kcb_bhyt.noi_tru.chi_phi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Nội trú lượt",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượt KCB BHYT Nội trú",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Số lượt KCB BHYT nội trú",
+   "unit": "lượt",
+   "code": "bhyt.kcb_bhyt.noi_tru.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tỷ lệ truyền dữ liệu XML hồ sơ KCB BHYT lên cổng tiếp nhận giám định BHYT",
+   "unit": "%",
+   "code": "bhyt.kcb_bhyt.truyen_du_lieu.ty_le_xml",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 38
+  },
+  {
+   "name": "Tổng viện phí Ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.vien_phi.ngoai_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng viện phí ngoại trú",
+   "unit": "VND",
+   "code": "bhyt.vien_phi.ngoai_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Tổng viện phí Nội trú",
+   "unit": "VND",
+   "code": "bhyt.vien_phi.noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng viện phí nội trú",
+   "unit": "VND",
+   "code": "bhyt.vien_phi.noi_tru",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 25
+  },
+  {
+   "name": "Bảng chi tiết Định mức thuốc và VTYT các DVKT giảm đau gây tê vùng - Khoa GMHS",
+   "unit": "Bảng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí KCB BHYT thanh toán",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục dịch vụ khám bệnh, chữa bệnh xây dựng mới",
+   "unit": "danh mục",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số dịch vụ kỹ thuật chuyên khoa Ngoại thần kinh - Khoa GMHS xem xét định mức",
+   "unit": "dịch vụ kỹ thuật",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số dịch vụ kỹ thuật chuyên khoa Tai mũi họng - Khoa GMHS xem xét định mức",
+   "unit": "dịch vụ kỹ thuật",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt KCB BHYT",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ĐN Định mức thuốc và VTYT xem xét",
+   "unit": "ĐN",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng viện phí",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Định mức gói dịch vụ kỹ thuật giảm đau tê vùng - Khoa GMHS",
+   "unit": "Định mức",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí quản lý",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chi phí quản lý bảo hiểm thương mại",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số tiền được bảo lãnh",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tiền được bảo lãnh bảo hiểm thương mại",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng viện phí bảo hiểm thương mại",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  }
+ ]
+}

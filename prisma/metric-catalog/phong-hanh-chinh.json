@@ -1,0 +1,3002 @@
+{
+ "department": "Phòng Hành chính",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Cây lấy từ file số liệu Excel phòng HC (hc_metrics); tên gọi khác do glm-5.2 gắn, kiểm chứng bằng giá trị cùng tuần với Excel.",
+ "nodes": [
+  {
+   "code": "hc",
+   "parent": null,
+   "name": "Phòng Hành chính",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking",
+   "parent": "hc",
+   "name": "Bãi giữ xe",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking.cong_suat_trung_binh_ngay",
+   "parent": "hc.parking",
+   "name": "Công suất trung bình/ngày",
+   "kind": "METRIC",
+   "unit": "xe/ngày",
+   "agg": "AVG",
+   "hc": [
+    "Bãi giữ xe",
+    "Công suất trung bình/ngày"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking.doanh_thu",
+   "parent": "hc.parking",
+   "name": "Doanh thu",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": [
+    "Bãi giữ xe",
+    "Doanh thu"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking.so_phan_anh_khieu_nai",
+   "parent": "hc.parking",
+   "name": "Số phản ánh khiếu nại",
+   "kind": "METRIC",
+   "unit": "phản ánh",
+   "agg": "SUM",
+   "hc": [
+    "Bãi giữ xe",
+    "Số phản ánh khiếu nại"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking.tong_so_luot_ve_ngay",
+   "parent": "hc.parking",
+   "name": "Tổng số lượt vé ngày",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": [
+    "Bãi giữ xe",
+    "Tổng số lượt vé ngày"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.parking.tong_so_luot_ve_thang",
+   "parent": "hc.parking",
+   "name": "Tổng số lượt vé tháng",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": [
+    "Bãi giữ xe",
+    "Tổng số lượt vé tháng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet",
+   "parent": "hc",
+   "name": "Tổ xe",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.chi_phi_bao_duong",
+   "parent": "hc.fleet",
+   "name": "Chi phí bảo dưỡng",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Chi phí bảo dưỡng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.doanh_thu_to_xe",
+   "parent": "hc.fleet",
+   "name": "Doanh thu Tổ xe",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Doanh thu Tổ xe"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.km_chay_cua_hanh_chinh",
+   "parent": "hc.fleet.tong_km_chay",
+   "name": "Km chạy của hành chính",
+   "kind": "METRIC",
+   "unit": "km",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Km chạy của hành chính"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.km_chay_cua_xe_cuu_thuong",
+   "parent": "hc.fleet.tong_km_chay",
+   "name": "Km chạy của xe cứu thương",
+   "kind": "METRIC",
+   "unit": "km",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Km chạy của xe cứu thương"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.so_chuyen_xe",
+   "parent": "hc.fleet",
+   "name": "Số chuyến xe",
+   "kind": "METRIC",
+   "unit": "chuyến",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Số chuyến xe"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.so_phieu_khao_sat_hai_long",
+   "parent": "hc.fleet",
+   "name": "Số phiếu khảo sát hài lòng",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Số phiếu khảo sát hài lòng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.tong_km_chay",
+   "parent": "hc.fleet",
+   "name": "Tổng km chạy",
+   "kind": "METRIC",
+   "unit": "km",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Tổng km chạy"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.tong_so_nhien_lieu_tieu_thu",
+   "parent": "hc.fleet",
+   "name": "Tổng số nhiên liệu tiêu thụ",
+   "kind": "METRIC",
+   "unit": "lít",
+   "agg": "SUM",
+   "hc": [
+    "Tổ xe",
+    "Tổng số nhiên liệu tiêu thụ"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.fleet.ty_le_hai_long_cua_khach_hang",
+   "parent": "hc.fleet",
+   "name": "Tỷ lệ hài lòng của khách hàng",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": [
+    "Tổ xe",
+    "Tỷ lệ hài lòng của khách hàng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard",
+   "parent": "hc",
+   "name": "Tổng đài",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.hottline",
+   "parent": "hc.switchboard",
+   "name": "Hottline",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Hottline"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_khong_bat_may_nhanh_0_tong_dai_vien",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "name": "Nhỡ do không bắt máy (Nhánh 0-Tổng đài viên)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do không bắt máy (Nhánh 0-Tổng đài viên)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_khong_bat_may_nhanh_1_cap_cuu",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "name": "Nhỡ do không bắt máy (Nhánh 1-Cấp cứu)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do không bắt máy (Nhánh 1-Cấp cứu)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_khong_bat_may_nhanh_2_tu_van_thuoc",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "name": "Nhỡ do không bắt máy (Nhánh 2-Tư vấn Thuốc)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do không bắt máy (Nhánh 2-Tư vấn Thuốc)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_khong_bat_may_nhanh_3_pkqt",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "name": "Nhỡ do không bắt máy (Nhánh 3-PKQT)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do không bắt máy  (Nhánh 3-PKQT)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_khong_bat_may_nhanh_4_van_de_khac",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "name": "Nhỡ do không bắt máy (Nhánh 4-Vấn đề khác)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do không bắt máy (Nhánh 4-Vấn đề khác)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_tu_choi_nhanh_0_tong_dai_vien",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "name": "Nhỡ do từ chối (Nhánh 0-Tổng đài viên)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do từ chối (Nhánh 0-Tổng đài viên)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_tu_choi_nhanh_1_cap_cuu",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "name": "Nhỡ do từ chối (Nhánh 1-Cấp cứu)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do từ chối (Nhánh 1-Cấp cứu)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_tu_choi_nhanh_2_tu_van_thuoc",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "name": "Nhỡ do từ chối (Nhánh 2- Tư vấn Thuốc)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do từ chối (Nhánh 2- Tư vấn Thuốc)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_tu_choi_nhanh_3_pkqt",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "name": "Nhỡ do từ chối (Nhánh 3-PKQT)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do từ chối (Nhánh 3-PKQT)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.nho_do_tu_choi_nhanh_4_van_de_khac",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "name": "Nhỡ do từ chối (Nhánh 4-Vấn đề khác)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Nhỡ do từ chối (Nhánh 4-Vấn đề khác)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.so_cuoc_goi_den_nhanh_0_tong_dai_vien",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "name": "Số cuộc gọi đến (Nhánh 0-Tổng đài viên)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Số cuộc gọi đến (Nhánh 0-Tổng đài viên)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.so_cuoc_goi_den_nhanh_1_cap_cuu",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "name": "Số cuộc gọi đến (Nhánh 1-Cấp cứu)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Số cuộc gọi đến (Nhánh 1-Cấp cứu)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.so_cuoc_goi_den_nhanh_2_tu_van_thuoc",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "name": "Số cuộc gọi đến (Nhánh 2-Tư vấn Thuốc)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Số cuộc gọi đến (Nhánh 2-Tư vấn Thuốc)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.so_cuoc_goi_den_nhanh_3_pkqt",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "name": "Số cuộc gọi đến (Nhánh 3-PKQT)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Số cuộc gọi đến (Nhánh 3-PKQT)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.so_cuoc_goi_den_nhanh_4_van_de_khac",
+   "parent": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "name": "Số cuộc gọi đến (Nhánh 4-Vấn đề khác)",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Số cuộc gọi đến (Nhánh 4-Vấn đề khác)"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "parent": "hc.switchboard",
+   "name": "Tổng số cuộc gọi đến Bệnh viện",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Tổng số cuộc gọi đến Bệnh viện"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "parent": "hc.switchboard",
+   "name": "Tổng số cuộc gọi nhỡ do không bắt máy",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Tổng số cuộc gọi nhỡ do không bắt máy"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "parent": "hc.switchboard",
+   "name": "Tổng số cuộc gọi nhỡ do từ chối",
+   "kind": "METRIC",
+   "unit": "cuộc gọi",
+   "agg": "SUM",
+   "hc": [
+    "Tổng đài",
+    "Tổng số cuộc gọi nhỡ do từ chối"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_in",
+   "parent": "hc",
+   "name": "Văn bản đến",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_in.tong_so_van_ban_den",
+   "parent": "hc.docs_in",
+   "name": "Tổng số văn bản đến",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản đến",
+    "Tổng số văn bản đến, trong đó:"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_in.xu_ly_dung_han",
+   "parent": "hc.docs_in.tong_so_van_ban_den",
+   "name": "Xử lý đúng hạn",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản đến",
+    "Xử lý đúng hạn"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "parent": "hc.docs_in.tong_so_van_ban_den",
+   "name": "Xử lý trễ hạn",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản đến",
+    "Xử lý trễ hạn"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out",
+   "parent": "hc",
+   "name": "Văn bản phát hành",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.hop_dong",
+   "parent": "hc.docs_out",
+   "name": "Hợp đồng",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Hợp đồng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.huong_dan",
+   "parent": "hc.docs_out",
+   "name": "Hướng dẫn",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Hướng dẫn"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.quy_che",
+   "parent": "hc.docs_out",
+   "name": "Quy chế",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Quy chế"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.quy_dinh",
+   "parent": "hc.docs_out",
+   "name": "Quy định",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Quy định"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.quyet_dinh",
+   "parent": "hc.docs_out",
+   "name": "Quyết định",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Quyết định"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.quy_trinh",
+   "parent": "hc.docs_out",
+   "name": "Quy trình",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Quy trình"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.docs_out.van_ban_di",
+   "parent": "hc.docs_out",
+   "name": "Văn bản đi",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": [
+    "Văn bản phát hành",
+    "Văn bản đi"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.events",
+   "parent": "hc",
+   "name": "Sự kiện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.events.phong_hanh_chinh_chu_tri",
+   "parent": "hc.events.tong_so_su_kien_hanh_chinh_cua_benh_vien",
+   "name": "Phòng Hành chính chủ trì",
+   "kind": "METRIC",
+   "unit": "sự kiện",
+   "agg": "SUM",
+   "hc": [
+    "Sự kiện",
+    "Phòng Hành chính chủ trì"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.events.phong_hanh_chinh_phoi_hop",
+   "parent": "hc.events.tong_so_su_kien_hanh_chinh_cua_benh_vien",
+   "name": "Phòng Hành chính phối hợp",
+   "kind": "METRIC",
+   "unit": "sự kiện",
+   "agg": "SUM",
+   "hc": [
+    "Sự kiện",
+    "Phòng Hành chính phối hợp"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.events.tong_so_su_kien_hanh_chinh_cua_benh_vien",
+   "parent": "hc.events",
+   "name": "Tổng số sự kiện hành chính của Bệnh viện",
+   "kind": "METRIC",
+   "unit": "sự kiện",
+   "agg": "SUM",
+   "hc": [
+    "Sự kiện",
+    "Tổng số sự kiện hành chính của Bệnh viện, trong đó:"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.guests",
+   "parent": "hc",
+   "name": "Tiếp khách trong nước",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.guests.lam_viec",
+   "parent": "hc.guests.tong_so_doan_khach_trong_nuoc",
+   "name": "Làm việc",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "SUM",
+   "hc": [
+    "Tiếp khách trong nước",
+    "Làm việc"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.guests.tham_quan_hoc_tap",
+   "parent": "hc.guests.tong_so_doan_khach_trong_nuoc",
+   "name": "Tham quan, học tập",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "SUM",
+   "hc": [
+    "Tiếp khách trong nước",
+    "Tham quan, học tập"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.guests.tong_so_doan_khach_trong_nuoc",
+   "parent": "hc.guests",
+   "name": "Tổng số đoàn khách trong nước",
+   "kind": "METRIC",
+   "unit": "đoàn",
+   "agg": "SUM",
+   "hc": [
+    "Tiếp khách trong nước",
+    "Tổng số đoàn khách trong nước, trong đó:"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.vip",
+   "parent": "hc",
+   "name": "Đón tiếp khách VIP",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "parent": "hc.vip",
+   "name": "Số lượt khách VIP được lễ tân tiếp đón, hỗ trợ khám chữa bệnh",
+   "kind": "METRIC",
+   "unit": "lượt khách",
+   "agg": "SUM",
+   "hc": [
+    "Đón tiếp khách VIP",
+    "Số lượt khách VIP được lễ tân tiếp đón, hỗ trợ khám chữa bệnh"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.reception",
+   "parent": "hc",
+   "name": "Lễ tân",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.reception.ho_tro_le_tan_cho_hoi_nghi_hoi_thao",
+   "parent": "hc.reception",
+   "name": "Hỗ trợ lễ tân cho hội nghị/hội thảo",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": [
+    "Lễ tân",
+    "Hỗ trợ lễ tân cho hội nghị/hội thảo"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.online_meetings",
+   "parent": "hc",
+   "name": "Tổ chức cuộc họp trực tuyến",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.online_meetings.tong_so_cuoc_hop_truc_tuyen_do_phong_hanh_chinh_",
+   "parent": "hc.online_meetings",
+   "name": "Tổng số cuộc họp trực tuyến do Phòng Hành chính chuẩn bị",
+   "kind": "METRIC",
+   "unit": "cuộc họp",
+   "agg": "SUM",
+   "hc": [
+    "Tổ chức cuộc họp trực tuyến",
+    "Tổng số cuộc họp trực tuyến do Phòng Hành chính chuẩn bị"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.dhtn",
+   "parent": "hc",
+   "name": "Trang điều hành tác nghiệp",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.dhtn.so_luong_tin_dang_dhtn",
+   "parent": "hc.dhtn",
+   "name": "Số lượng tin đăng ĐHTN",
+   "kind": "METRIC",
+   "unit": "tin",
+   "agg": "SUM",
+   "hc": [
+    "Trang điều hành tác nghiệp",
+    "Số lượng tin đăng ĐHTN"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary",
+   "parent": "hc",
+   "name": "Hệ thống thư ký Bệnh viện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_buoi_sinh_hoat_cho_thu_ky",
+   "parent": "hc.secretary",
+   "name": "Số buổi sinh hoạt cho thư ký",
+   "kind": "METRIC",
+   "unit": "buổi",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số buổi sinh hoạt cho thư ký"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_buoi_tap_huan_dao_tao_cho_thu_ky",
+   "parent": "hc.secretary",
+   "name": "Số buổi tập huấn, đào tạo cho thư ký",
+   "kind": "METRIC",
+   "unit": "buổi",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số buổi tập huấn, đào tạo cho thư ký"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_buoi_tham_quan_hoc_tap",
+   "parent": "hc.secretary",
+   "name": "Số buổi tham quan, học tập",
+   "kind": "METRIC",
+   "unit": "buổi",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số buổi tham quan, học tập"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_duoc_dieu_dong",
+   "parent": "hc.secretary",
+   "name": "Số thư ký được điều động",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký được điều động"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_duoc_so_tuyen",
+   "parent": "hc.secretary",
+   "name": "Số thư ký được sơ tuyển",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký được sơ tuyển"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_duoc_tuyen_dung",
+   "parent": "hc.secretary",
+   "name": "Số thư ký được tuyển dụng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký được tuyển dụng"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_nghi_viec",
+   "parent": "hc.secretary",
+   "name": "Số thư ký nghỉ việc",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký nghỉ việc"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_nhan_viec",
+   "parent": "hc.secretary",
+   "name": "Số thư ký nhận việc",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký nhận việc"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_tham_gia_sinh_hoat",
+   "parent": "hc.secretary",
+   "name": "Số thư ký tham gia sinh hoạt",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký tham gia sinh hoạt"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_tham_gia_tap_huan_dao_tao",
+   "parent": "hc.secretary",
+   "name": "Số thư ký tham gia tập huấn, đào tạo",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký tham gia tập huấn, đào tạo"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.so_thu_ky_tham_gia_tham_quan_hoc_tap",
+   "parent": "hc.secretary",
+   "name": "Số thư ký tham gia tham quan, học tập",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Số thư ký tham gia tham quan, học tập"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.thu_ky_chuyen_mon",
+   "parent": "hc.secretary.tong_so_thu_ky",
+   "name": "Thư ký chuyên môn",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "- Thư ký chuyên môn"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.thu_ky_hanh_chinh",
+   "parent": "hc.secretary.tong_so_thu_ky",
+   "name": "Thư ký hành chính",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "- Thư ký hành chính"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.secretary.tong_so_thu_ky",
+   "parent": "hc.secretary",
+   "name": "Tổng số thư ký",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "LAST",
+   "hc": [
+    "Hệ thống thư ký Bệnh viện",
+    "Tổng số thư ký"
+   ],
+   "origin": "EXCEL"
+  },
+  {
+   "code": "hc.doc_tracking",
+   "parent": "hc",
+   "name": "Theo dõi tiến độ xử lý văn bản",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "hc.doc_tracking.total",
+   "parent": "hc.doc_tracking",
+   "name": "Tổng số văn bản theo dõi tiến độ",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "hc.doc_tracking.total.pending",
+   "parent": "hc.doc_tracking.total",
+   "name": "Chưa xử lý",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "hc.doc_tracking.total.in_progress",
+   "parent": "hc.doc_tracking.total",
+   "name": "Đang xử lý",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "hc.doc_tracking.total.done",
+   "parent": "hc.doc_tracking.total",
+   "name": "Hoàn thành",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "hc.docs_in.on_time_rate",
+   "parent": "hc.docs_in",
+   "name": "Tỷ lệ văn bản đến xử lý đúng hạn",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Tiến độ xử lý văn bản tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý văn bản tuần tổng",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ xử lý văn bản tuần tổng số",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số văn bản theo dõi tiến độ xử lý tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số văn bản xử lý trong tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng văn bản theo dõi tiến độ xử lý tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Văn bản theo dõi tiến độ xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Văn bản theo dõi tiến độ xử lý tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Văn bản xử lý trong tuần",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số lượng văn bản theo dõi tiến độ hoàn thành",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.done",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý văn bản hoàn thành",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.done",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Văn bản hoàn thành",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.done",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Văn bản hoàn thành xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.done",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Văn bản theo dõi tiến độ hoàn thành",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.done",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng văn bản theo dõi tiến độ đang xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.in_progress",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý văn bản đang xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.in_progress",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Văn bản theo dõi tiến độ đang xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.in_progress",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đang xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.in_progress",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Số lượng văn bản theo dõi tiến độ chưa xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.pending",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ xử lý văn bản chưa xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.pending",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Văn bản chưa xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.pending",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Văn bản theo dõi tiến độ chưa xử lý",
+   "unit": "văn bản",
+   "code": "hc.doc_tracking.total.pending",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ văn bản đến xử lý đúng hạn",
+   "unit": "%",
+   "code": "hc.docs_in.on_time_rate",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 38
+  },
+  {
+   "name": "Số lượng văn bản đến tiếp nhận",
+   "unit": "văn bản",
+   "code": "hc.docs_in.tong_so_van_ban_den",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số văn bản đến tiếp nhận",
+   "unit": "văn bản",
+   "code": "hc.docs_in.tong_so_van_ban_den",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận văn bản đến",
+   "unit": "văn bản",
+   "code": "hc.docs_in.tong_so_van_ban_den",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đến tiếp nhận",
+   "unit": "văn bản",
+   "code": "hc.docs_in.tong_so_van_ban_den",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Số lượng văn bản đến xử lý đúng hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_dung_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số văn bản đến xử lý đúng hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_dung_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đến xử lý đúng hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_dung_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Số lượng văn bản trễ hạn của Phòng KHTH",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản trễ hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Văn bản trễ hạn của Phòng KHTH",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Văn bản trễ hạn của Phòng TCCB",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Văn bản xử lý trễ hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Văn bản đến xử lý trễ hạn",
+   "unit": "văn bản",
+   "code": "hc.docs_in.xu_ly_tre_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hợp đồng phát hành",
+   "unit": "hợp đồng",
+   "code": "hc.docs_out.hop_dong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 34
+  },
+  {
+   "name": "Phát hành hợp đồng",
+   "unit": "hợp đồng",
+   "code": "hc.docs_out.hop_dong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hợp đồng phát hành",
+   "unit": "hợp đồng",
+   "code": "hc.docs_out.hop_dong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng hợp đồng phát hành",
+   "unit": "hợp đồng",
+   "code": "hc.docs_out.hop_dong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn phát hành",
+   "unit": "hướng dẫn",
+   "code": "hc.docs_out.huong_dan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phát hành hướng dẫn",
+   "unit": "hướng dẫn",
+   "code": "hc.docs_out.huong_dan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy định phát hành",
+   "unit": "quy định",
+   "code": "hc.docs_out.quy_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phát hành quy trình",
+   "unit": "quy trình",
+   "code": "hc.docs_out.quy_trinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình phát hành",
+   "unit": "quy trình",
+   "code": "hc.docs_out.quy_trinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phát hành quyết định",
+   "unit": "quyết định",
+   "code": "hc.docs_out.quyet_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quyết định phát hành",
+   "unit": "quyết định",
+   "code": "hc.docs_out.quyet_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Số lượng quyết định phát hành",
+   "unit": "quyết định",
+   "code": "hc.docs_out.quyet_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quyết định phát hành",
+   "unit": "quyết định",
+   "code": "hc.docs_out.quyet_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng văn bản đi phát hành",
+   "unit": "văn bản",
+   "code": "hc.docs_out.van_ban_di",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số văn bản đi phát hành",
+   "unit": "văn bản",
+   "code": "hc.docs_out.van_ban_di",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản đi phát hành",
+   "unit": "văn bản",
+   "code": "hc.docs_out.van_ban_di",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 36
+  },
+  {
+   "name": "Doanh thu phương tiện vận chuyển",
+   "unit": "VND",
+   "code": "hc.fleet.doanh_thu_to_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Doanh thu quản lý phương tiện vận chuyển",
+   "unit": "VND",
+   "code": "hc.fleet.doanh_thu_to_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Doanh thu tổ xe",
+   "unit": "VND",
+   "code": "hc.fleet.doanh_thu_to_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu vận chuyển",
+   "unit": "VND",
+   "code": "hc.fleet.doanh_thu_to_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Chuyến xe thực hiện",
+   "unit": "chuyến xe",
+   "code": "hc.fleet.so_chuyen_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 25
+  },
+  {
+   "name": "Chuyến xe thực hiện",
+   "unit": "chuyến",
+   "code": "hc.fleet.so_chuyen_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số chuyến xe thực hiện",
+   "unit": "chuyến xe",
+   "code": "hc.fleet.so_chuyen_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số chuyến xe thực hiện",
+   "unit": "chuyến",
+   "code": "hc.fleet.so_chuyen_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượng chuyến xe thực hiện",
+   "unit": "chuyến xe",
+   "code": "hc.fleet.so_chuyen_xe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đoàn khách tham quan học tập tiếp",
+   "unit": "đoàn",
+   "code": "hc.guests.tham_quan_hoc_tap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đoàn phối hợp tiếp đón",
+   "unit": "đoàn",
+   "code": "hc.guests.tong_so_doan_khach_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đoàn khách tiếp",
+   "unit": "đoàn",
+   "code": "hc.guests.tong_so_doan_khach_trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chuẩn bị cuộc họp trực tuyến",
+   "unit": "cuộc họp",
+   "code": "hc.online_meetings.tong_so_cuoc_hop_truc_tuyen_do_phong_hanh_chinh_",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc họp trực tuyến chuẩn bị",
+   "unit": "cuộc họp",
+   "code": "hc.online_meetings.tong_so_cuoc_hop_truc_tuyen_do_phong_hanh_chinh_",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu Bãi xe",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu bãi xe",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 31
+  },
+  {
+   "name": "Doanh thu dịch vụ bãi xe",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu dịch vụ tiện ích",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu dịch vụ tiện ích bãi xe",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu quản lý các dịch vụ tiện ích",
+   "unit": "VND",
+   "code": "hc.parking.doanh_thu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hội nghị, hội thảo phục vụ",
+   "unit": "hội nghị",
+   "code": "hc.reception.ho_tro_le_tan_cho_hoi_nghi_hoi_thao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phối hợp phục vụ hội nghị, hội thảo",
+   "unit": "hội nghị",
+   "code": "hc.reception.ho_tro_le_tan_cho_hoi_nghi_hoi_thao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ứng viên thư ký bệnh án làm bài kiểm tra sơ tuyển",
+   "unit": "ứng viên",
+   "code": "hc.secretary.so_thu_ky_duoc_so_tuyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên TKYK làm bài kiểm tra sơ tuyển",
+   "unit": "người",
+   "code": "hc.secretary.so_thu_ky_duoc_so_tuyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ứng viên thư ký y khoa làm bài kiểm tra sơ tuyển",
+   "unit": "người",
+   "code": "hc.secretary.so_thu_ky_duoc_so_tuyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư ký y khoa nhận việc",
+   "unit": "người",
+   "code": "hc.secretary.so_thu_ky_nhan_viec",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi Đường dây nóng",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi Đường dây nóng",
+   "unit": "cuộc",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi đường dây nóng",
+   "unit": "cuộc",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Cuộc gọi đường dây nóng",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cuộc gọi đến đường dây nóng",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng cuộc gọi đường dây nóng",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đường dây nóng",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Đường dây nóng",
+   "unit": "cuộc",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Đường dây nóng",
+   "unit": "lượt",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đường dây nóng",
+   "unit": "đường dây",
+   "code": "hc.switchboard.hottline",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi đến tiếp nhận",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Cuộc gọi đến tiếp nhận",
+   "unit": "cuộc",
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Số cuộc gọi đến tiếp nhận",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng cuộc gọi đến tiếp nhận",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận cuộc gọi đến",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_den_benh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi nhỡ do không bắt máy",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Cuộc gọi nhỡ do không bắt máy",
+   "unit": "cuộc",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số cuộc gọi nhỡ do không bắt máy",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng cuộc gọi nhỡ do không bắt máy",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_khong_bat_may",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi nhỡ do từ chối",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Cuộc gọi nhỡ do từ chối",
+   "unit": "cuộc",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số cuộc gọi nhỡ do từ chối",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng cuộc gọi nhỡ do từ chối",
+   "unit": "cuộc gọi",
+   "code": "hc.switchboard.tong_so_cuoc_goi_nho_do_tu_choi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ đón tiếp, khám chữa bệnh cho khách",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khách VIP tiếp đón",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Khách VIP tiếp/đón",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Khách VIP đón tiếp",
+   "unit": "khách",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Khách VIP đón tiếp",
+   "unit": "người",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Khách VIP đón tiếp",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khách hỗ trợ đón tiếp khám chữa bệnh",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khách đón tiếp, khám chữa bệnh",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt khách VIP tiếp/đón",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lượt khách hỗ trợ đón tiếp, khám chữa bệnh",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng khách VIP đón tiếp",
+   "unit": "khách",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt đón tiếp khách VIP",
+   "unit": "lượt",
+   "code": "hc.vip.so_luot_khach_vip_duoc_le_tan_tiep_don_ho_tro_kh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá khai thác mặt bằng căn tin giảm",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ mua linh kiện nhận",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người dân tham gia khám sức khỏe, cấp phát thuốc miễn phí",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người tham dự Họp giao ban thư ký hành chính toàn viện",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người tham dự Tổng kết hoạt động thư ký năm 2025",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhận hồ sơ mua linh kiện",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số dòng trên một trang màn hình xem",
+   "unit": "dòng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ Phòng VTTB còn lại chưa đẩy lên kho",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ Phòng VTTB giao đợt 1",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ Phòng VTTB hoàn thành đẩy lên kho",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ Phòng VTTB tiếp nhận",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ tài liệu Phòng VTTB scan xong",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ đã số hóa bàn giao cho phòng VTTB",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu thu thập đối với các đơn vị đã triển khai",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu thu thập đối với đơn vị chưa triển khai",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng tài liệu trình Hội đồng thẩm định",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số nhân viên điểm danh tham dự qua QR Code",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số nhân viên được phân quyền tài khoản sử dụng phân hệ",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm Văn bản đi chưa hoàn thành đẩy lên kho lưu trữ",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm Văn bản đi hoàn thành đẩy lên kho lưu trữ",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm tài liệu Phòng Hành chính còn lại chưa đẩy lên kho",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm tài liệu hoàn thành đẩy lên kho Lưu trữ",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm tài liệu đang đẩy lên kho Lưu trữ",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thùng hồ sơ Phòng VTTB tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thùng hồ sơ đã số hóa bàn giao cho phòng VTTB",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thùng tài liệu Phòng VTTB scan xong",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thùng tài liệu tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu tiếp nhận",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số vụ việc phản ánh thái độ bác sĩ chuyên khoa huyết học",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số xe ô tô bổ sung mua bảo hiểm vật chất",
+   "unit": "xe",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số xe ô tô đề nghị phân bổ bổ sung",
+   "unit": "xe",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị còn lại xây dựng phiếu chỉ số",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị tham gia gói thầu quà tặng",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị đã nhận danh mục hồ sơ",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ tổng GĐ1L4",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư ký tham dự cuộc thi nghiệp vụ thư ký UMC năm 2026",
+   "unit": "thư ký",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu trình Hội đồng thẩm định",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ thanh toán gói thầu mua xe ô tô",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản trễ hạn Phòng TCCB và Phòng KHTH",
+   "unit": "văn bản",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản trễ hạn Phòng TCCB và Phòng VTTB",
+   "unit": "văn bản",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Văn bản trễ hạn của Phòng QTTN",
+   "unit": "văn bản",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Xe ô tô cứu thương đề nghị cấp lại giấy phép",
+   "unit": "xe",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Xe ô tô mua bảo hiểm vật chất bổ sung",
+   "unit": "xe",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Xe ô tô nghiệm thu, thanh toán và nhận bàn giao",
+   "unit": "xe ô tô",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị chưa nộp danh mục hồ sơ",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị đến chúc mừng Ngày Thầy thuốc Việt Nam",
+   "unit": "Đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đại biểu tham dự Hội thảo Pháp chế",
+   "unit": "đại biểu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi nhỡ do từ chối hoặc không bắt máy",
+   "unit": "cuộc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cuộc gọi nhỡ do từ chối hoặc không bắt máy",
+   "unit": "cuộc gọi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "File tài liệu Phòng VTTB đẩy lên kho lưu trữ",
+   "unit": "trang",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "File đẩy lên kho lưu trữ",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giấy phép tiến hành bức xạ sử dụng X-quang chụp cắt lớp vi tính CT 128",
+   "unit": "giấy phép",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giấy phép tiến hành bức xạ sử dụng X-quang chụp cắt lớp vi tính CT 64 lát cắt",
+   "unit": "giấy phép",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng Hành chính còn lại",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB hoàn thành scan",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB nhập liệu hoàn thành",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB scan xong",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB thống kê lập danh mục",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB tiếp nhận",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Phòng VTTB tiếp nhận để số hóa",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ bàn giao đã số hóa cho phòng VTTB",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ nhận từ Phòng VTTB",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ nhận về",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ scan xong Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ tiếp nhận Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân viên bãi xe nghỉ việc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phản ánh tiếp nhận",
+   "unit": "phản ánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Phản ánh tiếp nhận",
+   "unit": "văn bản",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình, quy định trình Hội đồng thẩm định",
+   "unit": "quy trình, quy định",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số cuộc gọi phản ánh tiếp nhận",
+   "unit": "cuộc gọi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm tài liệu còn lại chưa đẩy lên kho Lưu trữ",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số phản ánh của người bệnh tiếp nhận trong tuần",
+   "unit": "phản ánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số vụ việc hoàn thành",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số vụ việc phản ánh tiếp nhận",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số vụ việc tiếp nhận",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số vụ việc đang xử lý",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ Phòng VTTB scan xong",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ Phòng VTTB tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ Phòng VTTB tiếp nhận để số hóa",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ scan xong",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ scan xong tài liệu Phòng VTTB",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 0
+  },
+  {
+   "name": "Thùng hồ sơ tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng hồ sơ tiếp nhận tài liệu Phòng VTTB",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 0
+  },
+  {
+   "name": "Tài liệu Phòng VTTB file đẩy lên hệ thống",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 0
+  },
+  {
+   "name": "Tài liệu Phòng VTTB file đẩy lên hệ thống",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB scan được",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 0
+  },
+  {
+   "name": "Tài liệu Phòng VTTB scan được",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB số hóa đã được số hóa",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB số tài liệu đẩy lên hệ thống",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB tổng scan hoàn thành",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB tổng tài liệu đẩy lên hệ thống",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB đã số hóa",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Phòng VTTB đẩy lên hệ thống",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu kiểm tra hình ảnh sau scan",
+   "unit": "mét tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu phòng Hành chính còn lại",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu phòng Hành chính còn lại đẩy file lên Kho Lưu trữ",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu phòng Hành chính hoàn thiện đẩy file",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu phòng Hành chính hoàn thiện đẩy file lên Kho Lưu trữ",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu phòng Hành chính tổng cần hoàn thiện đẩy file",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu quét (scan)",
+   "unit": "mét tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng file cần đẩy lên kho lưu trữ",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hồ sơ Phòng VTTB nhập liệu",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hồ sơ Phòng VTTB scan",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hồ sơ tiếp nhận scan",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hồ sơ trả lại",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hồ sơ đã scan",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng scan hoàn thành tài liệu Phòng VTTB",
+   "unit": "trang",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng scan hoàn thành tài liệu Phòng VTTB",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số mét tài liệu",
+   "unit": "mét tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số vụ việc trong năm",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ cuộc gọi nhỡ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Vụ việc khiếu nại liên quan đến chuyên môn",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc khiếu nại tiếp nhận",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc phản ánh liên quan đến thái độ của nhân viên tổng đài",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc phản ánh qua email",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc phản ánh tiếp nhận",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc phản ánh đường dây nóng",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc phản ánh, kiến nghị, khiếu nại, tố cáo đang theo dõi, đôn đốc",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ việc tiếp nhận, chuyển xử lý",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Vụ việc tố cáo đối với nhân sự của Bệnh viện",
+   "unit": "vụ việc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đoàn phối hợp tiếp đón",
+   "unit": "đoàn",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn chưa nộp danh mục hồ sơ",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị nộp danh mục hồ sơ",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị rà soát danh mục hồ sơ",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn vị thực hiện số hóa",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Độ dài hồ sơ Phòng Hành chính còn lại",
+   "unit": "mét giá",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên thư ký y khoa sơ vấn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Doanh thu",
+   "unit": "VND",
+   "code": null,
+   "status": "VALUE",
+   "candidates": [
+    "hc.fleet.doanh_thu_to_xe",
+    "hc.parking.doanh_thu"
+   ],
+   "weeks": 18
+  }
+ ]
+}

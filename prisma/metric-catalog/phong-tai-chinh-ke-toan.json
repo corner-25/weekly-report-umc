@@ -1,0 +1,460 @@
+{
+ "department": "Phòng Tài chính Kế toán",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "nodes": [
+  {
+   "code": "tckt",
+   "parent": null,
+   "name": "Phòng Tài chính Kế toán",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tckt.quy_tien",
+   "parent": "tckt",
+   "name": "Quỹ tiền",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "parent": "tckt.quy_tien",
+   "name": "Số dư ngân hàng, tiền mặt",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tckt.ke_hoach",
+   "parent": "tckt",
+   "name": "Kế hoạch tài chính",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tckt.ke_hoach.ke_hoach_kinh_phi_hoat_dong_nam",
+   "parent": "tckt.ke_hoach",
+   "name": "Kế hoạch kinh phí hoạt động năm",
+   "kind": "METRIC",
+   "unit": "năm",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Kế hoạch kinh phí hoạt động",
+   "unit": "năm",
+   "code": "tckt.ke_hoach.ke_hoach_kinh_phi_hoat_dong_nam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "kế hoạch kinh phí hoạt động năm",
+   "unit": "năm",
+   "code": "tckt.ke_hoach.ke_hoach_kinh_phi_hoat_dong_nam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "kế hoạch ngân sách hoạt động năm",
+   "unit": "năm",
+   "code": "tckt.ke_hoach.ke_hoach_kinh_phi_hoat_dong_nam",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số dư ngân hàng, tiền mặt tuần",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số tuần báo cáo số dư ngân hàng, tiền mặt",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tuần báo cáo số dư ngân sách, tiền mặt",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tuần báo cáo số dư ngân hàng, tiền mặt",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "số dư ngân hàng",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "số dư ngân hàng tuần",
+   "unit": "tuần",
+   "code": "tckt.quy_tien.so_du_ngan_hang_tien_mat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi thù lao khối chuyên môn ngày",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kê khai và nộp thuế GTGT, thuế TNCN",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ngày chi thù lao",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Năm kê khai và nộp thuế GTGT",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Năm rà soát người phụ thuộc đã đăng ký",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Năm triển khai thực hiện ghi nhận và trích khấu hao tài sản cố định, phân bổ công cụ, dụng cụ",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Năm đăng ký người phụ thuộc để giảm trừ gia cảnh",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nộp bổ sung KPHĐ năm 2025",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy CT mua sắm",
+   "unit": "máy",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người bệnh BHYT phục vụ hàng ngày",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh BHYT phục vụ ngày 1/7",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thiết bị điều trị da đánh giá hiệu quả khai thác sau đầu tư",
+   "unit": "thiết bị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ bảo trì phần mềm kế toán",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số yêu cầu cung cấp hồ sơ, tài liệu của đoàn Kiểm toán nhà nước",
+   "unit": "yêu cầu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số đoàn các bệnh viện đến tham quan, học tập",
+   "unit": "đoàn",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tháng kê khai và nộp thuế GTGT",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng hợp thù lao khối chuyên môn năm",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ tăng số người bệnh BHYT so với trước đây",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "danh mục VTYT tái sử dụng không thay đổi số lần trong năm",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "mục tiêu tăng trưởng thu nhập",
+   "unit": "con số",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "quyết toán thuế TNCN trước ngày",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đánh giá tình hình tài chính Cơ sở 1",
+   "unit": "cơ sở",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo tài chính",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo tài chính năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo tài chính năm tại Cơ sở 1",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo đánh giá tình hình tài chính năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi thù lao khối chuyên môn tháng",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quyết toán tài chính năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tháng căn cứ chi thù lao khối hành chính",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tháng hợp đồng tiền gửi có kỳ hạn",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tháng kê khai thuế GTGT",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tháng phương án gửi tiền",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thù lao khối chuyên môn",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng hợp thù lao khối chuyên môn tháng",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "số liệu BCTC năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "thuế TNCN, thuế GTGT tháng",
+   "unit": "tháng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "tình hình tài chính của Cơ sở 1 năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đánh giá tình hình tài chính Cơ sở 1",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đánh giá tình hình tài chính năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "đánh giá tình hình tài chính Cơ sở 1 năm",
+   "unit": "năm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "đối tượng không ủy quyền BV quyết toán thuế TNCN",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  }
+ ]
+}

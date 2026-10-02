@@ -1,0 +1,3028 @@
+{
+ "department": "Phòng Tổ chức Cán bộ",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 3.7%.",
+ "nodes": [
+  {
+   "code": "tccb",
+   "parent": null,
+   "name": "Phòng Tổ chức Cán bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.kiem_tra_ho_so",
+   "parent": "tccb",
+   "name": "Kiểm tra hồ sơ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "parent": "tccb.kiem_tra_ho_so",
+   "name": "Hồ sơ thanh toán kiểm tra",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "parent": "tccb.kiem_tra_ho_so",
+   "name": "Hồ sơ trình ký BGD kiểm tra",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly",
+   "parent": "tccb",
+   "name": "Soát xét pháp lý hồ sơ trình ký",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Khoa KSKTYC",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng KH&ĐT",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng KHTH",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng VTTB",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Cơ sở 2",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng TCCB",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng TCKT",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng CTXH",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_cntt",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng CNTT",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_dieu_duong",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng Điều dưỡng",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng HC",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Trung tâm TT",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng QLCL",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "parent": "tccb.soat_xet_phap_ly",
+   "name": "Phòng QTTN",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tuyen_dung",
+   "parent": "tccb",
+   "name": "Tuyển dụng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "parent": "tccb.tuyen_dung",
+   "name": "Ứng viên phỏng vấn",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.bo_nhiem",
+   "parent": "tccb",
+   "name": "Bổ nhiệm lại viên chức",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.bo_nhiem.so_luong",
+   "parent": "tccb.bo_nhiem",
+   "name": "Hồ sơ bổ nhiệm lại viên chức",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.cong_tac",
+   "parent": "tccb",
+   "name": "Cử viên chức đi công tác/hội nghị",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.cong_tac.trong_nuoc",
+   "parent": "tccb.cong_tac",
+   "name": "Cử viên chức đi trong nước",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "parent": "tccb.cong_tac",
+   "name": "Cử viên chức đi nước ngoài",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.dao_tao",
+   "parent": "tccb",
+   "name": "Cử viên chức tham gia đào tạo, tập huấn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.dao_tao.trong_nuoc",
+   "parent": "tccb.dao_tao",
+   "name": "Đào tạo, tập huấn trong nước",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "parent": "tccb.dao_tao",
+   "name": "Đào tạo, tập huấn ngoài nước",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tham_dinh",
+   "parent": "tccb",
+   "name": "Thẩm định, chuyên gia gói thầu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tham_dinh.to_chuyen_gia",
+   "parent": "tccb.tham_dinh",
+   "name": "Tổ chuyên gia thành lập",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tham_dinh.to_tham_dinh",
+   "parent": "tccb.tham_dinh",
+   "name": "Tổ thẩm định thành lập",
+   "kind": "METRIC",
+   "unit": "tổ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tham_dinh.don_nguyen",
+   "parent": "tccb.tham_dinh",
+   "name": "Đơn nguyên thành lập",
+   "kind": "METRIC",
+   "unit": "đơn nguyên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tcct",
+   "parent": "tccb",
+   "name": "Kết luận thanh tra cán bộ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.tcct.cho_ket_luan",
+   "parent": "tccb.tcct",
+   "name": "Viên chức đang chờ Kết luận TCCT",
+   "kind": "METRIC",
+   "unit": "viên chức",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.ho_so_ghep_bo_phan",
+   "parent": "tccb",
+   "name": "Hội đồng tư vấn ghép bộ phận cơ thể",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "parent": "tccb.ho_so_ghep_bo_phan",
+   "name": "Cặp ghép gan họp HĐTV",
+   "kind": "METRIC",
+   "unit": "cặp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.cong_van",
+   "parent": "tccb",
+   "name": "Công văn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.cong_van.xin_y_kien_dia_phuong",
+   "parent": "tccb.cong_van",
+   "name": "CV soạn thảo xin ý kiến địa phương",
+   "kind": "METRIC",
+   "unit": "công văn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.ll58",
+   "parent": "tccb",
+   "name": "Tiếp nhận LL58",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "tccb.ll58.tiep_nhan",
+   "parent": "tccb.ll58",
+   "name": "LL58 tiếp nhận",
+   "kind": "METRIC",
+   "unit": "LL58",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Hồ sơ bổ nhiệm lại viên chức trong tháng 10/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ bổ nhiệm lại viên chức trong tháng 10/2025 và 12/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ bổ nhiệm lại viên chức trong tháng 12/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức bổ nhiệm lại tháng 10/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức bổ nhiệm lại tháng 10/2025 và 12/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Viên chức bổ nhiệm lại tháng 12/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức bổ nhiệm lại trong tháng 10/2025 và 12/2025",
+   "unit": "viên chức",
+   "code": "tccb.bo_nhiem.so_luong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Cử viên chức đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số viên chức cử đi nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số viên chức đi công tác nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Viên chức cử đi công tác nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức cử đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức đi công tác nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Viên chức đi công tác nước ngoài",
+   "unit": "người",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Viên chức đi tham quan, du lịch, hội nghị... nước ngoài",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cử viên chức đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Số viên chức cử đi trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số viên chức đi công tác trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Viên chức cử đi công tác trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức cử đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức đi công tác trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Viên chức đi công tác trong nước",
+   "unit": "người",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức đi tham quan, du lịch, hội nghị, hội thảo, hỗ trợ chuyên môn, chuyển giao kỹ thuật, giảng dạy, họp trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Viên chức đi tham quan, du lịch, hội nghị... trong nước",
+   "unit": "viên chức",
+   "code": "tccb.cong_tac.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Công văn soạn thảo gửi về địa phương xin ý kiến",
+   "unit": "Công văn",
+   "code": "tccb.cong_van.xin_y_kien_dia_phuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Soạn thảo công văn xin ý kiến",
+   "unit": "văn bản",
+   "code": "tccb.cong_van.xin_y_kien_dia_phuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số Công văn soạn thảo gửi về địa phương xin ý kiến",
+   "unit": "Công văn",
+   "code": "tccb.cong_van.xin_y_kien_dia_phuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử nhân viên chức tham gia chương trình đào tạo ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia chương trình đào tạo tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia chương trình đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia các chương trình đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia đào tạo ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ viên chức tham gia đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số viên chức tham gia đào tạo ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số viên chức tham gia đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức cử tham gia chương trình đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức tham gia chương trình đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Viên chức tham gia đào tạo ngoài nước",
+   "unit": "người",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức tham gia đào tạo ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức tham gia đào tạo, tập huấn ngoài nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.nuoc_ngoai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Hồ sơ cử nhân viên chức tham gia chương trình đào tạo trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia chương trình đào tạo tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia chương trình đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia các chương trình đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham gia đào tạo trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ viên chức tham gia đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số viên chức tham gia đào tạo trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số viên chức tham gia đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức cử tham gia chương trình đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức tham gia chương trình đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Viên chức tham gia đào tạo trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức tham gia đào tạo trong nước",
+   "unit": "người",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Viên chức tham gia đào tạo, tập huấn trong nước",
+   "unit": "viên chức",
+   "code": "tccb.dao_tao.trong_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Ca ghép gan trong tuần",
+   "unit": "cặp ghép gan",
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép gan tham gia họp Hội đồng tư vấn",
+   "unit": "cặp",
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Họp Hội đồng tư vấn ghép bộ phận cơ thể",
+   "unit": "cặp ghép gan",
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Họp Hội đồng tư vấn ghép bộ phận cơ thể",
+   "unit": "cặp",
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tham gia họp Hội đồng tư vấn lấy, ghép bộ phận cơ thể không tái sinh ở người sống",
+   "unit": "cặp ghép gan",
+   "code": "tccb.ho_so_ghep_bo_phan.cap_ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ kiểm tra thanh toán",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Hồ sơ thanh toán",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ thanh toán kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Hồ sơ thanh toán đã kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kiểm tra hồ sơ thanh toán",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số hồ sơ thanh toán kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.thanh_toan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ kiểm tra trình ký Ban Giám đốc",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Hồ sơ trình ký Ban Giám đốc",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Hồ sơ trình ký Ban Giám đốc kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Hồ sơ trình ký Ban Giám đốc đã kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kiểm tra hồ sơ trình ký Ban Giám đốc",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số hồ sơ trình ký Ban Giám đốc kiểm tra",
+   "unit": "hồ sơ",
+   "code": "tccb.kiem_tra_ho_so.trinh_ky_bgd",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "LL58 tiếp nhận được",
+   "unit": "LL58",
+   "code": "tccb.ll58.tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số LL58 tiếp nhận được",
+   "unit": "LL58",
+   "code": "tccb.ll58.tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận LL58",
+   "unit": "văn bản",
+   "code": "tccb.ll58.tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Cơ sở 2",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.co_so_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Khoa KSKTYC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.khoa_ksktyc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng CNTT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_cntt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng CNTT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_cntt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng CNTT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_cntt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng CNTT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_cntt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng CTXH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_ctxh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng Điều dưỡng",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng Điều dưỡng",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng Điều dưỡng",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng Điều dưỡng",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng HC",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_hc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng KH&ĐT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_kh_dt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng KHTH",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_khth",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng QLCL",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qlcl",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng QTTN",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_qttn",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng TCCB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số hồ sơ soát xét pháp lý trình ký",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tccb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng TCKT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_tckt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét - Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Phòng VTTB",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.phong_vttb",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ pháp lý đã soát xét - Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký Trung tâm TT",
+   "unit": "hồ sơ",
+   "code": "tccb.soat_xet_phap_ly.trung_tam_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức chờ kết luận TCCT",
+   "unit": "viên chức",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức chờ kết luận TCCT",
+   "unit": "VC",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức đang chờ Kết luận TCCT cấp ủy có thẩm quyền",
+   "unit": "viên chức",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Viên chức đang chờ Kết luận TCCT cấp ủy có thẩm quyền",
+   "unit": "VC",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Viên chức đang chờ kết luận TCCT",
+   "unit": "viên chức",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức đang chờ kết luận TCCT",
+   "unit": "VC",
+   "code": "tccb.tcct.cho_ket_luan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Đơn nguyên thành lập",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Đơn nguyên trình Hội đồng thành lập",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn nguyên",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn nguyên thành lập",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Đơn nguyên trình Hội đồng thành lập",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn nguyên xin phê duyệt chủ trương thành lập",
+   "unit": "Đơn nguyên",
+   "code": "tccb.tham_dinh.don_nguyen",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ chuyên gia",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_chuyen_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ chuyên gia thành lập",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_chuyen_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Tổ chuyên gia về công tác đấu thầu",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_chuyen_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổ chuyên môn thành lập",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_chuyen_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổ thẩm định của các gói thầu",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_tham_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ thẩm định thành lập",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_tham_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tổ thẩm định về công tác đấu thầu",
+   "unit": "Tổ",
+   "code": "tccb.tham_dinh.to_tham_dinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ứng viên tổng hợp phỏng vấn",
+   "unit": "ứng viên",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng hợp phỏng vấn ứng viên",
+   "unit": "ứng viên",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên phỏng vấn",
+   "unit": "người",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Ứng viên phỏng vấn",
+   "unit": "ứng viên",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Ứng viên phỏng vấn tổng hợp",
+   "unit": "ứng viên",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên tổng hợp phỏng vấn",
+   "unit": "ứng viên",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Ứng viên tổng hợp phỏng vấn",
+   "unit": "người",
+   "code": "tccb.tuyen_dung.uv_phong_van",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ban Giám sát kỳ xét thăng hạng chức danh nghề nghiệp viên chức từ hạng III lên hạng II năm 2025 thành lập",
+   "unit": "Ban",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ban Tổ chức Hội nghị khoa học Liver summit 2026 thành lập",
+   "unit": "Ban",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ban Xét duyệt các dấu ấn, sự kiện nổi bật của Bệnh viện Đại học Y Dược TP. Hồ Chí Minh trong năm 2025 thành lập",
+   "unit": "Ban",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hội đồng chuyên môn xem xét quá trình điều trị người bệnh Nguyễn Thị Mai thành lập",
+   "unit": "Hội đồng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hội đồng chuyên môn xem xét quá trình điều trị người bệnh Nguyễn Văn Việt thành lập",
+   "unit": "Hội đồng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hội đồng xét thăng hạng chức danh nghề nghiệp viên chức từ hạng III lên hạng II năm 2025 thành lập",
+   "unit": "Hội đồng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lần chiến sĩ thi đua cơ sở xét tặng",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "MOU ký với trường ĐH Trung Quốc",
+   "unit": "MOU",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Mạng lưới Chăm sóc sức khỏe tâm thần cho viên chức, người lao động thành lập",
+   "unit": "Mạng lưới",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân sự tham gia chương trình tập huấn Tư vấn, truyền thông và giáo dục sức khỏe",
+   "unit": "nhân sự",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy chế Xét tặng danh hiệu bác sĩ tiêu biểu năm và trọn đời",
+   "unit": "quy chế",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy chế Xét tặng danh hiệu điều dưỡng, hộ sinh, kỹ thuật y tiêu biểu năm và trọn đời",
+   "unit": "quy chế",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy chế tổng ý kiến góp ý Hội đồng thẩm định",
+   "unit": "quy chế",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Ban Xây dựng và Phát triển Văn hóa Tử tế thành lập",
+   "unit": "Ban",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số dự thảo quy chế tổng hợp ý kiến",
+   "unit": "dự thảo",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số liệu sơ kết vận hành chính quyền địa phương 02 cấp",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian chiến dịch làm sạch, làm giàu, chuẩn hóa dữ liệu",
+   "unit": "ngày đêm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ cập nhật nội dung kiểm toán Phòng Mổ lầu 2 khu A",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiến độ kiểm toán nội bộ chuyên đề kiểm soát tuân thủ quy trình, quy định trong thực hiện phẫu thuật/thủ thuật",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổ Chuẩn hóa dữ liệu thuộc phần mềm Quản lý tài sản của Bệnh viện Đại học Y Dược TP. Hồ Chí Minh giải thể",
+   "unit": "Tổ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổ chuyên và Tổ thẩm định của các gói thầu thành lập",
+   "unit": "Tổ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Đoàn Kiểm tra đánh giá nội bộ chất lượng bệnh viện 06 tháng cuối năm 2025",
+   "unit": "Đoàn",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ca ghép thận tham gia họp hội đồng tư vấn",
+   "unit": "ca",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép thận",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép thận tham gia họp Hội đồng tư vấn",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cặp ghép thận tham gia họp Hội đồng tư vấn",
+   "unit": "cặp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép thận tham gia họp Hội đồng tư vấn lấy, ghép bộ phận cơ thể không tái sinh ở người sống",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép thận tham vấn",
+   "unit": "cặp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cặp ghép thận tham vấn",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giấy xác nhận thời gian hành nghề/cho là việc ngoài giờ",
+   "unit": "Giấy XN",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ Bằng khen Bộ Y tế trình",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ nhân sự nhận việc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý soát xét",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký Phòng BHYT",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ pháp lý trình ký tổng",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Cơ sở 3",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Khoa Dược",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Khoa GPB",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Khoa Thần kinh",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ soát xét pháp lý trình ký - Phòng BHYT",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý Phòng BHYT",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ xét pháp lý trình ký - Cơ sở 3",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đề nghị xét tặng danh hiệu Thầy thuốc Nhân dân, Thầy thuốc Ưu tú lần thứ 15 - năm 2027",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ký hợp đồng CTV TTG Bác sĩ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ký hợp đồng CTV TTG Hành chính",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân sự trúng tuyển viên chức năm 2025 trình hợp đồng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân sự trúng tuyển viên chức năm 2025 trình hợp đồng làm việc",
+   "unit": "nhân sự",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân sự trúng tuyển viên chức năm 2025 trình quyết định bổ nhiệm chức danh nghề nghiệp",
+   "unit": "nhân sự",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân sự điều chỉnh chức danh nghề nghiệp",
+   "unit": "nhân sự",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy chế góp ý ý kiến",
+   "unit": "quy chế",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Cơ sở 3",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký - Phòng BHYT",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét pháp lý hồ sơ trình ký Khoa Nội tiết",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Bác sĩ ký hợp đồng CTG TTG",
+   "unit": "Bác sĩ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Hành chính ký hợp đồng CTG TTG",
+   "unit": "Hành chính",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Tổ chuyên gia và Tổ thẩm định thành lập",
+   "unit": "Tổ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số cặp ghép thận tham gia Hội đồng tư vấn",
+   "unit": "cặp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cặp ghép thận tham gia họp Hội đồng tư vấn",
+   "unit": "cặp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ pháp lý trình ký",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét pháp lý",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hợp đồng CTV BTG CS1",
+   "unit": "hợp đồng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hợp đồng CTV BTG CS2",
+   "unit": "Hợp đồng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hợp đồng CTV BTG CS3",
+   "unit": "hợp đồng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt thông báo chấm dứt hợp đồng",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt đăng ký thay đổi thời gian hành nghề",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sốt xét pháp lý hồ sơ trình ký",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tham gia họp Hội đồng tư vấn lấy, ghép bộ phận cơ thể không tái sinh ở người sống",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tham gia họp Hội đồng tư vấn lấy, ghép bộ phận cơ thể không tái sinh ở người sống - Cặp ghép thận",
+   "unit": "cặp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tham gia họp Hội đồng tư vấn lấy, ghép bộ phận cơ thể không tái sinh ở người sống - cặp ghép thận",
+   "unit": "cặp ghép thận",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tham gia tư vấn vụ phản ánh",
+   "unit": "vụ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thông báo chấm dứt hợp đồng",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kiểm toán nội bộ chuyên đề kiểm soát tuân thủ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kiểm toán nội bộ tại Phòng Mổ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ kiểm toán nội bộ với Khoa GMHS (phòng mổ lầu 2) lần 01",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ đạt kiểm toán nội bộ chuyên đề kiểm soát tuân thủ",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ đạt kiểm toán nội bộ chuyên đề kiểm soát tuân thủ quy trình thực hiện phẫu thuật/thủ thuật",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiến độ đạt được kiểm toán nội bộ chuyên đề",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tái ký hợp đồng CTV BTG",
+   "unit": "hợp đồng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổ chuyên gia và Tổ thẩm định của các gói thầu thành lập",
+   "unit": "Tổ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Tổ chuyên gia và Tổ thẩm định thành lập",
+   "unit": "Tổ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổ chuyên gia và Tổ thẩm định thành lập",
+   "unit": "tổ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổ chuyên gia và Tổ thẩm định về công tác đấu thầu thành lập",
+   "unit": "Tổ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ viên chức ĐHYD làm việc tại Bệnh viện",
+   "unit": "%",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "VC-NLĐ tham gia cuộc thi tìm hiểu pháp luật",
+   "unit": "VC-NLĐ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức cử dự thi Sau đại học",
+   "unit": "viên chức",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức quản lý tham dự Chương trình đào tạo Quản trị tài chính dành cho viên chức quản lý - Lớp 1",
+   "unit": "viên chức",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức quản lý tham gia Buổi nói chuyện chuyên đề Tối ưu thuế thu nhập cá nhân",
+   "unit": "viên chức quản lý",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức quản lý tham gia chương trình đào tạo Kỹ năng xây dựng đề án",
+   "unit": "viên chức quản lý",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức tham gia Chuyên đề 2 - lớp 1",
+   "unit": "viên chức",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ kiện",
+   "unit": "vụ kiện",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vụ kiện tham dự tại Tòa",
+   "unit": "vụ kiện",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đăng ký hành nghề thay đổi",
+   "unit": "lượt",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn thư tư vấn giải quyết",
+   "unit": "đơn thư",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đơn thư xử lý",
+   "unit": "đơn",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

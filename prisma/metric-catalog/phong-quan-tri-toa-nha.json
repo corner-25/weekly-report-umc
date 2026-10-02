@@ -1,0 +1,4326 @@
+{
+ "department": "Phòng Quản trị Tòa nhà",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 4.3%.",
+ "nodes": [
+  {
+   "code": "qttn",
+   "parent": null,
+   "name": "Phòng Quản trị Tòa nhà",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.de_nghi",
+   "parent": "qttn",
+   "name": "Đề nghị Khoa/Phòng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.de_nghi.tiep_nhan",
+   "parent": "qttn.de_nghi",
+   "name": "Đề nghị tiếp nhận",
+   "kind": "METRIC",
+   "unit": "đề nghị",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.de_nghi.hoan_thanh",
+   "parent": "qttn.de_nghi",
+   "name": "Đề nghị hoàn thành",
+   "kind": "METRIC",
+   "unit": "đề nghị",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.dau_thau",
+   "parent": "qttn",
+   "name": "Hồ sơ đấu thầu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.dau_thau.dang_thuc_hien",
+   "parent": "qttn.dau_thau",
+   "name": "Hồ sơ đang thực hiện",
+   "kind": "METRIC",
+   "unit": "bộ",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.dau_thau.hoan_thanh",
+   "parent": "qttn.dau_thau",
+   "name": "Hồ sơ hoàn thành",
+   "kind": "METRIC",
+   "unit": "bộ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat",
+   "parent": "qttn",
+   "name": "Kiểm soát an ninh & Môi trường",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.tai_san_ra_vao_cong",
+   "parent": "qttn.kiem_soat",
+   "name": "Kiểm soát tài sản ra vào cổng",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.nhac_nho_hut_thuoc",
+   "parent": "qttn.kiem_soat",
+   "name": "Nhắc nhở hút thuốc lá",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.binh_chua_chay",
+   "parent": "qttn.kiem_soat",
+   "name": "Kiểm tra bình chữa cháy",
+   "kind": "METRIC",
+   "unit": "bình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "parent": "qttn.kiem_soat",
+   "name": "Bàn giao tài sản bỏ quên",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac",
+   "parent": "qttn.kiem_soat",
+   "name": "Rác phát sinh & chuyển giao",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac.lay_nhiem",
+   "parent": "qttn.kiem_soat.rac",
+   "name": "Rác lây nhiễm",
+   "kind": "METRIC",
+   "unit": "kg",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac.nguy_hai",
+   "parent": "qttn.kiem_soat.rac",
+   "name": "Rác nguy hại",
+   "kind": "METRIC",
+   "unit": "kg",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac.giay",
+   "parent": "qttn.kiem_soat.rac",
+   "name": "Rác giấy",
+   "kind": "METRIC",
+   "unit": "kg",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac.nhua",
+   "parent": "qttn.kiem_soat.rac",
+   "name": "Rác nhựa",
+   "kind": "METRIC",
+   "unit": "kg",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.kiem_soat.rac.sinh_hoat",
+   "parent": "qttn.kiem_soat.rac",
+   "name": "Rác sinh hoạt",
+   "kind": "METRIC",
+   "unit": "kg",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua",
+   "parent": "qttn",
+   "name": "Sửa chữa & Bảo trì nội thất",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tong_dien",
+   "parent": "qttn.sua_chua",
+   "name": "Sửa chữa tiếp nhận qua điện thoại",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.ghe_inox",
+   "parent": "qttn.sua_chua",
+   "name": "Sửa chữa ghế inox",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.ghe_inox.bang_ghe",
+   "parent": "qttn.sua_chua.ghe_inox",
+   "name": "Hàn băng ghế inox",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.ghe_inox.ghe_xep",
+   "parent": "qttn.sua_chua.ghe_inox",
+   "name": "Hàn ghế xếp inox",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop",
+   "parent": "qttn.sua_chua",
+   "name": "Sửa chữa gạch bộp",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Tầng trệt khu B",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_a",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Tầng trệt khu A",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.ham_2",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Hầm 2",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_1",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 1",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 1 khu A",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_5",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 5",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_9",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 9",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_10",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 10",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_11",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 11",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_12",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 12",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_12_khu_a",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 12 khu A",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.gach_bop.lau_13",
+   "parent": "qttn.sua_chua.gach_bop",
+   "name": "Lầu 13",
+   "kind": "METRIC",
+   "unit": "viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran",
+   "parent": "qttn.sua_chua",
+   "name": "Thay thế tấm trần",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.tang_tret_khu_b",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Tầng trệt khu B",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.tang_tret_lau_1_khu_b",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Tầng trệt & Lầu 1 khu B",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_1_khu_b",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 1 khu B",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_5_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 5 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_7",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 7",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_7_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 7 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_8_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 8 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_9",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 9",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_9_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 9 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_10_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 10 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_11",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 11",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_11_khu_a",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 11 khu A",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_12",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 12",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.tam_tran.lau_13",
+   "parent": "qttn.sua_chua.tam_tran",
+   "name": "Lầu 13",
+   "kind": "METRIC",
+   "unit": "tấm",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh",
+   "parent": "qttn.sua_chua",
+   "name": "Chà ron nhà vệ sinh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_7",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 7",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_8",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 8",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_9",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 9",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_10",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 10",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_11",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 11",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_12",
+   "parent": "qttn.sua_chua.nha_ve_sinh",
+   "name": "Lầu 12",
+   "kind": "METRIC",
+   "unit": "phòng",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach",
+   "parent": "qttn.sua_chua",
+   "name": "Ốp vách compact",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.lau_1",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Lầu 1",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.lau_8",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Lầu 8",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.lau_9",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Lầu 9",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.lau_10",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Lầu 10",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.lau_13",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Lầu 13",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.khu_cssd_lau_3",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Khu CSSD lầu 3",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Khu phẫu thuật trong ngày lầu 6",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
+   "parent": "qttn.sua_chua.op_vach",
+   "name": "Khu phẫu thuật trong ngày lầu 6 khu A",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son",
+   "parent": "qttn.sua_chua",
+   "name": "Sơn tường & Cửa",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.tuong",
+   "parent": "qttn.sua_chua.son",
+   "name": "Sơn tường",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.tuong.tang_tret_khu_b",
+   "parent": "qttn.sua_chua.son.tuong",
+   "name": "Tầng trệt khu B",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.tuong.lau_1_khu_b",
+   "parent": "qttn.sua_chua.son.tuong",
+   "name": "Lầu 1 khu B",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.tuong.lau_2_khu_b",
+   "parent": "qttn.sua_chua.son.tuong",
+   "name": "Lầu 2 khu B",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
+   "parent": "qttn.sua_chua.son.tuong",
+   "name": "Khu CSSD lầu 3",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "parent": "qttn.sua_chua.son",
+   "name": "Sơn cánh cửa phòng bệnh",
+   "kind": "METRIC",
+   "unit": "cánh",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.lap_dat",
+   "parent": "qttn.sua_chua",
+   "name": "Lắp đặt nội thất",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.lap_dat.cua_nha_ve_sinh",
+   "parent": "qttn.sua_chua.lap_dat",
+   "name": "Cửa nhà vệ sinh lầu 14",
+   "kind": "METRIC",
+   "unit": "cánh",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
+   "parent": "qttn.sua_chua.lap_dat",
+   "name": "Vách gỗ cửa phòng bệnh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
+   "parent": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
+   "name": "Lầu 10",
+   "kind": "METRIC",
+   "unit": "vách",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
+   "parent": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
+   "name": "Lầu 13",
+   "kind": "METRIC",
+   "unit": "vách",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.thanh_chong_va_dap",
+   "parent": "qttn.sua_chua",
+   "name": "Thanh chống va đập",
+   "kind": "METRIC",
+   "unit": "m",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.quat_hoi_nuoc",
+   "parent": "qttn.sua_chua",
+   "name": "Châm nước quạt hơi nước",
+   "kind": "METRIC",
+   "unit": "can",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat",
+   "parent": "qttn",
+   "name": "Giám sát nhà thầu",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh",
+   "parent": "qttn.giam_sat",
+   "name": "Giám sát vệ sinh máy lạnh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Máy lạnh FCU",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Máy lạnh AHU",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Máy lạnh treo tường",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Miệng gió",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Quạt hút",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_chan_gio",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Quạt chắn gió",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hoi_nuoc",
+   "parent": "qttn.giam_sat.ve_sinh_may_lanh",
+   "name": "Quạt hơi nước",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.cay_xanh",
+   "parent": "qttn",
+   "name": "Chăm sóc cây xanh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.cay_xanh.vuon_dung",
+   "parent": "qttn.cay_xanh",
+   "name": "Cây vườn đứng",
+   "kind": "METRIC",
+   "unit": "chậu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.cay_xanh.trong_nha",
+   "parent": "qttn.cay_xanh",
+   "name": "Cây trong nhà",
+   "kind": "METRIC",
+   "unit": "chậu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.cay_xanh.tong",
+   "parent": "qttn.cay_xanh",
+   "name": "Tổng chăm sóc cây xanh",
+   "kind": "METRIC",
+   "unit": "chậu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Chăm sóc cây xanh cắt tỉa tưới cây",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh cắt tỉa, tưới cây",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh trong Bệnh viện",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chăm sóc cây xanh trong Bệnh viện tưới cây",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh trong và ngoài trời",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh tưới cây",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trồng cây xanh",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.tong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển cành cây lầu 4 xuống cổng Tản Đà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển cây mới lên lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển cây phòng BGĐ ra ngoài",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển cây xanh lên lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển cây xanh xuống hầm 1",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuyển hoa lan tầng trệt ra ngoài",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh chuyển hoa lan bên ngoài về Bệnh viện",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh chậu trệt A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh cắt tỉa cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh cắt tỉa tưới cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chăm sóc cây xanh rửa lá cây trệt A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh thay cây lầu 1 và lầu 3 khu A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh thay cây lầu 4A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Cắt tỉa cây trong chậu chuẩn bị thay cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cắt tỉa cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Cắt tỉa tưới cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Cắt tỉa, tưới cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Dọn lan trệt A đi bỏ",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Rửa lá cây lầu 4A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chậu cây mang từ lầu 12,13,14 ra ngoài rửa lá",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chậu cây trong nhà cắt tỉa tưới",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây Lầu 1 và trệt A",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây Lầu 2B",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây chậu nhỏ từ lầu 1-3",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây hầm 1",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây hầm B2",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 1",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 1 khu A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 11",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 14",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 1A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây mới hầm 1",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây mới lầu 10,12,13,14",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây mới lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây mới trong nhà từ hầm 1 - lầu 14",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây mới tầng trệt, lầu 1, lầu 2",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây nhỏ trệt A",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây phòng BGĐ",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây trong nhà khu A, B",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây trong nhà tại tầng trệt và lầu 1 khu A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây trệt A",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trồng cây xanh lầu 4 và trên tháp thông gió",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tưới cây trong nhà",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh cây Lầu 1B",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh cây lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh lá cây lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh lá cây trệt A",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh rửa lá cây lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đưa cây hành lang lầu 4 ra ngoài dưỡng",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đưa cây lầu 4 ra ngoài",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đưa cây mới lên lầu 12",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đưa cây mới vào lầu 14 khoa Thần kinh",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đưa cây vào lầu 4",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.trong_nha",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây vườn đứng",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh cắt tỉa cây vườn đứng",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chăm sóc cây xanh tháp thông gió và đường Hồng Bàng - Tản Đà",
+   "unit": "m²",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chăm sóc cây xanh vườn đứng",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Cắt tỉa cây vườn đứng",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Cắt tỉa cây vườn đứng",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chậu cây vườn đứng cắt tỉa",
+   "unit": "chậu",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây vườn đứng",
+   "unit": "cây",
+   "code": "qttn.cay_xanh.vuon_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đấu thầu đang thực hiện",
+   "unit": "bộ",
+   "code": "qttn.dau_thau.dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số bộ hồ sơ đấu thầu đang thực hiện",
+   "unit": "bộ",
+   "code": "qttn.dau_thau.dang_thuc_hien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đấu thầu hoàn thành",
+   "unit": "bộ",
+   "code": "qttn.dau_thau.hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Số bộ hồ sơ đấu thầu hoàn thành",
+   "unit": "bộ",
+   "code": "qttn.dau_thau.hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đề nghị của các Khoa/Phòng hoàn thành",
+   "unit": "đề nghị",
+   "code": "qttn.de_nghi.hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị của các Khoa/Phòng hoàn thành",
+   "unit": "đề nghị",
+   "code": "qttn.de_nghi.hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số đề nghị của các Khoa/Phòng tiếp nhận",
+   "unit": "đề nghị",
+   "code": "qttn.de_nghi.tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị của các Khoa/Phòng tiếp nhận",
+   "unit": "đề nghị",
+   "code": "qttn.de_nghi.tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh AHU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát vệ sinh AHU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh AHU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh AHU (lần 2)",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh lọc thô và thay mới lọc túi AHU",
+   "unit": "AHU",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.ahu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh FCU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát vệ sinh FCU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh FCU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh FCu",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy lạnh FCU giám sát vệ sinh",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh máy lạnh FCU",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Vệ sinh máy lạnh tủ đứng",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.fcu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh miệng gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh miệng gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Giám sát vệ sinh miệng gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh",
+   "unit": "miệng gió",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh miệng gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.mieng_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh quạt chắn gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_chan_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh quạt chắn gió",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_chan_gio",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh quạt hơi nước",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh quạt hơi nước",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh quạt hơi nước",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát vệ sinh quạt hơi nước",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh quạt hút",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh quạt hút",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Giám sát vệ sinh quạt hút",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số quạt hút giám sát vệ sinh",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh quạt hút",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.quat_hut",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh máy treo",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh máy treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy lạnh treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh máy treo",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh máy treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh treo",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Giám sát vệ sinh máy treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy lạnh treo tường giám sát vệ sinh",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh máy lạnh treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Vệ sinh máy treo tường",
+   "unit": "cái",
+   "code": "qttn.giam_sat.ve_sinh_may_lanh.treo_tuong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bàn giao cho người bệnh",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bàn giao tài sản",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Bàn giao tài sản bỏ quên",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Bàn giao tài sản bỏ quên cho người bệnh",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bàn giao tài sản cho người bệnh",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bàn giao tài sản người bệnh để quên",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Bàn giao tài sản để quên cho người bệnh",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.ban_giao_tai_san",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kiểm tra định kì bình chữa cháy",
+   "unit": "bình",
+   "code": "qttn.kiem_soat.binh_chua_chay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kiểm tra định kỳ bình chữa cháy",
+   "unit": "bình",
+   "code": "qttn.kiem_soat.binh_chua_chay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Kiểm tra nhắc nhở hút thuốc lá",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.nhac_nho_hut_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số trường hợp kiểm tra nhắc nhở hút thuốc lá",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.nhac_nho_hut_thuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác giấy phát sinh và chuyển giao",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 27
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao Giấy",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao giấy",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.giay",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác lây nhiễm phát sinh và chuyển giao",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.lay_nhiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 30
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao Lây nhiễm",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.lay_nhiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao lây nhiễm",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.lay_nhiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác nguy hại phát sinh và chuyển giao",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.nguy_hai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao Nguy hại",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.nguy_hai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao nguy hại",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.nguy_hai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác nhựa phát sinh và chuyển giao",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.nhua",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Khối lượng rác phát sinh và chuyển giao Nhựa",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.nhua",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khối lượng rác sinh hoạt phát sinh và chuyển giao",
+   "unit": "kg",
+   "code": "qttn.kiem_soat.rac.sinh_hoat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Kiểm soát tài sản ra vào cổng",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.tai_san_ra_vao_cong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số trường hợp kiểm soát tài sản ra vào cổng",
+   "unit": "trường hợp",
+   "code": "qttn.kiem_soat.tai_san_ra_vao_cong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp hầm 2",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.ham_2",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 1",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 10",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_10",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 11",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_11",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 12",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_12",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 12 khu A",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_12_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 13",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Sửa chữa gạch bộp đường nội bộ lầu 13",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gạch bộp sửa chữa lầu 1 khu A",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 1 khu A",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 5",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_5",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 9",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_9",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Sửa chữa gạch bộp đường nội bộ lầu 9",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.lau_9",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp tầng trệt khu A",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số gạch bộp sửa chữa tầng trệt khu B",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp tầng trệt khu B",
+   "unit": "viên",
+   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Hàn băng ghế inox",
+   "unit": "cái",
+   "code": "qttn.sua_chua.ghe_inox.bang_ghe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Số băng ghế inox sửa chữa",
+   "unit": "băng ghế",
+   "code": "qttn.sua_chua.ghe_inox.bang_ghe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa băng ghế inox",
+   "unit": "cái",
+   "code": "qttn.sua_chua.ghe_inox.bang_ghe",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hàn ghế xếp inox",
+   "unit": "cái",
+   "code": "qttn.sua_chua.ghe_inox.ghe_xep",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 14",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.lap_dat.cua_nha_ve_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh phòng bệnh lầu 14",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.lap_dat.cua_nha_ve_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 10",
+   "unit": "vách",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 11",
+   "unit": "vách",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 12",
+   "unit": "vách",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 13",
+   "unit": "vách",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 10",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_10",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 11",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_11",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 12",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_12",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 7",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_7",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 8",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_8",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 9",
+   "unit": "phòng",
+   "code": "qttn.sua_chua.nha_ve_sinh.lau_9",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Ốp vách compact khu CSSD lầu 3",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.khu_cssd_lau_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Vách kính khung inox khu phẫu thuật trong ngày lầu 6",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu phẫu thuật trong ngày lầu 6",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Vách compact khu phẫu thuật trong ngày lầu 6 khu A",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ốp vách compact khu phẫu thuật trong ngày lầu 6 khu A",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 1",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.lau_1",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 10",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.lau_10",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 13",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 8",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.lau_8",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 9",
+   "unit": "m²",
+   "code": "qttn.sua_chua.op_vach.lau_9",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Châm nước cho quạt",
+   "unit": "can",
+   "code": "qttn.sua_chua.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Châm nước cho quạt hơi nước",
+   "unit": "can",
+   "code": "qttn.sua_chua.quat_hoi_nuoc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Sơn cánh cửa đi phòng bệnh lầu 11",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi PK 94-96 khu B",
+   "unit": "bộ",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 10",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 11",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 12",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 8",
+   "unit": "cánh",
+   "code": "qttn.sua_chua.son.cua_phong_benh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy khu CSSD lầu 3",
+   "unit": "m²",
+   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sơn tường epoxy khu CSSD lầu 3",
+   "unit": "m2",
+   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường lầu 1 khu B",
+   "unit": "m²",
+   "code": "qttn.sua_chua.son.tuong.lau_1_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Sơn tường lầu 2 khu B",
+   "unit": "m²",
+   "code": "qttn.sua_chua.son.tuong.lau_2_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Sơn tường tầng trệt khu B",
+   "unit": "m²",
+   "code": "qttn.sua_chua.son.tuong.tang_tret_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Thay thế tấm trần lầu 10 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_10_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số tấm trần thay thế lầu 11",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_11",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 11",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_11",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Thay thế tấm trần lầu 11 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_11_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Thay thế tấm trần lầu 12",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_12",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Thay thế tấm trần lầu 13",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_13",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Thay thế tấm trần lầu 1 khu B",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_1_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Thay thế tấm trần lầu 5 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_5_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số tấm trần thay thế lầu 7",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_7",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 7",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_7",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Thay thế tấm trần lầu 7 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_7_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Thay thế tấm trần lầu 8 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_8_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Thay thế tấm trần lầu 9",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_9",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Thay thế tấm trần lầu 9 khu A",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.lau_9_khu_a",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Thay thế tấm trần tầng trệt khu B",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.tang_tret_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Thay thế tấm trần tầng trệt, lầu 1 khu B",
+   "unit": "tấm",
+   "code": "qttn.sua_chua.tam_tran.tang_tret_lau_1_khu_b",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Thanh chống va đập khu CSSD lầu 3",
+   "unit": "m",
+   "code": "qttn.sua_chua.thanh_chong_va_dap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Thanh chống va đập khu phẫu thuật trong ngày lầu 6",
+   "unit": "m",
+   "code": "qttn.sua_chua.thanh_chong_va_dap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thanh chống va đập phòng cấp phát lầu 2 khu A",
+   "unit": "m",
+   "code": "qttn.sua_chua.thanh_chong_va_dap",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số công việc sửa chữa tiếp nhận qua điện thoại",
+   "unit": "công việc",
+   "code": "qttn.sua_chua.tong_dien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng sửa chữa tiếp nhận qua điện thoại",
+   "unit": "công việc",
+   "code": "qttn.sua_chua.tong_dien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa tiếp nhận qua điện thoại",
+   "unit": "công việc",
+   "code": "qttn.sua_chua.tong_dien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Bàn giao đối tượng trộm tài sản cho Công an Phường Chợ Lớn",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuẩn bị thay cây mới trong nhà",
+   "unit": "chậu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cấp chậu hoa phòng QTTN B2",
+   "unit": "chậu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cắt tỉa cây hồng lộc trên tháp thông gió",
+   "unit": "cây",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Cắt tỉa cây trong và ngoài",
+   "unit": "chậu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hoàn thiện trạm chia hệ thống chuyển mẫu chân không",
+   "unit": "trạm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn PCCC cho nhân viên bếp mới",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn an toàn PCCC cho nhân viên nhà thầu bếp nội viện mới",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp bộ lọc 0.2 cho nguồn nước máy nội soi lầu 6 và lầu 1",
+   "unit": "bộ lọc",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp bộ lọc cho nguồn nước máy nội soi lầu 6 và lầu 1",
+   "unit": "bộ lọc",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp cửa trượt tự động khu phẫu thuật trong ngày lầu 6",
+   "unit": "bộ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp cửa trượt tự động phòng khám lầu 14",
+   "unit": "bộ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền trong ví nữ bàn giao",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bả và sơn tường phòng khám Hóa trị hầm 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bả, sơn epoxy phòng 5, 6, 7, 8 lầu 12",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bả, sơn tường lầu 1, lầu 2 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bả, sơn tường lầu 3, lầu 4 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 13",
+   "unit": "phòng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Chà ron nhà vệ sinh lầu 2",
+   "unit": "phòng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chống thấm, ốp gạch tường nhà vệ sinh khu cấp cứu mới",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cấp cây lầu 10",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cấp cây lầu 8",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cấp cây lầu 9",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cắt cỏ sân vườn lầu 4",
+   "unit": "cây",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Cắt tỉa cây sanh sân vườn lầu 4",
+   "unit": "cây",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích sơn tường epoxy nội soi lầu 6 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích ốp vách compact hành lang lầu 2 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Dán nền sàn vinyl khu cấp cứu mới",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát bảo trì đợt 1 chiller",
+   "unit": "chiller",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu hút bùn thải",
+   "unit": "m3",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu hút bùn thải khu A",
+   "unit": "m³",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu hút bùn thải khu B",
+   "unit": "m³",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu thay máy lạnh",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu thay van cổng DN20",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát nhà thầu thay van điện từ FCU",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát nhà thầu vệ sinh máy tủ đứng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay bộ máy lạnh",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay lọc đèn máy nước uống",
+   "unit": "máy",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay lọc đèn vị trí chậu rửa tay thủ thuật",
+   "unit": "vị trí",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay lọc đèn vị trí nguồn nước vô khuẩn",
+   "unit": "vị trí",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay van điện từ FCU",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát thay ổ bi căng lại toàn bộ dây đai AHU",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh dàn nóng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh lọc bụi bãi xe",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy CTH",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh CTH",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy lạnh giấu trần",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh máy tủ đứng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh máy âm trần",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giám sát vệ sinh tủ đứng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giám sát vệ sinh định kỳ tháp giải nhiệt",
+   "unit": "tháp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hàn ghế tròn inox",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Kiểm tra định kỳ máy nước uống",
+   "unit": "máy",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Kiểm tra định kỳ nguồn nước vô khuẩn",
+   "unit": "vị trí",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lát gạch nền phòng khám Hóa trị hầm 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lát gạch nền phòng điều khiển hầm 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp máy nội soi đi đường cấp thoát lầu 6",
+   "unit": "máy",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp vách kính khung inox lầu 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp vách kính khung inox tầng trệt khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp ô kính cho cửa đi phòng thủ thuật lầu 2",
+   "unit": "ô kính",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đèn Exit cho trục thang bộ",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đèn sảnh thang lầu 10,11,12,13,14",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 10",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 11",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 12",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 13",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 2",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 6",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 7",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 8",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh lầu 9",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lắp đặt cánh cửa nhựa composite nhà vệ sinh phòng bệnh lầu 13",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt cửa lùa phòng khám Hóa trị hầm 1 khu A",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt tay vịn inox cầu thang bộ từ lầu 3 đến lầu 8",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt tay vịn inox cầu thang bộ từ lầu 8 đến lầu 14",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt tay vịn nox cầu thang bộ trung tâm từ lầu 6 - lầu 7",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt trần phòng khám Hóa trị hầm 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt tủ châm hoá chất xử lý nước tháp giải nhiệt",
+   "unit": "tủ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lắp đặt đèn Exit trục thang bộ giữa và trục thang bộ phía thang E8",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới chậu xi măng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới cây",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới cây các loại",
+   "unit": "cây",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới cây mới và trồng ngoài đường Hồng Bàng",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới phân bón",
+   "unit": "kg",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhập mới đất trồng",
+   "unit": "bao",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Rót vữa sika grout nhà vệ sinh 205 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn cánh cửa đi phòng bệnh lầu 8",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn cánh cửa đi phòng bệnh lầu 9",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sơn cửa đi lầu 12",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn cửa đi lầu 7",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn cửa đi tầng trệt",
+   "unit": "bộ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn epoxy trần tròn sảnh tầng trệt",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 7",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn khung cánh cửa đi phòng bệnh lầu 9",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn khung cửa đi nhà vệ sinh phòng bệnh lầu 11",
+   "unit": "khung",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn khung cửa đi nhà vệ sinh phòng bệnh lầu 8",
+   "unit": "khung",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy khu DSA lầu 6",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy khu phòng mổ 1-2 lầu 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy khu phẫu thuật trong ngày",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy khu phẫu thuật trong ngày lầu 6",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy lầu 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn tường epoxy phòng 21 lầu 7",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy phòng 21 lầu 7 khu A",
+   "unit": "m2",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường epoxy phòng khám TMH lầu 1",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sơn tường epoxy phòng mổ lầu 4 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 10",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 11",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 12",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 13",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 14",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 7",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 8",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường hành lang lầu 9",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu Cấp cứu tầng trệt",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu hành lang khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu phòng khám 1- 5",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu phòng khám 5-10",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu phòng khám TMH lầu 1",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu quầy điều dưỡng lầu 9A khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường khu thang máy E9 từ lầu 3 - 14",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường lầu 3 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường lầu 9 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sơn tường phòng điều khiển hầm 2 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chậu cây thay trệt A",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cánh cửa nhựa composite lắp đặt hầm 1",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cánh cửa nhựa composite lắp đặt hầm 2",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số cánh cửa nhựa composite lắp đặt lầu 13",
+   "unit": "cánh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gạch bộp sửa chữa lầu 3 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số gạch bộp sửa chữa lầu 9 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số máy lạnh tủ đứng giám sát vệ sinh",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bóp lầu 10 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bóp lầu 13 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bóp lầu 6 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp hầm 1",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp hầm 2 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 10 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 13 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 14 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 2 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 3",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 3 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 4 khu B",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 5 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 6",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 6 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 7",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 7 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 8",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 8 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp lầu 9 khu A",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sửa chữa gạch bộp tầng trệt",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sửa chữa gạch bộp đường nội bộ tầng trệt",
+   "unit": "viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay bông lọc hồi FFU hành lang sạch phòng mổ và khu hồi tỉnh lầu 2",
+   "unit": "",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay cây trệt A",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thay máng xối tầng trệt khu B",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay mới máy lạnh cho nhà thuốc khu B",
+   "unit": "máy lạnh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế mái tôn lầu 1 khu A",
+   "unit": "m",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế máng nước ngưng máy lạnh treo tường",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế máng nước ngưng tủ đứng",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần Xét nghiệm khu B",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần khu CSSD lầu 3",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần khu siêu âm hầm 1",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 1",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thay thế tấm trần lầu 1 khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 10",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 12 khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thay thế tấm trần lầu 13 khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 14 khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 2 khu B",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thay thế tấm trần lầu 3",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 8",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần lầu 8 khu",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay thế tấm trần tầng trệt khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay tôn tầng trệt khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thay van điện từ FCU",
+   "unit": "cái",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thay, trồng mới cây đường Hồng Bàng",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trải nền sơn epoxy nhà vệ sinh khu cấp cứu mới",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trồng hoa giấy vào chậu",
+   "unit": "cây",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trồng mới cỏ nhung lam dốc",
+   "unit": "m2",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tô trát tường phòng khám Hóa trị hầm 1",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tưới cây trong nhà và ngoài trời",
+   "unit": "chậu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Vách compact khu phòng khám TMH lầu 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Xây tường nhà vệ sinh khu cấp cứu mới",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp mặt dựng tấm alu mái đón canopy khu Cấp cứu",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 11",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 12",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 14",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp tường tấm compact lầu 7",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact hành lang khoa GMHS lầu 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact hành lang phòng X quang nhũ ảnh tầng trệt",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khoa xét nghiệm lầu 6",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ốp vách compact khu Hóa trị hầm 1",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu Hóa trị hầm 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu XN lầu 6",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu hành lang khoa RHM lầu 6",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu phòng khám TMH lầu 1",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu phòng khám TMH lầu 1 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ốp vách compact khu vựa outdoor lầu 13A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact khu xử lý dụng cụ khoa GMHS lầu 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact phòng cấp phát lầu 2 khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact phòng rửa dụng cụ lầu 2",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ốp vách compact phòng siêu âm tim lầu 7",
+   "unit": "m²",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

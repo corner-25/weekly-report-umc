@@ -1,0 +1,996 @@
+{
+ "department": "Phòng Vật tư Thiết bị",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "nodes": [
+  {
+   "code": "vttb",
+   "parent": null,
+   "name": "Phòng Vật tư Thiết bị",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu",
+   "parent": "vttb",
+   "name": "Quản lý kho vật tư",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho",
+   "parent": "vttb.kho_vat_tu",
+   "name": "Giá trị nhập kho",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho.vat_tu_y_te_tieu_hao",
+   "parent": "vttb.kho_vat_tu.nhap_kho",
+   "name": "Vật tư y tế tiêu hao",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho.hoa_chat_xet_nghiem",
+   "parent": "vttb.kho_vat_tu.nhap_kho",
+   "name": "Hóa chất xét nghiệm",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho.hoa_chat_sat_khuan",
+   "parent": "vttb.kho_vat_tu.nhap_kho",
+   "name": "Hóa chất sát khuẩn",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho.linh_kien_phu_kien",
+   "parent": "vttb.kho_vat_tu.nhap_kho",
+   "name": "Linh kiện phụ kiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.nhap_kho.vat_tu_thong_dung",
+   "parent": "vttb.kho_vat_tu.nhap_kho",
+   "name": "Vật tư thông dụng",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho",
+   "parent": "vttb.kho_vat_tu",
+   "name": "Giá trị xuất kho",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho.vat_tu_y_te_tieu_hao",
+   "parent": "vttb.kho_vat_tu.xuat_kho",
+   "name": "Vật tư y tế tiêu hao",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho.hoa_chat_xet_nghiem",
+   "parent": "vttb.kho_vat_tu.xuat_kho",
+   "name": "Hóa chất xét nghiệm",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho.hoa_chat_sat_khuan",
+   "parent": "vttb.kho_vat_tu.xuat_kho",
+   "name": "Hóa chất sát khuẩn",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho.linh_kien_phu_kien",
+   "parent": "vttb.kho_vat_tu.xuat_kho",
+   "name": "Linh kiện phụ kiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.xuat_kho.vat_tu_thong_dung",
+   "parent": "vttb.kho_vat_tu.xuat_kho",
+   "name": "Vật tư thông dụng",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho",
+   "parent": "vttb.kho_vat_tu",
+   "name": "Giá trị tồn kho",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho.vat_tu_y_te_tieu_hao",
+   "parent": "vttb.kho_vat_tu.ton_kho",
+   "name": "Vật tư y tế tiêu hao",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho.hoa_chat_xet_nghiem",
+   "parent": "vttb.kho_vat_tu.ton_kho",
+   "name": "Hóa chất xét nghiệm",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho.hoa_chat_sat_khuan",
+   "parent": "vttb.kho_vat_tu.ton_kho",
+   "name": "Hóa chất sát khuẩn",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho.linh_kien_phu_kien",
+   "parent": "vttb.kho_vat_tu.ton_kho",
+   "name": "Linh kiện phụ kiện",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.kho_vat_tu.ton_kho.vat_tu_thong_dung",
+   "parent": "vttb.kho_vat_tu.ton_kho",
+   "name": "Vật tư thông dụng",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec",
+   "parent": "vttb",
+   "name": "Quản lý công việc",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.tong_so_tiep_nhan",
+   "parent": "vttb.cong_viec",
+   "name": "Tổng số công việc tiếp nhận",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.da_hoan_thanh",
+   "parent": "vttb.cong_viec",
+   "name": "Công việc đã hoàn thành",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.da_giai_quyet",
+   "parent": "vttb.cong_viec",
+   "name": "Công việc đã giải quyết",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.chua_xu_ly_trong_tuan",
+   "parent": "vttb.cong_viec",
+   "name": "Công việc chưa xử lý trong tuần",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.ton_dong_luy_ke",
+   "parent": "vttb.cong_viec",
+   "name": "Công việc tồn đọng lũy kế chưa giải quyết",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "parent": "vttb.cong_viec",
+   "name": "Lũy kế công việc đã giải quyết từ đầu năm",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.de_nghi_cong_van",
+   "parent": "vttb",
+   "name": "Quản lý đề nghị và công văn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.de_nghi_cong_van.tong_so",
+   "parent": "vttb.de_nghi_cong_van",
+   "name": "Tổng số đề nghị và công văn",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.de_nghi_cong_van.da_giai_quyet",
+   "parent": "vttb.de_nghi_cong_van",
+   "name": "Đề nghị và công văn đã giải quyết",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "parent": "vttb.de_nghi_cong_van",
+   "name": "Đề nghị và công văn tồn đọng lũy kế chưa giải quyết",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "parent": "vttb.de_nghi_cong_van",
+   "name": "Lũy kế đề nghị và công văn đã giải quyết từ đầu năm",
+   "kind": "METRIC",
+   "unit": "văn bản",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.sua_chua_bao_tri",
+   "parent": "vttb",
+   "name": "Sửa chữa bảo trì TBYT",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "parent": "vttb.sua_chua_bao_tri",
+   "name": "Tổng số công việc tiếp nhận sửa chữa bảo trì",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "parent": "vttb.sua_chua_bao_tri",
+   "name": "Số công việc sửa chữa bảo trì đã hoàn thành",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "parent": "vttb.sua_chua_bao_tri",
+   "name": "Công việc sửa chữa bảo trì chưa xử lý trong tuần",
+   "kind": "METRIC",
+   "unit": "công việc",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "parent": "vttb.sua_chua_bao_tri",
+   "name": "Giá trị sửa chữa bảo trì trong tuần",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Công việc chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Công việc thực hiện đã giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Công việc đã giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Công việc đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Số công việc đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Luỹ kế công việc thực hiện đã giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Luỹ kế công việc thực hiện đã giải quyết từ đầu năm",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 20
+  },
+  {
+   "name": "Luỹ kế công việc đã giải quyết từ đầu năm",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Luỹ kế công việc đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lũy kế công việc thực hiện đã giải quyết từ đầu năm",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Công việc thực hiện tồn đọng lũy kế",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Công việc thực hiện tồn đọng lũy kế chưa giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Công việc tồn đọng lũy kế chưa giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tồn đọng lũy kế công việc thực hiện chưa giải quyết",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số công việc tiếp nhận",
+   "unit": "công việc",
+   "code": "vttb.cong_viec.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Tổng số đề nghị và công văn đã giải quyết",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổng số đề nghị và công văn đã giải quyết",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị và công văn đã giải quyết",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Đề nghị và công văn đã giải quyết",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Luỹ kế công việc đã giải quyết từ đầu năm",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế công việc đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế công việc đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Luỹ kế đề nghị và công văn đã giải quyết",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Luỹ kế đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Luỹ kế đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Lũy kế đề nghị và công văn đã giải quyết từ đầu năm",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.luy_ke_da_giai_quyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tồn đọng lũy kế đề nghị và công văn chưa giải quyết",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số đề nghị và công văn tồn đọng lũy kế chưa giải quyết",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tổng số đề nghị và công văn tồn đọng lũy kế chưa giải quyết",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề nghị và công văn tồn đọng lũy kế",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Đề nghị và công văn tồn đọng lũy kế chưa giải quyết",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Đề nghị và công văn tồn đọng lũy kế chưa giải quyết",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.ton_dong_luy_ke",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Tổng số đề nghị và công văn",
+   "unit": "văn bản",
+   "code": "vttb.de_nghi_cong_van.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 18
+  },
+  {
+   "name": "Tổng số đề nghị và công văn",
+   "unit": "đề nghị và công văn",
+   "code": "vttb.de_nghi_cong_van.tong_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Nhập kho hóa chất sát khuẩn",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.hoa_chat_sat_khuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Nhập kho hóa chất xét nghiệm",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.hoa_chat_xet_nghiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Nhập kho linh kiện phụ kiện",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.linh_kien_phu_kien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Nhập kho Vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Nhập kho vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Nhập kho vật tư y tế tiêu hao",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.nhap_kho.vat_tu_y_te_tieu_hao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Tồn kho hóa chất sát khuẩn",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.hoa_chat_sat_khuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Tồn kho hóa chất xét nghiệm",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.hoa_chat_xet_nghiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Tồn kho linh kiện phụ kiện",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.linh_kien_phu_kien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Tồn kho Vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tồn kho vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 30
+  },
+  {
+   "name": "Tồn kho vật tư y tế tiêu hao",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.ton_kho.vat_tu_y_te_tieu_hao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Xuất kho hóa chất sát khuẩn",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.hoa_chat_sat_khuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Xuất kho hóa chất xét nghiệm",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.hoa_chat_xet_nghiem",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Xuất kho linh kiện phụ kiện",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.linh_kien_phu_kien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Xuất kho Vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Xuất kho vật tư thông dụng",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.vat_tu_thong_dung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Xuất kho vật tư y tế tiêu hao",
+   "unit": "VND",
+   "code": "vttb.kho_vat_tu.xuat_kho.vat_tu_y_te_tieu_hao",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Công việc sửa chửa bảo trì bảo dưỡng TBYT chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Công việc sửa chữa bảo trì TBYT chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Công việc sửa chữa bảo trì bảo dưỡng TBYT chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Công việc sửa chữa bảo trì chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số công việc sửa chửa bảo trì bảo dưỡng TBYT chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số công việc sửa chữa bảo trì bảo dưỡng TBYT chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số công việc sửa chữa bảo trì chưa xử lý trong tuần",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.chua_xu_ly_trong_tuan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Công việc sửa chửa bảo trì bảo dưỡng TBYT đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số công việc sửa chửa bảo trì bảo dưỡng TBYT đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số công việc sửa chữa bảo trì TBYT đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số công việc sửa chữa bảo trì bảo dưỡng TBYT đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số công việc sửa chữa bảo trì đã hoàn thành",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.da_hoan_thanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Giá trị sửa chữa bảo trì TBYT",
+   "unit": "VND",
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giá trị sửa chữa bảo trì TBYT trong tuần",
+   "unit": "VND",
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị sửa chữa bảo trì bảo dưỡng TBYT trong tuần",
+   "unit": "VND",
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Giá trị sửa chữa bảo trì trong tuần",
+   "unit": "VND",
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Giá trị sửa chữa, bảo trì trong tuần",
+   "unit": "VND",
+   "code": "vttb.sua_chua_bao_tri.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Tổng số công việc sửa chửa bảo trì bảo dưỡng TBYT tiếp nhận",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số công việc sửa chữa bảo trì TBYT tiếp nhận",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số công việc sửa chữa bảo trì bảo dưỡng TBYT tiếp nhận",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số công việc sửa chữa bảo trì tiếp nhận",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số công việc tiếp nhận sửa chữa bảo trì",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tổng số công việc tiếp nhận sửa chữa bảo trì TBYT",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số công việc tiếp nhận sửa chữa bảo trì bảo dưỡng TBYT",
+   "unit": "công việc",
+   "code": "vttb.sua_chua_bao_tri.tong_so_tiep_nhan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Công việc thực hiện",
+   "unit": "công việc",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 35
+  }
+ ]
+}

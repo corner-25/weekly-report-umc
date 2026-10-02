@@ -1,0 +1,1350 @@
+{
+ "department": "Phòng Công tác Xã hội",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "nodes": [
+  {
+   "code": "ctxh",
+   "parent": null,
+   "name": "Phòng Công tác Xã hội",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_tam_linh",
+   "parent": "ctxh",
+   "name": "Hỗ trợ tâm linh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "parent": "ctxh.ho_tro_tam_linh",
+   "name": "Số người bệnh tiếp nhận, hỗ trợ tâm linh",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_tam_linh.ket_noi_linh_muc",
+   "parent": "ctxh.ho_tro_tam_linh",
+   "name": "Số người bệnh có nhu cầu kết nối linh mục",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_y_te",
+   "parent": "ctxh",
+   "name": "Hỗ trợ điều trị y tế",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_y_te.ghep_gan",
+   "parent": "ctxh.ho_tro_y_te",
+   "name": "Số ca ghép gan",
+   "kind": "METRIC",
+   "unit": "trường hợp",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Người bệnh có nhu cầu kết nối hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.ket_noi_linh_muc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Người bệnh có nhu cầu kết nối tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.ket_noi_linh_muc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Người bệnh có nhu cầu kết nối với linh mục hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.ket_noi_linh_muc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Người bệnh tiếp nhận hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh tiếp nhận, hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Người bệnh được hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh được tiếp nhận, hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh tiếp nhận, hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số người bệnh được tiếp nhận, hỗ trợ tâm linh",
+   "unit": "người",
+   "code": "ctxh.ho_tro_tam_linh.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca ghép gan trong tuần",
+   "unit": "trường hợp",
+   "code": "ctxh.ho_tro_y_te.ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Trường hợp người bệnh nhi tiếp nhận và đánh giá",
+   "unit": "trường hợp",
+   "code": "ctxh.ho_tro_y_te.ghep_gan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Băng ghế inox hàn",
+   "unit": "cái",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca ghép gan trong tuần",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca ghép gan trong tuần",
+   "unit": "bé",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí hỗ trợ người bệnh khó khăn xin Vietcombank",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí hỗ trợ điều trị cho người bệnh bị Viêm tủy thị thần kinh",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích sơn tường lầu 1 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích sơn tường lầu 2 khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích sơn tường quầy điều dưỡng lầu 9A khu A",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích sơn tường tầng trệt khu B",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích ốp tường tấm compact lầu 1",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích ốp tường tấm compact lầu 10",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Diện tích ốp tường tấm compact lầu 11",
+   "unit": "m²",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ghế xếp inox hàn",
+   "unit": "cái",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị mỗi suất học bổng",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị suất học bổng Khuyến học - Khuyến tài",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gạch bộp sửa chữa lầu 12",
+   "unit": "viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gạch bộp sửa chữa lầu 7",
+   "unit": "viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt cán bộ viên chức, người lao động, người nhà người bệnh và sinh viên, tình nguyện viên tham gia chiếu phim Mưa đỏ",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt cán bộ viên chức, người lao động, người nhà người bệnh và sinh viên, tình nguyện viên tham gia chiếu phim Địa đạo",
+   "unit": "lượt",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lần kỷ niệm ngày Công tác xã hội Việt Nam",
+   "unit": "lần",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy lạnh FCU vệ sinh",
+   "unit": "cái",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Máy lạnh treo tường vệ sinh",
+   "unit": "cái",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Mẹ VNAH tham gia chương trình CSSK",
+   "unit": "mẹ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phòng chà ron nhà vệ sinh lầu 12",
+   "unit": "phòng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên hoàn thiện đánh giá thực tập",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Suất chiếu phim lịch sử với bộ phim Mưa đỏ",
+   "unit": "suất",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Suất chiếu phim lịch sử với bộ phim Địa đạo",
+   "unit": "suất",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Suất học bổng Khuyến học - Khuyến tài",
+   "unit": "suất",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Suất học bổng trao tặng",
+   "unit": "suất",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bệnh nhi cập nhật quá trình điều trị và hình ảnh",
+   "unit": "bệnh nhi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng thùng mi Kokomi tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh sinh đôi theo dõi tài trợ",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số năm dữ liệu tài trợ nhập liệu",
+   "unit": "năm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu ăn hỗ trợ người bệnh Hoàng Tuấn Duy",
+   "unit": "phiếu ăn",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu ăn hỗ trợ người bệnh Nguyễn Văn Thái",
+   "unit": "phiếu ăn",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền chi phí ghép tạng trao tặng từ Bệnh viện Nhi Đồng 1",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền hỗ trợ người bệnh Phan Ngọc Tuyền",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền hỗ trợ người bệnh Phạm Thị Ngọc Tuyết",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền thỏa thuận tài trợ cho người bệnh Phan Hoàng Gia Hy",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ từ Công ty Cổ phần Tập đoàn Apollo Silicone",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ từ Quỹ Hy vọng cho Bệnh nhi Nguyễn Ngọc Linh Đan",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ từ tập đoàn Apollo",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đại biểu tham gia Hội nghị vận động hiến, ghép mô, bộ phận cơ thể người khu vực Đồng bằng sông Cửu Long",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thành viên tham gia tập huấn phỏng vấn tạo động lực",
+   "unit": "thành viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng bảo quản tạng tiếp nhận",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng bảo quản tạng tiếp nhận sử dụng",
+   "unit": "thùng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thư chào giá mua sắm Bảo hiểm trách nhiệm nghề nghiệp năm 2026",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thương binh, cán bộ tiền khởi nghĩa tham gia chương trình CSSK",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ từ Công ty Cổ phần Tập đoàn VAS Nghi Sơn",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền tài trợ Hội nghị vận động hiến, ghép mô, bộ phận cơ thể người khu vực Đồng bằng sông Cửu Long",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền tài trợ tiếp nhận từ đối tác PV Drilling",
+   "unit": "VND",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trẻ em mồ côi do covid - 19 được thăm hỏi, tặng quà, học bổng",
+   "unit": "trẻ em",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tấm trần thay thế lầu 2 khu B",
+   "unit": "tấm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tấm trần thay thế lầu 8 khu A",
+   "unit": "tấm",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tủ đứng máy lạnh vệ sinh",
+   "unit": "cái",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Viên chức học tập chương trình đào tạo ngắn hạn về phương pháp hỗ trợ người bệnh qua Công cụ trung gian trong trị liệu theo định hướng phân tâm học",
+   "unit": "viên chức",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bác sĩ tham gia chương trình định hướng nghề nghiệp",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bệnh nhi có hoàn cảnh khó khăn được đánh giá tâm lý xã hội",
+   "unit": "bệnh nhi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị học bổng",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị hợp tác tài trợ với Công ty Kabi",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị trang thiết bị y tế tài trợ",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ tiếp nhận với PTSC",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giáo viên tham gia chương trình Trải nghiệm cùng UMC",
+   "unit": "giáo viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giảng viên ngành CTXH, khoa Xây dựng Đảng, Học viện Cán bộ Thành phố Hồ Chí Minh tiếp nhận và hướng dẫn",
+   "unit": "giảng viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giảng viên ngành Công tác xã hội thực hành",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giảng viên tiếp nhận",
+   "unit": "giảng viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Giảng viên được chia sẻ về CTXH trong Bệnh viện",
+   "unit": "giảng viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giảng viên đến tham quan, kiến tập",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh tham gia chương trình Trải nghiệm cùng UMC",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Học sinh tham gia chương trình định hướng nghề nghiệp",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh tham gia chương trình định hướng nghề nghiệp",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh tham gia trải nghiệm tại Bệnh viện",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh trải nghiệm và tình nguyện",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh trải nghiệm và tình nguyện",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh được hướng dẫn trải nghiệm và tình nguyện",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh đến trải nghiệm và tình nguyện",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ người bệnh có hoàn cảnh khó khăn đánh giá",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh có hoàn cảnh khó khăn có chỉ định ghép tim",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh có hoàn cảnh khó khăn có chỉ định phẫu thuật đặt van tim sinh học",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh có hoàn cảnh khó khăn tiếp nhận tư vấn, đánh giá và hướng dẫn thực hiện xác nhận hồ sơ",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh có hoàn cảnh khó khăn được hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Người bệnh ghép tạng được thanh toán chi phí từ nguồn tài trợ",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh tham gia chương trình sinh hoạt nhóm",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh tiếp nhận, hỗ trợ tâm lý",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh ung thư chia sẻ nhận diện cảm xúc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh, người nhà người bệnh được cắt tóc 0 đồng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người cao tuổi tham gia chương trình CSSK cộng đồng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người dân có hoàn cảnh khó khăn và gia đình chính sách được khám bệnh cấp thuốc tặng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người dân tham gia chương trình CSSK cộng đồng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Người dân được khám bệnh, phát thuốc, tặng quà",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người dân, người cao tuổi tham gia chương trình CSSK cộng đồng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân viên CTXH bệnh viện Bãi Cháy tiếp nhận và hướng dẫn",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân viên xã hội Bệnh viện Bãi Cháy chia sẻ kỹ năng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phần quà Vĩnh Hoàn phát cho viên chức người lao động",
+   "unit": "phần quà",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phần quà nhãn hàng Cocon",
+   "unit": "phần quà",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Cao đẳng Kinh tế TP.HCM được hướng dẫn",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Cao đẳng Kinh tế TP.HCM được hướng dẫn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Đại học Tôn Đức Thắng được hướng dẫn",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Đại học Tôn Đức Thắng được hướng dẫn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên ngành CTXH - Trường Đại học Tôn Đức Thắng tiếp nhận và hướng dẫn",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên ngành CTXH tiếp nhận thực tập",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên ngành Công tác xã hội thực hành",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên ngành Công tác xã hội được chia sẻ về CTXH trong Bệnh viện",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên ngành Công tác xã hội được hướng dẫn thực hành CTXH",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên năm 4 ngành Công tác xã hội tiếp nhận thực tập tốt nghiệp",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên thực tập",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên thực tập hướng dẫn",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên thực tập trường Đại học Tôn Đức Thắng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên thực tập tốt nghiệp",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên thực tập được hướng dẫn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên tiếp nhận",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sinh viên đến tham quan, kiến tập",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bệnh nhi được hỗ trợ chi phí ghép tạng",
+   "unit": "bệnh nhi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số giảng viên ngành Công tác xã hội được hướng dẫn thực hành CTXH",
+   "unit": "giảng viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh được hướng dẫn tham gia trải nghiệm",
+   "unit": "học sinh",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh, du học sinh báo cáo và cấp giấy chứng nhận",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượng mạnh thường quân tài trợ",
+   "unit": "mạnh thường quân",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh có hoàn cảnh khó khăn tiếp đón hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh có hoàn cảnh khó khăn được hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số người bệnh được trao tặng chi phí hỗ trợ điều trị",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người được cắt tóc định kỳ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên CTXH hướng dẫn thực tập",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên CTXH được hướng dẫn thực tập",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên ngành Công tác xã hội được hướng dẫn thực hành CTXH",
+   "unit": "sinh viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên thực tập tốt nghiệp",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên thực tập được hướng dẫn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thợ cắt tóc và tình nguyện viên hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tiếp nhận tài trợ hỗ trợ chi phí điều trị cho người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tiếp nhận tài trợ từ MTQ",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tiếp nhận tài trợ từ mạnh thường quân",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền vận động tài trợ hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "TNV hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thùng mì Omachi tiếp nhận tài trợ",
+   "unit": "thùng",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thợ cắt tóc hỗ trợ",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ hỗ trợ cho người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tiếp nhận tài trợ hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền tiếp nhận tài trợ hỗ trợ cho người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền tài trợ tiếp nhận hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiền tài trợ tiếp nhận hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trường hợp người bệnh tiếp nhận và đánh giá có chỉ định ghép tim",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Trường hợp thực tế hỗ trợ kỹ năng tiếp cận và hỗ trợ tâm lý xã hội",
+   "unit": "trường hợp",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng giá trị tài trợ mì Omachi",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số tiền hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

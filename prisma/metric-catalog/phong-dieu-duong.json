@@ -1,0 +1,5650 @@
+{
+ "department": "Phòng Điều dưỡng",
+ "model": "glm-5.2",
+ "reviewedAt": null,
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ 142 chuỗi >= 3 tuần; kiểm chứng nhất quán: 1,9% chỉ số-tuần có nhiều giá trị khác nhau.",
+ "nodes": [
+  {
+   "code": "dd",
+   "parent": null,
+   "name": "Phòng Điều dưỡng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat",
+   "parent": "dd",
+   "name": "Giám sát tuân thủ chuyên môn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong",
+   "parent": "dd.giam_sat",
+   "name": "Giám sát điều dưỡng",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "parent": "dd.giam_sat.chi_dieu_duong",
+   "name": "Số điều dưỡng giám sát",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.nhan_dang",
+   "parent": "dd.giam_sat.chi_dieu_duong",
+   "name": "Tỷ lệ tuân thủ nhận dạng người bệnh",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "parent": "dd.giam_sat.chi_dieu_duong",
+   "name": "Giám sát quy trình kỹ thuật",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "parent": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "name": "Số lượt giám sát quy trình kỹ thuật",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "parent": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật",
+   "kind": "METRIC",
+   "unit": "khoa/đơn vị",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.ty_le_tt",
+   "parent": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "name": "Tỷ lệ tuân thủ quy trình trung bình",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "parent": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "name": "Số quy trình cơ bản giám sát",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "parent": "dd.giam_sat.chi_dieu_duong.quy_trinh",
+   "name": "Số quy trình chuyên khoa giám sát",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so",
+   "parent": "dd.giam_sat.chi_dieu_duong",
+   "name": "Giám sát chỉ số chăm sóc",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_luot",
+   "parent": "dd.giam_sat.chi_dieu_duong.chi_so",
+   "name": "Số lượt giám sát chỉ số chăm sóc",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_khoa",
+   "parent": "dd.giam_sat.chi_dieu_duong.chi_so",
+   "name": "Số khoa/đơn vị giám sát chỉ số chăm sóc",
+   "kind": "METRIC",
+   "unit": "khoa/đơn vị",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "parent": "dd.giam_sat.chi_dieu_duong.chi_so",
+   "name": "Số chỉ số chăm sóc giám sát",
+   "kind": "METRIC",
+   "unit": "chỉ số",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.ty_le_tt",
+   "parent": "dd.giam_sat.chi_dieu_duong.chi_so",
+   "name": "Tỷ lệ tuân thủ chỉ số chăm sóc trung bình",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.prime",
+   "parent": "dd.giam_sat.chi_dieu_duong",
+   "name": "Giám sát chương trình PRIME",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "parent": "dd.giam_sat.chi_dieu_duong.prime",
+   "name": "Số lượt giám sát chương trình PRIME",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "parent": "dd.giam_sat.chi_dieu_duong.prime",
+   "name": "Số khoa/đơn vị giám sát chương trình PRIME",
+   "kind": "METRIC",
+   "unit": "khoa/đơn vị",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "parent": "dd.giam_sat.chi_dieu_duong.prime",
+   "name": "Tỷ lệ đạt tuân thủ chương trình PRIME",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.kiem_tra",
+   "parent": "dd.giam_sat",
+   "name": "Kiểm tra chuyên môn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "parent": "dd.giam_sat.kiem_tra",
+   "name": "Số khoa lâm sàng kiểm tra chuyên môn",
+   "kind": "METRIC",
+   "unit": "khoa",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so",
+   "parent": "dd.giam_sat",
+   "name": "Giám sát ký số hồ sơ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.chua_ky_so",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa ký số",
+   "kind": "METRIC",
+   "unit": "biểu mẫu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa hoàn tất ký số lúc xuất viện",
+   "kind": "METRIC",
+   "unit": "biểu mẫu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số khoa/đơn nguyên tồn tại biểu mẫu chưa ký số",
+   "kind": "METRIC",
+   "unit": "khoa/đơn nguyên",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số phiếu theo dõi truyền dịch tồn đọng",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.ty_le_truyen_dich",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Tỷ lệ tồn đọng phiếu theo dõi truyền dịch",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa ký số Khoa Cấp cứu",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.hoa_tri",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa ký số Khoa Hóa trị ung thư",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.than_kinh",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa ký số Khoa Thần kinh",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.noi_than",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số biểu mẫu chưa ký số Khoa Nội thận - Thận nhân tạo",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu",
+   "parent": "dd",
+   "name": "Quản lý tài liệu chuyên môn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.qtkt",
+   "parent": "dd.tai_lieu",
+   "name": "Quy trình kỹ thuật (QTKT)",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "parent": "dd.tai_lieu.qtkt",
+   "name": "Số QTKT chuẩn bị xét duyệt",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "parent": "dd.tai_lieu.qtkt",
+   "name": "Số QTKT sau xét duyệt",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "parent": "dd.tai_lieu.qtkt",
+   "name": "Số QTKT xét duyệt",
+   "kind": "METRIC",
+   "unit": "quy trình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.hdcs",
+   "parent": "dd.tai_lieu",
+   "name": "Hướng dẫn chăm sóc (HDCS)",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "parent": "dd.tai_lieu.hdcs",
+   "name": "Số HDCS chuẩn bị xét duyệt",
+   "kind": "METRIC",
+   "unit": "hướng dẫn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.ttgdsk",
+   "parent": "dd.tai_lieu",
+   "name": "Tài liệu truyền thông, GDSK",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "parent": "dd.tai_lieu.ttgdsk",
+   "name": "Số tài liệu TTGDSK chuẩn bị xét duyệt",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "parent": "dd.tai_lieu.ttgdsk",
+   "name": "Số tài liệu TTGDSK gửi xét duyệt",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "parent": "dd.tai_lieu",
+   "name": "Số bài lượng giá sau tập huấn",
+   "kind": "METRIC",
+   "unit": "bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu",
+   "parent": "dd",
+   "name": "Quản lý vật tư y tế",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "parent": "dd.vat_tu",
+   "name": "Số phiếu yêu cầu cấp hàng",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.ty_le_dieu_chinh",
+   "parent": "dd.vat_tu",
+   "name": "Tỷ lệ điều chỉnh phiếu yêu cầu cấp hàng",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.bien_ban_vat_tu",
+   "parent": "dd.vat_tu",
+   "name": "Số biên bản xác nhận sử dụng vật tư nhiều kích cỡ",
+   "kind": "METRIC",
+   "unit": "biên bản",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.cong_van_ncc",
+   "parent": "dd.vat_tu",
+   "name": "Số công văn của nhà cung cấp",
+   "kind": "METRIC",
+   "unit": "công văn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.danh_muc_can_han",
+   "parent": "dd.vat_tu",
+   "name": "Số danh mục cận hạn thống kê",
+   "kind": "METRIC",
+   "unit": "danh mục",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "parent": "dd.vat_tu",
+   "name": "Số danh mục đề xuất thầu bổ sung",
+   "kind": "METRIC",
+   "unit": "danh mục",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.vat_tu.goi_thau",
+   "parent": "dd.vat_tu",
+   "name": "Số phần gói thầu vật tư y tế đánh giá",
+   "kind": "METRIC",
+   "unit": "phần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao",
+   "parent": "dd",
+   "name": "Đào tạo và phát triển nhân lực",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_thao",
+   "parent": "dd.dao_tao",
+   "name": "Chương trình đào tạo/hội thảo",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "parent": "dd.dao_tao.hoi_thao",
+   "name": "Số lượt chương trình đào tạo/hội thảo",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "parent": "dd.dao_tao.hoi_thao",
+   "name": "Số hồ sơ chương trình đào tạo/hội thảo",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.thi_hoc",
+   "parent": "dd.dao_tao",
+   "name": "Cử viên chức đi thi/đi học",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "parent": "dd.dao_tao.thi_hoc",
+   "name": "Số lượt cử viên chức đi thi/đi học",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "parent": "dd.dao_tao.thi_hoc",
+   "name": "Số hồ sơ cử viên chức đi thi/đi học",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_nghi",
+   "parent": "dd.dao_tao",
+   "name": "Cử viên chức tham dự hội thảo/hội nghị",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "parent": "dd.dao_tao.hoi_nghi",
+   "name": "Số lượt cử viên chức tham dự hội thảo/hội nghị",
+   "kind": "METRIC",
+   "unit": "lượt",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "parent": "dd.dao_tao.hoi_nghi",
+   "name": "Số hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.sv_yersin",
+   "parent": "dd.dao_tao",
+   "name": "Số sinh viên CNĐD tiếp nhận",
+   "kind": "METRIC",
+   "unit": "sinh viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "parent": "dd.dao_tao",
+   "name": "Số học viên quản lý học phần thực hành",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "parent": "dd.dao_tao",
+   "name": "Số ứng viên khối Điều dưỡng sơ vấn",
+   "kind": "METRIC",
+   "unit": "ứng viên",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cai_tien",
+   "parent": "dd",
+   "name": "Cải tiến chất lượng và sáng kiến",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cai_tien.de_an",
+   "parent": "dd.cai_tien",
+   "name": "Số báo cáo kết quả đề án cải tiến chất lượng",
+   "kind": "METRIC",
+   "unit": "báo cáo",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cai_tien.sang_kien",
+   "parent": "dd.cai_tien",
+   "name": "Số hồ sơ đăng ký sáng kiến cải tiến",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cai_tien.mo_hinh",
+   "parent": "dd.cai_tien",
+   "name": "Số mô hình cho mượn",
+   "kind": "METRIC",
+   "unit": "mô hình",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cham_soc",
+   "parent": "dd",
+   "name": "Hỗ trợ chăm sóc người bệnh",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cham_soc.so_nguoi",
+   "parent": "dd.cham_soc",
+   "name": "Số người bệnh được cung cấp dịch vụ chăm sóc",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cham_soc.so_nguoi_ht",
+   "parent": "dd.cham_soc",
+   "name": "Số người bệnh được hỗ trợ chăm sóc",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cham_soc.gio_cham_soc",
+   "parent": "dd.cham_soc",
+   "name": "Tổng thời gian chăm sóc người bệnh",
+   "kind": "METRIC",
+   "unit": "giờ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.cham_soc.gio_ht_truc_tiep",
+   "parent": "dd.cham_soc",
+   "name": "Số giờ hỗ trợ chăm sóc trực tiếp",
+   "kind": "METRIC",
+   "unit": "giờ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban",
+   "parent": "dd",
+   "name": "Thực hiện văn bản quy định",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_1599",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 1599/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2332",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2332/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2557",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2557/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2669",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2669/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_3072",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 3072/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_3295",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 3295/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_3309",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 3309/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_1497",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 1497/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2160",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2160/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2605",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2605/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.van_ban.qd_2720",
+   "parent": "dd.van_ban",
+   "name": "Tỷ lệ sử dụng QĐ 2720/QĐ-BVĐHYD",
+   "kind": "METRIC",
+   "unit": "%",
+   "agg": "AVG",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "parent": "dd.tai_lieu.hdcs",
+   "name": "Số HDCS xét duyệt",
+   "kind": "METRIC",
+   "unit": "hướng dẫn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "parent": "dd.tai_lieu.hdcs",
+   "name": "Số HDCS sau xét duyệt",
+   "kind": "METRIC",
+   "unit": "hướng dẫn",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.chung",
+   "parent": "dd.tai_lieu",
+   "name": "Tài liệu chuyên môn khác",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.chung.chuan_bi",
+   "parent": "dd.tai_lieu.chung",
+   "name": "Số tài liệu chuyên môn chuẩn bị xét duyệt",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.chung.gui",
+   "parent": "dd.tai_lieu.chung",
+   "name": "Số tài liệu chuyên môn gửi xét duyệt",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.chung.sau",
+   "parent": "dd.tai_lieu.chung",
+   "name": "Số tài liệu chuyên môn sau xét duyệt",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.chung.bien_soan",
+   "parent": "dd.tai_lieu.chung",
+   "name": "Số tài liệu điều dưỡng biên soạn, in ấn, xuất bản trong năm",
+   "kind": "METRIC",
+   "unit": "tài liệu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.phieu_cns_ton",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số phiếu theo dõi chức năng sống tồn đọng",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.giam_sat.ky_so.phieu_cs_ton",
+   "parent": "dd.giam_sat.ky_so",
+   "name": "Số phiếu theo dõi chăm sóc tồn đọng",
+   "kind": "METRIC",
+   "unit": "phiếu",
+   "agg": "LAST",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "parent": "dd.tai_lieu.qtkt",
+   "name": "Số bài post-test hiệu chỉnh",
+   "kind": "METRIC",
+   "unit": "bài",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "parent": "dd.dao_tao",
+   "name": "Số nhân sự có nguyện vọng nghỉ việc được phỏng vấn",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  }
+ ],
+ "aliases": [
+  {
+   "name": "Báo cáo kết quả đề án cải tiến chất lượng năm 2025",
+   "unit": "báo cáo",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Báo cáo kết quả đề án cải tiến chất lượng năm 2025",
+   "unit": "Báo cáo",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Báo cáo kết quả đề án cải tiến chất lượng năm 2025 nộp Phòng QLCLBV",
+   "unit": "Báo cáo",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Báo cáo kết quả đề án cải tiến chất lượng năm 2025 nộp Phòng QLCLBV",
+   "unit": "văn bản",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đăng ký đề án cải thiện trải nghiệm đo điện tim",
+   "unit": "hồ sơ",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đăng ký đề án cải tiến trải nghiệm người bệnh nữ",
+   "unit": "hồ sơ",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số báo cáo kết quả đề án cải tiến chất lượng năm 2025 nộp Phòng QLCLBV",
+   "unit": "báo cáo",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số báo cáo kết quả đề án cải tiến chất lượng nộp Phòng QLCLBV",
+   "unit": "báo cáo",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đề án cải tiến hồ sơ đăng ký hoàn thành",
+   "unit": "đề án",
+   "code": "dd.cai_tien.de_an",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Mô hình cho Phòng KHĐT mượn",
+   "unit": "mô hình",
+   "code": "dd.cai_tien.mo_hinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Mô hình cho mượn",
+   "unit": "mô hình",
+   "code": "dd.cai_tien.mo_hinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hồ sơ đăng ký sáng kiến cải tiến",
+   "unit": "hồ sơ",
+   "code": "dd.cai_tien.sang_kien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tổng thời gian chăm sóc người bệnh",
+   "unit": "giờ",
+   "code": "dd.cham_soc.gio_cham_soc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Giờ hỗ trợ chăm sóc trực tiếp",
+   "unit": "giờ",
+   "code": "dd.cham_soc.gio_ht_truc_tiep",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số giờ hỗ trợ chăm sóc trực tiếp",
+   "unit": "giờ",
+   "code": "dd.cham_soc.gio_ht_truc_tiep",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Người bệnh cung cấp dịch vụ chăm sóc",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh được cung cấp dịch vụ chăm sóc",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Người bệnh được cung cấp dịch vụ hỗ trợ chăm sóc",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số người bệnh cung cấp dịch vụ hỗ trợ chăm sóc",
+   "unit": "người bệnh",
+   "code": "dd.cham_soc.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Người bệnh được cung cấp dịch vụ chăm sóc không có thân nhân",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi_ht",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh cung cấp dịch vụ hỗ trợ chăm sóc",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi_ht",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh hỗ trợ chăm sóc",
+   "unit": "người",
+   "code": "dd.cham_soc.so_nguoi_ht",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt/00 hồ sơ",
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_nghi.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Hồ sơ cử viên chức tham dự hội thảo/hội nghị soát xét",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt hồ sơ cử nhân chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượt soát xét hồ sơ cử viên chức tham dự hội thảo/hội nghị",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_nghi.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 21
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo (01 lượt/03 hồ sơ)",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo (02 lượt/01 hồ sơ)",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo (lần 2)",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo Ngoại GMT",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo PTHM-RHM",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chương trình đào tạo/hội thảo soát xét",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ chương trình đào tạo/hội thảo",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số hồ sơ đào tạo/hội thảo GPB",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ đào tạo/hội thảo LNMM",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 22
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo (01 lượt/03 hồ sơ)",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo (02 lượt/01 hồ sơ)",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo (lượt/hồ sơ)",
+   "unit": "lượt/02 hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo (lượt/hồ sơ)",
+   "unit": "lượt/03 hồ sơ",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo (lần 2)",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo Ngoại GMT",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo PTHM-RHM",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chương trình đào tạo/hội thảo soát xét",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Soát xét chương trình đào tạo/hội thảo",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt chương trình đào tạo/hội thảo",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượt soát xét hồ sơ đào tạo chương trình đào tạo/hội thảo",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt soát xét hồ sơ đào tạo/hội thảo GPB",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt soát xét hồ sơ đào tạo/hội thảo LNMM",
+   "unit": "lượt",
+   "code": "dd.dao_tao.hoi_thao.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên lớp Nghiệp vụ Hộ lý trợ giúp chăm sóc",
+   "unit": "người",
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên lớp Nghiệp vụ Hộ lý trợ giúp chăm sóc",
+   "unit": "học viên",
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên quản lý học phần Thực hành",
+   "unit": "người",
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên quản lý học phần thực hành Đợt 1",
+   "unit": "người",
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên Đợt 1 quản lý học phần thực hành giai đoạn I",
+   "unit": "người",
+   "code": "dd.dao_tao.hv_thuc_hanh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hộ lý nghỉ việc",
+   "unit": "người",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hộ lý phỏng vấn nghỉ việc",
+   "unit": "hộ lý",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Kỹ thuật viên y tế có nguyện vọng nghỉ việc",
+   "unit": "người",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng có nguyện vọng nghỉ việc phỏng vấn",
+   "unit": "ĐD",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng có nguyện vọng nghỉ việc được phỏng vấn",
+   "unit": "điều dưỡng",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng nghỉ việc",
+   "unit": "người",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng phỏng vấn nghỉ việc",
+   "unit": "ĐD",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Điều dưỡng phỏng vấn nghỉ việc",
+   "unit": "điều dưỡng",
+   "code": "dd.dao_tao.nghi_viec_pv",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sinh viên CNĐD khóa 20 tiếp nhận",
+   "unit": "sinh viên",
+   "code": "dd.dao_tao.sv_yersin",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Sinh viên CNĐD khóa 20 tiếp nhận",
+   "unit": "người",
+   "code": "dd.dao_tao.sv_yersin",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Sinh viên CNĐD khóa 20, Trường Đại học Yersin Đà Lạt tiếp nhận",
+   "unit": "sinh viên",
+   "code": "dd.dao_tao.sv_yersin",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận sinh viên CNĐD khóa 20",
+   "unit": "người",
+   "code": "dd.dao_tao.sv_yersin",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử nhân chức đi thi/đi học",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ cử viên chức đi thi/đi học",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Hồ sơ cử viên chức đi thi/đi học",
+   "unit": "lượt/00 hồ sơ",
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ cử nhân chức đi thi/đi học",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ cử viên chức đi thi/đi học",
+   "unit": "hồ sơ",
+   "code": "dd.dao_tao.thi_hoc.so_ho_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Hồ sơ cử nhân chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Hồ sơ cử viên chức đi thi/đi học soát xét",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt cử viên chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt hồ sơ cử viên chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Soát xét hồ sơ cử nhân chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số lượt hồ sơ cử nhân chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt hồ sơ cử viên chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số lượt soát xét hồ sơ cử viên chức đi thi/đi học",
+   "unit": "lượt",
+   "code": "dd.dao_tao.thi_hoc.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ứng viên khối Điều dưỡng sơ vấn",
+   "unit": "ứng viên",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số ứng viên khối Điều dưỡng sơ vấn chuyên môn",
+   "unit": "người",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ứng viên sơ vấn khối Điều dưỡng",
+   "unit": "ứng viên",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên khối Điều dưỡng sơ vấn",
+   "unit": "người",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên khối Điều dưỡng sơ vấn chuyên môn",
+   "unit": "người",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ứng viên Điều dưỡng sơ vấn",
+   "unit": "người",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Ứng viên Điều dưỡng sơ vấn",
+   "unit": "ứng viên",
+   "code": "dd.dao_tao.uv_dieu_duong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chỉ số chăm sóc",
+   "unit": "chỉ số",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Chỉ số chăm sóc giám sát",
+   "unit": "chỉ số",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số chỉ số chăm sóc",
+   "unit": "chỉ số",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số chỉ số chăm sóc giám sát",
+   "unit": "chỉ số",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số chỉ số chăm sóc được giám sát",
+   "unit": "chỉ số",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_chi_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/đơn vị giám sát chỉ số chăm sóc",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát chỉ số chăm sóc",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 30
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát chỉ số chăm sóc",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Lượt giám sát chỉ số chăm sóc",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượt giám sát chỉ số chăm sóc",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 35
+  },
+  {
+   "name": "Tỷ lệ tuân thủ chỉ số chăm sóc trung bình",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.ty_le_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Tỷ lệ tuân thủ trung bình chỉ số chăm sóc",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.chi_so.ty_le_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 19
+  },
+  {
+   "name": "Tỷ lệ tuân thủ nhận dạng người bệnh",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.nhan_dang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 38
+  },
+  {
+   "name": "Khoa/đơn vị giám sát tuân thủ PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Khoa/đơn vị giám sát tuân thủ chương trình PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát chương trình PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát chương trình PRIME",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát tuân thủ PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát tuân thủ chương trình PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát tuân thủ chương trình PRIME",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát tuân thủ thực hiện chương trình PRIME",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát tuân thủ thực hiện chương trình PRIME",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt giám sát tuân thủ PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Lượt giám sát tuân thủ chương trình PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt giám sát chương trình PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượt giám sát tuân thủ PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượt giám sát tuân thủ chương trình PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số lượt giám sát tuân thủ thực hiện chương trình PRIME",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 15
+  },
+  {
+   "name": "Tỷ lệ đạt PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ đạt chương trình PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Tỷ lệ đạt giám sát tuân thủ chương trình PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ đạt giám sát tuân thủ thực hiện chương trình PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tỷ lệ đạt tuân thủ PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Tỷ lệ đạt tuân thủ chương trình PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Tỷ lệ đạt tuân thủ thực hiện chương trình PRIME",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.prime.ty_le_dat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Quy trình chuyên khoa",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Quy trình chuyên khoa giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số quy trình chuyên khoa",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số quy trình chuyên khoa giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số quy trình chuyên khoa được giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.chuyen_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình cơ bản",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Quy trình cơ bản giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 14
+  },
+  {
+   "name": "Số quy trình cơ bản",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số quy trình cơ bản giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số quy trình cơ bản được giám sát",
+   "unit": "quy trình",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.co_ban",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/đơn vị giám sát quy trình kỹ thuật",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật ĐD",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật ĐD",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật Điều dưỡng",
+   "unit": "khoa",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa/đơn vị giám sát quy trình kỹ thuật điều dưỡng",
+   "unit": "khoa/đơn vị",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_khoa",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Lượt giám sát quy trình kỹ thuật",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số lượt giám sát quy trình kỹ thuật",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Số lượt giám sát quy trình kỹ thuật ĐD",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số lượt giám sát quy trình kỹ thuật Điều dưỡng",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số lượt giám sát quy trình kỹ thuật điều dưỡng",
+   "unit": "lượt",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.so_luot",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ tuân thủ quy trình kỹ thuật điều dưỡng trung bình",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.ty_le_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ tuân thủ quy trình trung bình",
+   "unit": "%",
+   "code": "dd.giam_sat.chi_dieu_duong.quy_trinh.ty_le_tt",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Số Điều dưỡng giám sát",
+   "unit": "người",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Số Điều dưỡng giám sát",
+   "unit": "Điều dưỡng",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Số Điều dưỡng giám sát quy trình kỹ thuật",
+   "unit": "người",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số Điều dưỡng giám sát quy trình kỹ thuật ĐD",
+   "unit": "người",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số Điều dưỡng được giám sát quy trình kỹ thuật",
+   "unit": "người",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng giám sát",
+   "unit": "Điều dưỡng",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Điều dưỡng giám sát",
+   "unit": "người",
+   "code": "dd.giam_sat.chi_dieu_duong.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa lâm sàng kiểm tra quản lý và hoạt động chuyên môn",
+   "unit": "khoa",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra công tác quản lý và hoạt động chuyên môn điều dưỡng",
+   "unit": "khoa lâm sàng",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra công tác quản lý và hoạt động chuyên môn điều dưỡng",
+   "unit": "khoa",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra quản lý chuyên môn",
+   "unit": "khoa",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra quản lý và chuyên môn",
+   "unit": "khoa lâm sàng",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra quản lý và hoạt động chuyên môn",
+   "unit": "khoa",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số khoa lâm sàng kiểm tra quản lý và hoạt động chuyên môn",
+   "unit": "khoa lâm sàng",
+   "code": "dd.giam_sat.kiem_tra.khoa_lam_sang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Cấp cứu",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số cao nhất tại khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số của Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Biểu mẫu chưa ký số tại Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số tại Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số phiếu chưa ký số tại Khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số phiếu theo dõi truyền dịch chưa ký số tại khoa Cấp cứu",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.cap_cuu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa hoàn tất ký số tại thời điểm NB xuất viện",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Biểu mẫu chưa hoàn tất ký số tại thời điểm xuất viện",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa hoàn tất ký số tại thời điểm NB xuất viện",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số biểu mẫu chưa hoàn tất ký số tại thời điểm người bệnh xuất viện",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa hoàn tất ký số tại thời điểm xuất viện",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_hoan_tat",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Biểu mẫu chưa ký số",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_ky_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 24
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_ky_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 10
+  },
+  {
+   "name": "Số biểu mẫu chưa tuân thủ ký số",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.chua_ky_so",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Hóa trị ung thư",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.hoa_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số Khoa Hóa trị ung thư",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.hoa_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số tại khoa Hóa trị ung thư",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.hoa_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu công khai sử dụng thuốc chưa ký số tại khoa Hóa trị ung thư",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.hoa_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa/Đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa/đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/Đơn nguyên còn tồn tại các biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa/Đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/Đơn nguyên tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa/đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Khoa/Đơn nguyên tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa/Đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa/Đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa/Đơn nguyên",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số Khoa/Đơn nguyên tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "Khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số Khoa/Đơn vị còn tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Khoa/Đơn vị tồn tại biểu mẫu hồ sơ xuất viện chưa ký số",
+   "unit": "khoa",
+   "code": "dd.giam_sat.ky_so.khoa_ton_tai",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Nội thận - TNT",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.noi_than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Nội thận - Thận nhân tạo",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.noi_than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Nội thận - Thận nhân tạo",
+   "unit": "biểu mẫu",
+   "code": "dd.giam_sat.ky_so.noi_than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số Khoa Nội thận - Thận nhân tạo",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.noi_than",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Phiếu theo dõi chức năng sống tồn đọng",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.phieu_cns_ton",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Phiếu theo dõi chăm sóc tồn đọng",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.phieu_cs_ton",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Phiếu tồn đọng theo dõi chăm sóc",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.phieu_cs_ton",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Thần kinh",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.than_kinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Biểu mẫu chưa ký số của Khoa Thần kinh",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.than_kinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu theo dõi truyền dịch chưa ký số",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Phiếu theo dõi truyền dịch tồn đọng",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 16
+  },
+  {
+   "name": "Phiếu theo dõi truyền dịch tồn đọng cao nhất",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Phiếu tồn đọng theo dõi truyền dịch",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu theo dõi truyền dịch chưa ký số",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số phiếu theo dõi truyền dịch tồn đọng",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số phiếu theo dõi truyền dịch tồn đọng cao nhất",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số phiếu theo dõi truyền dịch tồn đọng chưa ký số",
+   "unit": "phiếu",
+   "code": "dd.giam_sat.ky_so.truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tỷ lệ tồn đọng phiếu theo dõi truyền dịch",
+   "unit": "%",
+   "code": "dd.giam_sat.ky_so.ty_le_truyen_dich",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Bài lượng giá sau tập huấn",
+   "unit": "bài",
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Bài lượng giá sau tập huấn hiệu chỉnh",
+   "unit": "bài",
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài lượng giá sau tập huấn",
+   "unit": "bài",
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài lượng giá sau tập huấn Khoa Nội thận-Thận nhân tạo và Hô hấp",
+   "unit": "bài",
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật lượng giá sau tập huấn",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.bai_luong_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tài liệu biên soạn, in ấn và xuất bản năm 2026",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.bien_soan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu điều dưỡng biên soạn, in ấn và xuất bản",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.bien_soan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu điều dưỡng biên soạn, in ấn và xuất bản năm 2026",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.bien_soan",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu chuẩn bị xét duyệt soát xét, hiệu chỉnh",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 12
+  },
+  {
+   "name": "Tài liệu chuẩn bị xét duyệt soát xét hiệu chỉnh",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK soát xét hiệu chỉnh",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu HĐĐD xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu gửi HĐĐD xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu gửi Hội đồng Điều dưỡng xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu gửi xét duyệt qua email",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu qua email xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Khoa Mắt gửi HDDD xét duyệt qua email",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu Khoa TMH CS2 gửi HDDD xét duyệt qua email",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu gửi HDDD xét duyệt qua email",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu gửi HĐĐD xét duyệt qua email",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.gui",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu sau xét duyệt soát xét, hiệu chỉnh",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu sau xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 8
+  },
+  {
+   "name": "Tài liệu sau xét duyệt soát xét hiệu chỉnh",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK hiệu chỉnh sau xét duyệt",
+   "unit": "tài liệu truyền thông, GDSK",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK sau xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK sau xét duyệt",
+   "unit": "TTGDSK",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK sau xét duyệt",
+   "unit": "tài liệu truyền thông, GDSK",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK soát xét sau xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.chung.sau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HDCS chuẩn bị xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "HDCS chuẩn bị xét duyệt của Khoa Ngoại GMT",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc (phần CĐĐD) Khoa Phẫu thuật Tim mạch chuẩn bị xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc chuẩn bị xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hướng dẫn chăm sóc chuẩn bị xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Hướng dẫn chăm sóc xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hướng dẫn chăm sóc xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ chăm sóc chuẩn bị xét duyệt",
+   "unit": "Hồ sơ chăm sóc",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS Khoa Phẫu thuật Tim mạch chuẩn bị xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS Lão - Chăm sóc giảm nhẹ chuẩn bị xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc Khoa Ngoại Gan - Mật - Tụy chuẩn bị xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc chuẩn bị xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc chuẩn bị xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc chuẩn bị xét duyệt (Khoa Tim mạch can thiệp)",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc chuẩn bị xét duyệt (Lão - Chăm sóc giảm nhẹ)",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc chuẩn bị xét duyệt Khoa Lồng ngực - Mạch máu",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc Khoa Ngoại Thần kinh sau xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc Khoa Tim mạch can thiệp hiệu chỉnh sau xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc của Khoa sau xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc sau xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc sau xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc sau xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc soát xét hiệu chỉnh sau xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS Khoa Ngoại Gan - Mật - Tụy sau xét duyệt soát xét, hiệu chỉnh",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS sau xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc Khoa Phụ sản sau xét duyệt",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc sau xét duyệt được soát xét, hiệu chỉnh",
+   "unit": "hướng dẫn chăm sóc",
+   "code": "dd.tai_lieu.hdcs.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chung ban hành",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn chăm sóc xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn của Phòng Điều dưỡng xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn gửi Hội đồng Điều dưỡng xét duyệt",
+   "unit": "hướng dẫn",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ chăm sóc trình ký ban hành",
+   "unit": "Hồ sơ chăm sóc",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HDCS soát xét, hiệu chỉnh và tổ chức họp HĐĐD xét duyệt",
+   "unit": "HDCS",
+   "code": "dd.tai_lieu.hdcs.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Hóa trị ung thư chuẩn bị xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Xét nghiệm chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Phụ sản chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Sơ sinh chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Thăm dò chức năng hô hấp chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật chuẩn bị xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 6
+  },
+  {
+   "name": "Quy trình kỹ thuật chuẩn bị xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Quy trình kỹ thuật chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật soát xét hiệu chỉnh",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số QTKT chuẩn bị xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số QTKT chuẩn bị xét duyệt Khoa Sơ sinh",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Mắt chuẩn bị xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật chuẩn bị xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật chuẩn bị xét duyệt được soát xét, hiệu chỉnh",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test Khoa Nội tim mạch",
+   "unit": "post-test",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test hiệu chỉnh",
+   "unit": "post-test",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test quy trình kỹ thuật soát xét",
+   "unit": "post-test",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test tập huấn QTKT",
+   "unit": "post-test",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test tập huấn QTKT soát xét hiệu chỉnh",
+   "unit": "post-test",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test tập huấn quy trình kỹ thuật",
+   "unit": "bài kiểm tra",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Post-test tập huấn quy trình kỹ thuật hiệu chỉnh",
+   "unit": "bài",
+   "code": "dd.tai_lieu.qtkt.post_test",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "QTKT sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Mắt sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa NS sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Tiêu hóa sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật các Khoa hiệu chỉnh sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật hiệu chỉnh sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật hiệu chỉnh sau xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật sau xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Quy trình kỹ thuật sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Quy trình kỹ thuật sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Quy trình kỹ thuật soát xét hiệu chỉnh sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật soát xét sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Đơn nguyên GMHS Sản phụ khoa sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số QTKT sau xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Số QTKT sau xét duyệt soát xét, hiệu chỉnh",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật hiệu chỉnh sau xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật sau xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật sau xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật sau xét duyệt được soát xét, hiệu chỉnh",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.sau_xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ quy trình kỹ thuật trình ký",
+   "unit": "hồ sơ",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Ngoại Tiêu hóa xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Phụ sản và Hô hấp xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật gửi HĐĐD xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật gửi HĐĐD xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật gửi Hội đồng xét duyệt lần 2",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật gửi xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật gửi xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật trình ký ban hành",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Quy trình kỹ thuật xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Quy trình kỹ thuật xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật Đơn nguyên Gây mê - Hồi sức Sản phụ khoa gửi HĐĐD",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật HĐĐD xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Gây mê - Hồi sức gửi HĐĐD xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa HTUT xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Hô hấp xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Mắt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật gửi HĐĐD xét duyệt qua email",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật gửi Hội đồng Điều dưỡng xét duyệt (Khoa Nội tim mạch)",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật gửi Hội đồng Điều dưỡng xét duyệt (Khoa Xét nghiệm)",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật gửi xét duyệt qua email",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật xét duyệt",
+   "unit": "quy trình",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật xét duyệt",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật xét duyệt tại cuộc họp HĐĐD",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Đơn nguyên Gây mê - Hồi sức Sản phụ khoa qua email",
+   "unit": "QTKT",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Đơn nguyên Gây mê - Hồi sức Sản phụ khoa xét duyệt",
+   "unit": "quy trình kỹ thuật",
+   "code": "dd.tai_lieu.qtkt.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số TTGDSK chuẩn bị xét duyệt",
+   "unit": "TTGDSK",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, giáo dục sức khỏe chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu giáo dục sức khỏe chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông giáo dục sức khỏe chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK chuẩn bị xét duyệt",
+   "unit": "tài liệu truyền thông, GDSK",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK chuẩn bị xét duyệt",
+   "unit": "TTGDSK",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, giáo dục sức khỏe chuẩn bị xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.chuan_bi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ tài liệu truyền thông, GDSK trình ký",
+   "unit": "hồ sơ",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK gửi HDDD xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK gửi Hội đồng Điều dưỡng xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK Khoa Ngoại Gan - Mật - Tụy gửi HĐĐD",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi HĐĐD",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi HĐĐD xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi HĐĐD xét duyệt của Khoa CTCH",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi HĐĐD xét duyệt của Khoa Ngoại Tiêu hóa",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi HĐĐD xét duyệt của Ngoại Tiêu hóa",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK gửi xét duyệt",
+   "unit": "tài liệu truyền thông, GDSK",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK xét duyệt",
+   "unit": "tài liệu truyền thông, GDSK",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tài liệu truyền thông, giáo dục sức khỏe gửi Hội đồng xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tài liệu truyền thông, giáo dục sức khỏe xét duyệt",
+   "unit": "tài liệu",
+   "code": "dd.tai_lieu.ttgdsk.xet_duyet",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 1497/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_1497",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 17
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 1497/QĐ-BVĐHYD MSBS lần 3/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_1497",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 1599/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_1599",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 1599/QĐ-BVĐHYD MSRR lần 2/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_1599",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2160/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2160",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2160/QĐ-BVĐHYD MSBS lần 7/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2160",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2332/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2332",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2332/QĐ-BVĐHYD MSRR lần 4/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2332",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2557/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2557",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 37
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2557/QĐ-BVĐHYD MSBS lần 05/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2557",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2605/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2605",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 11
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2605/QĐ-BVĐHYD MSBS lần 10/2025",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2605",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2669/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2669",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 28
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2720/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2720",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 9
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 2720/QĐ-BVĐHYD MSRR lần 5/2024",
+   "unit": "%",
+   "code": "dd.van_ban.qd_2720",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 3072/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_3072",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 3295/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_3295",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 26
+  },
+  {
+   "name": "Tỷ lệ sử dụng QĐ 3309/QĐ-BVĐHYD",
+   "unit": "%",
+   "code": "dd.van_ban.qd_3309",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 20
+  },
+  {
+   "name": "Biên bản xác nhận sử dụng vật tư nhiều kích cỡ",
+   "unit": "biên bản",
+   "code": "dd.vat_tu.bien_ban_vat_tu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 31
+  },
+  {
+   "name": "Số biên bản xác nhận sử dụng vật tư nhiều kích cỡ",
+   "unit": "biên bản",
+   "code": "dd.vat_tu.bien_ban_vat_tu",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Công văn của nhà cung cấp",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 13
+  },
+  {
+   "name": "Công văn của nhà cung cấp",
+   "unit": "văn bản",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Công văn của nhà cung cấp tiếp nhận",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Công văn của nhà cung cấp tiếp nhận xử lý",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Công văn nhà cung cấp",
+   "unit": "văn bản",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Công văn nhà cung cấp tiếp nhận",
+   "unit": "văn bản",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Công văn nhà cung cấp tiếp nhận",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số công văn của nhà cung cấp",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số công văn của nhà cung cấp tiếp nhận xử lý",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số công văn nhà cung cấp",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số công văn nhà cung cấp tiếp nhận",
+   "unit": "công văn",
+   "code": "dd.vat_tu.cong_van_ncc",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục gói thầu bổ sung năm 2026",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Danh mục tổng hợp đề xuất thầu gói bổ sung",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Danh mục đề xuất thầu gói bổ sung",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Danh mục đề xuất thầu gói bổ sung do thiếu số lượng",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Đề xuất thầu gói bổ sung do thiếu số lượng",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_bo_sung",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục cận hạn",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_can_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục cận hạn thống kê",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_can_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Số danh mục cận hạn",
+   "unit": "danh mục",
+   "code": "dd.vat_tu.danh_muc_can_han",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Gói thầu Cung cấp vật tư y tế tiêu hao năm 2025 lần 16",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Phần gói thầu Cung cấp vật tư y tế tiêu hao năm 2025 lần 16",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 4
+  },
+  {
+   "name": "Phần gói thầu Cung cấp vật tư y tế tiêu hao năm 2026 lần 4",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phần gói thầu VTYT chuyên khoa Tim mạch 2026",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phần gói thầu Cung cấp vật tư y tế tiêu hao năm 2026 lần 3",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số phần gói thầu Cung cấp vật tư y tế tiêu hao năm 2026 lần 4",
+   "unit": "phần",
+   "code": "dd.vat_tu.goi_thau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu yêu cầu cấp hàng",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 3
+  },
+  {
+   "name": "Phiếu yêu cầu cấp hàng của Đơn vị",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 23
+  },
+  {
+   "name": "Phiếu yêu cầu cấp hàng của Đơn vị tiếp nhận",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số phiếu yêu cầu cấp hàng",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu yêu cầu cấp hàng của Đơn vị",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 5
+  },
+  {
+   "name": "Số phiếu yêu cầu cấp hàng của Đơn vị tiếp nhận xử lý",
+   "unit": "phiếu",
+   "code": "dd.vat_tu.phieu_yeu_cau",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỉ lệ điều chỉnh phiếu yêu cầu cấp hàng",
+   "unit": "%",
+   "code": "dd.vat_tu.ty_le_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 7
+  },
+  {
+   "name": "Tỷ lệ điều chỉnh phiếu yêu cầu cấp hàng",
+   "unit": "%",
+   "code": "dd.vat_tu.ty_le_dieu_chinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 31
+  },
+  {
+   "name": "Biểu mẫu chưa ký số giảm so với tuần trước",
+   "unit": "phiếu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi họp thẩm định kết quả nhóm KTY khoa Xét nghiệm, Giải phẫu bệnh và Vi sinh",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi họp thẩm định kết quả đánh giá và phân cấp năng lực",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi họp thẩm định kết quả đánh giá và phân cấp năng lực ĐD-HS-KTY 2025-2026",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Buổi phổ biến nội dung chương trình Đặt kim luồn tĩnh mạch ngoại vi dưới hướng dẫn của siêu âm",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi thi đánh giá thẩm định năng lực cấp 4",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Buổi thi đánh giá thẩm định năng lực cấp 4",
+   "unit": "buổi thi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi tập huấn quy trình – quy định tổ chức",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Buổi tập huấn toàn viện",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bài KHCS Review",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bài KHCS của Học viên Đợt 12",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Bài KHCS học viên khóa 5 năm 2025 tiếp nhận",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Báo cáo hoàn thành tập huấn của các khoa/đơn vị",
+   "unit": "khoa/đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca lâm sàng hiệu chỉnh cho sách Thực hành chăm sóc vết thương",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ca lâm sàng tổng hợp và hiệu chỉnh cho sách Thực hành chăm sóc vết thương",
+   "unit": "ca lâm sàng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chuẩn bị xét duyệt",
+   "unit": "chuẩn bị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hành động điều dưỡng bổ sung hồ sơ đăng ký đề tài",
+   "unit": "hành động",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Học viên khóa 6 phân khoa thực hành",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên review và phản hồi bài KHCS",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi Lý thuyết cuối khóa",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi Lý thuyết cuối khóa lần 2",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi Lý thuyết học phần I lớp Nghiệp vụ Hộ lý trợ giúp",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Học viên thi Lý thuyết học phần II",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi Lý thuyết học phần II lớp Nghiệp vụ Hộ lý",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi học phần Lý thuyết",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi học phần Lý thuyết Đợt 11",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi lần 2 chưa đạt",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên thi và chấm bài thi Lý thuyết",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên Đợt 10 review và phản hồi bài KHCS",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên Đợt 11",
+   "unit": "Học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học viên Đợt 12",
+   "unit": "học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ ca bệnh chuẩn bị xét duyệt",
+   "unit": "Hồ sơ ca bệnh",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hồ sơ đăng ký đề án cải tiến hoàn thiện hệ thống quản lý sử dụng thuốc",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Nhân sự tham dự tập huấn",
+   "unit": "nhân sự",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Quy trình kỹ thuật Khoa Phụ sản",
+   "unit": "QTKT",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình liên quan truyền máu",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình – quy định thông báo tập huấn",
+   "unit": "QT-QĐ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình – quy định tập huấn",
+   "unit": "quy trình – quy định",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HV ngoài phân khoa thực hành",
+   "unit": "HV",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số HV thi học phần Lý thuyết cuối khóa lần 2",
+   "unit": "HV",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số giảm so với tuần trước",
+   "unit": "phiếu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu chưa ký số tăng so với tuần trước",
+   "unit": "phiếu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số biểu mẫu giảm so với tuần trước",
+   "unit": "phiếu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài KHCS của HV Đợt 14 được review",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài KHCS review",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài KHCS review của học viên Đợt 13",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài hoàn tất hiệu chỉnh sách Cẩm nang thực hành tiêm truyền an toàn",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài post-test soát xét",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài rà soát hiệu chỉnh sách Thực hành chăm sóc vết thương",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số bài tổng hợp và hiệu chỉnh nội dung sách Cẩm nang thực hành tiêm truyền an toàn (lần 1)",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài tổng hợp và hiệu chỉnh sách Cẩm nang thực hành tiêm truyền",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca lâm sàng hoàn tất hiệu chỉnh sách Thực hành chăm sóc vết thương",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số ca lâm sàng tổng hợp và hiệu chỉnh",
+   "unit": "ca lâm sàng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca lâm sàng tổng hợp và hiệu chỉnh nội dung sách Thực hành chăm sóc vết thương (lần 1)",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ca lâm sàng tổng hợp và hiệu chỉnh sách Thực hành chăm sóc vết thương",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên chưa đạt bài thi",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên tham dự Hội thảo Bệnh án điện tử Điều dưỡng",
+   "unit": "học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên tham dự hội thảo Đào tạo Điều dưỡng chuyên khoa",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên tham dự hội thảo Đào tạo Điều dưỡng chuyên khoa",
+   "unit": "học viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên Đợt 1 thực hành giai đoạn I",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ soát xét hồ sơ đào tạo chương trình đào tạo/hội thảo",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa có kết quả ghi nhận",
+   "unit": "khoa",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số ngày phỏng vấn văn hoá tử tế",
+   "unit": "ngày",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người đăng ký tham dự sinh hoạt chuyên môn",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số nhân viên phòng TCCB cung cấp danh sách trao đổi công việc",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số nhân viên phòng TCCB cung cấp danh sách trao đổi công việc",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số nhân viên phỏng vấn văn hoá tử tế",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số phiếu giảm so với tuần trước",
+   "unit": "phiếu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Tai Mũi HỌng Cơ sở 2",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Thần kinh, Khoa Hậu môn - Trực tràng, Đơn nguyên Gây mê - Hồi sức Phẫu thuật Tim mạch",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Tạo hình thẩm mỹ ban hành",
+   "unit": "quy trình kỹ thuật",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật sau xét duyệt Khoa Mắt",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật vừa ban hành",
+   "unit": "QTKT",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật vừa ban hành tổ chức tập huấn",
+   "unit": "quy trình",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thuyết minh đề án cải tiến chất lượng xây dựng",
+   "unit": "thuyết minh",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tháng thu thập và phân tích dữ liệu",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu Khoa Sơ sinh xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu Phụ sản xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu chuẩn bị xét duyệt Khoa Xét nghiệm",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu chuẩn bị xét duyệt Thăm dò chức năng hô hấp",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông GDSK Khoa Ngoại Gan - Mật - Tụy qua email",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK Khoa Khám bệnh",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK chuẩn bị xét duyệt (Khoa Ngoại Thần kinh)",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, giáo dục sức khỏe Khoa Sơ sinh gửi HĐĐD xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số đơn vị post-test được soát xét",
+   "unit": "đơn vị",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thang điểm cập nhật",
+   "unit": "thang",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thuyết minh đề án cải tiến chất lượng năm 2026",
+   "unit": "thuyết minh",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thí sinh đánh giá thẩm định năng lực cấp 4",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Thí sinh đánh giá thẩm định năng lực cấp 4",
+   "unit": "thí sinh",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Thời gian thu thập và phân tích dữ liệu",
+   "unit": "tháng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Tài liệu truyền thông, GDSK trình ký ban hành",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số buổi thi đánh giá thẩm định năng lực cấp 4",
+   "unit": "buổi",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số bài KHCS học viên khóa 5 năm 2025",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số bài sách Cẩm nang thực hành tiêm truyền",
+   "unit": "bài",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca lâm sàng sách Thực hành chăm sóc vết thương",
+   "unit": "ca",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số ca lâm sàng sách Thực hành chăm sóc vết thương",
+   "unit": "ca lâm sàng",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số học viên",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số thí sinh đánh giá thẩm định năng lực cấp 4",
+   "unit": "người",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tỷ lệ giảm biểu mẫu chưa hoàn tất ký số tại thời điểm NB xuất viện",
+   "unit": "%",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Ứng viên ĐD phỏng vấn",
+   "unit": "ứng viên",
+   "code": null,
+   "status": "NOISE",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Chấn thương chỉnh hình",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa GMHS PTTM",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Gây mê Hồi sức",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Hô hấp",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Hồi sức tích cực",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Ngoại GMT",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Ngoại Thần kinh",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Ngoại Tiêu hoá",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Nội Tim mạch",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Biểu mẫu chưa ký số Khoa Tai Mũi Họng",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Danh mục can thiệp chăm sóc rà soát",
+   "unit": "danh mục",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Học viên BVDK Thanh Vũ Medic Bạc Liêu tiếp nhận",
+   "unit": "học viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hồ sơ cử viên chức dự thi Sau đại học UMP",
+   "unit": "hồ sơ",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Hộ lý phỏng vấn",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Khoa/đơn vị hoàn thành tập huấn",
+   "unit": "khoa/đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhân viên phỏng vấn nghỉ việc",
+   "unit": "nhân viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu bàn giao phiên trực tồn đọng",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu công khai sử dụng thuốc tồn đọng",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu công khai đơn thuốc ngoại trú tồn đọng",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu tường trình thủ thuật tồn đọng",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phiếu tồn đọng tường trình thủ thuật",
+   "unit": "phiếu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phỏng vấn Hộ lý",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Phỏng vấn Điều dưỡng",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình kỹ thuật ban hành",
+   "unit": "quy trình",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Quy trình truyền máu cập nhật",
+   "unit": "quy trình",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số Khoa/Đơn vị có Đề nghị cập nhật danh mục kỹ thuật chuyên môn điều dưỡng đã rà soát",
+   "unit": "khoa",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Khoa/Đơn vị rà soát nội dung Đề nghị cập nhật",
+   "unit": "khoa",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Khoa/Đơn vị rà soát Đề nghị cập nhật danh mục kỹ thuật",
+   "unit": "khoa",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số QTKT vừa ban hành",
+   "unit": "QTKT",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số buổi họp phổ biến nội dung triển khai danh mục kỹ thuật chuyên môn điều dưỡng",
+   "unit": "buổi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số buổi sinh hoạt định hướng nội dung Văn hóa Tử tế",
+   "unit": "buổi",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài đã rà soát và hiệu chỉnh nội dung lần 2 sách Cẩm nang thực hành tiêm truyền an toàn",
+   "unit": "bài",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bài đã rà soát và hiệu chỉnh nội dung lần 2 sách Thực hành chăm sóc vết thương",
+   "unit": "bài",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chung Khoa Hồi sức tích cực xét duyệt",
+   "unit": "hướng dẫn",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc Khoa Nội tim mạch ban hành",
+   "unit": "hướng dẫn chăm sóc",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hướng dẫn chăm sóc xét duyệt",
+   "unit": "hướng dẫn",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên lớp Nghiệp vụ Hộ lý trợ giúp chăm sóc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học viên tiếp nhận tham quan, trao đổi kinh nghiệm",
+   "unit": "HV",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số khoa/đơn vị báo cáo hoàn thành tập huấn",
+   "unit": "khoa/đơn vị",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật Khoa Chấn thương chỉnh hình ban hành",
+   "unit": "quy trình kỹ thuật",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật khoa Nội thận-Thận nhân tạo và Hô hấp lượng giá",
+   "unit": "quy trình kỹ thuật",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật lượng giá sau tập huấn được soát xét, hiệu chỉnh",
+   "unit": "quy trình kỹ thuật",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số quy trình kỹ thuật đã soát xét post-test",
+   "unit": "quy trình",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu sau xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tài liệu truyền thông, GDSK sau xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Số tài liệu truyền thông, giáo dục sức khỏe sau xét duyệt",
+   "unit": "tài liệu",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số Điều dưỡng phỏng vấn nghỉ việc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Điều dưỡng phỏng vấn nghỉ việc",
+   "unit": "người",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 2
+  },
+  {
+   "name": "Ứng viên KTY PHCN sơ vấn",
+   "unit": "ứng viên",
+   "code": null,
+   "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  }
+ ]
+}

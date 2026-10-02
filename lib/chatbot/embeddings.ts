@@ -8,6 +8,12 @@ import { getPrismaRo } from '@/lib/prisma-ro';
 interface MetricVector {
   metric: string;
   department: string;
+  /** Số tuần có dữ liệu — 1 tuần là con số rời, nhiều tuần là chuỗi theo dõi. */
+  weeks: number | null;
+  /** Tuần cuối có dữ liệu, dạng 202640. */
+  lastYearWeek: number | null;
+  /** Chỉ số chuẩn (cây cha/con, v_chatbot_metric_facts); metric là đường dẫn đầy đủ. */
+  standard: boolean;
   /** Float32 thay vì number[] — 2.544 chỉ số × 2.048 chiều chỉ còn ~20MB. */
   vec: Float32Array;
 }
@@ -248,9 +254,35 @@ function buildCache(): Promise<CachedEmbeddings> {
   if (building) return building;
   building = (async () => {
     const t0 = Date.now();
-    const rows = await getPrismaRo().$queryRawUnsafe<Array<{ metric_name: string; department_name: string }>>(
-      'SELECT DISTINCT metric_name, department_name FROM v_chatbot_metrics ORDER BY department_name, metric_name',
-    );
+    // Đọc từ danh mục để biết mỗi chỉ số có bao nhiêu tuần dữ liệu — gợi ý cho
+    // model ưu tiên chuỗi thật thay vì con số rời chỉ xuất hiện một tuần.
+    // Môi trường chưa có danh mục (chưa chạy migration) thì đọc thẳng v_chatbot_metrics.
+    //
+    // Tên thô đã gộp vào danh mục chuẩn được thay bằng chỉ số chuẩn: để lại chỉ
+    // làm model chọn nhầm bảng thô — đo được: hỏi "văn bản theo dõi tiến độ"
+    // model lấy v_chatbot_metrics và thiếu số "chưa xử lý". Con số rời chưa gắn
+    // vào cây (standard_metric_path NULL) vẫn giữ để còn tìm được.
+    type Row = { metric_name: string; department_name: string; weeks_with_data: number | null; last_year_week: number | null; standard: boolean };
+    const rows = await getPrismaRo()
+      .$queryRawUnsafe<Row[]>(
+        `SELECT metric_path AS metric_name, department_name, NULL::int AS weeks_with_data, NULL::int AS last_year_week, true AS standard
+           FROM v_chatbot_metric_tree WHERE kind = 'METRIC'
+         UNION ALL
+         SELECT metric_name, department_name, weeks_with_data, last_year_week, false
+           FROM v_chatbot_metric_catalog
+          WHERE standard_metric_path IS NULL
+         ORDER BY 2, 1`,
+      )
+      .catch(() =>
+        getPrismaRo().$queryRawUnsafe<Row[]>(
+          'SELECT metric_name, department_name, weeks_with_data, last_year_week, false AS standard FROM v_chatbot_metric_catalog ORDER BY department_name, metric_name',
+        ),
+      )
+      .catch(() =>
+        getPrismaRo().$queryRawUnsafe<Row[]>(
+          'SELECT DISTINCT metric_name, department_name, NULL::int AS weeks_with_data, NULL::int AS last_year_week, false AS standard FROM v_chatbot_metrics ORDER BY department_name, metric_name',
+        ),
+      );
     if (rows.length === 0) {
       cache = { fetchedAt: Date.now(), model: 'empty', items: [] };
       return cache;
@@ -260,7 +292,11 @@ function buildCache(): Promise<CachedEmbeddings> {
     cache = {
       fetchedAt: Date.now(),
       model,
-      items: rows.map((r, i) => ({ metric: r.metric_name, department: r.department_name, vec: Float32Array.from(vectors[i]) })),
+      items: rows.map((r, i) => ({
+        metric: r.metric_name, department: r.department_name,
+        weeks: r.weeks_with_data ?? null, lastYearWeek: r.last_year_week ?? null, standard: r.standard,
+        vec: Float32Array.from(vectors[i]),
+      })),
     };
     console.info(`[chatbot] embedding ${rows.length} chỉ số bằng ${model} trong ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     return cache;
@@ -291,7 +327,7 @@ export function warmMetricEmbeddings(): void {
 export async function findRelevantMetrics(
   question: string,
   k = 10,
-): Promise<Array<{ metric: string; department: string; score: number }>> {
+): Promise<Array<{ metric: string; department: string; score: number; weeks: number | null; lastYearWeek: number | null; standard: boolean }>> {
   // Không chờ build: cache cũ vẫn dùng được trong lúc làm mới; chưa có thì bỏ qua.
   warmMetricEmbeddings();
   const cached = cache;
@@ -301,6 +337,9 @@ export async function findRelevantMetrics(
   const scored = cached.items.map((item) => ({
     metric: item.metric,
     department: item.department,
+    weeks: item.weeks,
+    lastYearWeek: item.lastYearWeek,
+    standard: item.standard,
     score: cosine(qVec, item.vec),
   }));
   scored.sort((a, b) => b.score - a.score);
