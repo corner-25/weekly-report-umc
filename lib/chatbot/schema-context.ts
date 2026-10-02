@@ -46,6 +46,8 @@ v_chatbot_hc_metrics là bảng dọc gốc của chúng — chỉ dùng khi kh�
   'OUTLIER_HIGH' lệch cao bất thường · 'OUTLIER_LOW' lệch thấp
   'DUPLICATE_PERIOD' nhiều giá trị cùng mốc · 'MIXED_SCALE' trộn hai thang
   'DATE_FRAGMENT' mảnh ngày tháng · 'COMPARISON_VALUE' số ở mệnh đề so sánh
+  'EXCEL_MISMATCH' lệch file số liệu của phòng · 'COPIED_VALUE' trùng số với mục khác (nghi chép)
+  'CHILD_EXCEEDS_PARENT' số con > số tổng · 'UNIT_MISMATCH' sai loại đơn vị (vd lấy số tuần làm giá trị)
 - review_status (text): 'PENDING'|'APPROVED'|'REJECTED'
 
 ### 2. v_chatbot_tasks — Nhiệm vụ + tiến độ + NỘI DUNG BÁO CÁO

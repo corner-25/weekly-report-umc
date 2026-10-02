@@ -10,6 +10,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { PROMPT_VERSION } from './prompts';
 import { validateMetric, validateMetricGroup } from './metric-validation';
+import { validateAgainstCatalog, type CatalogNodeInfo } from './catalog-validation';
 import { extractMetrics, buildHistory, type MetricExtractionInput } from './metric-extraction';
 import {
   matchWeekTasks,
@@ -332,6 +333,15 @@ async function extractMetricsForWeek(
     })),
   );
 
+  // Lỗi chỉ thấy được khi biết số liệu thuộc chỉ số chuẩn nào: con > cha, sai
+  // loại đơn vị, chép số giữa hai mục, lệch file Excel của phòng.
+  const catalog = await loadCatalogContext(db, input.departmentId, input.year, input.week);
+  const catalogIssues = validateAgainstCatalog(
+    result.metrics.map((m) => ({ nodeCode: catalog.nodeOf(m.name, m.unit), value: m.value, unit: m.unit })),
+    catalog.nodes,
+    catalog.excel,
+  );
+
   let extracted = 0;
   let flagged = 0;
 
@@ -348,6 +358,7 @@ async function extractMetricsForWeek(
         history.get(metric.name),
       ),
       ...(groupIssues.get(index) ?? []),
+      ...(catalogIssues.get(index) ?? []),
     ];
 
     const reviewFlags = [...metric.flags, ...issues.map((i) => i.flag)];
@@ -374,4 +385,51 @@ async function extractMetricsForWeek(
   }
 
   return { extracted, flagged, tokens: result.totalTokens };
+}
+
+interface CatalogContext {
+  /** Mã chỉ số chuẩn của một tên số liệu, null nếu tên chưa gắn vào danh mục. */
+  nodeOf(name: string, unit: string | null): string | null;
+  nodes: Map<string, CatalogNodeInfo>;
+  /** Số chính thức từ file Excel của phòng cùng tuần, theo mã chỉ số. */
+  excel: Map<string, number>;
+}
+
+/** Danh mục chỉ số chuẩn của một phòng, kèm số Excel cùng tuần nếu phòng có file số liệu. */
+async function loadCatalogContext(
+  db: PrismaClient,
+  departmentId: string,
+  year: number,
+  week: number,
+): Promise<CatalogContext> {
+  const [aliases, nodes] = await Promise.all([
+    db.metricAlias.findMany({
+      where: { departmentId, status: 'MAPPED' },
+      select: { aliasName: true, unit: true, nodeCode: true },
+    }),
+    db.metricNode.findMany({
+      where: { departmentId, isActive: true },
+      select: { code: true, unit: true, parentCode: true, aggregation: true, hcCategory: true, hcContent: true },
+    }),
+  ]);
+  const byKey = new Map(aliases.map((a) => [`${a.aliasName}|${a.unit}`, a.nodeCode]));
+
+  const excel = new Map<string, number>();
+  const hcNodes = nodes.filter((n) => n.hcCategory && n.hcContent);
+  if (hcNodes.length > 0) {
+    const rows = await db.hcMetric.findMany({
+      where: { year, week, category: { in: [...new Set(hcNodes.map((n) => n.hcCategory!))] } },
+      select: { category: true, content: true, value: true },
+    });
+    for (const n of hcNodes) {
+      const row = rows.find((r) => r.category === n.hcCategory && r.content === n.hcContent);
+      if (row) excel.set(n.code, row.value);
+    }
+  }
+
+  return {
+    nodeOf: (name, unit) => byKey.get(`${name}|${unit ?? ''}`) ?? null,
+    nodes: new Map(nodes.map((n) => [n.code, { unit: n.unit, parentCode: n.parentCode, aggregation: n.aggregation }])),
+    excel,
+  };
 }
