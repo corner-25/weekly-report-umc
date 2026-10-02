@@ -4,6 +4,7 @@ import { Select } from '@/components/ui/Select';
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { VehicleDocumentFiles } from '@/components/vehicles/VehicleDocumentFiles';
 import {
   Truck, ArrowLeft, Wrench, Calendar, FileText, FileBadge, History,
   Plus, Loader2, Ambulance, Car, Bus, Package, HelpCircle,
@@ -213,10 +214,11 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
       {tab === 'documents' && (
         <div className="space-y-3">
+          <VehicleDocumentFiles vehicleId={vehicle.id} />
           {vehicle.relatedLicenses.length === 0 && (
             <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-12 text-center">
               <FileText className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-              <p className="text-slate-500 text-sm">Chưa có giấy tờ nào được gắn cho xe này</p>
+              <p className="text-slate-500 text-sm">Chưa có giấy phép nào gắn với xe này (đăng kiểm, phù hiệu… quản lý ở mục Giấy phép)</p>
             </div>
           )}
           {vehicle.relatedLicenses.map((l) => (

@@ -661,6 +661,8 @@ model Vehicle {
   licenses License[]
 
   maintenanceLogs VehicleMaintenance[]
+  /// File hồ sơ gốc (ảnh chụp đăng ký, đăng kiểm, bảo hiểm, PDF…).
+  documents       VehicleDocument[]
   /// Chuyến đi của xe này, nối từ dữ liệu tổ xe qua biển số đã chuẩn hoá.
   trips           FleetTrip[]
 
@@ -673,6 +675,32 @@ model Vehicle {
   @@index([brand])
   @@map("vehicles")
 }
+/// File hồ sơ gốc của xe, lưu thẳng trong Postgres.
+///
+/// App chạy trên Railway không có ổ đĩa bền vững (ghi vào public/uploads thì
+/// mất sau mỗi lần deploy), còn hồ sơ xe chỉ vài chục MB — lưu trong DB là gọn
+/// nhất và được sao lưu cùng dữ liệu. Muốn chuyển sang S3 chỉ cần đổi cột data
+/// thành đường dẫn.
+model VehicleDocument {
+  id         String   @id @default(cuid())
+  vehicleId  String
+  title      String
+  fileName   String
+  mimeType   String
+  size       Int
+  /// SHA-256 nội dung — chống tải trùng cùng một file cho một xe.
+  sha256     String
+  data       Bytes
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, sha256])
+  @@index([vehicleId])
+  @@map("vehicle_documents")
+}
+
 
 // VehicleMaintenance - 1 record bảo dưỡng / sửa chữa / sự kiện
 model VehicleMaintenance {
