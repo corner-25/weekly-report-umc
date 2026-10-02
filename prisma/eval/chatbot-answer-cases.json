@@ -1,0 +1,33 @@
+{
+  "note": "Đáp án lấy từ nguồn chính thức, KHÔNG từ chính view chatbot: Excel phòng HC (hc_metrics), Google Sheets đội xe (fleet_trips), và câu gốc trong báo cáo tuần bệnh viện (đã đối chiếu từng con số ngày 02-03/10/2026). Câu hỏi ghi rõ tuần/tháng để đáp án không đổi theo thời gian.",
+  "cases": [
+    { "id": "baixe-dt-t39", "question": "Doanh thu bãi giữ xe tuần 39/2026 là bao nhiêu?", "expect": [49004000], "source": "Excel HC" },
+    { "id": "baixe-dt-thang9", "question": "Doanh thu bãi giữ xe tháng 9/2026 là bao nhiêu?", "expect": [188620000], "source": "Excel HC" },
+    { "id": "baixe-vengay-t39", "question": "Tuần 39/2026 bãi xe bán được bao nhiêu lượt vé ngày?", "expect": [8986], "source": "Excel HC" },
+    { "id": "baixe-sosanh", "question": "So sánh doanh thu bãi giữ xe tuần 39 với tuần 38 năm 2026", "expect": [49004000, 47028000], "source": "Excel HC" },
+    { "id": "xehc-km-thang9", "question": "Tháng 9/2026 xe hành chính chạy bao nhiêu km?", "expect": [5988], "source": "Google Sheets đội xe" },
+    { "id": "xehc-chuyen-thang9", "question": "Tháng 9/2026 xe hành chính chạy bao nhiêu chuyến?", "expect": [201], "source": "Google Sheets đội xe" },
+    { "id": "xehc-maxkm-thang9", "question": "Xe hành chính nào chạy nhiều km nhất tháng 9/2026?", "expect": ["50A-007.20"], "source": "Google Sheets đội xe" },
+    { "id": "xehc-nhienlieu-thang9", "question": "Xe hành chính đổ bao nhiêu lít nhiên liệu trong tháng 9/2026?", "expect": [1120], "source": "Google Sheets đội xe" },
+    { "id": "toxe-km-t39", "question": "Tuần 39/2026 tổ xe chạy tổng bao nhiêu km, trong đó xe hành chính bao nhiêu km?", "expect": [5894, 1351], "source": "Excel HC" },
+    { "id": "toxe-dt-thang9", "question": "Doanh thu tổ xe tháng 9/2026 theo báo cáo Phòng Hành chính?", "expect": [352114293], "source": "Excel HC" },
+    { "id": "tongdai-den-t39", "question": "Tuần 39/2026 tổng đài bệnh viện có bao nhiêu cuộc gọi đến?", "expect": [1330], "source": "Excel HC" },
+    { "id": "tongdai-nho-t39", "question": "Tuần 39/2026 nhánh tổng đài nào bị nhỡ cuộc gọi do không bắt máy nhiều nhất, bao nhiêu cuộc?", "expect": [232], "source": "Excel HC" },
+    { "id": "vbden-thang9", "question": "Tháng 9/2026 có bao nhiêu văn bản đến và bao nhiêu văn bản xử lý trễ hạn?", "expect": [1045, 8], "source": "Excel HC" },
+    { "id": "vip-t1-39", "question": "Từ tuần 1 đến tuần 39 năm 2026 lễ tân đã tiếp bao nhiêu lượt khách VIP?", "expect": [883], "source": "Excel HC" },
+    { "id": "thuky-t39", "question": "Tuần 39/2026 hệ thống thư ký có tổng cộng bao nhiêu thư ký?", "expect": [290], "source": "Excel HC" },
+    { "id": "tiendo-t37-a", "question": "Tuần 37/2026 Phòng Hành chính đang theo dõi tiến độ bao nhiêu văn bản, trong đó bao nhiêu văn bản chưa xử lý?", "expect": [376, 92], "source": "Báo cáo tuần sheet 37" },
+    { "id": "tiendo-t37-b", "question": "Tuần 37/2026 trong số văn bản theo dõi tiến độ có bao nhiêu đang xử lý và bao nhiêu đã hoàn thành?", "expect": [101, 183], "source": "Báo cáo tuần sheet 37" },
+    { "id": "dd-chamsoc-t36", "question": "Tuần 36/2026 Phòng Điều dưỡng giám sát chỉ số chăm sóc bao nhiêu lượt, tại bao nhiêu khoa/đơn vị?", "expect": [9, 2], "source": "Báo cáo tuần sheet 36" },
+    { "id": "dd-nhandang-t36", "question": "Tỷ lệ tuân thủ nhận dạng người bệnh tuần 36/2026 là bao nhiêu?", "expect": [99.94], "source": "Báo cáo tuần sheet 36" },
+    { "id": "dd-qtkt-thang8", "question": "Tháng 8/2026 Phòng Điều dưỡng thực hiện tổng cộng bao nhiêu lượt giám sát quy trình kỹ thuật?", "expect": [1245], "source": "Báo cáo tuần sheet 32-35" },
+    { "id": "bhyt-luot-t36", "question": "Tuần 36/2026 có bao nhiêu lượt khám chữa bệnh BHYT nội trú và ngoại trú?", "expect": [1640, 11434], "source": "Báo cáo tuần sheet 36" },
+    { "id": "khdt-thuctap-t36", "question": "Tuần 36/2026 tổng số sinh viên, học viên thực tập tại bệnh viện là bao nhiêu?", "expect": [1084], "source": "Báo cáo tuần sheet 36" },
+    { "id": "tttt-facebook-t36", "question": "Tuần 36/2026 fanpage Facebook của bệnh viện có bao nhiêu lượt xem bài viết, video?", "expect": [391564], "source": "Báo cáo tuần sheet 36" },
+    { "id": "vttb-xuatkho-t36", "question": "Tuần 36/2026 giá trị xuất kho vật tư y tế tiêu hao là bao nhiêu?", "expect": [13639578407], "source": "Báo cáo tuần sheet 36" },
+    { "id": "khth-hsba-t38", "question": "Tuần 38/2026 Phòng Kế hoạch Tổng hợp kiểm tra tiếp nhận bao nhiêu hồ sơ bệnh án và in mã lưu trữ bao nhiêu hồ sơ?", "expect": [2390, 1631], "source": "Báo cáo tuần sheet 38" },
+    { "id": "tccb-hoso-t38", "question": "Tuần 38/2026 Phòng Tổ chức Cán bộ kiểm tra bao nhiêu hồ sơ thanh toán và bao nhiêu hồ sơ trình ký Ban Giám đốc?", "expect": [543, 305], "source": "Báo cáo tuần sheet 38" },
+    { "id": "cntt-hotro-t38", "question": "Tuần 38/2026 Phòng Công nghệ Thông tin hỗ trợ người dùng bao nhiêu lượt, trong đó hỗ trợ máy tính bao nhiêu lượt?", "expect": [239, 105], "source": "Báo cáo tuần sheet 38" },
+    { "id": "qldt-goithau-t38", "question": "Tuần 38/2026 Đơn vị Quản lý Đấu thầu tiếp nhận rà soát bao nhiêu gói thầu, gồm bao nhiêu danh mục?", "expect": [19, 1218], "source": "Báo cáo tuần sheet 38" }
+  ]
+}
