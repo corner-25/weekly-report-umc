@@ -8,7 +8,7 @@
  * bịa: tài xế nhập "45.000km", "50,000", ô trống, hay chữ lẫn số.
  */
 import { describe, expect, it } from 'vitest';
-import { checkOdometerSequence, parseFuelLiters, parseOdometer } from './cleaning';
+import { checkOdometerSequence, fixDistanceOutliers, parseFuelLiters, parseOdometer } from './cleaning';
 
 describe('parseOdometer', () => {
   it('đọc số nguyên bình thường', () => {
@@ -137,5 +137,21 @@ describe('checkOdometerSequence', () => {
     // Vẫn so với 10.000 của chuyến 1, không phải "không có gì để so".
     expect(result[2].status).toBe('OK');
     expect(result[2].delta).toBe(200);
+  });
+});
+
+describe('fixDistanceOutliers — ước km từ giờ lái', () => {
+  const base = { vehicleId: '50A-032.81', timestamp: new Date('2026-09-30T08:00:00Z'), odometer: null, areaType: 'Nội thành' };
+
+  it('ước km khi giờ lái hợp lý', () => {
+    const [r] = fixDistanceOutliers([{ ...base, distanceKm: null, durationHours: 2 }]);
+    expect(r.method).toBe('ESTIMATED_FROM_HOURS');
+    expect(r.distanceKm).toBeGreaterThan(0);
+  });
+
+  it('KHÔNG ước khi giờ lái vô lý — để trống cho người rà soát', () => {
+    // Ca thật: 80,04 giờ từng bị ước thành 2.401,2 km.
+    const [r] = fixDistanceOutliers([{ ...base, distanceKm: null, durationHours: 80.04 }]);
+    expect(r).toEqual({ distanceKm: null, method: 'UNFIXABLE' });
   });
 });

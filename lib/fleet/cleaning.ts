@@ -11,6 +11,7 @@ import {
   MAX_ODO_DELTA_KM,
   MAX_REASONABLE_SPEED,
   MAX_TRIP_DISTANCE_KM,
+  SUSPICIOUS_TRIP_HOURS,
   UNKNOWN_DRIVER,
   WORK_CATEGORY_RULES,
 } from './cleaning-rules';
@@ -540,8 +541,13 @@ export function fixDistanceOutliers(rows: readonly DistanceFixInput[]): Distance
       continue;
     }
 
-    // Cách 2: giờ lái × vận tốc trung bình theo khu vực
-    if (hours !== null && hours > 0) {
+    // Cách 2: giờ lái × vận tốc trung bình theo khu vực.
+    //
+    // Chỉ khi giờ lái hợp lý. Giờ lái quá SUSPICIOUS_TRIP_HOURS gần như luôn là
+    // nhập sai (thiếu giờ kết thúc, sai ngày) — nhân lên ra km vô lý: chuyến
+    // 80 giờ ngày 30/09/2026 thành 2.401 km, chuyến 94,5 giờ thành 2.836 km,
+    // làm sai số km và tiêu hao nhiên liệu của cả xe.
+    if (hours !== null && hours > 0 && hours <= SUSPICIOUS_TRIP_HOURS) {
       const speed = AVG_SPEED_KMH[row.areaType] ?? AVG_SPEED_KMH['Nội thành'];
       results[idx] = { distanceKm: Math.round(hours * speed * 10) / 10, method: 'ESTIMATED_FROM_HOURS' };
       continue;
