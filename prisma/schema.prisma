@@ -1466,6 +1466,9 @@ model ExtractedMetric {
   /// Chỉ đánh dấu, không tự sửa giá trị — máy đoán sai một lần là hỏng cả
   /// chuỗi, mà người đọc câu gốc là biết ngay.
   reviewFlags     String[] @default([])
+  /// Mã chỉ số chuẩn (metric_nodes.code) do AI chọn từ danh mục lúc trích.
+  /// NULL: số liệu ngoài danh mục — khi đó gắn qua metric_aliases theo tên.
+  metricCode      String?
   extractionModel String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -1476,6 +1479,7 @@ model ExtractedMetric {
 
   @@index([weekId, departmentId])
   @@index([name])
+  @@index([metricCode])
   @@index([reviewStatus])
   @@map("extracted_metrics")
 }

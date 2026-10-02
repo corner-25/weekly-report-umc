@@ -12,6 +12,7 @@ import { PROMPT_VERSION } from './prompts';
 import { validateMetric, validateMetricGroup } from './metric-validation';
 import { validateAgainstCatalog, type CatalogNodeInfo } from './catalog-validation';
 import { extractMetrics, buildHistory, type MetricExtractionInput } from './metric-extraction';
+import type { MetricCatalogEntry } from './prompts';
 import {
   matchWeekTasks,
   saveAliases,
@@ -270,7 +271,9 @@ async function extractMetricsForWeek(
     resultText: t.resultText,
   }));
 
-  const result = await extractMetrics(input.departmentName, items, buildHistory(previous));
+  // Danh mục chuẩn của phòng: đưa vào prompt để AI chọn mã, và để kiểm tra chéo.
+  const catalog = await loadCatalogContext(db, input.departmentId, input.year, input.week);
+  const result = await extractMetrics(input.departmentName, items, buildHistory(previous), catalog.entries);
 
   // Liên kết metric với MasterTask đã khớp, nếu xác định được.
   const progressRows = await db.weekTaskProgress.findMany({
@@ -335,9 +338,8 @@ async function extractMetricsForWeek(
 
   // Lỗi chỉ thấy được khi biết số liệu thuộc chỉ số chuẩn nào: con > cha, sai
   // loại đơn vị, chép số giữa hai mục, lệch file Excel của phòng.
-  const catalog = await loadCatalogContext(db, input.departmentId, input.year, input.week);
   const catalogIssues = validateAgainstCatalog(
-    result.metrics.map((m) => ({ nodeCode: catalog.nodeOf(m.name, m.unit), value: m.value, unit: m.unit })),
+    result.metrics.map((m) => ({ nodeCode: m.metricCode ?? catalog.nodeOf(m.name, m.unit), value: m.value, unit: m.unit })),
     catalog.nodes,
     catalog.excel,
   );
@@ -379,6 +381,7 @@ async function extractMetricsForWeek(
         originalValue: metric.value,
         reviewFlags,
         extractionModel: model,
+        metricCode: metric.metricCode,
       },
     });
     extracted += 1;
@@ -388,6 +391,8 @@ async function extractMetricsForWeek(
 }
 
 interface CatalogContext {
+  /** Danh mục đưa vào prompt: chỉ số có số (METRIC), kèm đường dẫn cha > con. */
+  entries: MetricCatalogEntry[];
   /** Mã chỉ số chuẩn của một tên số liệu, null nếu tên chưa gắn vào danh mục. */
   nodeOf(name: string, unit: string | null): string | null;
   nodes: Map<string, CatalogNodeInfo>;
@@ -409,7 +414,10 @@ async function loadCatalogContext(
     }),
     db.metricNode.findMany({
       where: { departmentId, isActive: true },
-      select: { code: true, unit: true, parentCode: true, aggregation: true, hcCategory: true, hcContent: true },
+      select: {
+        code: true, name: true, kind: true, unit: true, parentCode: true, aggregation: true,
+        hcCategory: true, hcContent: true,
+      },
     }),
   ]);
   const byKey = new Map(aliases.map((a) => [`${a.aliasName}|${a.unit}`, a.nodeCode]));
@@ -427,9 +435,41 @@ async function loadCatalogContext(
     }
   }
 
+  // Đường dẫn bỏ node gốc (tên phòng) — phòng đã nằm sẵn trong prompt.
+  const byCode = new Map(nodes.map((n) => [n.code, n]));
+  const pathOf = (code: string): string => {
+    const node = byCode.get(code);
+    if (!node) return '';
+    const parent = node.parentCode ? byCode.get(node.parentCode) : undefined;
+    return parent?.parentCode ? `${pathOf(parent.code)} > ${node.name}` : node.name;
+  };
+  const entries = nodes
+    .filter((n) => n.kind === 'METRIC')
+    .map((n) => ({ code: n.code, path: pathOf(n.code), unit: n.unit }));
+
   return {
+    entries,
     nodeOf: (name, unit) => byKey.get(`${name}|${unit ?? ''}`) ?? null,
     nodes: new Map(nodes.map((n) => [n.code, { unit: n.unit, parentCode: n.parentCode, aggregation: n.aggregation }])),
     excel,
   };
+}
+
+/**
+ * Chỉ trích lại SỐ LIỆU của một phòng-tuần (không khớp lại nhiệm vụ).
+ *
+ * Dùng khi đổi cách trích (vd thêm danh mục chuẩn vào prompt) mà nhiệm vụ đã
+ * khớp đúng rồi — rẻ hơn importWeekForDepartment vì bỏ bước khớp nhiệm vụ.
+ */
+export async function reextractWeekMetrics(
+  db: PrismaClient,
+  input: WeekImportInput,
+  options: { model?: string } = {},
+): Promise<{ extracted: number; flagged: number; tokens: number }> {
+  const week = await db.week.findUnique({
+    where: { weekNumber_year: { weekNumber: input.week, year: input.year } },
+    select: { id: true },
+  });
+  if (!week) throw new Error(`Chưa có bản ghi tuần ${input.week}/${input.year} trong hệ thống`);
+  return extractMetricsForWeek(db, input, week.id, options.model ?? DEFAULT_MODEL);
 }

@@ -209,12 +209,50 @@ CHỈ trả JSON.`;
 // GIAI ĐOẠN 5 — trích số liệu định lượng từ văn bản
 // ═══════════════════════════════════════════════════════════════════
 
+/** Một chỉ số trong danh mục chuẩn của phòng, đưa vào prompt để AI chọn mã. */
+export interface MetricCatalogEntry {
+  code: string;
+  /** Đường dẫn cha > con, vd "Bảo hiểm thương mại > Nội trú BHTM > Số lượt nội trú BHTM". */
+  path: string;
+  unit: string | null;
+}
+
+/**
+ * Phần danh mục chuẩn trong prompt.
+ *
+ * Có danh mục thì AI CHỌN mã thay vì tự đặt tên: một chỉ số không còn sinh ra
+ * 8 cách viết, và tên trơn mất ngữ cảnh ("Nội trú" của mục bảo lãnh bị gộp vào
+ * lượt KCB BHYT nội trú) được neo vào đúng nhánh của cây.
+ */
+function catalogSection(catalog: readonly MetricCatalogEntry[]): string {
+  if (catalog.length === 0) return '';
+  return `
+DANH MỤC CHỈ SỐ CHUẨN của phòng (mã | đường dẫn | đơn vị):
+${catalog.map((c) => `${c.code} | ${c.path} | ${c.unit ?? ''}`).join('\n')}
+
+Với MỖI số liệu, chọn "ma" là mã trong danh mục nếu số liệu ĐÚNG là đại lượng đó:
+cùng thứ được đếm, cùng phạm vi, cùng mục cha. Đọc kỹ MỤC CHỨA dòng số liệu —
+"Nội trú: 5 lượt" nằm trong mục "Bảo hiểm thương mại" thì là số lượt nội trú
+BHTM, KHÔNG phải số lượt KCB BHYT nội trú.
+Mã trong danh mục là SỐ TỔNG HỢP của cả tuần. Con số nhắc tới MỘT việc cụ thể
+không phải số tổng, dù cùng loại:
+  "Ký hợp đồng dịch vụ đánh giá ISO 15189 với 01 đơn vị" → "ma": null
+    (không phải tổng số hợp đồng phát hành trong tuần)
+  "Tổ chức cuộc thi nghiệp vụ thư ký ngày 26/3" → "ma": null
+    (không phải tổng số sự kiện Phòng Hành chính chủ trì)
+  "Phát hành 95 hợp đồng" → "ma": mã tổng số hợp đồng phát hành
+Không chắc, hoặc danh mục không có đại lượng đó → "ma": null và đặt "ten" như
+quy tắc dưới. KHÔNG tự bịa mã ngoài danh mục.
+`;
+}
+
 export function buildMetricPrompt(
   deptName: string,
   items: Array<{ taskName: string; resultText: string }>,
+  catalog: readonly MetricCatalogEntry[] = [],
 ): string {
   return `Trích số liệu định lượng từ báo cáo tuần của ${deptName}, Bệnh viện Đại học Y Dược TP.HCM.
-
+${catalogSection(catalog)}
 ${items.map((it, i) => `[${i}] NHIỆM VỤ: ${it.taskName}\n    KẾT QUẢ: ${clip(it.resultText, 700)}`).join('\n\n')}
 
 Với mỗi mục, trích TẤT CẢ số liệu định lượng có trong văn bản.
@@ -298,7 +336,7 @@ Quy tắc bắt buộc:
 
 Trả JSON:
 {"ket_qua": [{"stt": <số trong []>, "so_lieu": [
-  {"ten": "...", "gia_tri": <số>, "don_vi": "...", "ky": "WEEK|CUMULATIVE|MONTH|QUARTER|YEAR",
+  {"ma": "<mã danh mục hoặc null>", "ten": "...", "gia_tri": <số>, "don_vi": "...", "ky": "WEEK|CUMULATIVE|MONTH|QUARTER|YEAR",
    "tinh_den_ngay": "YYYY-MM-DD hoặc null", "trich_tu": "<đoạn văn gốc>", "do_tin_cay": <0-1>}
 ]}]}
 
