@@ -2,7 +2,7 @@
  "department": "Phòng Quản trị Tòa nhà",
  "model": "glm-5.2",
  "reviewedAt": null,
- "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 4.3%.",
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 4.3%. Ngày 03/10/2026: gộp các chỉ số theo từng tầng thành một chỉ số theo loại việc (vị trí đổi mỗi tuần, không làm cây được).",
  "nodes": [
   {
    "code": "qttn",
@@ -237,127 +237,7 @@
   {
    "code": "qttn.sua_chua.gach_bop",
    "parent": "qttn.sua_chua",
-   "name": "Sửa chữa gạch bộp",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Tầng trệt khu B",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_a",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Tầng trệt khu A",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.ham_2",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Hầm 2",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_1",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 1",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 1 khu A",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_5",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 5",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_9",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 9",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_10",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 10",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_11",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 11",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_12",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 12",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_12_khu_a",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 12 khu A",
-   "kind": "METRIC",
-   "unit": "viên",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.gach_bop.lau_13",
-   "parent": "qttn.sua_chua.gach_bop",
-   "name": "Lầu 13",
+   "name": "Số viên gạch bộp sửa chữa",
    "kind": "METRIC",
    "unit": "viên",
    "agg": "SUM",
@@ -367,147 +247,7 @@
   {
    "code": "qttn.sua_chua.tam_tran",
    "parent": "qttn.sua_chua",
-   "name": "Thay thế tấm trần",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.tang_tret_khu_b",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Tầng trệt khu B",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.tang_tret_lau_1_khu_b",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Tầng trệt & Lầu 1 khu B",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_1_khu_b",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 1 khu B",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_5_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 5 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_7",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 7",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_7_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 7 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_8_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 8 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_9",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 9",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_9_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 9 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_10_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 10 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_11",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 11",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_11_khu_a",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 11 khu A",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_12",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 12",
-   "kind": "METRIC",
-   "unit": "tấm",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.tam_tran.lau_13",
-   "parent": "qttn.sua_chua.tam_tran",
-   "name": "Lầu 13",
+   "name": "Số tấm trần thay thế",
    "kind": "METRIC",
    "unit": "tấm",
    "agg": "SUM",
@@ -517,67 +257,7 @@
   {
    "code": "qttn.sua_chua.nha_ve_sinh",
    "parent": "qttn.sua_chua",
-   "name": "Chà ron nhà vệ sinh",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_7",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 7",
-   "kind": "METRIC",
-   "unit": "phòng",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_8",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 8",
-   "kind": "METRIC",
-   "unit": "phòng",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_9",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 9",
-   "kind": "METRIC",
-   "unit": "phòng",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_10",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 10",
-   "kind": "METRIC",
-   "unit": "phòng",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_11",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 11",
-   "kind": "METRIC",
-   "unit": "phòng",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_12",
-   "parent": "qttn.sua_chua.nha_ve_sinh",
-   "name": "Lầu 12",
+   "name": "Số phòng vệ sinh chà ron",
    "kind": "METRIC",
    "unit": "phòng",
    "agg": "SUM",
@@ -587,87 +267,7 @@
   {
    "code": "qttn.sua_chua.op_vach",
    "parent": "qttn.sua_chua",
-   "name": "Ốp vách compact",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.lau_1",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Lầu 1",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.lau_8",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Lầu 8",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.lau_9",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Lầu 9",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.lau_10",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Lầu 10",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.lau_13",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Lầu 13",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.khu_cssd_lau_3",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Khu CSSD lầu 3",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Khu phẫu thuật trong ngày lầu 6",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
-   "parent": "qttn.sua_chua.op_vach",
-   "name": "Khu phẫu thuật trong ngày lầu 6 khu A",
+   "name": "Diện tích ốp vách compact",
    "kind": "METRIC",
    "unit": "m²",
    "agg": "SUM",
@@ -687,47 +287,7 @@
   {
    "code": "qttn.sua_chua.son.tuong",
    "parent": "qttn.sua_chua.son",
-   "name": "Sơn tường",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.son.tuong.tang_tret_khu_b",
-   "parent": "qttn.sua_chua.son.tuong",
-   "name": "Tầng trệt khu B",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.son.tuong.lau_1_khu_b",
-   "parent": "qttn.sua_chua.son.tuong",
-   "name": "Lầu 1 khu B",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.son.tuong.lau_2_khu_b",
-   "parent": "qttn.sua_chua.son.tuong",
-   "name": "Lầu 2 khu B",
-   "kind": "METRIC",
-   "unit": "m²",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
-   "parent": "qttn.sua_chua.son.tuong",
-   "name": "Khu CSSD lầu 3",
+   "name": "Diện tích bả, sơn tường",
    "kind": "METRIC",
    "unit": "m²",
    "agg": "SUM",
@@ -757,7 +317,7 @@
   {
    "code": "qttn.sua_chua.lap_dat.cua_nha_ve_sinh",
    "parent": "qttn.sua_chua.lap_dat",
-   "name": "Cửa nhà vệ sinh lầu 14",
+   "name": "Số cánh cửa nhà vệ sinh lắp đặt",
    "kind": "METRIC",
    "unit": "cánh",
    "agg": "SUM",
@@ -767,27 +327,7 @@
   {
    "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
    "parent": "qttn.sua_chua.lap_dat",
-   "name": "Vách gỗ cửa phòng bệnh",
-   "kind": "GROUP",
-   "unit": null,
-   "agg": null,
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
-   "parent": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
-   "name": "Lầu 10",
-   "kind": "METRIC",
-   "unit": "vách",
-   "agg": "SUM",
-   "hc": null,
-   "origin": "REPORT"
-  },
-  {
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
-   "parent": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
-   "name": "Lầu 13",
+   "name": "Số vách gỗ cửa phòng bệnh lắp đặt",
    "kind": "METRIC",
    "unit": "vách",
    "agg": "SUM",
@@ -938,6 +478,46 @@
    "code": "qttn.cay_xanh.tong",
    "parent": "qttn.cay_xanh",
    "name": "Tổng chăm sóc cây xanh",
+   "kind": "METRIC",
+   "unit": "chậu",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.thay_ton",
+   "parent": "qttn.sua_chua",
+   "name": "Diện tích thay tôn",
+   "kind": "METRIC",
+   "unit": "m²",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.sua_chua.ghe_inox.ghe_tron",
+   "parent": "qttn.sua_chua.ghe_inox",
+   "name": "Hàn ghế tròn inox",
+   "kind": "METRIC",
+   "unit": "cái",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.giam_sat.thay_may_lanh",
+   "parent": "qttn.giam_sat",
+   "name": "Giám sát thay máy lạnh",
+   "kind": "METRIC",
+   "unit": "bộ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "qttn.cay_xanh.cat_tia",
+   "parent": "qttn.cay_xanh",
+   "name": "Cắt tỉa cây",
    "kind": "METRIC",
    "unit": "chậu",
    "agg": "SUM",
@@ -2085,7 +1665,7 @@
   {
    "name": "Sửa chữa gạch bộp hầm 2",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.ham_2",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2093,7 +1673,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 1",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_1",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 9
@@ -2101,7 +1681,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 10",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_10",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2109,7 +1689,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 11",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_11",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5
@@ -2117,7 +1697,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 12",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_12",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5
@@ -2125,7 +1705,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 12 khu A",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_12_khu_a",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2133,7 +1713,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 13",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_13",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 7
@@ -2141,7 +1721,7 @@
   {
    "name": "Sửa chữa gạch bộp đường nội bộ lầu 13",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_13",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2149,7 +1729,7 @@
   {
    "name": "Số gạch bộp sửa chữa lầu 1 khu A",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2157,7 +1737,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 1 khu A",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_1_khu_a",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5
@@ -2165,7 +1745,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 5",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_5",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2173,7 +1753,7 @@
   {
    "name": "Sửa chữa gạch bộp lầu 9",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_9",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2181,7 +1761,7 @@
   {
    "name": "Sửa chữa gạch bộp đường nội bộ lầu 9",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.lau_9",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2189,7 +1769,7 @@
   {
    "name": "Sửa chữa gạch bộp tầng trệt khu A",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_a",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2197,7 +1777,7 @@
   {
    "name": "Số gạch bộp sửa chữa tầng trệt khu B",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2205,7 +1785,7 @@
   {
    "name": "Sửa chữa gạch bộp tầng trệt khu B",
    "unit": "viên",
-   "code": "qttn.sua_chua.gach_bop.tang_tret_khu_b",
+   "code": "qttn.sua_chua.gach_bop",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 6
@@ -2261,7 +1841,7 @@
   {
    "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 10",
    "unit": "vách",
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2269,7 +1849,7 @@
   {
    "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 11",
    "unit": "vách",
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_10",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2277,7 +1857,7 @@
   {
    "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 12",
    "unit": "vách",
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2285,7 +1865,7 @@
   {
    "name": "Lắp đặt vách gỗ trang trí cửa đi phòng bệnh lầu 13",
    "unit": "vách",
-   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh.lau_13",
+   "code": "qttn.sua_chua.lap_dat.vach_go_cua_phong_benh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2293,7 +1873,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 10",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_10",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5
@@ -2301,7 +1881,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 11",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_11",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 6
@@ -2309,7 +1889,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 12",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_12",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2317,7 +1897,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 7",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_7",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 8
@@ -2325,7 +1905,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 8",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_8",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2333,7 +1913,7 @@
   {
    "name": "Chà ron nhà vệ sinh lầu 9",
    "unit": "phòng",
-   "code": "qttn.sua_chua.nha_ve_sinh.lau_9",
+   "code": "qttn.sua_chua.nha_ve_sinh",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2341,7 +1921,7 @@
   {
    "name": "Ốp vách compact khu CSSD lầu 3",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.khu_cssd_lau_3",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 6
@@ -2349,7 +1929,7 @@
   {
    "name": "Vách kính khung inox khu phẫu thuật trong ngày lầu 6",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2357,7 +1937,7 @@
   {
    "name": "Ốp vách compact khu phẫu thuật trong ngày lầu 6",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2365,7 +1945,7 @@
   {
    "name": "Vách compact khu phẫu thuật trong ngày lầu 6 khu A",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 2
@@ -2373,7 +1953,7 @@
   {
    "name": "Ốp vách compact khu phẫu thuật trong ngày lầu 6 khu A",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.khu_ptt_ngay_lau_6_khu_a",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2381,7 +1961,7 @@
   {
    "name": "Ốp tường tấm compact lầu 1",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.lau_1",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2389,7 +1969,7 @@
   {
    "name": "Ốp tường tấm compact lầu 10",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.lau_10",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2397,7 +1977,7 @@
   {
    "name": "Ốp tường tấm compact lầu 13",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.lau_13",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2405,7 +1985,7 @@
   {
    "name": "Ốp tường tấm compact lầu 8",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.lau_8",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2413,7 +1993,7 @@
   {
    "name": "Ốp tường tấm compact lầu 9",
    "unit": "m²",
-   "code": "qttn.sua_chua.op_vach.lau_9",
+   "code": "qttn.sua_chua.op_vach",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2485,7 +2065,7 @@
   {
    "name": "Sơn tường epoxy khu CSSD lầu 3",
    "unit": "m²",
-   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
+   "code": "qttn.sua_chua.son.tuong",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2493,7 +2073,7 @@
   {
    "name": "Sơn tường epoxy khu CSSD lầu 3",
    "unit": "m2",
-   "code": "qttn.sua_chua.son.tuong.khu_cssd_lau_3",
+   "code": "qttn.sua_chua.son.tuong",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2501,7 +2081,7 @@
   {
    "name": "Sơn tường lầu 1 khu B",
    "unit": "m²",
-   "code": "qttn.sua_chua.son.tuong.lau_1_khu_b",
+   "code": "qttn.sua_chua.son.tuong",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 8
@@ -2509,7 +2089,7 @@
   {
    "name": "Sơn tường lầu 2 khu B",
    "unit": "m²",
-   "code": "qttn.sua_chua.son.tuong.lau_2_khu_b",
+   "code": "qttn.sua_chua.son.tuong",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 7
@@ -2517,7 +2097,7 @@
   {
    "name": "Sơn tường tầng trệt khu B",
    "unit": "m²",
-   "code": "qttn.sua_chua.son.tuong.tang_tret_khu_b",
+   "code": "qttn.sua_chua.son.tuong",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 7
@@ -2525,7 +2105,7 @@
   {
    "name": "Thay thế tấm trần lầu 10 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_10_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2533,7 +2113,7 @@
   {
    "name": "Số tấm trần thay thế lầu 11",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_11",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2541,7 +2121,7 @@
   {
    "name": "Thay thế tấm trần lầu 11",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_11",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2549,7 +2129,7 @@
   {
    "name": "Thay thế tấm trần lầu 11 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_11_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 6
@@ -2557,7 +2137,7 @@
   {
    "name": "Thay thế tấm trần lầu 12",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_12",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2565,7 +2145,7 @@
   {
    "name": "Thay thế tấm trần lầu 13",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_13",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2573,7 +2153,7 @@
   {
    "name": "Thay thế tấm trần lầu 1 khu B",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_1_khu_b",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 3
@@ -2581,7 +2161,7 @@
   {
    "name": "Thay thế tấm trần lầu 5 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_5_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5
@@ -2589,7 +2169,7 @@
   {
    "name": "Số tấm trần thay thế lầu 7",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_7",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 1
@@ -2597,7 +2177,7 @@
   {
    "name": "Thay thế tấm trần lầu 7",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_7",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 8
@@ -2605,7 +2185,7 @@
   {
    "name": "Thay thế tấm trần lầu 7 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_7_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 6
@@ -2613,7 +2193,7 @@
   {
    "name": "Thay thế tấm trần lầu 8 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_8_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2621,7 +2201,7 @@
   {
    "name": "Thay thế tấm trần lầu 9",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_9",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 4
@@ -2629,7 +2209,7 @@
   {
    "name": "Thay thế tấm trần lầu 9 khu A",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.lau_9_khu_a",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 7
@@ -2637,7 +2217,7 @@
   {
    "name": "Thay thế tấm trần tầng trệt khu B",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.tang_tret_khu_b",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 14
@@ -2645,7 +2225,7 @@
   {
    "name": "Thay thế tấm trần tầng trệt, lầu 1 khu B",
    "unit": "tấm",
-   "code": "qttn.sua_chua.tam_tran.tang_tret_lau_1_khu_b",
+   "code": "qttn.sua_chua.tam_tran",
    "status": "MAPPED",
    "candidates": [],
    "weeks": 5

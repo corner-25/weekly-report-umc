@@ -241,6 +241,10 @@ không phải số tổng, dù cùng loại:
   "Tổ chức cuộc thi nghiệp vụ thư ký ngày 26/3" → "ma": null
     (không phải tổng số sự kiện Phòng Hành chính chủ trì)
   "Phát hành 95 hợp đồng" → "ma": mã tổng số hợp đồng phát hành
+Cùng MỘT loại việc làm ở nhiều vị trí trong tuần → trích MỘT số liệu TỔNG cho
+loại việc đó (cộng các vị trí), gắn mã của loại việc; không tách từng vị trí:
+  "Sửa chữa gạch bộp: lầu 3 (4 viên), lầu 7 (16 viên), lầu 6 (78 viên)"
+    → MỘT số liệu: gia_tri 98, don_vi "viên", mã "Số viên gạch bộp sửa chữa"
 Không chắc, hoặc danh mục không có đại lượng đó → "ma": null và đặt "ten" như
 quy tắc dưới. KHÔNG tự bịa mã ngoài danh mục.
 `;

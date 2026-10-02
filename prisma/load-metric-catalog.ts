@@ -93,6 +93,15 @@ async function main(): Promise<void> {
     await prisma.metricNode.upsert({ where: { code: n.code }, create: { code: n.code, ...data }, update: data });
   }
 
+  // File là nguồn chân lý: chỉ số của phòng không còn trong file thì tắt (không
+  // xoá — tên gọi và số liệu cũ còn trỏ tới). Vd gộp chỉ số "gạch bộp lầu 3",
+  // "lầu 7"… thành một chỉ số tổng: các chỉ số theo tầng phải biến khỏi cây.
+  const retired = await prisma.metricNode.updateMany({
+    where: { departmentId: department.id, isActive: true, code: { notIn: catalog.nodes.map((n) => n.code) } },
+    data: { isActive: false },
+  });
+  if (retired.count > 0) console.info(`  tắt ${retired.count} chỉ số không còn trong danh mục`);
+
   for (const a of catalog.aliases) {
     const key = { departmentId: department.id, aliasName: a.name, unit: a.unit };
     const existing = await prisma.metricAlias.findUnique({
