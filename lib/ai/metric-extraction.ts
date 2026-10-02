@@ -16,6 +16,13 @@ import { buildMetricPrompt, type MetricCatalogEntry } from './prompts';
 const METRIC_BATCH_SIZE = 6;
 
 /**
+ * Số ô mỗi lô khi prompt kèm danh mục chuẩn. Danh mục (vài nghìn token) đi kèm
+ * MỖI lô, nên lô to hơn thì gửi lặp ít hơn — chạy thử lô 6 tốn ~17.000 token
+ * mỗi phòng-tuần, phần lớn là danh mục lặp lại.
+ */
+const METRIC_BATCH_SIZE_WITH_CATALOG = 12;
+
+/**
  * Số lô gọi AI cùng lúc trong một phòng-tuần. Các lô độc lập nhau; chạy tuần tự
  * thì phòng nhiều việc (Điều dưỡng ~16 ô) mất vài phút chỉ để chờ mạng.
  */
@@ -106,8 +113,9 @@ export async function extractMetrics(
   const candidates = items.filter((it) => /\d/.test(it.resultText));
   const knownCodes = new Set(catalog.map((c) => c.code));
   const batches: MetricExtractionInput[][] = [];
-  for (let i = 0; i < candidates.length; i += METRIC_BATCH_SIZE) {
-    batches.push(candidates.slice(i, i + METRIC_BATCH_SIZE));
+  const batchSize = catalog.length > 0 ? METRIC_BATCH_SIZE_WITH_CATALOG : METRIC_BATCH_SIZE;
+  for (let i = 0; i < candidates.length; i += batchSize) {
+    batches.push(candidates.slice(i, i + batchSize));
   }
 
   const results = await mapWithConcurrency(batches, METRIC_BATCH_CONCURRENCY, async (batch) => {
