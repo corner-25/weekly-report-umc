@@ -178,7 +178,7 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
   has_smart_board, has_wifi, has_aircon, has_whiteboard
 - v_chatbot_event_checklists: record_id, event_id, event_name, event_date, title, description, is_completed, completed_at, order_number
   Đã có sẵn event_name, event_date — KHÔNG join sang v_chatbot_events (view đó không có id để join).
-- v_chatbot_vip_summary: record_id, visit_date, organization_name, destination, visit_count (không có tên khách/nhân viên/liên hệ)
+- v_chatbot_vip_summary: record_id, visit_date, organization_name, destination, visit_count — lượt dẫn khách VIP khám và dẫn đoàn ghi trong CRM (không có tên khách/nhân viên/liên hệ)
 - v_chatbot_mou_details: record_id, mou_id, mou_title, detail_type, title, content, status, progress, deadline, result, notes
 - v_chatbot_license_renewals: record_id, license_id, license_name, license_number, renewed_date, previous_expiry, new_expiry, decision_number, notes
 - v_chatbot_sync_health: record_id, source_name, source_kind, status, trigger, started_at, finished_at, rows_read, rows_upserted, rows_skipped, error_message

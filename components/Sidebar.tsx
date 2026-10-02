@@ -36,10 +36,12 @@ import {
   ChevronDown,
   Truck,
   Crown,
+  Contact,
+  HeartHandshake,
   type LucideIcon,
 } from 'lucide-react';
 
-type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'partnerships' | 'analytics' | 'settings';
+type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'crm' | 'partnerships' | 'analytics' | 'settings';
 
 interface NavItem {
   href: string;
@@ -74,7 +76,6 @@ const navGroups: NavGroup[] = [
       { href: '/dashboard/calendar', label: 'Lịch công tác', icon: CalendarDays, exact: false },
       { href: '/dashboard/hospital-events', label: 'Sự kiện bệnh viện', icon: CalendarClock, exact: false },
       { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
-      { href: '/dashboard/vip-guests', label: 'Khách VIP', icon: Crown, exact: true },
       { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen, exact: false },
     ],
   },
@@ -97,6 +98,16 @@ const navGroups: NavGroup[] = [
       { href: '/dashboard/secretaries/transfers', label: 'Luân chuyển', icon: ArrowLeftRight, exact: true },
       { href: '/dashboard/secretaries/birthdays', label: 'Sinh nhật', icon: Cake, exact: true },
       { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', icon: FileUser, exact: true },
+    ],
+  },
+  {
+    id: 'crm',
+    title: 'CRM đối tác',
+    icon: HeartHandshake,
+    items: [
+      { href: '/dashboard/crm', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/crm/contacts', label: 'Danh bạ', icon: Contact, exact: false },
+      { href: '/dashboard/crm/interactions', label: 'Tiếp đón & dẫn đoàn', icon: Crown, exact: false },
     ],
   },
   {

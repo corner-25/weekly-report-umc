@@ -421,41 +421,6 @@ enum HospitalEventType {
   COLLABORATED // Phối hợp
 }
 
-// Cơ quan của khách VIP - danh mục được tái sử dụng khi nhập liệu
-model VipOrganization {
-  id             String   @id @default(cuid())
-  name           String   @unique @db.Text
-  normalizedName String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  visits VipGuestVisit[]
-
-  @@map("vip_organizations")
-}
-
-// Một lượt tiếp đón/hướng dẫn khách VIP của Phòng Hành chính
-model VipGuestVisit {
-  id             String           @id @default(cuid())
-  visitDate      DateTime
-  guestName      String           @db.Text
-  organizationId String?
-  organization   VipOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  phone          String?
-  contactInfo    String?          @db.Text
-  supportContent String           @db.Text
-  destination    String?          @db.Text
-  staffName      String
-  note           String?          @db.Text
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-
-  @@index([visitDate])
-  @@index([staffName])
-  @@index([organizationId])
-  @@map("vip_guest_visits")
-}
-
 // ==================== SECRETARY MANAGEMENT ====================
 
 // SecretaryType - Loại thư ký
@@ -1508,3 +1473,255 @@ model AiExtractionRun {
   @@index([departmentId, year, week])
   @@map("ai_extraction_runs")
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CRM đối tác — thay cho module Khách VIP (VipOrganization, VipGuestVisit).
+//
+// Theo dõi trọn một đối tác: cá nhân, tổ chức, chức vụ qua các thời kỳ, người
+// thân/trợ lý, ngày quan trọng (dương hoặc âm lịch) và dòng thời gian tương tác
+// — gồm tiếp đón, dẫn khách VIP khám bệnh, dẫn đoàn. Thiết kế: phác thảo CRM
+// đã duyệt ngày 02/10/2026 (giai đoạn 1; nhắc nhở và quà tặng ở giai đoạn sau).
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum CrmTier {
+  VIP
+  A
+  B
+  C
+}
+
+enum CrmOrganizationType {
+  HOSPITAL      // Bệnh viện, cơ sở y tế
+  UNIVERSITY    // Trường, viện nghiên cứu
+  COMPANY       // Doanh nghiệp
+  GOVERNMENT    // Cơ quan nhà nước
+  INTERNATIONAL // Tổ chức quốc tế
+  PRESS         // Báo chí
+  OTHER
+}
+
+enum CrmContactStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CrmRelationKind {
+  SPOUSE    // Vợ/chồng
+  CHILD     // Con
+  PARENT    // Bố/mẹ
+  ASSISTANT // Trợ lý
+  SECRETARY // Thư ký riêng
+  OTHER
+}
+
+enum CrmDateKind {
+  BIRTHDAY    // Sinh nhật
+  APPOINTMENT // Ngày nhận chức
+  FOUNDING    // Ngày thành lập
+  ANNIVERSARY // Ngày kỷ niệm khác (cưới, hợp tác…)
+  OTHER
+}
+
+enum CrmInteractionType {
+  VIP_ESCORT // Dẫn khách VIP khám/chữa bệnh
+  DELEGATION // Tiếp và dẫn đoàn
+  MEETING    // Gặp mặt, làm việc
+  CALL       // Gọi điện
+  EMAIL      // Email, thư
+  EVENT      // Mời/dự sự kiện
+  GIFT       // Tặng hoa, quà
+  OTHER
+}
+
+model CrmOrganization {
+  id             String              @id @default(cuid())
+  name           String              @db.Text
+  /// Tên đã chuẩn hoá (chữ thường, gọn khoảng trắng) — chống tạo trùng tổ chức.
+  normalizedName String              @unique
+  type           CrmOrganizationType @default(OTHER)
+  tier           CrmTier             @default(C)
+  address        String?             @db.Text
+  website        String?
+  phone          String?
+  email          String?
+  /// Nhân viên Phòng HC phụ trách quan hệ.
+  ownerName      String?
+  tags           String[]            @default([])
+  note           String?             @db.Text
+  isActive       Boolean             @default(true)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  positions      CrmPosition[]
+  importantDates CrmImportantDate[]
+  interactions   CrmInteraction[]
+
+  @@index([tier])
+  @@map("crm_organizations")
+}
+
+model CrmContact {
+  id             String           @id @default(cuid())
+  fullName       String
+  /// Học hàm, học vị ghi trước tên: "PGS.TS.", "BS.CKII."
+  academicTitle  String?
+  /// Cách xưng hô khi chúc mừng: "Thầy", "Chị", "Anh".
+  salutation     String?
+  gender         String?
+  /// Ngày sinh tách phần: nhiều đối tác chỉ biết ngày/tháng, không biết năm.
+  birthDay       Int?
+  birthMonth     Int?
+  birthYear      Int?
+  birthIsLunar   Boolean          @default(false)
+  phone          String?
+  email          String?
+  /// Địa chỉ nhận hoa, quà.
+  giftAddress    String?          @db.Text
+  tier           CrmTier          @default(C)
+  tags           String[]         @default([])
+  ownerName      String?
+  /// Sở thích có cấu trúc: { flowers, avoid, food, hobbies } — dùng khi chọn quà.
+  preferences    Json?
+  /// Lưu ý nhạy cảm (sức khoẻ, gia đình): chỉ hiện cho người phụ trách và quản trị.
+  sensitiveNote  String?          @db.Text
+  status         CrmContactStatus @default(ACTIVE)
+  source         String?
+  note           String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  positions      CrmPosition[]
+  relationsFrom  CrmRelation[]          @relation("RelationFrom")
+  relationsTo    CrmRelation[]          @relation("RelationTo")
+  importantDates CrmImportantDate[]
+  interactions   CrmInteraction[]
+  participations CrmInteractionParticipant[]
+
+  @@index([fullName])
+  @@index([tier])
+  @@index([birthMonth, birthDay])
+  @@map("crm_contacts")
+}
+
+/// Chức vụ qua các thời kỳ — người chuyển công tác vẫn giữ lịch sử.
+model CrmPosition {
+  id             String           @id @default(cuid())
+  contactId      String
+  organizationId String?
+  title          String
+  department     String?
+  fromDate       DateTime?
+  toDate         DateTime?
+  isCurrent      Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+
+  contact      CrmContact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([contactId])
+  @@index([organizationId])
+  @@map("crm_positions")
+}
+
+/// Người thân, trợ lý — để gửi lời chúc/quà đúng người. Người có hồ sơ riêng thì
+/// nối toContactId; không thì chỉ ghi tên và số điện thoại.
+model CrmRelation {
+  id            String          @id @default(cuid())
+  fromContactId String
+  toContactId   String?
+  name          String?
+  phone         String?
+  kind          CrmRelationKind
+  note          String?         @db.Text
+  createdAt     DateTime        @default(now())
+
+  fromContact CrmContact  @relation("RelationFrom", fields: [fromContactId], references: [id], onDelete: Cascade)
+  toContact   CrmContact? @relation("RelationTo", fields: [toContactId], references: [id], onDelete: SetNull)
+
+  @@index([fromContactId])
+  @@map("crm_relations")
+}
+
+/// Ngày quan trọng của một cá nhân HOẶC tổ chức; ngày âm lịch được đổi sang
+/// dương lịch của từng năm khi tính ngày sắp tới (lib/crm/lunar.ts).
+model CrmImportantDate {
+  id               String      @id @default(cuid())
+  contactId        String?
+  organizationId   String?
+  kind             CrmDateKind
+  label            String?
+  day              Int
+  month            Int
+  year             Int?
+  isLunar          Boolean     @default(false)
+  repeatsYearly    Boolean     @default(true)
+  /// Nhắc trước bao nhiêu ngày; trống = theo hạng đối tác.
+  remindDaysBefore Int?
+  note             String?     @db.Text
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  contact      CrmContact?      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([organizationId])
+  @@index([month, day])
+  @@map("crm_important_dates")
+}
+
+/// Dòng thời gian quan hệ: mỗi lần tiếp đón, dẫn khám, dẫn đoàn, gặp mặt… một dòng.
+model CrmInteraction {
+  id              String             @id @default(cuid())
+  type            CrmInteractionType
+  occurredAt      DateTime
+  /// Khách chính (dẫn khám: khách VIP; dẫn đoàn: trưởng đoàn).
+  contactId       String?
+  organizationId  String?
+  title           String?
+  /// Nội dung hỗ trợ / làm việc.
+  content         String             @db.Text
+  /// Khoa/phòng hoặc nơi đến.
+  destination     String?            @db.Text
+  // ── Dẫn khách VIP khám bệnh ──
+  /// Người được khám khi không phải chính khách (người nhà khách VIP).
+  patientName     String?
+  /// Dịch vụ đã hỗ trợ: Khám, Xét nghiệm, Chẩn đoán hình ảnh, Nội trú…
+  services        String[]           @default([])
+  // ── Dẫn đoàn ──
+  guestCount      Int?
+  /// Mục đích đoàn: Làm việc, Tham quan, Học tập, Ký kết…
+  purpose         String?
+  /// Nhân viên dẫn chính và người đi cùng.
+  staffName       String
+  companions      String[]           @default([])
+  hospitalEventId String?
+  note            String?            @db.Text
+  createdById     String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  contact      CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  organization CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  participants CrmInteractionParticipant[]
+
+  @@index([occurredAt])
+  @@index([type, occurredAt])
+  @@index([contactId])
+  @@index([organizationId])
+  @@map("crm_interactions")
+}
+
+/// Thành viên đoàn có hồ sơ — một lượt tiếp đoàn gắn vào hồ sơ của từng người.
+model CrmInteractionParticipant {
+  interactionId String
+  contactId     String
+
+  interaction CrmInteraction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  contact     CrmContact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([interactionId, contactId])
+  @@index([contactId])
+  @@map("crm_interaction_participants")
+}
+

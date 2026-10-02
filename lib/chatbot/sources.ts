@@ -17,7 +17,7 @@ const VIEW_SOURCES: Record<string, Omit<ChatbotSource, 'id'>> = {
   v_chatbot_fleet_summary: { title: 'Tổng hợp hoạt động tổ xe', href: '/dashboard/reports/phong-hc-native' },
   v_chatbot_meeting_rooms: { title: 'Danh sách phòng họp', href: '/dashboard/meeting-rooms' },
   v_chatbot_event_checklists: { title: 'Checklist sự kiện', href: '/dashboard/hospital-events' },
-  v_chatbot_vip_summary: { title: 'Thống kê tiếp đón khách VIP', href: '/dashboard/vip-guests' },
+  v_chatbot_vip_summary: { title: 'Thống kê tiếp đón VIP và dẫn đoàn (CRM)', href: '/dashboard/crm/interactions' },
   v_chatbot_mou_details: { title: 'Điều khoản và hoạt động MOU', href: '/dashboard/mous' },
   v_chatbot_license_renewals: { title: 'Lịch sử gia hạn giấy phép', href: '/dashboard/licenses' },
   v_chatbot_sync_health: { title: 'Tình trạng đồng bộ dữ liệu', href: '/dashboard/data-sync' },
