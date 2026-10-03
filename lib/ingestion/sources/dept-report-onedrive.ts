@@ -80,25 +80,24 @@ export const deptReportOnedrive: Connector<Buffer, DeptReportParseResult> = {
   async upsert([result]: DeptReportParseResult[], ctx: SyncContext): Promise<UpsertResult> {
     const { prisma, source, runId } = ctx;
 
-    // CHỈ THÊM DÒNG MỚI, không ghi đè dòng đã có.
+    // File Excel là nguồn sự thật: dòng mới thì thêm, dòng đổi giá trị thì CẬP NHẬT.
     //
-    // Số liệu đã nạp coi như đã chốt: nếu ai đó sửa nhầm file Excel nguồn, DB
-    // vẫn giữ nguyên con số cũ. Muốn sửa số đã chốt thì sửa thẳng trong DB.
-    //
-    // Đổi lại, khi file nguồn có giá trị khác giá trị đã lưu, ta ghi cảnh báo
-    // vào SyncLog để người vận hành biết mà quyết định — im lặng bỏ qua sẽ
-    // khiến sai lệch nằm mãi mà không ai hay.
+    // Trước đây số đã nạp bị "chốt" — sửa trong Excel không vào được DB. Nhưng
+    // hệ thống không có chỗ nào sửa tay số này, còn Excel thì hay được nhập dần
+    // trong tuần và sửa lỗi sau: tuần 39 văn bản đến nạp lúc mới có 338 rồi kẹt
+    // ở đó dù file đã là 420; tuần 32 lưu ngược "đúng hạn 2 / trễ hạn 299".
+    // Mọi thay đổi ghi lại cũ → mới vào SyncLog để tra cứu.
     const existing = await prisma.hcMetric.findMany({
       where: { year: result.year },
-      select: { category: true, content: true, week: true, value: true },
+      select: { id: true, category: true, content: true, week: true, value: true },
     });
 
     const keyOf = (r: { category: string; content: string; week: number }) =>
       `${r.category}|${r.content}|${r.week}`;
-    const existingByKey = new Map(existing.map((r) => [keyOf(r), r.value]));
+    const existingByKey = new Map(existing.map((r) => [keyOf(r), r]));
 
     const fresh: typeof result.rows = [];
-    const changed: Array<{ key: string; oldValue: number; newValue: number }> = [];
+    const changed: Array<{ id: string; key: string; oldValue: number; newValue: number; month: number | null }> = [];
 
     for (const row of result.rows) {
       const key = keyOf(row);
@@ -106,8 +105,8 @@ export const deptReportOnedrive: Connector<Buffer, DeptReportParseResult> = {
 
       if (known === undefined) {
         fresh.push(row);
-      } else if (known !== row.value) {
-        changed.push({ key, oldValue: known, newValue: row.value });
+      } else if (known.value !== row.value) {
+        changed.push({ id: known.id, key, oldValue: known.value, newValue: row.value, month: row.month });
       }
     }
 
@@ -137,19 +136,24 @@ export const deptReportOnedrive: Connector<Buffer, DeptReportParseResult> = {
     );
 
     if (changed.length > 0) {
+      await prisma.$transaction(
+        changed.map((c) => prisma.hcMetric.update({
+          where: { id: c.id },
+          data: { value: c.newValue, month: c.month, syncRunId: runId },
+        })),
+      );
       await ctx.log(
         'warn',
-        `${changed.length} số liệu trong file nguồn khác giá trị đã lưu — GIỮ NGUYÊN giá trị cũ. ` +
-          'Muốn áp dụng số mới thì sửa trực tiếp trong hệ thống.',
-        { changes: changed.slice(0, MAX_CHANGED_LOGGED) },
+        `Cập nhật ${changed.length} số liệu đã sửa trong file nguồn (cũ → mới)`,
+        { changes: changed.slice(0, MAX_CHANGED_LOGGED).map(({ key, oldValue, newValue }) => ({ key, oldValue, newValue })) },
       );
     }
 
     // Ô chưa nhập không phải dòng "bỏ qua do lỗi", nhưng vẫn đáng đếm để
     // trang quản trị cho thấy còn bao nhiêu số liệu chưa có.
     return {
-      upserted,
-      skipped: result.emptyValueCount + result.notApplicableCount + changed.length,
+      upserted: upserted + changed.length,
+      skipped: result.emptyValueCount + result.notApplicableCount,
     };
   },
 };
