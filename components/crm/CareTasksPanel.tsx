@@ -3,6 +3,7 @@
 import { Gift, Pencil, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CARE_STATUS_LABELS, GIFT_TYPE_LABELS } from '@/lib/crm/constants';
+import { PhotoStrip } from './CrmPhotos';
 import { formatDate, formatMoney } from './format';
 import type { CareStatus, CareTaskDTO } from './types';
 import { ICON_BTN, SectionCard, SmallAction } from './ui';
@@ -111,6 +112,7 @@ export function CareTasksPanel({ tasks, onAdd, onEdit, onDelete, onStatusChange 
                         {[money, t.assigneeName, t.deliveredAt ? `trao ${formatDate(t.deliveredAt)}` : null].filter(Boolean).join(' · ')}
                       </p>
                       {t.note && <p className="mt-0.5 whitespace-pre-line text-xs text-slate-500">{t.note}</p>}
+                      <PhotoStrip photos={t.photos} className="mt-1.5" />
                     </div>
                     <div className="-mr-1 flex shrink-0">
                       <button type="button" onClick={() => onEdit(t)} aria-label="Sửa kế hoạch quà, hoa" className={ICON_BTN}><Pencil className="h-3.5 w-3.5" /></button>

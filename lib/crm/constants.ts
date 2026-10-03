@@ -124,3 +124,13 @@ export function toSearchKey(...parts: Array<string | null | undefined>): string 
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+export const MAX_CRM_PHOTO_BYTES = 8 * 1024 * 1024;
+/** Đủ cho vài góc chụp giỏ quà và ảnh trao tặng, không biến CRM thành kho ảnh. */
+export const MAX_PHOTOS_PER_ITEM = 12;
+
+export const PHOTO_KIND_LABELS = {
+  RECEIVED: 'Quà, hoa bệnh viện nhận',
+  GIVEN: 'Quà, hoa tặng đối tác',
+  OTHER: 'Ảnh khác',
+} as const;

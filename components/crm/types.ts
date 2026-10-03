@@ -44,6 +44,18 @@ export interface InteractionDTO {
   contact: { id: string; fullName: string; academicTitle: string | null } | null;
   organization: { id: string; name: string } | null;
   participants: Array<{ id: string; fullName: string }>;
+  photos: PhotoDTO[];
+}
+
+export type PhotoKind = 'RECEIVED' | 'GIVEN' | 'OTHER';
+
+export interface PhotoDTO {
+  id: string;
+  kind: PhotoKind;
+  caption: string | null;
+  uploadedById: string | null;
+  /** Đường dẫn ảnh (cần đăng nhập). */
+  url: string;
 }
 
 export interface ImportantDateDTO {
@@ -101,6 +113,7 @@ export interface CareTaskDTO {
   /** Lượt tương tác GIFT ghi khi đã trao. */
   interactionId: string | null;
   createdById: string | null;
+  photos: PhotoDTO[];
 }
 
 /** Dịp đã tới hạn chuẩn bị quà/hoa (trong số ngày nhắc trước), kèm việc nếu đã lên kế hoạch. */

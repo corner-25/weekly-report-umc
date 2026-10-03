@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Building2, CalendarClock, Clock, Gift, Handshake, History, Plus, UserRound, Users } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, Clock, Gift, Handshake, History, Plus, QrCode, UserRound, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS, GIFT_TYPE_LABELS } from '@/lib/crm/constants';
@@ -12,6 +12,7 @@ import { CareDueSection } from '@/components/crm/CareDueSection';
 import { CareTaskModal } from '@/components/crm/CareTaskModal';
 import { CareQuickActions } from '@/components/crm/CareTasksPanel';
 import { ContactModal } from '@/components/crm/ContactModal';
+import { QuickEntryQrModal } from '@/components/crm/QuickEntryQrModal';
 import { InteractionModal, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { daysUntilLabel, formatDate, yearsLabel } from '@/components/crm/format';
@@ -44,6 +45,7 @@ export default function CrmOverviewPage() {
   const [error, setError] = useState('');
   const [interactionMode, setInteractionMode] = useState<InteractionMode | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const [careDialog, setCareDialog] = useState<{ due: CareDueItem } | { task: CareTaskDTO } | null>(null);
 
   const load = useCallback(async () => {
@@ -93,6 +95,9 @@ export default function CrmOverviewPage() {
             </button>
             <button type="button" onClick={() => setShowContactModal(true)} className={SECONDARY_BTN}>
               <Plus className="h-4 w-4" aria-hidden="true" /> Thêm đối tác
+            </button>
+            <button type="button" onClick={() => setShowQr(true)} className={SECONDARY_BTN}>
+              <QrCode className="h-4 w-4" aria-hidden="true" /> Mã QR nhập nhanh
             </button>
           </div>
         }
@@ -247,6 +252,7 @@ export default function CrmOverviewPage() {
           }}
         />
       )}
+      {showQr && <QuickEntryQrModal onClose={() => setShowQr(false)} />}
       {showContactModal && (
         <ContactModal
           onClose={() => setShowContactModal(false)}

@@ -5,10 +5,11 @@ import { X } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF, INTERACTION_STATUS_LABELS } from '@/lib/crm/constants';
 import type { InteractionInput } from '@/lib/crm/schemas';
-import { CrmApiError, crmSend, errorMessage } from './api';
+import { CrmApiError, crmSend, errorMessage, syncCrmPhotos } from './api';
+import { PhotoField } from './CrmPhotos';
 import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
-import type { InteractionDTO, InteractionType, InteractionStatus } from './types';
+import type { InteractionDTO, InteractionType, InteractionStatus, PhotoKind } from './types';
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
 
 export type InteractionMode = 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
@@ -18,6 +19,11 @@ export interface InteractionPreset {
   contactName?: string;
   organizationId?: string;
   organizationName?: string;
+  /** Loại tương tác chọn sẵn ở chế độ OTHER (vd tặng quà từ trang nhập nhanh). */
+  type?: InteractionType;
+  /** Ảnh là quà bệnh viện nhận hay quà tặng đi, khi loại tương tác không tự nói lên. */
+  photoKind?: PhotoKind;
+  title?: string;
 }
 
 interface InteractionModalProps {
@@ -102,14 +108,14 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     };
   }
   return {
-    type: mode === 'OTHER' ? 'MEETING' : mode,
+    type: mode === 'OTHER' ? preset?.type ?? 'MEETING' : mode,
     status: 'DONE',
     occurredAt: toDateTimeLocal(new Date()),
     contact: preset?.contactId ? { id: preset.contactId, label: preset.contactName ?? 'Khách đã chọn' } : null,
     newContactPhone: '',
     organization: preset?.organizationId ? { id: preset.organizationId, label: preset.organizationName ?? 'Đơn vị đã chọn' } : null,
     participants: [],
-    title: '',
+    title: preset?.title ?? '',
     content: '',
     destination: '',
     patientName: '',
@@ -176,7 +182,16 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [banner, setBanner] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
+  const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
+  // Đã lưu nhưng ảnh lỗi: bấm Lưu lần nữa thì sửa bản đã lưu, không tạo bản trùng.
+  const [saved, setSaved] = useState<InteractionDTO | null>(null);
+  const savedId = saved?.id ?? initial?.id ?? null;
+  // Đã lưu rồi mà đóng form vì lỗi ảnh: vẫn báo cho trang tải lại.
+  const close = saved ? () => onSaved(saved) : onClose;
   const text = MODE_TEXT[mode];
+  const photoKind: PhotoKind =
+    preset?.photoKind ?? (form.type === 'DELEGATION' || form.type === 'VIP_ESCORT' ? 'RECEIVED' : form.type === 'GIFT' ? 'GIVEN' : 'OTHER');
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -192,10 +207,18 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
     setSaving(true);
     try {
       const body = buildBody(form);
-      const saved = initial
-        ? await crmSend<InteractionDTO>(`/api/crm/interactions/${initial.id}`, 'PATCH', body)
+      const record = savedId
+        ? await crmSend<InteractionDTO>(`/api/crm/interactions/${savedId}`, 'PATCH', body)
         : await crmSend<InteractionDTO>('/api/crm/interactions', 'POST', body);
-      onSaved(saved);
+      setSaved(record);
+      const photoProblem = await syncCrmPhotos({ interactionId: record.id }, pendingPhotos, removedPhotoIds, photoKind);
+      if (photoProblem) {
+        setPendingPhotos([]);
+        setRemovedPhotoIds([]);
+        setBanner(`Đã lưu, nhưng có ảnh chưa tải được — ${photoProblem}`);
+        return;
+      }
+      onSaved(record);
     } catch (error) {
       if (error instanceof CrmApiError && error.issues.length) {
         setErrors(mergeApiErrors(error.fieldErrors));
@@ -231,7 +254,7 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
   );
 
   return (
-    <ModalShell title={initial ? text.edit : text.create} subtitle={text.subtitle} onClose={onClose}>
+    <ModalShell title={initial ? text.edit : text.create} subtitle={text.subtitle} onClose={close}>
       <form onSubmit={handleSubmit} noValidate className="space-y-5 p-5 sm:p-6">
         <ErrorBanner message={banner} />
 
@@ -294,7 +317,17 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
           <textarea rows={2} value={form.note} onChange={(event) => set('note', event.target.value)} className={inputClass(errors.note, 'resize-none')} placeholder="Không bắt buộc" />
         </Field>
 
-        <ModalFooter onCancel={onClose} saving={saving} submitLabel={initial ? 'Lưu thay đổi' : text.submit} />
+        <PhotoField
+          label={photoKind === 'RECEIVED' ? 'Ảnh quà, hoa khách tặng bệnh viện' : photoKind === 'GIVEN' ? 'Ảnh quà, hoa đã tặng' : 'Ảnh'}
+          hint="Không bắt buộc. Ảnh được thu nhỏ trước khi gửi."
+          existing={saved?.photos ?? initial?.photos ?? []}
+          pending={pendingPhotos}
+          onPendingChange={setPendingPhotos}
+          removedIds={removedPhotoIds}
+          onRemovedChange={setRemovedPhotoIds}
+        />
+
+        <ModalFooter onCancel={close} saving={saving} submitLabel={savedId ? 'Lưu thay đổi' : text.submit} />
       </form>
     </ModalShell>
   );

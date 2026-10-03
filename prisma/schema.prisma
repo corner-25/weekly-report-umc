@@ -1748,6 +1748,7 @@ model CrmInteraction {
   contact      CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
   organization CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   participants CrmInteractionParticipant[]
+  photos       CrmPhoto[]
   careTask     CrmCareTask?
 
   @@index([occurredAt])
@@ -1823,8 +1824,41 @@ model CrmCareTask {
   importantDate CrmImportantDate? @relation(fields: [importantDateId], references: [id], onDelete: SetNull)
   interaction   CrmInteraction?   @relation(fields: [interactionId], references: [id], onDelete: SetNull)
 
+  photos        CrmPhoto[]
+
   @@index([status, occasionDate])
   @@index([contactId])
   @@index([organizationId])
   @@map("crm_care_tasks")
+}
+
+/// Ảnh quà, hoa: quà đoàn khách tặng bệnh viện (gắn lượt tương tác) hoặc hoa,
+/// quà phòng tặng đối tác (gắn việc chăm sóc). Lưu thẳng trong DB như hồ sơ xe.
+enum CrmPhotoKind {
+  RECEIVED // Quà, hoa bệnh viện nhận
+  GIVEN    // Quà, hoa tặng đối tác
+  OTHER
+}
+
+model CrmPhoto {
+  id            String       @id @default(cuid())
+  interactionId String?
+  careTaskId    String?
+  kind          CrmPhotoKind @default(OTHER)
+  caption       String?
+  mimeType      String
+  size          Int
+  /// SHA-256 nội dung — chống tải trùng cùng một ảnh vào cùng một mục.
+  sha256        String
+  data          Bytes
+  uploadedById  String?
+  uploadedBy    String?
+  createdAt     DateTime     @default(now())
+
+  interaction CrmInteraction? @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  careTask    CrmCareTask?    @relation(fields: [careTaskId], references: [id], onDelete: Cascade)
+
+  @@index([interactionId])
+  @@index([careTaskId])
+  @@map("crm_photos")
 }

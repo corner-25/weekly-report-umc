@@ -1,12 +1,16 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 
-export default function SignIn() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Chỉ nhận đường dẫn nội bộ ("/nhap-nhanh?loai=doan"), không cho chuyển sang trang ngoài.
+  const callbackUrl = searchParams.get('callbackUrl');
+  const target = callbackUrl && callbackUrl.startsWith('/') && !callbackUrl.startsWith('//') ? callbackUrl : '/dashboard';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
@@ -32,7 +36,7 @@ export default function SignIn() {
       if (result?.error) {
         setError('Email hoặc mật khẩu không đúng');
       } else {
-        router.push('/dashboard');
+        router.push(target);
         router.refresh();
       }
     } catch (error) {
@@ -125,5 +129,14 @@ export default function SignIn() {
         </form>
       </div>
     </div>
+  );
+}
+
+/** useSearchParams cần Suspense để trang vẫn dựng sẵn được. */
+export default function SignIn() {
+  return (
+    <Suspense>
+      <SignInForm />
+    </Suspense>
   );
 }

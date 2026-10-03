@@ -3,6 +3,8 @@
  * `CrmApiError` để form hiện lỗi cạnh đúng trường.
  */
 
+import type { PhotoDTO, PhotoKind } from './types';
+
 export interface ApiIssue {
   path: string;
   message: string;
@@ -93,4 +95,42 @@ export function changeInteractionStatus(id: string, status: 'PLANNED' | 'DONE' |
 /** Chuyển trạng thái việc quà/hoa; "Đã trao" tự ghi lượt tặng quà trên dòng thời gian. */
 export function changeCareTaskStatus(id: string, status: 'TODO' | 'ORDERED' | 'DELIVERED' | 'CANCELLED'): Promise<unknown> {
   return crmSend(`/api/crm/care-tasks/${id}/status`, 'POST', { status });
+}
+
+/** Tải ảnh quà, hoa cho một lượt tương tác hoặc một việc chăm sóc (ảnh đã thu nhỏ). */
+export async function uploadCrmPhotos(
+  owner: { interactionId: string } | { careTaskId: string },
+  files: File[],
+  kind: PhotoKind,
+): Promise<{ created: PhotoDTO[]; skipped: Array<{ fileName: string; reason: string }> }> {
+  const form = new FormData();
+  for (const [key, value] of Object.entries(owner)) form.append(key, value);
+  form.append('kind', kind);
+  for (const file of files) form.append('files', file);
+  return crmFetch('/api/crm/photos', { method: 'POST', body: form });
+}
+
+export function deleteCrmPhoto(id: string): Promise<{ ok: true }> {
+  return crmSend(`/api/crm/photos/${id}`, 'DELETE');
+}
+
+/**
+ * Áp thay đổi ảnh của form sau khi lưu bản ghi: xoá ảnh bị bỏ, tải ảnh mới.
+ * Trả về thông báo cho ảnh không tải được (trùng, sai định dạng), rỗng nếu ổn.
+ */
+export async function syncCrmPhotos(
+  owner: { interactionId: string } | { careTaskId: string },
+  pending: File[],
+  removedIds: string[],
+  kind: PhotoKind,
+): Promise<string> {
+  await Promise.all(removedIds.map(deleteCrmPhoto));
+  if (pending.length === 0) return '';
+  try {
+    const { skipped } = await uploadCrmPhotos(owner, pending, kind);
+    return skipped.map((s) => `${s.fileName}: ${s.reason}`).join('; ');
+  } catch (error) {
+    // 400 khi mọi ảnh đều bị bỏ qua — body vẫn có danh sách lý do.
+    return errorMessage(error, 'Không tải được ảnh.');
+  }
 }

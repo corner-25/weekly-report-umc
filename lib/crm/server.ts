@@ -158,10 +158,20 @@ export function canSeeSensitive(session: Session, ownerName: string | null): boo
   return Boolean(ownerName && session.user.name && ownerName.trim() === session.user.name.trim());
 }
 
+/** Thông tin ảnh để hiển thị — không kèm nội dung file. */
+const photoSelect = { id: true, kind: true, caption: true, uploadedById: true } satisfies Prisma.CrmPhotoSelect;
+
+export function toPhotoDto(p: Prisma.CrmPhotoGetPayload<{ select: typeof photoSelect }>) {
+  return { id: p.id, kind: p.kind, caption: p.caption, uploadedById: p.uploadedById, url: `/api/crm/photos/${p.id}` };
+}
+
 export const interactionInclude = {
   contact: { select: { id: true, fullName: true, academicTitle: true } },
   organization: { select: { id: true, name: true } },
   participants: { select: { contact: { select: { id: true, fullName: true } } } },
+  photos: { select: photoSelect, orderBy: { createdAt: 'asc' } },
+  // Lượt tặng quà ghi từ việc chăm sóc: ảnh nằm ở việc đó, hiện kèm trên dòng thời gian.
+  careTask: { select: { photos: { select: photoSelect, orderBy: { createdAt: 'asc' } } } },
 } satisfies Prisma.CrmInteractionInclude;
 
 type InteractionWithRelations = Prisma.CrmInteractionGetPayload<{ include: typeof interactionInclude }>;
@@ -186,6 +196,7 @@ export function toInteractionDto(i: InteractionWithRelations) {
     contact: i.contact,
     organization: i.organization,
     participants: i.participants.map((p) => p.contact),
+    photos: [...i.photos, ...(i.careTask?.photos ?? [])].map(toPhotoDto),
   };
 }
 
@@ -193,6 +204,7 @@ export const careTaskInclude = {
   contact: { select: { id: true, fullName: true, academicTitle: true } },
   organization: { select: { id: true, name: true } },
   importantDate: { select: { label: true } },
+  photos: { select: photoSelect, orderBy: { createdAt: 'asc' } },
 } satisfies Prisma.CrmCareTaskInclude;
 
 type CareTaskWithRelations = Prisma.CrmCareTaskGetPayload<{ include: typeof careTaskInclude }>;
@@ -217,6 +229,7 @@ export function toCareTaskDto(t: CareTaskWithRelations) {
     note: t.note,
     interactionId: t.interactionId,
     createdById: t.createdById,
+    photos: t.photos.map(toPhotoDto),
   };
 }
 

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
+import { PhotoStrip } from './CrmPhotos';
 import { displayName, formatDate } from './format';
 import type { InteractionDTO, InteractionStatus, InteractionType } from './types';
 import { ICON_BTN } from './ui';
@@ -158,6 +159,8 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
         </header>
 
         <p className={cn('mt-1 whitespace-pre-line text-sm text-slate-700', compact && 'line-clamp-2')}>{item.content}</p>
+
+        <PhotoStrip photos={item.photos} className="mt-2" />
 
         {!compact && <InteractionMeta item={item} />}
       </article>

@@ -4,7 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { Select } from '@/components/ui/Select';
 import { DATE_KIND_LABELS, GIFT_TYPE_LABELS, VIP_STAFF } from '@/lib/crm/constants';
 import type { CareTaskFields, CareTaskInput } from '@/lib/crm/schemas';
-import { CrmApiError, crmSend, errorMessage } from './api';
+import { CrmApiError, crmSend, errorMessage, syncCrmPhotos } from './api';
+import { PhotoField } from './CrmPhotos';
 import { cleanText, formatDate, toInt, withCurrent } from './format';
 import type { CareTaskDTO, DateKind, GiftType, UpcomingDTO } from './types';
 import { ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
@@ -57,6 +58,11 @@ export function CareTaskModal({ initial, occasion, owner, occasions = [], giftHi
   const [assigneeName, setAssigneeName] = useState(initial?.assigneeName ?? '');
   const [note, setNote] = useState(initial?.note ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
+  const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
+  // Đã lưu nhưng ảnh lỗi: lưu lần nữa thì sửa bản đã có, đóng form thì trang vẫn tải lại.
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const close = savedId ? onSaved : onClose;
   const [banner, setBanner] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -116,8 +122,18 @@ export function CareTaskModal({ initial, occasion, owner, occasions = [], giftHi
         assigneeName: cleanText(assigneeName),
         note: cleanText(note),
       };
-      if (initial) await crmSend(`/api/crm/care-tasks/${initial.id}`, 'PATCH', fields);
-      else await crmSend('/api/crm/care-tasks', 'POST', { ...fields, ...occasionBody() });
+      const taskId = savedId ?? initial?.id;
+      const record = taskId
+        ? await crmSend<CareTaskDTO>(`/api/crm/care-tasks/${taskId}`, 'PATCH', fields)
+        : await crmSend<CareTaskDTO>('/api/crm/care-tasks', 'POST', { ...fields, ...occasionBody() });
+      setSavedId(record.id);
+      const photoProblem = await syncCrmPhotos({ careTaskId: record.id }, pendingPhotos, removedPhotoIds, 'GIVEN');
+      if (photoProblem) {
+        setPendingPhotos([]);
+        setRemovedPhotoIds([]);
+        setBanner(`Đã lưu, nhưng có ảnh chưa tải được — ${photoProblem}`);
+        return;
+      }
       onSaved();
     } catch (error) {
       if (error instanceof CrmApiError && error.issues.length) setErrors(error.fieldErrors);
@@ -133,7 +149,7 @@ export function CareTaskModal({ initial, occasion, owner, occasions = [], giftHi
     <ModalShell
       title={initial ? 'Sửa kế hoạch quà, hoa' : 'Lên kế hoạch quà, hoa'}
       subtitle="Đánh dấu “Đã trao” sẽ tự ghi lượt tặng quà vào dòng thời gian đối tác."
-      onClose={onClose}
+      onClose={close}
       size="md"
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-5 p-5 sm:p-6">
@@ -209,7 +225,17 @@ export function CareTaskModal({ initial, occasion, owner, occasions = [], giftHi
           <textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} className={inputClass(errors.note, 'resize-none')} placeholder="Nơi đặt, người nhận thay, lời chúc…" />
         </Field>
 
-        <ModalFooter onCancel={onClose} saving={saving} submitLabel={initial ? 'Lưu thay đổi' : 'Lưu kế hoạch'} />
+        <PhotoField
+          label="Ảnh hoa, quà"
+          hint="Chụp giỏ hoa, quà trước khi gửi hoặc lúc trao tặng."
+          existing={initial?.photos ?? []}
+          pending={pendingPhotos}
+          onPendingChange={setPendingPhotos}
+          removedIds={removedPhotoIds}
+          onRemovedChange={setRemovedPhotoIds}
+        />
+
+        <ModalFooter onCancel={close} saving={saving} submitLabel={initial || savedId ? 'Lưu thay đổi' : 'Lưu kế hoạch'} />
       </form>
     </ModalShell>
   );

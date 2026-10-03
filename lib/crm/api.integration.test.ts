@@ -55,6 +55,8 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       careTasks: await import('@/app/api/crm/care-tasks/route'),
       careTask: await import('@/app/api/crm/care-tasks/[id]/route'),
       careStatus: await import('@/app/api/crm/care-tasks/[id]/status/route'),
+      photos: await import('@/app/api/crm/photos/route'),
+      photo: await import('@/app/api/crm/photos/[id]/route'),
     } as never;
   }, 60_000);
 
@@ -407,6 +409,40 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
 
       const detail = await call(api.contact.GET, `/api/crm/contacts/${vipId}`, undefined, vipId);
       expect(detail.json.careTasks.map((t: { id: string }) => t.id).sort()).toEqual([taskId, dupTask.json.id].sort());
+    });
+
+    it('ảnh quà, hoa: tải lên, bỏ ảnh trùng, chỉ người tải hoặc quản trị được xoá', async () => {
+      const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4]);
+      const upload = async (bytes: Uint8Array, owner: Record<string, string>) => {
+        const form = new FormData();
+        for (const [k, v] of Object.entries(owner)) form.append(k, v);
+        form.append('kind', 'GIVEN');
+        form.append('files', new File([bytes], 'hoa.jpg', { type: 'image/jpeg' }));
+        const res = await api.photos.POST(new Request('http://test/api/crm/photos', { method: 'POST', body: form }));
+        return { status: res.status, json: await res.json() };
+      };
+
+      const first = await upload(jpeg, { careTaskId: taskId });
+      expect(first.status).toBe(201);
+      expect(first.json.created[0].url).toBe(`/api/crm/photos/${first.json.created[0].id}`);
+      expect((await upload(jpeg, { careTaskId: taskId })).json.skipped[0].reason).toBe('Ảnh này đã có');
+      expect((await upload(new TextEncoder().encode('%PDF-1.4'), { careTaskId: taskId })).status).toBe(400);
+      expect((await upload(jpeg, { careTaskId: taskId, interactionId: 'x' })).status).toBe(400);
+
+      // Ảnh của việc đã trao hiện cả trên lượt tặng quà ở dòng thời gian.
+      const detail = await call(api.contact.GET, `/api/crm/contacts/${vipId}`, undefined, vipId);
+      const gift = detail.json.interactions.find((i: { type: string }) => i.type === 'GIFT');
+      expect(gift.photos.map((p: { id: string }) => p.id)).toContain(first.json.created[0].id);
+
+      const photoId = first.json.created[0].id;
+      const got = await api.photo.GET(new Request('http://test/x'), { params: Promise.resolve({ id: photoId }) });
+      expect(got.headers.get('Content-Type')).toBe('image/jpeg');
+      expect(new Uint8Array(await got.arrayBuffer())).toEqual(jpeg);
+
+      session.current.user.id = 'u2';
+      expect((await send(api.photo.DELETE, 'DELETE', photoId)).status).toBe(403);
+      session.current.user.id = 'u1';
+      expect((await send(api.photo.DELETE, 'DELETE', photoId)).status).toBe(200);
     });
 
     it('dịp đã qua mà quà/hoa chưa trao vẫn được nhắc ở tổng quan', async () => {
