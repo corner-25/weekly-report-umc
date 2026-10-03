@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
 import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
@@ -16,6 +16,7 @@ import { InteractionModal, interactionModeOf, type InteractionMode } from '@/com
 import { InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { PositionModal } from '@/components/crm/PositionModal';
 import { RelationModal } from '@/components/crm/RelationModal';
+import { MergeContactModal } from '@/components/crm/MergeContactModal';
 import { displayName, initials } from '@/components/crm/format';
 import type { ContactDetail, ImportantDateDTO, InteractionDTO } from '@/components/crm/types';
 import { EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
@@ -26,7 +27,8 @@ type Dialog =
   | { kind: 'edit' }
   | { kind: 'date'; initial?: ImportantDateDTO }
   | { kind: 'position' }
-  | { kind: 'relation' };
+  | { kind: 'relation' }
+  | { kind: 'merge' };
 
 export default function ContactProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -115,6 +117,9 @@ export default function ContactProfilePage() {
           <InteractionMenu onPick={(mode) => setDialog({ kind: 'interaction', mode })} />
           <button type="button" onClick={() => setDialog({ kind: 'edit' })} className={SECONDARY_BTN}>
             <Pencil className="h-4 w-4" aria-hidden="true" /> Sửa
+          </button>
+          <button type="button" onClick={() => setDialog({ kind: 'merge' })} className={SECONDARY_BTN}>
+            <Merge className="h-4 w-4" aria-hidden="true" /> Gộp trùng
           </button>
           <button
             type="button"
@@ -212,6 +217,7 @@ export default function ContactProfilePage() {
       {dialog?.kind === 'edit' && <ContactModal initial={contact} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'date' && <ImportantDateModal owner={{ contactId: contact.id }} initial={dialog.initial} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'position' && <PositionModal contactId={contact.id} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
+      {dialog?.kind === 'merge' && <MergeContactModal contactId={contact.id} contactName={name} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'relation' && <RelationModal contactId={contact.id} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
     </div>
   );

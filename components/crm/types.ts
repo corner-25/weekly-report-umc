@@ -2,6 +2,7 @@
  * Kiểu dữ liệu giao diện CRM nhận từ API `/api/crm/**` (DTO đầu ra).
  * Kiểu đầu vào (form → API) lấy từ `@/lib/crm/schemas`.
  */
+import type { ReconcileRow } from '@/lib/crm/reconcile';
 import type {
   DATE_KIND_LABELS,
   INTERACTION_TYPE_LABELS,
@@ -91,6 +92,8 @@ export interface OverviewDTO {
   /** Lịch hẹn đã qua ngày mà chưa cập nhật kết quả. */
   overduePlanned: InteractionDTO[];
   dormant: DormantItem[];
+  /** Đối chiếu với Excel báo cáo tuần, tháng gần nhất trước. */
+  reconcile: ReconcileRow[];
   counts: {
     contacts: number;
     organizations: number;

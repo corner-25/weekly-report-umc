@@ -95,6 +95,8 @@ export const positionInputSchema = z.object({
   fromDate: z.string().date().optional(),
   toDate: z.string().date().optional(),
   isCurrent: z.boolean().default(true),
+  /** Kiêm nhiệm: giữ nguyên các chức vụ hiện tại khác thay vì chuyển chúng thành đã qua. */
+  concurrent: z.boolean().default(false),
 });
 export type PositionInput = z.infer<typeof positionInputSchema>;
 

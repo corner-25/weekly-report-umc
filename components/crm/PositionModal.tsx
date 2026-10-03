@@ -20,6 +20,7 @@ export function PositionModal({ contactId, onClose, onSaved }: PositionModalProp
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [isCurrent, setIsCurrent] = useState(true);
+  const [concurrent, setConcurrent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [banner, setBanner] = useState('');
   const [saving, setSaving] = useState(false);
@@ -43,6 +44,7 @@ export function PositionModal({ contactId, onClose, onSaved }: PositionModalProp
         fromDate: fromDate || undefined,
         toDate: isCurrent ? undefined : toDate || undefined,
         isCurrent,
+        concurrent: isCurrent && concurrent,
       };
       await crmSend(`/api/crm/contacts/${contactId}/positions`, 'POST', body);
       onSaved();
@@ -68,6 +70,9 @@ export function PositionModal({ contactId, onClose, onSaved }: PositionModalProp
           <input value={department} onChange={(e) => setDepartment(e.target.value)} className={inputClass(errors.department)} />
         </Field>
         <Toggle label="Đang giữ chức vụ này" checked={isCurrent} onChange={setIsCurrent} />
+        {isCurrent && (
+          <Toggle label="Kiêm nhiệm — vẫn giữ các chức vụ hiện tại khác" checked={concurrent} onChange={setConcurrent} />
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Từ ngày" error={errors.fromDate}>
             <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className={inputClass(errors.fromDate)} />

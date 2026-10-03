@@ -13,6 +13,7 @@ import { InteractionModal, type InteractionMode } from '@/components/crm/Interac
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { daysUntilLabel, formatDate, yearsLabel } from '@/components/crm/format';
 import type { DormantItem, InteractionDTO, InteractionStatus, OverviewDTO, OverviewUpcoming } from '@/components/crm/types';
+import type { ReconcileRow } from '@/lib/crm/reconcile';
 import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, SectionCard, Stat, TierBadge } from '@/components/crm/ui';
 
 const WINDOWS = [7, 30, 90] as const;
@@ -167,6 +168,8 @@ export default function CrmOverviewPage() {
         )}
       </SectionCard>
 
+      {data && <ReconcileCard rows={data.reconcile} />}
+
       {interactionMode && (
         <InteractionModal
           mode={interactionMode}
@@ -237,5 +240,43 @@ function DormantRow({ item }: { item: DormantItem }) {
         <span className="shrink-0 text-sm font-bold tabular-nums text-orange-600">{item.daysSince !== null ? `${item.daysSince} ngày` : '—'}</span>
       </Link>
     </li>
+  );
+}
+
+/** CRM và Excel báo cáo tuần ghi cùng một việc: lệch nhau nghĩa là có lượt chưa nhập bên này hoặc bên kia. */
+function ReconcileCard({ rows }: { rows: ReconcileRow[] }) {
+  return (
+    <SectionCard title="Đối chiếu với Excel báo cáo tuần" action={<span className="text-xs text-slate-500">CRM chỉ tính lượt đã thực hiện</span>}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[420px] text-sm">
+          <thead>
+            <tr className="text-left text-xs text-slate-500">
+              <th scope="col" className="py-2 pr-3 font-semibold">Tháng</th>
+              <th scope="col" className="py-2 pr-3 text-right font-semibold">Dẫn khám VIP · CRM / Excel</th>
+              <th scope="col" className="py-2 text-right font-semibold">Đoàn trong nước · CRM / Excel</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {rows.map((r) => (
+              <tr key={`${r.year}-${r.month}`}>
+                <th scope="row" className="py-2 pr-3 text-left font-semibold text-slate-700">{String(r.month).padStart(2, '0')}/{r.year}</th>
+                <ReconcileCell crm={r.crmVip} excel={r.excelVip} />
+                <ReconcileCell crm={r.crmDelegations} excel={r.excelDelegations} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </SectionCard>
+  );
+}
+
+function ReconcileCell({ crm, excel }: { crm: number; excel: number | null }) {
+  const mismatch = excel !== null && excel !== crm;
+  return (
+    <td className={cn('py-2 pr-3 text-right tabular-nums', mismatch ? 'font-semibold text-amber-700' : 'text-slate-700')}>
+      {crm} / {excel ?? '—'}
+      {mismatch && <span className="ml-1.5 text-xs font-medium">({crm > excel ? '+' : ''}{crm - excel})</span>}
+    </td>
   );
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { CrmTier } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { upcomingOccurrences, todayInVietnam } from '@/lib/crm/upcoming';
+import { reconcileWithExcel } from '@/lib/crm/reconcile';
 import {
   birthdaySource,
   handle,
@@ -17,6 +18,8 @@ const DORMANT_DAYS = 90;
 /** Chỉ theo dõi độ "nguội" của đối tác hạng cao — hạng B, C ít liên lạc là bình thường. */
 const DORMANT_TIERS: CrmTier[] = ['VIP', 'A'];
 const MS_PER_DAY = 86_400_000;
+/** Số tháng gần nhất đem đối chiếu với Excel báo cáo tuần. */
+const RECONCILE_MONTHS = 3;
 
 interface Target {
   type: 'contact' | 'organization';
@@ -34,7 +37,7 @@ export const GET = handle(async (request: Request) => {
   const todayStart = new Date(`${today}T00:00:00+07:00`);
   const windowEnd = new Date(todayStart.getTime() + (window + 1) * MS_PER_DAY);
 
-  const [contacts, organizations, recent, counts, planned, overduePlanned] = await Promise.all([
+  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile] = await Promise.all([
     prisma.crmContact.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -84,6 +87,7 @@ export const GET = handle(async (request: Request) => {
       orderBy: { occurredAt: 'desc' },
       take: 50,
     }),
+    reconcileWithExcel(prisma, today, RECONCILE_MONTHS),
   ]);
 
   // Mọi dịp của mọi hồ sơ, kèm hồ sơ sở hữu để hiển thị.
@@ -146,6 +150,7 @@ export const GET = handle(async (request: Request) => {
     planned: planned.map(toInteractionDto),
     overduePlanned: overduePlanned.map(toInteractionDto),
     dormant,
+    reconcile,
     counts: {
       contacts: contactCount, organizations: organizationCount,
       interactionsThisMonth, vipEscortsThisMonth, delegationsThisMonth,

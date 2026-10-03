@@ -50,6 +50,8 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       overview: await import('@/app/api/crm/overview/route'),
       search: await import('@/app/api/crm/search/route'),
       status: await import('@/app/api/crm/interactions/[id]/status/route'),
+      positions: await import('@/app/api/crm/contacts/[id]/positions/route'),
+      merge: await import('@/app/api/crm/contacts/[id]/merge/route'),
     } as never;
   }, 60_000);
 
@@ -247,5 +249,72 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
     session.current.user.role = 'ADMIN';
     expect((await send(api.contact.DELETE, 'DELETE', thanhVienId, undefined, '?force=1')).status).toBe(200);
     session.current.user.role = 'STAFF';
+  });
+
+  it('kiêm nhiệm giữ nguyên chức vụ hiện tại cũ, chức vụ mới thường thì thay thế', async () => {
+    await send(api.positions.POST, 'POST', khachId, { title: 'Trưởng Bộ môn', organizationName: 'Đại học Y', concurrent: true });
+    let detail = await call(api.contact.GET, `/api/crm/contacts/${khachId}`, undefined, khachId);
+    const currentTitles = () => detail.json.positions.filter((p: { isCurrent: boolean }) => p.isCurrent).map((p: { title: string }) => p.title).sort();
+    expect(currentTitles()).toEqual(['Giám đốc', 'Trưởng Bộ môn']);
+
+    await send(api.positions.POST, 'POST', khachId, { title: 'Phó Hiệu trưởng', organizationName: 'Đại học Y' });
+    detail = await call(api.contact.GET, `/api/crm/contacts/${khachId}`, undefined, khachId);
+    expect(currentTitles()).toEqual(['Phó Hiệu trưởng']);
+  });
+
+  it('gộp hồ sơ trùng: chuyển hết lịch sử, bổ sung thông tin, xoá bản trùng', async () => {
+    const dup = await call(api.contacts.POST, '/api/crm/contacts', {
+      fullName: 'Nguyen Van A', email: 'a@bvx.vn', tags: ['Cựu sinh viên'], tier: 'B',
+      currentTitle: 'Giám đốc', currentOrganizationName: 'Bệnh viện X',
+    });
+    const dupId = dup.json.id;
+    const escort = await call(api.interactions.POST, '/api/crm/interactions', {
+      type: 'VIP_ESCORT', occurredAt: '2026-10-01T02:00:00.000Z', contactId: dupId, content: 'Khám', staffName: 'A',
+    });
+    const delegation = await call(api.interactions.POST, '/api/crm/interactions', {
+      type: 'DELEGATION', occurredAt: '2026-10-01T04:00:00.000Z', contactId: khachId, participantIds: [dupId], organizationName: 'Bệnh viện X',
+      content: 'Làm việc', staffName: 'A',
+    });
+
+    expect([escort.status, delegation.status], JSON.stringify([escort.json, delegation.json])).toEqual([201, 201]);
+    const r = await send(api.merge.POST, 'POST', khachId, { sourceId: dupId });
+    expect(r.status).toBe(200);
+
+    const detail = await call(api.contact.GET, `/api/crm/contacts/${khachId}`, undefined, khachId);
+    expect(detail.json.email).toBe('a@bvx.vn');
+    expect(detail.json.tier).toBe('VIP');
+    expect(detail.json.tags).toEqual(['Đối tác MOU', 'Cựu sinh viên']);
+    const ids = detail.json.interactions.map((i: { id: string }) => i.id);
+    expect(ids).toContain(escort.json.id);
+    expect(ids).toContain(delegation.json.id);
+    // Trưởng đoàn không bị đếm lại là thành viên của chính đoàn mình.
+    const merged = detail.json.interactions.find((i: { id: string }) => i.id === delegation.json.id);
+    expect(merged.participants).toEqual([]);
+    // Chức vụ "Giám đốc @ Bệnh viện X" trùng y hệt (đã qua) nên không nhân đôi.
+    expect(detail.json.positions.filter((p: { title: string }) => p.title === 'Giám đốc')).toHaveLength(1);
+    expect((await call(api.contact.GET, `/api/crm/contacts/${dupId}`, undefined, dupId)).status).toBe(404);
+  });
+
+  it('đối chiếu với Excel: CRM chỉ đếm lượt đã thực hiện, tháng Excel chưa có thì để trống', async () => {
+    const { todayInVietnam } = await import('@/lib/crm/upcoming');
+    const [year, month] = todayInVietnam().split('-').map(Number);
+    const monthStart = new Date(`${year}-${String(month).padStart(2, '0')}-01T00:00:00+07:00`);
+    const nextMonthStart = new Date(Date.UTC(year, month, 1) - 7 * 3_600_000);
+    await prisma.$executeRawUnsafe('TRUNCATE hc_metrics');
+    await prisma.$executeRawUnsafe(`INSERT INTO hc_metrics (id, category, content, year, week, month, value, "sourceId", "updatedAt")
+      VALUES ('t1', 'Đón tiếp khách VIP', 'Số lượt khách VIP', ${year}, 1, ${month}, 7, 's', now()),
+             ('t2', 'Tiếp khách trong nước', 'Tổng số đoàn khách trong nước, trong đó:', ${year}, 1, ${month}, 1, 's', now()),
+             ('t3', 'Tiếp khách trong nước', 'Làm việc', ${year}, 1, ${month}, 1, 's', now())`);
+    const r = await call(api.overview.GET, '/api/crm/overview?window=7');
+    const crm = await prisma.crmInteraction.groupBy({
+      by: ['type'], where: { status: 'DONE', occurredAt: { gte: monthStart, lt: nextMonthStart } }, _count: true,
+    });
+    const count = (t: string) => crm.find((c) => c.type === t)?._count ?? 0;
+    expect(r.json.reconcile[0]).toEqual({ year, month, excelVip: 7, crmVip: count('VIP_ESCORT'), excelDelegations: 1, crmDelegations: count('DELEGATION') });
+    expect(r.json.reconcile[1].excelVip).toBeNull();
+  });
+
+  it('không gộp hồ sơ với chính nó', async () => {
+    expect((await send(api.merge.POST, 'POST', khachId, { sourceId: khachId })).status).toBe(400);
   });
 });
