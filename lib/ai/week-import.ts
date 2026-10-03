@@ -21,6 +21,11 @@ import {
 } from './task-matching';
 
 const DEFAULT_MODEL = 'glm-4.5';
+/**
+ * Trích số liệu theo danh mục chuẩn cần model mạnh hơn khớp nhiệm vụ: glm-5.2 (tắt
+ * thinking) đúng mã chỉ số hơn hẳn glm-4.5 trên 14 phòng, giá vẫn rẻ.
+ */
+const METRIC_MODEL = 'glm-5.2';
 
 /** Nhiều dòng Excel cùng thuộc một nghiệp vụ, gộp lại trước khi ghi. */
 interface MergedTask {
@@ -206,7 +211,7 @@ export async function importWeekForDepartment(
     let metricTokens = 0;
 
     if (options.extractMetricsEnabled !== false) {
-      const result = await extractMetricsForWeek(db, input, week.id, model);
+      const result = await extractMetricsForWeek(db, input, week.id, options.model ?? METRIC_MODEL);
       metricsExtracted = result.extracted;
       metricsFlagged = result.flagged;
       metricTokens = result.tokens;
@@ -474,5 +479,5 @@ export async function reextractWeekMetrics(
     select: { id: true },
   });
   if (!week) throw new Error(`Chưa có bản ghi tuần ${input.week}/${input.year} trong hệ thống`);
-  return extractMetricsForWeek(db, input, week.id, options.model ?? DEFAULT_MODEL);
+  return extractMetricsForWeek(db, input, week.id, options.model ?? METRIC_MODEL);
 }
