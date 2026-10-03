@@ -1,8 +1,8 @@
 {
-  "note": "Đáp án lấy từ nguồn chính thức, KHÔNG từ chính view chatbot: Excel phòng HC (hc_metrics), Google Sheets đội xe (fleet_trips), và câu gốc trong báo cáo tuần bệnh viện (đã đối chiếu từng con số ngày 02-03/10/2026). Câu hỏi ghi rõ tuần/tháng để đáp án không đổi theo thời gian.",
+  "note": "Đáp án lấy từ nguồn chính thức, KHÔNG từ chính view chatbot: Excel phòng HC (hc_metrics), Google Sheets đội xe (fleet_trips), và câu gốc trong báo cáo tuần bệnh viện (đã đối chiếu từng con số ngày 02-03/10/2026; ngày 04/10 cập nhật 3 đáp án tháng 9 và luỹ kế VIP sau khi Excel sửa số và có thêm tuần 40, tuần mà Excel tính vào tháng 9). Câu hỏi ghi rõ tuần/tháng để đáp án không đổi theo thời gian.",
   "cases": [
     { "id": "baixe-dt-t39", "question": "Doanh thu bãi giữ xe tuần 39/2026 là bao nhiêu?", "expect": [49004000], "source": "Excel HC" },
-    { "id": "baixe-dt-thang9", "question": "Doanh thu bãi giữ xe tháng 9/2026 là bao nhiêu?", "expect": [188620000], "source": "Excel HC" },
+    { "id": "baixe-dt-thang9", "question": "Doanh thu bãi giữ xe tháng 9/2026 là bao nhiêu?", "expect": [239972000], "source": "Excel HC" },
     { "id": "baixe-vengay-t39", "question": "Tuần 39/2026 bãi xe bán được bao nhiêu lượt vé ngày?", "expect": [8986], "source": "Excel HC" },
     { "id": "baixe-sosanh", "question": "So sánh doanh thu bãi giữ xe tuần 39 với tuần 38 năm 2026", "expect": [49004000, 47028000], "source": "Excel HC" },
     { "id": "xehc-km-thang9", "question": "Tháng 9/2026 xe hành chính chạy bao nhiêu km?", "expect": [5988], "source": "Google Sheets đội xe" },
@@ -13,8 +13,8 @@
     { "id": "toxe-dt-thang9", "question": "Doanh thu tổ xe tháng 9/2026 theo báo cáo Phòng Hành chính?", "expect": [352114293], "source": "Excel HC" },
     { "id": "tongdai-den-t39", "question": "Tuần 39/2026 tổng đài bệnh viện có bao nhiêu cuộc gọi đến?", "expect": [1330], "source": "Excel HC" },
     { "id": "tongdai-nho-t39", "question": "Tuần 39/2026 nhánh tổng đài nào bị nhỡ cuộc gọi do không bắt máy nhiều nhất, bao nhiêu cuộc?", "expect": [232], "source": "Excel HC" },
-    { "id": "vbden-thang9", "question": "Tháng 9/2026 có bao nhiêu văn bản đến và bao nhiêu văn bản xử lý trễ hạn?", "expect": [1045, 8], "source": "Excel HC" },
-    { "id": "vip-t1-39", "question": "Từ tuần 1 đến tuần 39 năm 2026 lễ tân đã tiếp bao nhiêu lượt khách VIP?", "expect": [883], "source": "Excel HC" },
+    { "id": "vbden-thang9", "question": "Tháng 9/2026 có bao nhiêu văn bản đến và bao nhiêu văn bản xử lý trễ hạn?", "expect": [1785, 8], "source": "Excel HC" },
+    { "id": "vip-t1-39", "question": "Từ tuần 1 đến tuần 39 năm 2026 lễ tân đã tiếp bao nhiêu lượt khách VIP?", "expect": [889], "source": "Excel HC" },
     { "id": "thuky-t39", "question": "Tuần 39/2026 hệ thống thư ký có tổng cộng bao nhiêu thư ký?", "expect": [290], "source": "Excel HC" },
     { "id": "tiendo-t37-a", "question": "Tuần 37/2026 Phòng Hành chính đang theo dõi tiến độ bao nhiêu văn bản, trong đó bao nhiêu văn bản chưa xử lý?", "expect": [376, 92], "source": "Báo cáo tuần sheet 37" },
     { "id": "tiendo-t37-b", "question": "Tuần 37/2026 trong số văn bản theo dõi tiến độ có bao nhiêu đang xử lý và bao nhiêu đã hoàn thành?", "expect": [101, 183], "source": "Báo cáo tuần sheet 37" },
