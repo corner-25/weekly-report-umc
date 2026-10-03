@@ -290,22 +290,6 @@ async function extractMetricsForWeek(
     }
   }
 
-  // Xoá metric cũ của đúng phòng + tuần này trước khi ghi mới.
-  //
-  // Trích xuất là thao tác thay thế, không phải bổ sung: chạy lại cùng một tuần
-  // phải cho cùng kết quả. Không xoá thì mỗi lần chạy lại nhân bản toàn bộ —
-  // đo được trên production: tuần 5 phình từ 358 lên 824 metric sau hai lần chạy.
-  //
-  // Giữ lại bản người dùng đã duyệt hoặc sửa: đó là quyết định của con người,
-  // AI không được ghi đè.
-  await db.extractedMetric.deleteMany({
-    where: {
-      weekId,
-      departmentId: input.departmentId,
-      reviewStatus: 'PENDING',
-    },
-  });
-
   // Lịch sử của từng chỉ số ở các tuần trước, làm mốc phát hiện giá trị lệch.
   //
   // Lỗi nhập là chuyện thường xuyên chứ không phải ngoại lệ: thiếu một số 0,
@@ -344,10 +328,8 @@ async function extractMetricsForWeek(
     catalog.excel,
   );
 
-  let extracted = 0;
   let flagged = 0;
-
-  for (const [index, metric] of result.metrics.entries()) {
+  const rows = result.metrics.map((metric, index) => {
     const issues = [
       ...validateMetric(
         {
@@ -366,28 +348,49 @@ async function extractMetricsForWeek(
     const reviewFlags = [...metric.flags, ...issues.map((i) => i.flag)];
     if (reviewFlags.length > 0) flagged += 1;
 
-    await db.extractedMetric.create({
-      data: {
-        weekId,
-        departmentId: input.departmentId,
-        masterTaskId: masterByRawName.get(metric.taskName) ?? null,
-        name: metric.name,
-        value: metric.value,
-        unit: metric.unit,
-        period: metric.period,
-        asOfDate: metric.asOfDate ? new Date(metric.asOfDate) : null,
-        sourceText: metric.sourceText,
-        confidence: metric.confidence,
-        originalValue: metric.value,
-        reviewFlags,
-        extractionModel: model,
-        metricCode: metric.metricCode,
-      },
-    });
-    extracted += 1;
-  }
+    return {
+      weekId,
+      departmentId: input.departmentId,
+      masterTaskId: masterByRawName.get(metric.taskName) ?? null,
+      name: metric.name,
+      value: metric.value,
+      unit: metric.unit,
+      period: metric.period,
+      asOfDate: metric.asOfDate ? new Date(metric.asOfDate) : null,
+      sourceText: metric.sourceText,
+      confidence: metric.confidence,
+      originalValue: metric.value,
+      reviewFlags,
+      extractionModel: model,
+      metricCode: metric.metricCode,
+    };
+  });
 
-  return { extracted, flagged, tokens: result.totalTokens };
+  // Thay metric cũ của đúng phòng + tuần này bằng bản mới — trong MỘT transaction.
+  //
+  // Xoá rồi ghi từng dòng ngoài transaction thì mất mạng giữa chừng để lại tuần
+  // chỉ còn một phần số liệu (đã gặp 03/10/2026: máy ngủ, đứt kết nối lúc ghi).
+  //
+  // Trích xuất là thao tác thay thế, không phải bổ sung: chạy lại cùng một tuần
+  // phải cho cùng kết quả. Không xoá thì mỗi lần chạy lại nhân bản toàn bộ —
+  // đo được trên production: tuần 5 phình từ 358 lên 824 metric sau hai lần chạy.
+  //
+  // Giữ lại bản người dùng đã duyệt hoặc sửa: đó là quyết định của con người,
+  // AI không được ghi đè.
+  await db.$transaction(
+    [
+      db.extractedMetric.deleteMany({
+        where: {
+          weekId,
+          departmentId: input.departmentId,
+          reviewStatus: 'PENDING',
+        },
+      }),
+      db.extractedMetric.createMany({ data: rows }),
+    ],
+  );
+
+  return { extracted: rows.length, flagged, tokens: result.totalTokens };
 }
 
 interface CatalogContext {
