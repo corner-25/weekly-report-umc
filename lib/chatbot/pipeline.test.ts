@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { daysFromToday, isEffectivelyEmpty, serialize } from './pipeline';
+import { daysFromToday, formatLargeNumbersVi, isEffectivelyEmpty, serialize } from './pipeline';
 
 const NOW = new Date('2026-09-30T03:00:00Z'); // 10:00 giờ VN
 
@@ -54,5 +54,13 @@ describe('serialize — kiểu Decimal của Prisma', () => {
   it('đổi Decimal thành số thay vì {"s":1,"e":0,"d":[...]}', () => {
     const fakeDecimal = { s: 1, e: 0, d: [5, 6000000], toNumber: () => 5.6 };
     expect(serialize({ change_pct: fakeDecimal })).toEqual({ change_pct: 5.6 });
+  });
+});
+
+describe('formatLargeNumbersVi', () => {
+  it('viết sẵn số lớn kiểu Việt, giữ nguyên năm và số nhỏ', () => {
+    expect(formatLargeNumbersVi([{ year: 2026, week_number: 39, value: 49004000, ratio: 22.9 }])).toEqual([
+      { year: 2026, week_number: 39, value: '49.004.000', ratio: 22.9 },
+    ]);
   });
 });

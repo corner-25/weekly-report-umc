@@ -420,7 +420,7 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
       role: 'user',
       content:
         `Câu hỏi: ${question}\n\n` +
-        `Kết quả (JSON, tối đa ${MAX_ROWS_PREVIEW} dòng):\n${JSON.stringify(preview)}\n\n` +
+        `Kết quả (JSON, tối đa ${MAX_ROWS_PREVIEW} dòng; số lớn đã viết sẵn kiểu Việt):\n${JSON.stringify(formatLargeNumbersVi(preview))}\n\n` +
         `Tổng số dòng thực tế: ${rows.length}\n` +
         (truncated
           ? `LƯU Ý: kết quả bị CẮT ở ${rows.length} dòng đầu (giới hạn LIMIT). KHÔNG được cộng các dòng này ` +
@@ -431,6 +431,22 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
   ];
   await streamAnswer(writerMessages, result, answer, { maxTokens: 1200, temperature: 0.3 });
   return result;
+}
+
+/**
+ * Viết sẵn số lớn kiểu Việt ("49.004.000") trước khi đưa cho model viết câu trả lời.
+ * Tự định dạng số 8–11 chữ số, model thỉnh thoảng thêm/bớt một số 0 (49004000 →
+ * "490.040.000"). Số nhỏ (năm, tuần, lượt) để nguyên cho model tính toán.
+ */
+export function formatLargeNumbersVi(value: unknown): unknown {
+  if (typeof value === 'number') {
+    return Math.abs(value) >= 10_000 ? value.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : value;
+  }
+  if (Array.isArray(value)) return value.map(formatLargeNumbersVi);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, formatLargeNumbersVi(v)]));
+  }
+  return value;
 }
 
 /** Trả lời trực tiếp khi câu hỏi không cần dữ liệu nội bộ. */

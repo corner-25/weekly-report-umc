@@ -417,7 +417,7 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
         const form = new FormData();
         for (const [k, v] of Object.entries(owner)) form.append(k, v);
         form.append('kind', 'GIVEN');
-        form.append('files', new File([bytes], 'hoa.jpg', { type: 'image/jpeg' }));
+        form.append('files', new File([bytes.buffer as ArrayBuffer], 'hoa.jpg', { type: 'image/jpeg' }));
         const res = await api.photos.POST(new Request('http://test/api/crm/photos', { method: 'POST', body: form }));
         return { status: res.status, json: await res.json() };
       };
