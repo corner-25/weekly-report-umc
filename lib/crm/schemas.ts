@@ -170,3 +170,45 @@ export const interactionInputSchema = z
     path: ['organizationId'],
   });
 export type InteractionInput = z.infer<typeof interactionInputSchema>;
+
+/** Số tiền (đồng): cột Int của Postgres tối đa ~2,1 tỷ. */
+const money = z.number().int().min(0, 'Số tiền không âm').max(2_000_000_000);
+
+/** Phần sửa được của một việc quà/hoa — dịp và đối tác cố định sau khi tạo. */
+export const careTaskFieldsSchema = z.object({
+  giftType: z.enum(['FLOWERS', 'GIFT', 'CARD', 'VISIT', 'OTHER']),
+  description: z.string().trim().min(1, 'Ghi rõ quà/hoa sẽ tặng').max(2000),
+  budget: money.optional(),
+  actualCost: money.optional(),
+  assigneeName: optionalText(200),
+  note: optionalText(2000),
+});
+export type CareTaskFields = z.infer<typeof careTaskFieldsSchema>;
+
+/**
+ * Lên kế hoạch quà/hoa cho MỘT lần diễn ra của một dịp. `occasionDate` là ngày
+ * dương lịch của lần đó (ngày âm đã đổi sẵn — lấy từ danh sách dịp sắp tới).
+ * Sinh nhật lấy từ hồ sơ nên không có importantDateId.
+ */
+export const careTaskInputSchema = careTaskFieldsSchema
+  .extend({
+    contactId: z.string().optional(),
+    organizationId: z.string().optional(),
+    importantDateId: z.string().optional(),
+    occasionKind: z.enum(['BIRTHDAY', 'APPOINTMENT', 'FOUNDING', 'ANNIVERSARY', 'OTHER']),
+    occasionDate: z.string().date('Ngày của dịp không hợp lệ'),
+  })
+  .refine((v) => Boolean(v.contactId) !== Boolean(v.organizationId), {
+    message: 'Việc quà/hoa phải thuộc đúng một cá nhân hoặc một tổ chức',
+    path: ['contactId'],
+  });
+export type CareTaskInput = z.infer<typeof careTaskInputSchema>;
+
+export const careTaskStatusSchema = z.object({
+  status: z.enum(['TODO', 'ORDERED', 'DELIVERED', 'CANCELLED']),
+  /** Thời điểm trao; trống = lúc bấm. */
+  deliveredAt: z.string().datetime().optional(),
+  actualCost: money.optional(),
+  note: optionalText(2000),
+});
+export type CareTaskStatusInput = z.infer<typeof careTaskStatusSchema>;

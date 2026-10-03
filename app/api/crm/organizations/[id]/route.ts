@@ -3,11 +3,13 @@ import { prisma } from '@/lib/prisma';
 import { organizationPatchSchema } from '@/lib/crm/schemas';
 import { normalizeOrganizationName, toSearchKey } from '@/lib/crm/constants';
 import {
+  careTaskInclude,
   handle,
   HttpError,
   importantDateSource,
   interactionInclude,
   requireSession,
+  toCareTaskDto,
   toImportantDateDto,
   toInteractionDto,
   upcomingFor,
@@ -30,11 +32,12 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       },
       importantDates: { orderBy: [{ month: 'asc' }, { day: 'asc' }] },
       interactions: { include: interactionInclude, orderBy: { occurredAt: 'desc' }, take: 200 },
+      careTasks: { include: careTaskInclude, orderBy: { occasionDate: 'desc' }, take: 100 },
     },
   });
   if (!organization) throw new HttpError(404, 'Không tìm thấy tổ chức');
 
-  const { positions, importantDates, interactions, ...rest } = organization;
+  const { positions, importantDates, interactions, careTasks, ...rest } = organization;
   return NextResponse.json({
     ...rest,
     contacts: positions.map((p) => ({
@@ -43,6 +46,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     })),
     importantDates: importantDates.map(toImportantDateDto),
     interactions: interactions.map(toInteractionDto),
+    careTasks: careTasks.map(toCareTaskDto),
     upcoming: upcomingFor(importantDates.map(importantDateSource)),
   });
 });

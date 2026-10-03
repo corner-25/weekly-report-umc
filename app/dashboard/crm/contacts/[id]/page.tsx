@@ -6,7 +6,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
-import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { CareTaskModal } from '@/components/crm/CareTaskModal';
+import { CareTasksPanel } from '@/components/crm/CareTasksPanel';
 import { ContactModal } from '@/components/crm/ContactModal';
 import { ContactInfoCard, PositionsCard, PreferencesCard, RelationsCard } from '@/components/crm/ContactProfileSections';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
@@ -18,7 +20,7 @@ import { PositionModal } from '@/components/crm/PositionModal';
 import { RelationModal } from '@/components/crm/RelationModal';
 import { MergeContactModal } from '@/components/crm/MergeContactModal';
 import { displayName, initials } from '@/components/crm/format';
-import type { ContactDetail, ImportantDateDTO, InteractionDTO } from '@/components/crm/types';
+import type { CareTaskDTO, ContactDetail, ImportantDateDTO, InteractionDTO } from '@/components/crm/types';
 import { EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
@@ -28,7 +30,8 @@ type Dialog =
   | { kind: 'date'; initial?: ImportantDateDTO }
   | { kind: 'position' }
   | { kind: 'relation' }
-  | { kind: 'merge' };
+  | { kind: 'merge' }
+  | { kind: 'care'; initial?: CareTaskDTO };
 
 export default function ContactProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -153,6 +156,22 @@ export default function ContactProfilePage() {
               onDone: load,
             })}
           />
+          <CareTasksPanel
+            tasks={contact.careTasks}
+            onAdd={() => setDialog({ kind: 'care' })}
+            onEdit={(t) => setDialog({ kind: 'care', initial: t })}
+            onDelete={(t) => askDelete({
+              title: 'Xoá kế hoạch quà, hoa',
+              message: t.interactionId
+                ? 'Xoá việc này? Lượt tặng quà đã ghi trên dòng thời gian vẫn được giữ.'
+                : 'Xoá kế hoạch quà, hoa cho dịp này?',
+              url: `/api/crm/care-tasks/${t.id}`,
+              onDone: load,
+            })}
+            onStatusChange={(t, status) => {
+              changeCareTaskStatus(t.id, status).then(() => load()).catch((e) => setError(errorMessage(e)));
+            }}
+          />
           <PreferencesCard contact={contact} />
           <RelationsCard
             relations={contact.relations}
@@ -218,9 +237,26 @@ export default function ContactProfilePage() {
       {dialog?.kind === 'date' && <ImportantDateModal owner={{ contactId: contact.id }} initial={dialog.initial} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'position' && <PositionModal contactId={contact.id} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'merge' && <MergeContactModal contactId={contact.id} contactName={name} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
+      {dialog?.kind === 'care' && (
+        <CareTaskModal
+          initial={dialog.initial}
+          owner={{ contactId: contact.id }}
+          occasions={contact.upcoming}
+          giftHint={giftHint(contact)}
+          onClose={() => setDialog(null)}
+          onSaved={closeAndReload}
+        />
+      )}
       {dialog?.kind === 'relation' && <RelationModal contactId={contact.id} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
     </div>
   );
+}
+
+/** Sở thích hoa và điều kiêng — nhắc ngay dưới ô chọn quà. */
+function giftHint(contact: ContactDetail): string | null {
+  const p = contact.preferences;
+  const parts = [p?.flowers && `Thích: ${p.flowers}`, p?.avoid && `Kiêng: ${p.avoid}`].filter(Boolean);
+  return parts.length ? parts.join(' · ') : null;
 }
 
 function BackLink() {

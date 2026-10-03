@@ -38,7 +38,7 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
     process.env.DATABASE_URL = TEST_URL;
     prisma = (await import('@/lib/prisma')).prisma;
     await prisma.$executeRawUnsafe(
-      'TRUNCATE crm_interaction_participants, crm_interactions, crm_important_dates, crm_relations, crm_positions, crm_contacts, crm_organizations CASCADE',
+      'TRUNCATE crm_care_tasks, crm_interaction_participants, crm_interactions, crm_important_dates, crm_relations, crm_positions, crm_contacts, crm_organizations CASCADE',
     );
     api = {
       contacts: await import('@/app/api/crm/contacts/route'),
@@ -52,6 +52,9 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       status: await import('@/app/api/crm/interactions/[id]/status/route'),
       positions: await import('@/app/api/crm/contacts/[id]/positions/route'),
       merge: await import('@/app/api/crm/contacts/[id]/merge/route'),
+      careTasks: await import('@/app/api/crm/care-tasks/route'),
+      careTask: await import('@/app/api/crm/care-tasks/[id]/route'),
+      careStatus: await import('@/app/api/crm/care-tasks/[id]/status/route'),
     } as never;
   }, 60_000);
 
@@ -316,5 +319,94 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
 
   it('không gộp hồ sơ với chính nó', async () => {
     expect((await send(api.merge.POST, 'POST', khachId, { sourceId: khachId })).status).toBe(400);
+  });
+
+  describe('chăm sóc đối tác: quà, hoa', () => {
+    let vipId = '';
+    let taskId = '';
+    let dueDate = '';
+    const addDays = async (days: number) => {
+      const { todayInVietnam } = await import('@/lib/crm/upcoming');
+      return new Date(Date.parse(`${todayInVietnam()}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+    };
+    const careDueOf = async (contactId: string) => {
+      const r = await call(api.overview.GET, '/api/crm/overview?window=7');
+      return r.json.careDue.find((d: { target: { id: string } }) => d.target.id === contactId);
+    };
+
+    it('sinh nhật VIP trong 7 ngày tới hiện ở "cần chuẩn bị", hạng C chỉ hiện đúng ngày', async () => {
+      const inThree = await addDays(3);
+      const [, m, d] = inThree.split('-').map(Number);
+      const vip = await call(api.contacts.POST, '/api/crm/contacts', { fullName: 'Lê Văn Quà', tier: 'VIP', birthDay: d, birthMonth: m });
+      const plain = await call(api.contacts.POST, '/api/crm/contacts', { fullName: 'Phạm Thị Thường', tier: 'C', birthDay: d, birthMonth: m });
+      vipId = vip.json.id;
+
+      const due = await careDueOf(vipId);
+      expect(due).toMatchObject({ key: `birthday:${vipId}`, kind: 'BIRTHDAY', date: inThree, daysUntil: 3, remindDays: 7, task: null });
+      expect(await careDueOf(plain.json.id)).toBeUndefined();
+      dueDate = due.date;
+    });
+
+    it('lên kế hoạch quà/hoa; lên lần nữa cho cùng dịp thì 409', async () => {
+      const body = {
+        contactId: vipId, occasionKind: 'BIRTHDAY', occasionDate: dueDate, giftType: 'FLOWERS',
+        description: 'Lẵng hoa lan hồ điệp', budget: 1_500_000, assigneeName: 'Vũ Thị Bích Thảo',
+      };
+      const r = await call(api.careTasks.POST, '/api/crm/care-tasks', body);
+      expect(r.status).toBe(201);
+      expect(r.json).toMatchObject({ status: 'TODO', occasionDate: dueDate, occasionLabel: 'Sinh nhật', budget: 1_500_000 });
+      taskId = r.json.id;
+
+      expect((await call(api.careTasks.POST, '/api/crm/care-tasks', { ...body, description: 'Giỏ trái cây' })).status).toBe(409);
+      expect((await careDueOf(vipId)).task.id).toBe(taskId);
+    });
+
+    it('tổ chức không có sinh nhật', async () => {
+      const org = await call(api.orgs.POST, '/api/crm/organizations', { name: 'Công ty Quà Tặng' });
+      const r = await call(api.careTasks.POST, '/api/crm/care-tasks', {
+        organizationId: org.json.id, occasionKind: 'BIRTHDAY', occasionDate: dueDate, giftType: 'GIFT', description: 'x',
+      });
+      expect(r.status).toBe(400);
+    });
+
+    it('đánh dấu đã trao: ghi lượt tặng quà trên dòng thời gian, tính vào thực chi', async () => {
+      expect((await send(api.careStatus.POST, 'POST', taskId, { status: 'ORDERED' })).status).toBe(200);
+      const delivered = await send(api.careStatus.POST, 'POST', taskId, { status: 'DELIVERED', actualCost: 1_200_000 });
+      expect(delivered.status).toBe(200);
+      expect(delivered.json.status).toBe('DELIVERED');
+      expect(delivered.json.deliveredAt).not.toBeNull();
+      expect(delivered.json.interactionId).toBeTruthy();
+
+      const detail = await call(api.contact.GET, `/api/crm/contacts/${vipId}`, undefined, vipId);
+      const gift = detail.json.interactions.find((i: { id: string }) => i.id === delivered.json.interactionId);
+      expect(gift).toMatchObject({ type: 'GIFT', status: 'DONE', content: 'Lẵng hoa lan hồ điệp', staffName: 'Vũ Thị Bích Thảo', title: 'Hoa · Sinh nhật' });
+      expect(gift.occurredAt).toBe(delivered.json.deliveredAt);
+      expect(detail.json.careTasks.map((t: { id: string }) => t.id)).toEqual([taskId]);
+
+      const overview = await call(api.overview.GET, '/api/crm/overview?window=7');
+      if (dueDate.slice(0, 4) === (await addDays(0)).slice(0, 4)) {
+        expect(overview.json.careBudget.year).toEqual({ budget: 1_500_000, actualCost: 1_200_000 });
+      }
+    });
+
+    it('đã trao thì không huỷ được', async () => {
+      const r = await send(api.careStatus.POST, 'POST', taskId, { status: 'CANCELLED' });
+      expect(r.status).toBe(400);
+      const list = await call(api.careTasks.GET, `/api/crm/care-tasks?status=DELIVERED&contactId=${vipId}`);
+      expect(list.json).toHaveLength(1);
+    });
+
+    it('gộp hồ sơ trùng chuyển cả việc quà/hoa, trùng dịp vẫn giữ đủ lịch sử', async () => {
+      const [, m, d] = dueDate.split('-').map(Number);
+      const dup = await call(api.contacts.POST, '/api/crm/contacts', { fullName: 'Le Van Qua', birthDay: d, birthMonth: m });
+      const dupTask = await call(api.careTasks.POST, '/api/crm/care-tasks', {
+        contactId: dup.json.id, occasionKind: 'BIRTHDAY', occasionDate: dueDate, giftType: 'CARD', description: 'Thiệp chúc mừng',
+      });
+      expect(dupTask.status).toBe(201);
+      expect((await send(api.merge.POST, 'POST', vipId, { sourceId: dup.json.id })).status).toBe(200);
+
+      const detail = await call(api.contact.GET, `/api/crm/contacts/${vipId}`, undefined, vipId);
+      expect(detail.json.careTasks.map((t: { id: string }) => t.id).sort()).toEqual([taskId, dupTask.json.id].sort());
+    });
   });
 });

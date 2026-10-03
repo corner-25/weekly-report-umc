@@ -89,3 +89,8 @@ export function errorMessage(error: unknown, fallback = 'Đã xảy ra lỗi. Vu
 export function changeInteractionStatus(id: string, status: 'PLANNED' | 'DONE' | 'CANCELLED'): Promise<unknown> {
   return crmSend(`/api/crm/interactions/${id}/status`, 'POST', { status });
 }
+
+/** Chuyển trạng thái việc quà/hoa; "Đã trao" tự ghi lượt tặng quà trên dòng thời gian. */
+export function changeCareTaskStatus(id: string, status: 'TODO' | 'ORDERED' | 'DELIVERED' | 'CANCELLED'): Promise<unknown> {
+  return crmSend(`/api/crm/care-tasks/${id}/status`, 'POST', { status });
+}

@@ -1592,6 +1592,7 @@ model CrmOrganization {
   positions      CrmPosition[]
   importantDates CrmImportantDate[]
   interactions   CrmInteraction[]
+  careTasks      CrmCareTask[]
 
   @@index([tier])
   @@map("crm_organizations")
@@ -1635,6 +1636,7 @@ model CrmContact {
   importantDates CrmImportantDate[]
   interactions   CrmInteraction[]
   participations CrmInteractionParticipant[]
+  careTasks      CrmCareTask[]
 
   @@index([fullName])
   @@index([searchKey])
@@ -1703,6 +1705,7 @@ model CrmImportantDate {
 
   contact      CrmContact?      @relation(fields: [contactId], references: [id], onDelete: Cascade)
   organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  careTasks    CrmCareTask[]
 
   @@index([contactId])
   @@index([organizationId])
@@ -1745,6 +1748,7 @@ model CrmInteraction {
   contact      CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
   organization CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   participants CrmInteractionParticipant[]
+  careTask     CrmCareTask?
 
   @@index([occurredAt])
   @@index([status, occurredAt])
@@ -1767,3 +1771,60 @@ model CrmInteractionParticipant {
   @@map("crm_interaction_participants")
 }
 
+// ── Giai đoạn 2: chăm sóc đối tác — chuẩn bị quà, hoa cho các dịp ──────────
+
+enum CrmGiftType {
+  FLOWERS // Hoa
+  GIFT    // Quà
+  CARD    // Thiệp chúc mừng
+  VISIT   // Đến thăm, chúc mừng trực tiếp
+  OTHER
+}
+
+enum CrmCareStatus {
+  TODO      // Chưa chuẩn bị
+  ORDERED   // Đã đặt hoa/quà
+  DELIVERED // Đã trao
+  CANCELLED // Không tặng nữa
+}
+
+/// Việc chuẩn bị quà/hoa cho MỘT lần diễn ra của một dịp (sinh nhật năm nay,
+/// kỷ niệm thành lập năm nay…). Trao xong thì ghi thành lượt tương tác GIFT.
+model CrmCareTask {
+  id              String        @id @default(cuid())
+  contactId       String?
+  organizationId  String?
+  /// Ngày quan trọng gốc; trống với sinh nhật (lấy từ hồ sơ) và dịp gõ tay.
+  importantDateId String?
+  occasionKind    CrmDateKind
+  /// Ngày dương lịch của lần diễn ra (ngày âm đã đổi sang dương của năm đó).
+  occasionDate    DateTime      @db.Date
+  /// Khoá chống trùng: một việc cho mỗi (đối tác, dịp, ngày diễn ra) — xem lib/crm/care.ts.
+  occasionKey     String        @unique
+  giftType        CrmGiftType
+  description     String        @db.Text
+  /// Dự kiến và thực chi, đơn vị đồng.
+  budget          Int?
+  actualCost      Int?
+  /// Nhân viên lo việc này (đặt, trao).
+  assigneeName    String?
+  status          CrmCareStatus @default(TODO)
+  deliveredAt     DateTime?
+  note            String?       @db.Text
+  createdById     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  /// Lượt tương tác GIFT tạo ra khi đánh dấu đã trao.
+  interactionId   String?       @unique
+
+  contact       CrmContact?       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  organization  CrmOrganization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  // Xoá ngày quan trọng không xoá lịch sử quà đã tặng.
+  importantDate CrmImportantDate? @relation(fields: [importantDateId], references: [id], onDelete: SetNull)
+  interaction   CrmInteraction?   @relation(fields: [interactionId], references: [id], onDelete: SetNull)
+
+  @@index([status, occasionDate])
+  @@index([contactId])
+  @@index([organizationId])
+  @@map("crm_care_tasks")
+}

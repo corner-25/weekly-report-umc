@@ -7,12 +7,14 @@ import {
   birthdaySource,
   CRM_TRANSACTION,
   canSeeSensitive,
+  careTaskInclude,
   handle,
   HttpError,
   importantDateSource,
   interactionInclude,
   requireSession,
   resolveOrganization,
+  toCareTaskDto,
   toImportantDateDto,
   toInteractionDto,
   upcomingFor,
@@ -46,12 +48,18 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   if (!contact) throw new HttpError(404, 'Không tìm thấy hồ sơ');
 
   // Dòng thời gian gồm cả lượt người này là khách chính lẫn là thành viên đoàn.
-  const interactions = await prisma.crmInteraction.findMany({
-    where: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] },
-    include: interactionInclude,
-    orderBy: { occurredAt: 'desc' },
-    take: 200,
-  });
+  const [interactions, careTasks] = await Promise.all([
+    prisma.crmInteraction.findMany({
+      where: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] },
+      include: interactionInclude,
+      orderBy: { occurredAt: 'desc' },
+      take: 200,
+    }),
+    // Quà, hoa đã và sẽ tặng — dịp gần nhất trước.
+    prisma.crmCareTask.findMany({
+      where: { contactId: id }, include: careTaskInclude, orderBy: { occasionDate: 'desc' }, take: 100,
+    }),
+  ]);
 
   const { relationsFrom, sensitiveNote, ...rest } = contact;
   const allowed = canSeeSensitive(session, contact.ownerName);
@@ -73,6 +81,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     })),
     importantDates: contact.importantDates.map(toImportantDateDto),
     interactions: interactions.map(toInteractionDto),
+    careTasks: careTasks.map(toCareTaskDto),
     upcoming: upcomingFor(sources),
   });
 });

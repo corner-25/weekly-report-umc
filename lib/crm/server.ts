@@ -189,6 +189,37 @@ export function toInteractionDto(i: InteractionWithRelations) {
   };
 }
 
+export const careTaskInclude = {
+  contact: { select: { id: true, fullName: true, academicTitle: true } },
+  organization: { select: { id: true, name: true } },
+  importantDate: { select: { label: true } },
+} satisfies Prisma.CrmCareTaskInclude;
+
+type CareTaskWithRelations = Prisma.CrmCareTaskGetPayload<{ include: typeof careTaskInclude }>;
+
+export function toCareTaskDto(t: CareTaskWithRelations) {
+  return {
+    id: t.id,
+    contact: t.contact,
+    organization: t.organization,
+    importantDateId: t.importantDateId,
+    occasionKind: t.occasionKind,
+    // Ngày quan trọng gốc đã bị xoá thì còn loại dịp để hiển thị.
+    occasionLabel: t.importantDate?.label || DATE_KIND_LABELS[t.occasionKind],
+    occasionDate: t.occasionDate.toISOString().slice(0, 10),
+    giftType: t.giftType,
+    description: t.description,
+    budget: t.budget,
+    actualCost: t.actualCost,
+    assigneeName: t.assigneeName,
+    status: t.status,
+    deliveredAt: t.deliveredAt?.toISOString() ?? null,
+    note: t.note,
+    interactionId: t.interactionId,
+    createdById: t.createdById,
+  };
+}
+
 export function toImportantDateDto(d: {
   id: string; kind: string; label: string | null; day: number; month: number; year: number | null;
   isLunar: boolean; repeatsYearly: boolean; remindDaysBefore: number | null; note: string | null;

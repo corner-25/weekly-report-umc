@@ -56,6 +56,13 @@ export function yearsLabel(kind: string, years: number | null): string | null {
   return kind === 'BIRTHDAY' ? `${years} tuổi` : `${years} năm`;
 }
 
+const MONEY = new Intl.NumberFormat('vi-VN');
+
+/** Số tiền đồng: "1.500.000 đ"; trống → "—". */
+export function formatMoney(value: number | null | undefined): string {
+  return value == null ? '—' : `${MONEY.format(value)} đ`;
+}
+
 /** Danh sách chọn có thêm giá trị hiện tại nếu nó không nằm trong danh mục (dữ liệu cũ). */
 export function withCurrent(list: readonly string[], current: string | null | undefined): string[] {
   return current && !list.includes(current) ? [...list, current] : [...list];

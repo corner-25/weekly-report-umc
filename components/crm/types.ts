@@ -4,7 +4,9 @@
  */
 import type { ReconcileRow } from '@/lib/crm/reconcile';
 import type {
+  CARE_STATUS_LABELS,
   DATE_KIND_LABELS,
+  GIFT_TYPE_LABELS,
   INTERACTION_TYPE_LABELS,
   INTERACTION_STATUS_LABELS,
   ORGANIZATION_TYPE_LABELS,
@@ -20,6 +22,8 @@ export type DateKind = keyof typeof DATE_KIND_LABELS;
 export type InteractionType = keyof typeof INTERACTION_TYPE_LABELS;
 export type InteractionStatus = keyof typeof INTERACTION_STATUS_LABELS;
 export type ContactStatus = keyof typeof CONTACT_STATUS_LABELS;
+export type GiftType = keyof typeof GIFT_TYPE_LABELS;
+export type CareStatus = keyof typeof CARE_STATUS_LABELS;
 
 export interface InteractionDTO {
   id: string;
@@ -75,6 +79,42 @@ export interface OverviewUpcoming extends UpcomingDTO {
   };
 }
 
+/** Một việc chuẩn bị quà/hoa cho một lần diễn ra của một dịp. */
+export interface CareTaskDTO {
+  id: string;
+  contact: { id: string; fullName: string; academicTitle: string | null } | null;
+  organization: { id: string; name: string } | null;
+  importantDateId: string | null;
+  occasionKind: DateKind;
+  occasionLabel: string;
+  /** Ngày dương lịch của lần diễn ra, YYYY-MM-DD. */
+  occasionDate: string;
+  giftType: GiftType;
+  description: string;
+  /** Đồng. */
+  budget: number | null;
+  actualCost: number | null;
+  assigneeName: string | null;
+  status: CareStatus;
+  deliveredAt: string | null;
+  note: string | null;
+  /** Lượt tương tác GIFT ghi khi đã trao. */
+  interactionId: string | null;
+  createdById: string | null;
+}
+
+/** Dịp đã tới hạn chuẩn bị quà/hoa (trong số ngày nhắc trước), kèm việc nếu đã lên kế hoạch. */
+export interface CareDueItem extends OverviewUpcoming {
+  importantDateId: string | null;
+  remindDays: number;
+  task: CareTaskDTO | null;
+}
+
+export interface CareBudgetSum {
+  budget: number;
+  actualCost: number;
+}
+
 export interface DormantItem {
   type: 'contact' | 'organization';
   id: string;
@@ -94,6 +134,9 @@ export interface OverviewDTO {
   dormant: DormantItem[];
   /** Đối chiếu với Excel báo cáo tuần, tháng gần nhất trước. */
   reconcile: ReconcileRow[];
+  careDue: CareDueItem[];
+  /** Dự kiến và thực chi quà/hoa (chưa huỷ) theo ngày của dịp. */
+  careBudget: { month: CareBudgetSum; year: CareBudgetSum };
   counts: {
     contacts: number;
     organizations: number;
@@ -188,6 +231,7 @@ export interface ContactDetail {
   relations: RelationDTO[];
   importantDates: ImportantDateDTO[];
   interactions: InteractionDTO[];
+  careTasks: CareTaskDTO[];
   upcoming: UpcomingDTO[];
 }
 
@@ -206,5 +250,6 @@ export interface OrganizationDetail {
   contacts: Array<{ id: string; fullName: string; academicTitle: string | null; title: string | null; isCurrent: boolean }>;
   importantDates: ImportantDateDTO[];
   interactions: InteractionDTO[];
+  careTasks: CareTaskDTO[];
   upcoming: UpcomingDTO[];
 }
