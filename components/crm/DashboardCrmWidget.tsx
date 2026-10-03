@@ -54,60 +54,62 @@ export function DashboardCrmWidget() {
             </Link>
           )}
 
-          <div>
-            <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> Lịch dẫn khách & đoàn
-            </h3>
-            {data.planned.length === 0 ? (
-              <p className="text-sm text-slate-500">Không có lịch hẹn trong {WINDOW_DAYS} ngày tới.</p>
-            ) : (
-              <ul className="space-y-2">
-                {data.planned.slice(0, PREVIEW).map((p) => (
-                  <li key={p.id} className="flex items-start gap-3">
-                    <div className="w-12 shrink-0 text-center">
-                      <div className="text-sm font-semibold tabular-nums text-slate-900">{formatDate(p.occurredAt, 'dd/MM')}</div>
-                      <div className="text-[11px] tabular-nums text-slate-400">{formatDate(p.occurredAt, 'HH:mm')}</div>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">
-                        {p.contact ? displayName(p.contact) : p.organization?.name ?? INTERACTION_TYPE_LABELS[p.type]}
-                      </p>
-                      <p className="truncate text-xs text-slate-500">
-                        {INTERACTION_TYPE_LABELS[p.type]}{p.destination ? ` · ${p.destination}` : ''} · {p.staffName}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div>
+              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> Lịch dẫn khách & đoàn
+              </h3>
+              {data.planned.length === 0 ? (
+                <p className="text-sm text-slate-500">Không có lịch hẹn trong {WINDOW_DAYS} ngày tới.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {data.planned.slice(0, PREVIEW).map((p) => (
+                    <li key={p.id} className="flex items-start gap-3">
+                      <div className="w-12 shrink-0 text-center">
+                        <div className="text-sm font-semibold tabular-nums text-slate-900">{formatDate(p.occurredAt, 'dd/MM')}</div>
+                        <div className="text-[11px] tabular-nums text-slate-400">{formatDate(p.occurredAt, 'HH:mm')}</div>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-slate-900">
+                          {p.contact ? displayName(p.contact) : p.organization?.name ?? INTERACTION_TYPE_LABELS[p.type]}
+                        </p>
+                        <p className="truncate text-xs text-slate-500">
+                          {INTERACTION_TYPE_LABELS[p.type]}{p.destination ? ` · ${p.destination}` : ''} · {p.staffName}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Dịp đối tác {WINDOW_DAYS} ngày tới</h3>
-            {data.upcoming.length === 0 ? (
-              <p className="text-sm text-slate-500">Không có sinh nhật hay ngày kỷ niệm nào.</p>
-            ) : (
-              <ul className="space-y-2">
-                {data.upcoming.slice(0, PREVIEW).map((u) => (
-                  <li key={u.key}>
-                    <Link
-                      href={`/dashboard/crm/${u.target.type === 'contact' ? 'contacts' : 'organizations'}/${u.target.id}`}
-                      className="flex items-center justify-between gap-3 rounded-lg px-1 py-0.5 hover:bg-slate-50"
-                    >
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium text-slate-900">{u.target.name}</span>
-                        <span className="block truncate text-xs text-slate-500">
-                          {u.label || DATE_KIND_LABELS[u.kind]} · {formatDate(u.date, 'dd/MM')}{u.isLunar ? ' (âm lịch)' : ''}
+            <div>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Dịp đối tác {WINDOW_DAYS} ngày tới</h3>
+              {data.upcoming.length === 0 ? (
+                <p className="text-sm text-slate-500">Không có sinh nhật hay ngày kỷ niệm nào.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {data.upcoming.slice(0, PREVIEW).map((u) => (
+                    <li key={u.key}>
+                      <Link
+                        href={`/dashboard/crm/${u.target.type === 'contact' ? 'contacts' : 'organizations'}/${u.target.id}`}
+                        className="flex items-center justify-between gap-3 rounded-lg px-1 py-0.5 hover:bg-slate-50"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium text-slate-900">{u.target.name}</span>
+                          <span className="block truncate text-xs text-slate-500">
+                            {u.label || DATE_KIND_LABELS[u.kind]} · {formatDate(u.date, 'dd/MM')}{u.isLunar ? ' (âm lịch)' : ''}
+                          </span>
                         </span>
-                      </span>
-                      <span className={`shrink-0 text-xs font-semibold ${u.daysUntil === 0 ? 'text-rose-600' : 'text-slate-500'}`}>
-                        {daysUntilLabel(u.daysUntil)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+                        <span className={`shrink-0 text-xs font-semibold ${u.daysUntil === 0 ? 'text-rose-600' : 'text-slate-500'}`}>
+                          {daysUntilLabel(u.daysUntil)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -7,22 +7,16 @@ import { useDashboardStats } from '@/lib/swr';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import { DashboardCrmWidget } from '@/components/crm/DashboardCrmWidget';
-import {
-  LayoutDashboard,
-  ClipboardCheck,
-  Clock,
-  CheckCircle2,
-  FileText,
-  CalendarDays,
-  Users,
-  Plus,
-  CalendarClock,
-  ArrowRight,
-  ArrowLeftRight,
-  Cake,
-  Handshake,
-  AlertTriangle,
-} from 'lucide-react';
+import { LayoutDashboard, ClipboardCheck, Clock, CheckCircle2, FileText, CalendarDays, Users, Plus, CalendarClock, Handshake } from 'lucide-react';
+import { BirthdayCard, EventsCard, MouCard, QuickActions, RecentWeeksCard, SecretaryCard, TransfersCard } from '@/components/dashboard/widgets';
+import type { DashboardStats } from '@/components/dashboard/types';
+
+const QUICK_ACTIONS = [
+  { href: '/dashboard/crm/interactions', icon: Handshake, label: 'Ghi lượt dẫn khách / đoàn' },
+  { href: '/dashboard/hospital-events', icon: CalendarDays, label: 'Thêm sự kiện' },
+  { href: '/dashboard/secretaries', icon: Users, label: 'Thêm thư ký' },
+  { href: '/dashboard/calendar', icon: CalendarClock, label: 'Xem lịch làm việc' },
+];
 
 export default function Dashboard() {
   const { data: stats, error, isLoading, mutate } = useDashboardStats();
@@ -55,9 +49,10 @@ export default function Dashboard() {
     );
   }
 
+  const data = stats as DashboardStats;
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <PageHeader
         icon={LayoutDashboard}
         title="Tổng quan hoạt động"
@@ -73,369 +68,33 @@ export default function Dashboard() {
         }
       />
 
-      {/* Quick Stats Grid */}
+      <QuickActions items={QUICK_ACTIONS} />
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard label="NV thường kỳ" value={stats.totalMasterTasks} icon={ClipboardCheck} color="purple" href="/dashboard/tasks" />
-        <StatCard label="Đang thực hiện" value={stats.tasksInProgress} icon={Clock} color="orange" />
-        <StatCard label="Đã hoàn thành" value={stats.tasksCompleted} icon={CheckCircle2} color="green" />
-        <StatCard label="Báo cáo đã nộp" value={stats.totalWeeks} icon={FileText} color="cyan" href="/dashboard/weeks" />
-        <StatCard label="Sự kiện sắp tới" value={stats.upcomingEvents.length} icon={CalendarDays} color="pink" href="/dashboard/hospital-events" />
-        <StatCard label="Thư ký" value={stats.activeSecretaries} subValue={`/${stats.totalSecretaries}`} icon={Users} color="blue" href="/dashboard/secretaries" />
+        <StatCard label="NV thường kỳ" value={data.totalMasterTasks} icon={ClipboardCheck} color="purple" href="/dashboard/tasks" />
+        <StatCard label="Đang thực hiện" value={data.tasksInProgress} icon={Clock} color="orange" href="/dashboard/tasks/overview" />
+        <StatCard label="Đã hoàn thành" value={data.tasksCompleted} icon={CheckCircle2} color="green" href="/dashboard/tasks/overview" />
+        <StatCard label="Tuần báo cáo" value={data.totalWeeks} icon={FileText} color="cyan" href="/dashboard/weeks" />
+        <StatCard label="Sự kiện sắp tới" value={data.upcomingEvents.length} icon={CalendarDays} color="pink" href="/dashboard/hospital-events" />
+        <StatCard label="Thư ký" value={data.activeSecretaries} subValue={`/${data.totalSecretaries}`} icon={Users} color="blue" href="/dashboard/secretaries" />
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - 2/3 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Cột chính: báo cáo và lịch — việc của phòng hằng tuần */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Today's Events */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
-                  <CalendarClock className="w-5 h-5 text-pink-600" />
-                </div>
-                <div>
-                  <h2 className="font-semibold text-slate-900">Sự kiện hôm nay</h2>
-                  <p className="text-sm text-slate-500">{stats.todayEvents.length} sự kiện</p>
-                </div>
-              </div>
-              <Link href="/dashboard/hospital-events-calendar" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
-                Xem lịch <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="p-5">
-              {stats.todayEvents.length === 0 ? (
-                <div className="text-center py-6 text-slate-500">
-                  <CalendarDays className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-                  Không có sự kiện nào hôm nay
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {stats.todayEvents.map((event: any) => (
-                    <div key={event.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
-                      <div className="text-center min-w-[50px]">
-                        <div className="text-lg font-bold text-pink-600">{event.time || '--:--'}</div>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-slate-900">{event.name}</h4>
-                        {event.meetingRoom && (
-                          <p className="text-sm text-slate-500">{event.meetingRoom.name}</p>
-                        )}
-                      </div>
-                      <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                        event.status === 'CONFIRMED'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-amber-100 text-amber-700'
-                      }`}>
-                        {event.status === 'CONFIRMED' ? 'Đã xác nhận' : 'Chờ xác nhận'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Upcoming Events */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900">Sự kiện sắp tới</h2>
-              <Link href="/dashboard/hospital-events" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
-                Xem tất cả <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="divide-y divide-slate-100">
-              {stats.upcomingEvents.length === 0 ? (
-                <div className="text-center py-8 text-slate-500">Chưa có sự kiện nào</div>
-              ) : (
-                stats.upcomingEvents.map((event: any) => (
-                  <div key={event.id} className="px-5 py-3 hover:bg-slate-50/50 flex items-center gap-4 transition-colors">
-                    <div className="text-center min-w-[45px]">
-                      <div className="text-xs text-slate-500 uppercase font-medium">
-                        {format(new Date(event.date), 'MMM', { locale: vi })}
-                      </div>
-                      <div className="text-xl font-bold text-slate-900">
-                        {format(new Date(event.date), 'd')}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-slate-900 line-clamp-1">{event.name}</h4>
-                      <p className="text-sm text-slate-500">
-                        {event.time && <span>{event.time} · </span>}
-                        {event.meetingRoom?.name || 'Chưa có phòng'}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Recent Reports */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900">Báo cáo tuần gần đây</h2>
-              <Link href="/dashboard/weeks" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
-                Xem tất cả <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="p-5">
-              {stats.recentWeeks.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-slate-500 mb-3">Chưa có báo cáo nào</p>
-                  <Link
-                    href="/dashboard/weeks/new"
-                    className="inline-block px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 text-sm"
-                  >
-                    Tạo báo cáo đầu tiên
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {stats.recentWeeks.map((week: any) => (
-                    <Link
-                      key={week.id}
-                      href={`/dashboard/weeks/${week.id}`}
-                      className="block p-4 border border-slate-200 rounded-xl hover:border-cyan-300 hover:shadow-sm transition-all group"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-bold text-slate-900">Tuần {week.weekNumber}</span>
-                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                          week.status === 'COMPLETED'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-amber-100 text-amber-700'
-                        }`}>
-                          {week.status === 'COMPLETED' ? 'Xong' : 'Nháp'}
-                        </span>
-                      </div>
-                      <p className="text-sm text-slate-500">
-                        {format(new Date(week.startDate), 'd/M', { locale: vi })} - {format(new Date(week.endDate), 'd/M', { locale: vi })}
-                      </p>
-                      <div className="mt-2 text-xs text-slate-400">
-                        {week.taskCount || 0} nhiệm vụ
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <RecentWeeksCard weeks={data.recentWeeks} />
+          <DashboardCrmWidget />
+          <EventsCard today={data.todayEvents} upcoming={data.upcomingEvents} />
         </div>
 
-        {/* Right Column - 1/3 */}
+        {/* Cột phụ: con người — sinh nhật, thư ký; khối trống thì ẩn */}
         <div className="space-y-6">
-          <DashboardCrmWidget />
-
-          {/* Birthday Widget */}
-          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center">
-                  <Cake className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="font-semibold">Sinh nhật tuần này</h2>
-                  <p className="text-sm text-slate-500">{stats.birthdaySecretaries.length} người · gần nhất trước</p>
-                </div>
-              </div>
-              <Link href="/dashboard/secretaries/birthdays?period=week" className="text-sm text-slate-600 hover:text-slate-900 flex items-center gap-1">
-                Xem <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="px-5 pb-5">
-              {stats.birthdaySecretaries.length === 0 ? (
-                <p className="text-center py-4 text-slate-500">Không có sinh nhật tuần này</p>
-              ) : (
-                <div className="divide-y divide-slate-100">
-                  {(stats.birthdayPreview || stats.birthdaySecretaries.slice(0, 4)).map((s: any) => (
-                    <div key={s.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                      <div className="w-10 text-center flex-shrink-0">
-                        <div className="text-lg font-semibold text-slate-900 leading-none">{s.birthdayDay}</div>
-                        <div className="text-[10px] uppercase tracking-wide text-slate-400">Thg {s.birthdayMonth}</div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{s.fullName}</p>
-                        <p className="text-xs text-slate-500">
-                          {s.isToday ? 'Hôm nay' : `Tròn ${s.age} tuổi`}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Secretary Stats */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-900">Thư ký</h2>
-            </div>
-            <div className="p-5">
-              <div className="flex items-center gap-5 mb-4">
-                {/* Multi-segment donut by type */}
-                <div className="relative w-24 h-24 flex-shrink-0">
-                  <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f1f5f9" strokeWidth="3.5" />
-                    {(() => {
-                      const total = stats.activeSecretaries || 1;
-                      let offset = 0;
-                      return (stats.secretariesByType || []).map((t: any, i: number) => {
-                        const pct = (t.count / total) * 100;
-                        const circ = (
-                          <circle
-                            key={t.typeId || i}
-                            cx="18" cy="18" r="15.9155" fill="none"
-                            stroke={t.color}
-                            strokeWidth="3.5"
-                            strokeDasharray={`${pct} ${100 - pct}`}
-                            strokeDashoffset={-offset}
-                          />
-                        );
-                        offset += pct;
-                        return circ;
-                      });
-                    })()}
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-slate-900 leading-none">{stats.activeSecretaries}</span>
-                    <span className="text-[10px] text-slate-500 mt-0.5">hoạt động</span>
-                  </div>
-                </div>
-
-                {/* Legend */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  {(stats.secretariesByType || []).length === 0 ? (
-                    <p className="text-sm text-slate-500">Chưa có dữ liệu</p>
-                  ) : (
-                    (stats.secretariesByType || []).map((t: any) => {
-                      const pct = stats.activeSecretaries > 0
-                        ? Math.round((t.count / stats.activeSecretaries) * 100)
-                        : 0;
-                      return (
-                        <div key={t.typeId || t.name} className="flex items-center gap-2 text-sm">
-                          <span
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: t.color }}
-                          />
-                          <span className="text-slate-700 truncate flex-1" title={t.name}>{t.name}</span>
-                          <span className="font-semibold text-slate-900 tabular-nums">{t.count}</span>
-                          <span className="text-xs text-slate-400 tabular-nums w-8 text-right">{pct}%</span>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-              <Link
-                href="/dashboard/secretaries"
-                className="block w-full text-center py-2 text-sm text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors font-medium"
-              >
-                Quản lý thư ký →
-              </Link>
-            </div>
-          </div>
-
-          {/* MOU Expiring Widget */}
-          {stats.expiringMOUs && stats.expiringMOUs.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
-                  MOU cần chú ý
-                </h2>
-                <Link href="/dashboard/mous?status=EXPIRING" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
-                  Xem <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-              <div className="divide-y divide-slate-100">
-                {stats.expiringMOUs.map((m: any) => {
-                  const today = new Date();
-                  const expiry = new Date(m.expiryDate);
-                  const days = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                  const isExpired = days <= 0;
-                  return (
-                    <Link
-                      key={m.id}
-                      href="/dashboard/mous"
-                      className="block px-5 py-3 hover:bg-slate-50/50 transition-colors"
-                    >
-                      <div className="flex items-start gap-2">
-                        <Handshake className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}`} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 line-clamp-1">{m.title}</p>
-                          <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{m.partnerName}</p>
-                          <p className={`text-xs font-medium mt-1 ${isExpired ? 'text-red-600' : days <= 30 ? 'text-red-600' : 'text-orange-600'}`}>
-                            {isExpired
-                              ? `Đã hết hạn ${Math.abs(days)} ngày`
-                              : `Còn ${days} ngày (${format(expiry, 'd/M/yyyy', { locale: vi })})`}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Recent Transfers */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-                <ArrowLeftRight className="w-4 h-4 text-slate-400" />
-                Luân chuyển gần đây
-              </h2>
-              <Link href="/dashboard/secretaries/transfers" className="text-sm text-cyan-600 hover:text-cyan-700 flex items-center gap-1 font-medium">
-                Xem <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="divide-y divide-slate-100">
-              {stats.recentTransfers.length === 0 ? (
-                <div className="text-center py-6 text-slate-500 text-sm">Chưa có luân chuyển</div>
-              ) : (
-                stats.recentTransfers.map((t: any) => (
-                  <div key={t.id} className="px-5 py-3">
-                    <p className="font-medium text-slate-900 text-sm">{t.secretary?.fullName}</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {t.fromDepartment?.name || 'Mới'} → {t.toDepartment?.name}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      {format(new Date(t.transferDate), 'd/M/yyyy', { locale: vi })}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
-            <h2 className="font-semibold text-slate-900 mb-4">Thao tác nhanh</h2>
-            <div className="space-y-1.5">
-              <QuickAction href="/dashboard/weeks/new" icon={Plus} label="Tạo báo cáo tuần" />
-              <QuickAction href="/dashboard/crm/interactions" icon={Handshake} label="Ghi lượt dẫn khách / đoàn" />
-              <QuickAction href="/dashboard/hospital-events" icon={CalendarDays} label="Thêm sự kiện" />
-              <QuickAction href="/dashboard/secretaries" icon={Users} label="Thêm thư ký" />
-              <QuickAction href="/dashboard/calendar" icon={CalendarClock} label="Xem lịch làm việc" />
-            </div>
-          </div>
+          <BirthdayCard people={data.birthdaySecretaries} preview={data.birthdayPreview} />
+          {data.expiringMOUs.length > 0 && <MouCard mous={data.expiringMOUs} />}
+          <SecretaryCard active={data.activeSecretaries} total={data.totalSecretaries} byType={data.secretariesByType} />
+          {data.recentTransfers.length > 0 && <TransfersCard transfers={data.recentTransfers} />}
         </div>
       </div>
     </div>
-  );
-}
-
-function QuickAction({ href, icon: Icon, label }: { href: string; icon: typeof Plus; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
-    >
-      <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-cyan-50 transition-colors">
-        <Icon className="w-4 h-4 text-slate-500 group-hover:text-cyan-600 transition-colors" />
-      </div>
-      <span className="text-sm text-slate-700 group-hover:text-slate-900">{label}</span>
-    </Link>
   );
 }
