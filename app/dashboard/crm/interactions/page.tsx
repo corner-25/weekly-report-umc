@@ -7,19 +7,20 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/utils';
 import { VIP_STAFF } from '@/lib/crm/constants';
-import { crmFetch, errorMessage } from '@/components/crm/api';
+import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import type { InteractionDTO } from '@/components/crm/types';
 import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, Stat } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
-type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
+type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'OTHER' | 'PLANNED';
 const TABS: Array<{ value: TypeTab; label: string }> = [
   { value: 'ALL', label: 'Tất cả' },
   { value: 'VIP_ESCORT', label: 'Dẫn khám VIP' },
   { value: 'DELEGATION', label: 'Dẫn đoàn' },
   { value: 'OTHER', label: 'Khác' },
+  { value: 'PLANNED', label: 'Lịch hẹn' },
 ];
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -53,6 +54,7 @@ export default function CrmInteractionsPage() {
     const params = new URLSearchParams();
     // Tab "Khác" gồm nhiều loại — lấy hết rồi lọc ở giao diện.
     if (tab === 'VIP_ESCORT' || tab === 'DELEGATION') params.set('type', tab);
+    if (tab === 'PLANNED') params.set('status', 'PLANNED');
     if (staffName) params.set('staffName', staffName);
     if (from) params.set('from', from);
     if (to) params.set('to', to);
@@ -82,10 +84,12 @@ export default function CrmInteractionsPage() {
 
   const monthStats = useMemo(() => {
     if (!monthItems) return null;
-    const escorts = monthItems.filter((i) => i.type === 'VIP_ESCORT');
-    const delegations = monthItems.filter((i) => i.type === 'DELEGATION');
+    // Chỉ đếm lượt đã thực hiện — lịch hẹn và lượt huỷ chưa phải việc đã làm.
+    const done = monthItems.filter((i) => i.status === 'DONE');
+    const escorts = done.filter((i) => i.type === 'VIP_ESCORT');
+    const delegations = done.filter((i) => i.type === 'DELEGATION');
     const guests = delegations.reduce((sum, d) => sum + (d.guestCount ?? 0), 0);
-    return { escorts: escorts.length, delegations: delegations.length, guests, others: monthItems.filter(isOtherType).length };
+    return { escorts: escorts.length, delegations: delegations.length, guests, others: done.filter(isOtherType).length };
   }, [monthItems]);
 
   const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL');
@@ -191,6 +195,9 @@ export default function CrmInteractionsPage() {
                   url: `/api/crm/interactions/${item.id}`,
                   onDone: reload,
                 })}
+                onStatusChange={(item, status) => {
+                  changeInteractionStatus(item.id, status).then(() => reload()).catch((e) => setError(errorMessage(e)));
+                }}
               />
             </div>
           )}

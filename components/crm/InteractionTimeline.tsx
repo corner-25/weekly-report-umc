@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import {
   Building2,
   CalendarDays,
+  Check,
   Gift,
   Handshake,
   Mail,
@@ -15,12 +17,13 @@ import {
   Trash2,
   UserRound,
   Users,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
+import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
 import { displayName, formatDate } from './format';
-import type { InteractionDTO, InteractionType } from './types';
+import type { InteractionDTO, InteractionStatus, InteractionType } from './types';
 import { ICON_BTN } from './ui';
 
 export const INTERACTION_ICONS: Record<InteractionType, LucideIcon> = {
@@ -52,10 +55,12 @@ interface InteractionTimelineProps {
   hideOrganizationId?: string;
   onEdit?: (item: InteractionDTO) => void;
   onDelete?: (item: InteractionDTO) => void;
+  /** Chốt lịch hẹn: đã xong / huỷ. */
+  onStatusChange?: (item: InteractionDTO, status: InteractionStatus) => void;
   compact?: boolean;
 }
 
-export function InteractionTimeline({ items, hideContactId, hideOrganizationId, onEdit, onDelete, compact = false }: InteractionTimelineProps) {
+export function InteractionTimeline({ items, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, compact = false }: InteractionTimelineProps) {
   return (
     <ol className="relative">
       {items.map((item, index) => (
@@ -67,6 +72,7 @@ export function InteractionTimeline({ items, hideContactId, hideOrganizationId, 
           hideOrganizationId={hideOrganizationId}
           onEdit={onEdit}
           onDelete={onDelete}
+          onStatusChange={onStatusChange}
           compact={compact}
         />
       ))}
@@ -79,8 +85,13 @@ interface TimelineItemProps extends Omit<InteractionTimelineProps, 'items'> {
   isLast: boolean;
 }
 
-function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit, onDelete, compact }: TimelineItemProps) {
+function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, compact }: TimelineItemProps) {
   const Icon = INTERACTION_ICONS[item.type];
+  const { data: session } = useSession();
+  // Khớp quy tắc phía API: quản trị viên hoặc người đã ghi lượt này mới sửa/xoá được.
+  const canModify = session?.user.role === 'ADMIN' || (item.createdById !== null && item.createdById === session?.user.id);
+  const editHandler = canModify ? onEdit : undefined;
+  const deleteHandler = canModify ? onDelete : undefined;
   const showContact = item.contact && item.contact.id !== hideContactId;
   const showOrganization = item.organization && item.organization.id !== hideOrganizationId;
 
@@ -97,6 +108,11 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
               <time dateTime={item.occurredAt} className="font-semibold tabular-nums text-slate-700">{formatDate(item.occurredAt, 'dd/MM/yyyy · HH:mm')}</time>
               <span className="mx-1.5 text-slate-300">|</span>
               {INTERACTION_TYPE_LABELS[item.type]}
+              {item.status !== 'DONE' && (
+                <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold', item.status === 'PLANNED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500 line-through')}>
+                  {INTERACTION_STATUS_LABELS[item.status]}
+                </span>
+              )}
             </p>
             {item.title && <h3 className="mt-0.5 text-sm font-semibold text-slate-900">{item.title}</h3>}
             {(showContact || showOrganization) && (
@@ -115,15 +131,25 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
               </p>
             )}
           </div>
-          {(onEdit || onDelete) && (
-            <div className="-mr-1 flex shrink-0">
-              {onEdit && (
-                <button type="button" onClick={() => onEdit(item)} aria-label="Sửa tương tác" className={ICON_BTN}>
+          {(editHandler || deleteHandler || (onStatusChange && item.status === 'PLANNED')) && (
+            <div className="-mr-1 flex shrink-0 items-center gap-1">
+              {onStatusChange && item.status === 'PLANNED' && (
+                <>
+                  <button type="button" onClick={() => onStatusChange(item, 'DONE')} className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" /> Đã xong
+                  </button>
+                  <button type="button" onClick={() => onStatusChange(item, 'CANCELLED')} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-100">
+                    <X className="h-3.5 w-3.5" aria-hidden="true" /> Huỷ
+                  </button>
+                </>
+              )}
+              {editHandler && (
+                <button type="button" onClick={() => editHandler(item)} aria-label="Sửa tương tác" className={ICON_BTN}>
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
               )}
-              {onDelete && (
-                <button type="button" onClick={() => onDelete(item)} aria-label="Xoá tương tác" className={cn(ICON_BTN, 'hover:bg-red-50 hover:text-red-600')}>
+              {deleteHandler && (
+                <button type="button" onClick={() => deleteHandler(item)} aria-label="Xoá tương tác" className={cn(ICON_BTN, 'hover:bg-red-50 hover:text-red-600')}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}

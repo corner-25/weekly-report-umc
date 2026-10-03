@@ -3,12 +3,12 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { X } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
-import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF } from '@/lib/crm/constants';
+import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF, INTERACTION_STATUS_LABELS } from '@/lib/crm/constants';
 import type { InteractionInput } from '@/lib/crm/schemas';
 import { CrmApiError, crmSend, errorMessage } from './api';
 import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
-import type { InteractionDTO, InteractionType } from './types';
+import type { InteractionDTO, InteractionType, InteractionStatus } from './types';
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
 
 export type InteractionMode = 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
@@ -58,6 +58,7 @@ const MODE_TEXT: Record<InteractionMode, { create: string; edit: string; subtitl
 
 interface FormState {
   type: InteractionType;
+  status: InteractionStatus;
   occurredAt: string;
   contact: ComboValue | null;
   newContactPhone: string;
@@ -81,6 +82,7 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     const purpose = initial.purpose ?? '';
     return {
       type: initial.type,
+      status: initial.status,
       occurredAt: toDateTimeLocal(initial.occurredAt),
       contact: initial.contact ? { id: initial.contact.id, label: displayName(initial.contact) } : null,
       newContactPhone: '',
@@ -101,6 +103,7 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
   }
   return {
     type: mode === 'OTHER' ? 'MEETING' : mode,
+    status: 'DONE',
     occurredAt: toDateTimeLocal(new Date()),
     contact: preset?.contactId ? { id: preset.contactId, label: preset.contactName ?? 'Khách đã chọn' } : null,
     newContactPhone: '',
@@ -127,6 +130,7 @@ function buildBody(form: FormState): InteractionInput {
   const isEscort = form.type === 'VIP_ESCORT';
   return {
     type: form.type,
+    status: form.status,
     occurredAt: new Date(form.occurredAt).toISOString(),
     contactId: contact && 'id' in contact ? contact.id : undefined,
     newContactName: contact && 'newName' in contact ? cleanText(contact.newName) : undefined,
@@ -240,9 +244,45 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
             </Field>
           )}
           <Field label="Ngày giờ" required error={errors.occurredAt}>
-            <input data-autofocus={mode !== 'OTHER' || undefined} type="datetime-local" value={form.occurredAt} onChange={(event) => set('occurredAt', event.target.value)} className={inputClass(errors.occurredAt)} />
+            <input
+              data-autofocus={mode !== 'OTHER' || undefined}
+              type="datetime-local"
+              value={form.occurredAt}
+              onChange={(event) => {
+                const occurredAt = event.target.value;
+                // Ngày ở tương lai gần như luôn là lịch hẹn — tự chọn sẵn, người dùng đổi được.
+                const future = new Date(occurredAt).getTime() > Date.now();
+                setForm((prev) => ({
+                  ...prev,
+                  occurredAt,
+                  status: prev.status === 'CANCELLED' ? prev.status : future ? 'PLANNED' : 'DONE',
+                }));
+              }}
+              className={inputClass(errors.occurredAt)}
+            />
           </Field>
         </div>
+
+        <fieldset>
+          <legend className="mb-1.5 block text-sm font-semibold text-slate-700">Trạng thái</legend>
+          <div className="inline-flex rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="Trạng thái">
+            {(['DONE', 'PLANNED', 'CANCELLED'] as const).map((status) => (
+              <button
+                key={status}
+                type="button"
+                role="radio"
+                aria-checked={form.status === status}
+                onClick={() => set('status', status)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${form.status === status ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                {INTERACTION_STATUS_LABELS[status]}
+              </button>
+            ))}
+          </div>
+          {form.status === 'PLANNED' && (
+            <p className="mt-1.5 text-xs text-slate-500">Lịch hẹn hiện ở Tổng quan và Dashboard; đến ngày bấm “Đã xong” để chốt.</p>
+          )}
+        </fieldset>
 
         {mode === 'VIP_ESCORT' && <EscortFields form={form} set={set} errors={errors} />}
         {mode === 'DELEGATION' && <DelegationFields form={form} set={set} errors={errors} />}

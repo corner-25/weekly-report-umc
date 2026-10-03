@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { CrmOrganizationType, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { organizationInputSchema } from '@/lib/crm/schemas';
-import { normalizeOrganizationName } from '@/lib/crm/constants';
+import { normalizeOrganizationName, toSearchKey } from '@/lib/crm/constants';
 import { handle, HttpError, importantDateSource, parseTier, requireSession, upcomingFor } from '@/lib/crm/server';
 
 const ORG_TYPES = new Set(['HOSPITAL', 'UNIVERSITY', 'COMPANY', 'GOVERNMENT', 'INTERNATIONAL', 'PRESS', 'OTHER']);
@@ -17,7 +17,7 @@ export const GET = handle(async (request: Request) => {
   const where: Prisma.CrmOrganizationWhereInput = {
     ...(tier && { tier }),
     ...(type && ORG_TYPES.has(type) && { type: type as CrmOrganizationType }),
-    ...(search && { name: { contains: search, mode: 'insensitive' } }),
+    ...(search && { searchKey: { contains: toSearchKey(search) } }),
   };
 
   const organizations = await prisma.crmOrganization.findMany({
@@ -49,10 +49,15 @@ export const POST = handle(async (request: Request) => {
   await requireSession();
   const data = organizationInputSchema.parse(await request.json());
   const normalizedName = normalizeOrganizationName(data.name);
-  const existing = await prisma.crmOrganization.findUnique({ where: { normalizedName }, select: { id: true } });
+  const searchKey = toSearchKey(data.name);
+  // Trùng tên, kể cả khác dấu ("Benh vien X" với "Bệnh viện X").
+  const existing = await prisma.crmOrganization.findFirst({
+    where: { OR: [{ normalizedName }, { searchKey }] },
+    select: { id: true },
+  });
   if (existing) throw new HttpError(409, `Tổ chức "${data.name}" đã có trong danh bạ`);
   const organization = await prisma.crmOrganization.create({
-    data: { ...data, name: data.name.replace(/\s+/g, ' '), normalizedName },
+    data: { ...data, name: data.name.replace(/\s+/g, ' '), normalizedName, searchKey },
   });
   return NextResponse.json(organization, { status: 201 });
 });

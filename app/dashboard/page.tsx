@@ -6,6 +6,7 @@ import { vi } from 'date-fns/locale';
 import { useDashboardStats } from '@/lib/swr';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
+import { DashboardCrmWidget } from '@/components/crm/DashboardCrmWidget';
 import {
   LayoutDashboard,
   ClipboardCheck,
@@ -223,6 +224,8 @@ export default function Dashboard() {
 
         {/* Right Column - 1/3 */}
         <div className="space-y-6">
+          <DashboardCrmWidget />
+
           {/* Birthday Widget */}
           <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100">
@@ -411,6 +414,7 @@ export default function Dashboard() {
             <h2 className="font-semibold text-slate-900 mb-4">Thao tác nhanh</h2>
             <div className="space-y-1.5">
               <QuickAction href="/dashboard/weeks/new" icon={Plus} label="Tạo báo cáo tuần" />
+              <QuickAction href="/dashboard/crm/interactions" icon={Handshake} label="Ghi lượt dẫn khách / đoàn" />
               <QuickAction href="/dashboard/hospital-events" icon={CalendarDays} label="Thêm sự kiện" />
               <QuickAction href="/dashboard/secretaries" icon={Users} label="Thêm thư ký" />
               <QuickAction href="/dashboard/calendar" icon={CalendarClock} label="Xem lịch làm việc" />

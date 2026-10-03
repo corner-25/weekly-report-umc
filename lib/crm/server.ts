@@ -10,7 +10,7 @@ import { ZodError } from 'zod';
 import { authOptions } from '@/lib/auth';
 import { normalizeOrganizationName } from '@/lib/vip';
 import { upcomingOccurrences, todayInVietnam } from './upcoming';
-import { DATE_KIND_LABELS } from './constants';
+import { DATE_KIND_LABELS, toSearchKey } from './constants';
 import { lunarToSolar } from './lunar';
 
 type Tx = Prisma.TransactionClient;
@@ -59,7 +59,10 @@ export function handle<A extends unknown[]>(fn: (...args: A) => Promise<Response
   };
 }
 
-/** Tìm tổ chức theo id, hoặc theo tên (chưa có thì tạo) — dùng cho ô "chọn hoặc gõ mới". */
+/**
+ * Tìm tổ chức theo id, hoặc theo tên (chưa có thì tạo) — dùng cho ô "chọn hoặc gõ mới".
+ * Tên gõ không dấu ("Benh vien X") vẫn nhận ra tổ chức có sẵn ("Bệnh viện X").
+ */
 export async function resolveOrganization(
   tx: Tx,
   input: { organizationId?: string; organizationName?: string },
@@ -71,18 +74,25 @@ export async function resolveOrganization(
   }
   const name = input.organizationName?.trim().replace(/\s+/g, ' ');
   if (!name) return null;
-  const org = await tx.crmOrganization.upsert({
-    where: { normalizedName: normalizeOrganizationName(name) },
-    update: {},
-    create: { name, normalizedName: normalizeOrganizationName(name) },
+  const searchKey = toSearchKey(name);
+  const existing = await tx.crmOrganization.findFirst({
+    where: { OR: [{ normalizedName: normalizeOrganizationName(name) }, { searchKey }] },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+  const org = await tx.crmOrganization.create({
+    data: { name, normalizedName: normalizeOrganizationName(name), searchKey },
     select: { id: true },
   });
   return org.id;
 }
 
 /**
- * Tìm cá nhân theo id, hoặc tạo hồ sơ mới từ tên gõ nhanh trong modal.
- * Không tự gộp theo tên: hai người trùng tên là chuyện thường.
+ * Tìm cá nhân theo id, hoặc lấy lại hồ sơ có sẵn / tạo mới từ tên gõ nhanh.
+ *
+ * Dùng lại hồ sơ cũ khi CHẮC là cùng người: trùng số điện thoại, hoặc trùng đúng
+ * họ tên (không phân biệt dấu) và đang làm ở cùng đơn vị. Chỉ trùng tên thì vẫn
+ * tạo mới — hai người trùng tên ở hai nơi là chuyện thường.
  */
 export async function resolveContact(
   tx: Tx,
@@ -94,11 +104,37 @@ export async function resolveContact(
     if (!contact) throw new HttpError(400, 'Khách đã chọn không còn tồn tại');
     return contact.id;
   }
-  const name = input.newContactName?.trim();
+  const name = input.newContactName?.trim().replace(/\s+/g, ' ');
   if (!name) return null;
+  const phone = input.newContactPhone?.replace(/\D/g, '') || null;
+  const nameKey = toSearchKey(name);
+
+  const candidates = await tx.crmContact.findMany({
+    where: { searchKey: { startsWith: nameKey } },
+    select: {
+      id: true, fullName: true,
+      positions: { where: { isCurrent: true }, select: { organizationId: true } },
+    },
+    take: 20,
+  });
+  // So số điện thoại chỉ theo chữ số: "0912 345 678" và "0912345678" là một người,
+  // kể cả khi tên gõ lần này khác lần trước (thêm học hàm, sai chính tả...).
+  const samePhone = phone
+    ? (await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM crm_contacts WHERE regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g') = ${phone} LIMIT 1`)[0]
+    : undefined;
+  const sameNameAndOrg = organizationId
+    ? candidates.filter(
+        (c) => toSearchKey(c.fullName) === nameKey && c.positions.some((p) => p.organizationId === organizationId),
+      )
+    : [];
+  const reuse = samePhone ?? (sameNameAndOrg.length === 1 ? sameNameAndOrg[0] : undefined);
+  if (reuse) return reuse.id;
+
   const contact = await tx.crmContact.create({
     data: {
       fullName: name,
+      searchKey: toSearchKey(name, input.newContactPhone),
       phone: input.newContactPhone || null,
       source: 'Nhập nhanh khi ghi tương tác',
       ...(organizationId && { positions: { create: { title: 'Khách', organizationId, isCurrent: true } } }),
@@ -106,6 +142,11 @@ export async function resolveContact(
     select: { id: true },
   });
   return contact.id;
+}
+
+/** Sửa/xoá lượt tương tác: quản trị viên, hoặc chính người đã ghi. */
+export function canModifyInteraction(session: Session, createdById: string | null): boolean {
+  return session.user.role === 'ADMIN' || (createdById !== null && createdById === session.user.id);
 }
 
 /**
@@ -129,6 +170,8 @@ export function toInteractionDto(i: InteractionWithRelations) {
   return {
     id: i.id,
     type: i.type,
+    status: i.status,
+    createdById: i.createdById,
     occurredAt: i.occurredAt.toISOString(),
     title: i.title,
     content: i.content,

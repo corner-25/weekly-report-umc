@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
-import type { CrmInteractionType, Prisma } from '@prisma/client';
+import type { CrmInteractionStatus, CrmInteractionType, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { interactionInputSchema } from '@/lib/crm/schemas';
-import { INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
+import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS, toSearchKey } from '@/lib/crm/constants';
 import { handle, interactionInclude, requireSession, toInteractionDto } from '@/lib/crm/server';
 import { saveInteraction } from './save';
 
 const TYPES = new Set(Object.keys(INTERACTION_TYPE_LABELS));
+const STATUSES = new Set(Object.keys(INTERACTION_STATUS_LABELS));
 
 /** Danh sách tương tác (tiếp đón, dẫn khám, dẫn đoàn…), mới nhất trước. */
 export const GET = handle(async (request: Request) => {
@@ -19,11 +20,13 @@ export const GET = handle(async (request: Request) => {
   const search = params.get('search')?.trim();
   const contactId = params.get('contactId');
   const organizationId = params.get('organizationId');
+  const status = params.get('status');
 
   // Mỗi bộ lọc là một điều kiện trong AND: nhiều bộ lọc cùng dùng OR, trải
   // chung vào một object thì cái sau ghi đè cái trước.
   const conditions: Prisma.CrmInteractionWhereInput[] = [];
   if (type && TYPES.has(type)) conditions.push({ type: type as CrmInteractionType });
+  if (status && STATUSES.has(status)) conditions.push({ status: status as CrmInteractionStatus });
   if (staffName) conditions.push({ OR: [{ staffName }, { companions: { has: staffName } }] });
   if (from || to) {
     conditions.push({
@@ -43,8 +46,8 @@ export const GET = handle(async (request: Request) => {
         { destination: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { patientName: { contains: search, mode: 'insensitive' } },
-        { contact: { fullName: { contains: search, mode: 'insensitive' } } },
-        { organization: { name: { contains: search, mode: 'insensitive' } } },
+        { contact: { searchKey: { contains: toSearchKey(search) } } },
+        { organization: { searchKey: { contains: toSearchKey(search) } } },
       ],
     });
   }

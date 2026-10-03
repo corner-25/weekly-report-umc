@@ -49,6 +49,7 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       dates: await import('@/app/api/crm/important-dates/route'),
       overview: await import('@/app/api/crm/overview/route'),
       search: await import('@/app/api/crm/search/route'),
+      status: await import('@/app/api/crm/interactions/[id]/status/route'),
     } as never;
   }, 60_000);
 
@@ -181,5 +182,70 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
   it('tổ chức trùng tên bị chặn', async () => {
     const r = await call(api.orgs.POST, '/api/crm/organizations', { name: 'BỆNH VIỆN X' });
     expect(r.status).toBe(409);
+  });
+
+  const send = async (handler: (...args: unknown[]) => Promise<Response>, method: string, id: string, body?: unknown, query = '') => {
+    const req = new Request(`http://test/x${query}`, {
+      method, headers: { 'Content-Type': 'application/json' },
+      ...(body !== undefined && { body: JSON.stringify(body) }),
+    });
+    const res = await handler(req, { params: Promise.resolve({ id }) });
+    return { status: res.status, json: await res.json() };
+  };
+
+  it('tìm không dấu vẫn ra khách có dấu', async () => {
+    const r = await call(api.contacts.GET, '/api/crm/contacts?search=tran thi b');
+    expect(r.json.map((c: { id: string }) => c.id)).toEqual([thanhVienId]);
+  });
+
+  it('ghi lượt mới cho khách gõ lại cùng số điện thoại thì dùng lại hồ sơ cũ', async () => {
+    const r = await call(api.interactions.POST, '/api/crm/interactions', {
+      type: 'VIP_ESCORT', occurredAt: '2026-10-02T05:00:00.000Z', newContactName: 'Trần Thị B.', newContactPhone: '09 12',
+      content: 'Tái khám', staffName: 'Nguyễn Thị Thảo Trang',
+    });
+    expect(r.status).toBe(201);
+    expect(r.json.contact.id).toBe(thanhVienId);
+  });
+
+  it('lịch hẹn: không tính vào số liệu tháng cho tới khi đánh dấu đã xong', async () => {
+    const before = await call(api.overview.GET, '/api/crm/overview?window=400');
+    const future = new Date(Date.now() + 3 * 86_400_000).toISOString();
+    const created = await call(api.interactions.POST, '/api/crm/interactions', {
+      type: 'VIP_ESCORT', status: 'PLANNED', occurredAt: future, contactId: khachId,
+      content: 'Hẹn khám tổng quát', staffName: 'Nguyễn Thị Thảo Trang',
+    });
+    expect(created.status).toBe(201);
+    expect(created.json.status).toBe('PLANNED');
+
+    const mid = await call(api.overview.GET, '/api/crm/overview?window=400');
+    expect(mid.json.planned.map((p: { id: string }) => p.id)).toContain(created.json.id);
+    expect(mid.json.counts.vipEscortsThisMonth).toBe(before.json.counts.vipEscortsThisMonth);
+
+    // Người khác trong phòng (không phải người đặt lịch) vẫn đánh dấu được.
+    session.current.user.id = 'u2';
+    const done = await send(api.status.POST, 'POST', created.json.id, { status: 'DONE', note: 'Khách đến đúng giờ' });
+    session.current.user.id = 'u1';
+    expect(done.status).toBe(200);
+    expect(done.json.note).toContain('Khách đến đúng giờ');
+    const planned = await call(api.interactions.GET, '/api/crm/interactions?status=PLANNED');
+    expect(planned.json).toEqual([]);
+  });
+
+  it('chỉ người tạo hoặc quản trị mới sửa/xoá được lượt tương tác', async () => {
+    const list = await call(api.interactions.GET, `/api/crm/interactions?contactId=${thanhVienId}`);
+    const id = list.json[0].id;
+    session.current.user.id = 'u2';
+    expect((await send(api.interaction.DELETE, 'DELETE', id)).status).toBe(403);
+    session.current.user.role = 'ADMIN';
+    expect((await send(api.interaction.DELETE, 'DELETE', id)).status).toBe(200);
+    session.current.user.role = 'STAFF';
+    session.current.user.id = 'u1';
+  });
+
+  it('không xoá được khách đã có lịch sử, trừ quản trị xoá hẳn', async () => {
+    expect((await send(api.contact.DELETE, 'DELETE', thanhVienId)).status).toBe(409);
+    session.current.user.role = 'ADMIN';
+    expect((await send(api.contact.DELETE, 'DELETE', thanhVienId, undefined, '?force=1')).status).toBe(200);
+    session.current.user.role = 'STAFF';
   });
 });

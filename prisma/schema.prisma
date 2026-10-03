@@ -1550,6 +1550,13 @@ enum CrmDateKind {
   OTHER
 }
 
+/// Lượt dẫn khách/đoàn thường được hẹn trước: ghi lịch hẹn, đến ngày đánh dấu đã xong.
+enum CrmInteractionStatus {
+  PLANNED   // Lịch hẹn, chưa diễn ra
+  DONE      // Đã thực hiện
+  CANCELLED // Huỷ / khách không đến
+}
+
 enum CrmInteractionType {
   VIP_ESCORT // Dẫn khách VIP khám/chữa bệnh
   DELEGATION // Tiếp và dẫn đoàn
@@ -1566,6 +1573,8 @@ model CrmOrganization {
   name           String              @db.Text
   /// Tên đã chuẩn hoá (chữ thường, gọn khoảng trắng) — chống tạo trùng tổ chức.
   normalizedName String              @unique
+  /// Tên viết thường, bỏ dấu, để tìm không dấu.
+  searchKey      String              @default("")
   type           CrmOrganizationType @default(OTHER)
   tier           CrmTier             @default(C)
   address        String?             @db.Text
@@ -1591,6 +1600,8 @@ model CrmOrganization {
 model CrmContact {
   id             String           @id @default(cuid())
   fullName       String
+  /// Họ tên + SĐT viết thường, bỏ dấu — tìm "nguyen van a" ra "Nguyễn Văn A".
+  searchKey      String           @default("")
   /// Học hàm, học vị ghi trước tên: "PGS.TS.", "BS.CKII."
   academicTitle  String?
   /// Cách xưng hô khi chúc mừng: "Thầy", "Chị", "Anh".
@@ -1626,6 +1637,7 @@ model CrmContact {
   participations CrmInteractionParticipant[]
 
   @@index([fullName])
+  @@index([searchKey])
   @@index([tier])
   @@index([birthMonth, birthDay])
   @@map("crm_contacts")
@@ -1702,6 +1714,7 @@ model CrmImportantDate {
 model CrmInteraction {
   id              String             @id @default(cuid())
   type            CrmInteractionType
+  status          CrmInteractionStatus @default(DONE)
   occurredAt      DateTime
   /// Khách chính (dẫn khám: khách VIP; dẫn đoàn: trưởng đoàn).
   contactId       String?
@@ -1734,6 +1747,7 @@ model CrmInteraction {
   participants CrmInteractionParticipant[]
 
   @@index([occurredAt])
+  @@index([status, occurredAt])
   @@index([type, occurredAt])
   @@index([contactId])
   @@index([organizationId])

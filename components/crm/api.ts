@@ -84,3 +84,8 @@ export function crmSend<T>(url: string, method: 'POST' | 'PATCH' | 'DELETE', bod
 export function errorMessage(error: unknown, fallback = 'Đã xảy ra lỗi. Vui lòng thử lại.'): string {
   return error instanceof Error && error.message ? error.message : fallback;
 }
+
+/** Chốt lịch hẹn dẫn khách/đoàn: đã xong hoặc huỷ. */
+export function changeInteractionStatus(id: string, status: 'PLANNED' | 'DONE' | 'CANCELLED'): Promise<unknown> {
+  return crmSend(`/api/crm/interactions/${id}/status`, 'POST', { status });
+}

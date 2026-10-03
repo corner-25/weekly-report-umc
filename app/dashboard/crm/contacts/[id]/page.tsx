@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
-import { crmFetch, errorMessage } from '@/components/crm/api';
+import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { ContactModal } from '@/components/crm/ContactModal';
 import { ContactInfoCard, PositionsCard, PreferencesCard, RelationsCard } from '@/components/crm/ContactProfileSections';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
@@ -185,6 +185,9 @@ export default function ContactProfilePage() {
                 url: `/api/crm/interactions/${item.id}`,
                 onDone: load,
               })}
+              onStatusChange={(item, status) => {
+                changeInteractionStatus(item.id, status).then(() => load()).catch((e) => setError(errorMessage(e)));
+              }}
             />
           )}
         </SectionCard>

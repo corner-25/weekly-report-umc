@@ -31,8 +31,10 @@ export const GET = handle(async (request: Request) => {
   const window = Math.min(Math.max(Number(new URL(request.url).searchParams.get('window') ?? 30) || 30, 1), 366);
   const today = todayInVietnam();
   const monthStart = new Date(`${today.slice(0, 7)}-01T00:00:00+07:00`);
+  const todayStart = new Date(`${today}T00:00:00+07:00`);
+  const windowEnd = new Date(todayStart.getTime() + (window + 1) * MS_PER_DAY);
 
-  const [contacts, organizations, recent, counts] = await Promise.all([
+  const [contacts, organizations, recent, counts, planned, overduePlanned] = await Promise.all([
     prisma.crmContact.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -57,14 +59,31 @@ export const GET = handle(async (request: Request) => {
         interactions: { orderBy: { occurredAt: 'desc' }, take: 1, select: { occurredAt: true } },
       },
     }),
-    prisma.crmInteraction.findMany({ include: interactionInclude, orderBy: { occurredAt: 'desc' }, take: 10 }),
+    prisma.crmInteraction.findMany({
+      where: { status: 'DONE' }, include: interactionInclude, orderBy: { occurredAt: 'desc' }, take: 10,
+    }),
     Promise.all([
       prisma.crmContact.count(),
       prisma.crmOrganization.count(),
-      prisma.crmInteraction.count({ where: { occurredAt: { gte: monthStart } } }),
-      prisma.crmInteraction.count({ where: { occurredAt: { gte: monthStart }, type: 'VIP_ESCORT' } }),
-      prisma.crmInteraction.count({ where: { occurredAt: { gte: monthStart }, type: 'DELEGATION' } }),
+      // Chỉ tính lượt đã thực hiện: lịch hẹn và lượt huỷ chưa phải việc đã làm.
+      prisma.crmInteraction.count({ where: { status: 'DONE', occurredAt: { gte: monthStart } } }),
+      prisma.crmInteraction.count({ where: { status: 'DONE', occurredAt: { gte: monthStart }, type: 'VIP_ESCORT' } }),
+      prisma.crmInteraction.count({ where: { status: 'DONE', occurredAt: { gte: monthStart }, type: 'DELEGATION' } }),
     ]),
+    // Lịch hẹn dẫn khách/đoàn từ hôm nay trong cửa sổ.
+    prisma.crmInteraction.findMany({
+      where: { status: 'PLANNED', occurredAt: { gte: todayStart, lt: windowEnd } },
+      include: interactionInclude,
+      orderBy: { occurredAt: 'asc' },
+      take: 50,
+    }),
+    // Lịch hẹn đã qua ngày mà chưa cập nhật kết quả — nhắc người dẫn đánh dấu xong/huỷ.
+    prisma.crmInteraction.findMany({
+      where: { status: 'PLANNED', occurredAt: { lt: todayStart } },
+      include: interactionInclude,
+      orderBy: { occurredAt: 'desc' },
+      take: 50,
+    }),
   ]);
 
   // Mọi dịp của mọi hồ sơ, kèm hồ sơ sở hữu để hiển thị.
@@ -124,6 +143,8 @@ export const GET = handle(async (request: Request) => {
   return NextResponse.json({
     upcoming,
     recentInteractions: recent.map(toInteractionDto),
+    planned: planned.map(toInteractionDto),
+    overduePlanned: overduePlanned.map(toInteractionDto),
     dormant,
     counts: {
       contacts: contactCount, organizations: organizationCount,

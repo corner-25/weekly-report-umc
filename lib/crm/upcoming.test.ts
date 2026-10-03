@@ -52,3 +52,14 @@ describe('todayInVietnam', () => {
     expect(todayInVietnam(new Date('2026-10-01T23:30:00Z'))).toBe('2026-10-02');
   });
 });
+
+import { toSearchKey } from './constants';
+
+describe('toSearchKey', () => {
+  it('bỏ dấu, chữ đ, viết thường, gọn khoảng trắng', () => {
+    expect(toSearchKey('  Nguyễn   Văn Đức ', '0909 111')).toBe('nguyen van duc 0909 111');
+  });
+  it('bỏ qua phần rỗng', () => {
+    expect(toSearchKey('Bệnh viện X', null, undefined)).toBe('benh vien x');
+  });
+});

@@ -139,6 +139,8 @@ export type ImportantDateInput = z.infer<typeof importantDateInputSchema>;
 export const interactionInputSchema = z
   .object({
     type: z.enum(['VIP_ESCORT', 'DELEGATION', 'MEETING', 'CALL', 'EMAIL', 'EVENT', 'GIFT', 'OTHER']),
+    /** PLANNED: lịch hẹn dẫn khách/đoàn; DONE: đã thực hiện; CANCELLED: huỷ/khách không đến. */
+    status: z.enum(['PLANNED', 'DONE', 'CANCELLED']).default('DONE'),
     occurredAt: z.string().datetime(),
     contactId: z.string().optional(),
     newContactName: optionalText(200),

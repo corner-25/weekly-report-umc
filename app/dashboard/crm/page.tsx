@@ -3,16 +3,16 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Building2, Clock, Handshake, History, Plus, UserRound, Users } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, Clock, Handshake, History, Plus, UserRound, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS } from '@/lib/crm/constants';
-import { crmFetch, errorMessage } from '@/components/crm/api';
+import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { ContactModal } from '@/components/crm/ContactModal';
 import { InteractionModal, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { daysUntilLabel, formatDate, yearsLabel } from '@/components/crm/format';
-import type { DormantItem, OverviewDTO, OverviewUpcoming } from '@/components/crm/types';
+import type { DormantItem, InteractionDTO, InteractionStatus, OverviewDTO, OverviewUpcoming } from '@/components/crm/types';
 import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, SectionCard, Stat, TierBadge } from '@/components/crm/ui';
 
 const WINDOWS = [7, 30, 90] as const;
@@ -47,6 +47,12 @@ export default function CrmOverviewPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const changeStatus = (item: InteractionDTO, status: InteractionStatus) => {
+    changeInteractionStatus(item.id, status)
+      .then(() => load())
+      .catch((statusError) => setError(errorMessage(statusError, 'Không cập nhật được lịch hẹn.')));
+  };
 
   const counts = data?.counts;
 
@@ -85,6 +91,30 @@ export default function CrmOverviewPage() {
           tone="accent"
         />
       </div>
+
+      {data && data.overduePlanned.length > 0 && (
+        <SectionCard
+          title={`Lịch hẹn đã qua, chưa cập nhật kết quả (${data.overduePlanned.length})`}
+          icon={<Clock className="h-4 w-4 text-amber-600" aria-hidden="true" />}
+        >
+          <p className="mb-3 text-xs text-slate-500">Bấm “Đã xong” nếu đã dẫn khách, “Huỷ” nếu khách không đến — số liệu tháng chỉ tính lượt đã xong.</p>
+          <InteractionTimeline items={data.overduePlanned} compact onStatusChange={changeStatus} />
+        </SectionCard>
+      )}
+
+      <SectionCard
+        title="Lịch dẫn khách & đoàn sắp tới"
+        icon={<CalendarClock className="h-4 w-4 text-cyan-600" aria-hidden="true" />}
+        action={<span className="text-xs text-slate-500">{windowDays} ngày tới</span>}
+      >
+        {!data?.planned.length ? (
+          <p className="py-6 text-center text-sm text-slate-500">
+            {loading ? 'Đang tải...' : 'Chưa có lịch hẹn. Khi ghi lượt dẫn khách cho ngày tương lai, lịch sẽ hiện ở đây.'}
+          </p>
+        ) : (
+          <InteractionTimeline items={data.planned} compact onStatusChange={changeStatus} />
+        )}
+      </SectionCard>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <section className={cn(PANEL, 'p-4 sm:p-5')} aria-labelledby="upcoming-heading">

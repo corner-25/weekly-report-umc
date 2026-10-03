@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Building2, MessagesSquare, Pencil, Trash2, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ORGANIZATION_TYPE_LABELS } from '@/lib/crm/constants';
-import { crmFetch, errorMessage } from '@/components/crm/api';
+import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
 import { ImportantDatesPanel } from '@/components/crm/ImportantDatesPanel';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
@@ -186,6 +186,9 @@ export default function OrganizationProfilePage() {
                 url: `/api/crm/interactions/${item.id}`,
                 onDone: load,
               })}
+              onStatusChange={(item, status) => {
+                changeInteractionStatus(item.id, status).then(() => load()).catch((e) => setError(errorMessage(e)));
+              }}
             />
           )}
         </SectionCard>

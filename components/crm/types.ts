@@ -5,6 +5,7 @@
 import type {
   DATE_KIND_LABELS,
   INTERACTION_TYPE_LABELS,
+  INTERACTION_STATUS_LABELS,
   ORGANIZATION_TYPE_LABELS,
   RELATION_KIND_LABELS,
   TIER_LABELS,
@@ -16,11 +17,14 @@ export type OrganizationType = keyof typeof ORGANIZATION_TYPE_LABELS;
 export type RelationKind = keyof typeof RELATION_KIND_LABELS;
 export type DateKind = keyof typeof DATE_KIND_LABELS;
 export type InteractionType = keyof typeof INTERACTION_TYPE_LABELS;
+export type InteractionStatus = keyof typeof INTERACTION_STATUS_LABELS;
 export type ContactStatus = keyof typeof CONTACT_STATUS_LABELS;
 
 export interface InteractionDTO {
   id: string;
   type: InteractionType;
+  status: InteractionStatus;
+  createdById: string | null;
   occurredAt: string;
   title: string | null;
   content: string;
@@ -82,6 +86,10 @@ export interface DormantItem {
 export interface OverviewDTO {
   upcoming: OverviewUpcoming[];
   recentInteractions: InteractionDTO[];
+  /** Lịch hẹn dẫn khách/đoàn sắp tới. */
+  planned: InteractionDTO[];
+  /** Lịch hẹn đã qua ngày mà chưa cập nhật kết quả. */
+  overduePlanned: InteractionDTO[];
   dormant: DormantItem[];
   counts: {
     contacts: number;

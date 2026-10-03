@@ -5,6 +5,7 @@
 import type {
   CrmContactStatus,
   CrmDateKind,
+  CrmInteractionStatus,
   CrmInteractionType,
   CrmOrganizationType,
   CrmRelationKind,
@@ -82,3 +83,27 @@ export const DELEGATION_PURPOSES = [
   'Kiểm tra, giám sát',
   'Thăm hỏi',
 ] as const;
+
+export const INTERACTION_STATUS_LABELS: Record<CrmInteractionStatus, string> = {
+  PLANNED: 'Lịch hẹn',
+  DONE: 'Đã thực hiện',
+  CANCELLED: 'Đã huỷ',
+};
+
+/**
+ * Khoá tìm kiếm: viết thường, bỏ dấu, gọn khoảng trắng — để gõ "nguyen van a"
+ * vẫn ra "Nguyễn Văn A". DB chưa có extension unaccent nên tự chuẩn hoá ở app
+ * và lưu vào cột searchKey.
+ */
+export function toSearchKey(...parts: Array<string | null | undefined>): string {
+  return parts
+    .filter(Boolean)
+    .join(' ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}

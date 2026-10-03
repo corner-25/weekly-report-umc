@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { contactInputSchema } from '@/lib/crm/schemas';
 import { handle, parseTier, requireSession, resolveOrganization, CRM_TRANSACTION } from '@/lib/crm/server';
+import { toSearchKey } from '@/lib/crm/constants';
 
 /** Danh bạ cá nhân: tìm theo tên/SĐT/email/tổ chức, lọc hạng, nhãn, người phụ trách. */
 export const GET = handle(async (request: Request) => {
@@ -19,7 +20,8 @@ export const GET = handle(async (request: Request) => {
     ...(owner && { ownerName: owner }),
     ...(search && {
       OR: [
-        { fullName: { contains: search, mode: 'insensitive' } },
+        // Không dấu: "nguyen van a" ra "Nguyễn Văn A".
+        { searchKey: { contains: toSearchKey(search) } },
         { phone: { contains: search } },
         { email: { contains: search, mode: 'insensitive' } },
         { positions: { some: { organization: { name: { contains: search, mode: 'insensitive' } } } } },
@@ -68,6 +70,7 @@ export const POST = handle(async (request: Request) => {
     return tx.crmContact.create({
       data: {
         ...data,
+        searchKey: toSearchKey(data.fullName, data.phone),
         preferences: preferences ?? undefined,
         ...((currentTitle || organizationId) && {
           positions: { create: { title: currentTitle ?? 'Liên hệ', organizationId, isCurrent: true } },

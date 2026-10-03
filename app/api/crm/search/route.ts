@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handle, requireSession } from '@/lib/crm/server';
+import { toSearchKey } from '@/lib/crm/constants';
 
 const LIMIT = 10;
 
@@ -14,7 +15,7 @@ export const GET = handle(async (request: Request) => {
     prisma.crmContact.findMany({
       where: {
         OR: [
-          { fullName: { contains: q, mode: 'insensitive' } },
+          { searchKey: { contains: toSearchKey(q) } },
           { phone: { contains: q } },
         ],
       },
@@ -29,7 +30,7 @@ export const GET = handle(async (request: Request) => {
       },
     }),
     prisma.crmOrganization.findMany({
-      where: { name: { contains: q, mode: 'insensitive' } },
+      where: { searchKey: { contains: toSearchKey(q) } },
       orderBy: [{ tier: 'asc' }, { name: 'asc' }],
       take: LIMIT,
       select: { id: true, name: true },

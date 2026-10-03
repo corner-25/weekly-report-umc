@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { contactPatchSchema } from '@/lib/crm/schemas';
+import { toSearchKey } from '@/lib/crm/constants';
 import {
   birthdaySource,
   CRM_TRANSACTION,
@@ -80,7 +81,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
 export const PATCH = handle(async (request: Request, { params }: Ctx) => {
   const session = await requireSession();
   const { id } = await params;
-  const existing = await prisma.crmContact.findUnique({ where: { id }, select: { ownerName: true } });
+  const existing = await prisma.crmContact.findUnique({ where: { id }, select: { ownerName: true, fullName: true, phone: true } });
   if (!existing) throw new HttpError(404, 'Không tìm thấy hồ sơ');
 
   const body = (await request.json()) as Record<string, unknown>;
@@ -107,6 +108,11 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
       where: { id },
       data: {
         ...data,
+        // Khoá tìm kiếm theo họ tên + SĐT sau khi sửa.
+        searchKey: toSearchKey(
+          data.fullName ?? existing.fullName,
+          cleared.includes('phone') ? null : (data.phone ?? existing.phone),
+        ),
         // Trường JSON phải xoá bằng Prisma.DbNull, null thường bị Prisma từ chối.
         ...Object.fromEntries(cleared.map((key) => [key, key === 'preferences' ? Prisma.DbNull : null])),
         // Xoá ngày sinh là xoá cả bộ ngày/tháng/năm.
@@ -119,9 +125,25 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
   return NextResponse.json(contact);
 });
 
-export const DELETE = handle(async (_request: Request, { params }: Ctx) => {
-  await requireSession();
+/**
+ * Xoá hồ sơ. Hồ sơ đã có lượt tương tác thì không xoá — lịch sử dẫn khách sẽ mất
+ * tên khách. Chuyển sang "Ngừng quan hệ"; quản trị viên xoá hẳn được bằng ?force=1.
+ */
+export const DELETE = handle(async (request: Request, { params }: Ctx) => {
+  const session = await requireSession();
   const { id } = await params;
+  const force = new URL(request.url).searchParams.get('force') === '1' && session.user.role === 'ADMIN';
+  const [own, joined] = await Promise.all([
+    prisma.crmInteraction.count({ where: { contactId: id } }),
+    prisma.crmInteractionParticipant.count({ where: { contactId: id } }),
+  ]);
+  if (own + joined > 0 && !force) {
+    throw new HttpError(
+      409,
+      `Hồ sơ đã có ${own + joined} lượt tương tác — xoá sẽ mất tên khách trong lịch sử. ` +
+        'Hãy đổi trạng thái sang "Ngừng quan hệ" thay vì xoá.',
+    );
+  }
   await prisma.crmContact.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 });
