@@ -6,21 +6,24 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Building2, MessagesSquare, Pencil, Trash2, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ORGANIZATION_TYPE_LABELS } from '@/lib/crm/constants';
-import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { CareTaskModal } from '@/components/crm/CareTaskModal';
+import { CareTasksPanel } from '@/components/crm/CareTasksPanel';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
 import { ImportantDatesPanel } from '@/components/crm/ImportantDatesPanel';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { OrganizationModal } from '@/components/crm/OrganizationModal';
 import { daysUntilLabel, displayName, initials } from '@/components/crm/format';
-import type { ImportantDateDTO, InteractionDTO, OrganizationDetail } from '@/components/crm/types';
+import type { CareTaskDTO, ImportantDateDTO, InteractionDTO, OrganizationDetail } from '@/components/crm/types';
 import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
 type Dialog =
   | { kind: 'interaction'; mode: InteractionMode; initial?: InteractionDTO }
   | { kind: 'edit' }
-  | { kind: 'date'; initial?: ImportantDateDTO };
+  | { kind: 'date'; initial?: ImportantDateDTO }
+  | { kind: 'care'; initial?: CareTaskDTO };
 
 const SOON_DAYS = 30;
 
@@ -155,6 +158,23 @@ export default function OrganizationProfilePage() {
             })}
           />
 
+          <CareTasksPanel
+            tasks={org.careTasks}
+            onAdd={() => setDialog({ kind: 'care' })}
+            onEdit={(t) => setDialog({ kind: 'care', initial: t })}
+            onDelete={(t) => askDelete({
+              title: 'Xoá kế hoạch quà, hoa',
+              message: t.interactionId
+                ? 'Xoá việc này? Lượt tặng quà đã ghi trên dòng thời gian vẫn được giữ.'
+                : 'Xoá kế hoạch quà, hoa cho dịp này?',
+              url: `/api/crm/care-tasks/${t.id}`,
+              onDone: load,
+            })}
+            onStatusChange={(t, status) => {
+              changeCareTaskStatus(t.id, status).then(() => load()).catch((e) => setError(errorMessage(e)));
+            }}
+          />
+
           <SectionCard title="Người liên hệ" icon={<Users className="h-4 w-4 text-blue-600" aria-hidden="true" />} action={<span className="text-xs text-slate-500">{currentContacts.length} người</span>}>
             {org.contacts.length === 0 ? (
               <p className="text-sm text-slate-500">Chưa có ai. Thêm chức vụ tại tổ chức này trong hồ sơ cá nhân.</p>
@@ -206,6 +226,15 @@ export default function OrganizationProfilePage() {
         />
       )}
       {dialog?.kind === 'edit' && <OrganizationModal initial={org} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
+      {dialog?.kind === 'care' && (
+        <CareTaskModal
+          initial={dialog.initial}
+          owner={{ organizationId: org.id }}
+          occasions={org.upcoming}
+          onClose={() => setDialog(null)}
+          onSaved={closeAndReload}
+        />
+      )}
       {dialog?.kind === 'date' && <ImportantDateModal owner={{ organizationId: org.id }} initial={dialog.initial} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
     </div>
   );

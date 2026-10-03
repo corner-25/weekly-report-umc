@@ -7,12 +7,23 @@ import { ArrowRight, Building2, CalendarClock, Clock, Handshake, History, Plus, 
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS } from '@/lib/crm/constants';
-import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { CareDueSection } from '@/components/crm/CareDueSection';
+import { CareTaskModal } from '@/components/crm/CareTaskModal';
 import { ContactModal } from '@/components/crm/ContactModal';
 import { InteractionModal, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { daysUntilLabel, formatDate, yearsLabel } from '@/components/crm/format';
-import type { DormantItem, InteractionDTO, InteractionStatus, OverviewDTO, OverviewUpcoming } from '@/components/crm/types';
+import type {
+  CareDueItem,
+  CareStatus,
+  CareTaskDTO,
+  DormantItem,
+  InteractionDTO,
+  InteractionStatus,
+  OverviewDTO,
+  OverviewUpcoming,
+} from '@/components/crm/types';
 import type { ReconcileRow } from '@/lib/crm/reconcile';
 import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, SectionCard, Stat, TierBadge } from '@/components/crm/ui';
 
@@ -32,6 +43,7 @@ export default function CrmOverviewPage() {
   const [error, setError] = useState('');
   const [interactionMode, setInteractionMode] = useState<InteractionMode | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [careDialog, setCareDialog] = useState<{ due: CareDueItem } | { task: CareTaskDTO } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -53,6 +65,12 @@ export default function CrmOverviewPage() {
     changeInteractionStatus(item.id, status)
       .then(() => load())
       .catch((statusError) => setError(errorMessage(statusError, 'Không cập nhật được lịch hẹn.')));
+  };
+
+  const changeCareStatus = (task: CareTaskDTO, status: CareStatus) => {
+    changeCareTaskStatus(task.id, status)
+      .then(() => load())
+      .catch((statusError) => setError(errorMessage(statusError, 'Không cập nhật được việc quà, hoa.')));
   };
 
   const counts = data?.counts;
@@ -117,6 +135,17 @@ export default function CrmOverviewPage() {
         )}
       </SectionCard>
 
+      {data && (
+        <CareDueSection
+          items={data.careDue}
+          budget={data.careBudget}
+          loading={loading}
+          onPlan={(due) => setCareDialog({ due })}
+          onEdit={(task) => setCareDialog({ task })}
+          onStatusChange={changeCareStatus}
+        />
+      )}
+
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <section className={cn(PANEL, 'p-4 sm:p-5')} aria-labelledby="upcoming-heading">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -176,6 +205,24 @@ export default function CrmOverviewPage() {
           onClose={() => setInteractionMode(null)}
           onSaved={() => {
             setInteractionMode(null);
+            load();
+          }}
+        />
+      )}
+      {careDialog && (
+        <CareTaskModal
+          initial={'task' in careDialog ? careDialog.task : undefined}
+          occasion={'due' in careDialog ? {
+            owner: careDialog.due.target.type === 'contact' ? { contactId: careDialog.due.target.id } : { organizationId: careDialog.due.target.id },
+            importantDateId: careDialog.due.importantDateId,
+            occasionKind: careDialog.due.kind,
+            occasionDate: careDialog.due.date,
+            label: careDialog.due.label,
+            targetName: careDialog.due.target.name,
+          } : undefined}
+          onClose={() => setCareDialog(null)}
+          onSaved={() => {
+            setCareDialog(null);
             load();
           }}
         />

@@ -3,8 +3,10 @@
  * chọn sẵn trong modal nhập liệu.
  */
 import type {
+  CrmCareStatus,
   CrmContactStatus,
   CrmDateKind,
+  CrmGiftType,
   CrmInteractionStatus,
   CrmInteractionType,
   CrmOrganizationType,
@@ -87,6 +89,21 @@ export const DELEGATION_PURPOSES = [
 export const INTERACTION_STATUS_LABELS: Record<CrmInteractionStatus, string> = {
   PLANNED: 'Lịch hẹn',
   DONE: 'Đã thực hiện',
+  CANCELLED: 'Đã huỷ',
+};
+
+export const GIFT_TYPE_LABELS: Record<CrmGiftType, string> = {
+  FLOWERS: 'Hoa',
+  GIFT: 'Quà',
+  CARD: 'Thiệp',
+  VISIT: 'Đến thăm',
+  OTHER: 'Khác',
+};
+
+export const CARE_STATUS_LABELS: Record<CrmCareStatus, string> = {
+  TODO: 'Chưa đặt',
+  ORDERED: 'Đã đặt',
+  DELIVERED: 'Đã trao',
   CANCELLED: 'Đã huỷ',
 };
 

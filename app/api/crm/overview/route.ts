@@ -3,12 +3,15 @@ import type { CrmTier } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { upcomingOccurrences, todayInVietnam } from '@/lib/crm/upcoming';
 import { reconcileWithExcel } from '@/lib/crm/reconcile';
+import { budgetPeriods, careKey, MAX_REMIND_DAYS, remindDaysFor } from '@/lib/crm/care';
 import {
   birthdaySource,
+  careTaskInclude,
   handle,
   importantDateSource,
   interactionInclude,
   requireSession,
+  toCareTaskDto,
   toInteractionDto,
   type DateSource,
 } from '@/lib/crm/server';
@@ -29,6 +32,18 @@ interface Target {
   subtitle: string | null;
 }
 
+/** Một dịp kèm hồ sơ sở hữu và số ngày nhắc chuẩn bị quà/hoa. */
+type OverviewSource = DateSource & { id: string; target: Target; importantDateId: string | null; remindDays: number };
+
+/** Tổng dự kiến và thực chi của việc quà/hoa chưa huỷ, theo ngày diễn ra của dịp. */
+async function sumCare(range: { from: Date; to: Date }) {
+  const { _sum } = await prisma.crmCareTask.aggregate({
+    where: { status: { not: 'CANCELLED' }, occasionDate: { gte: range.from, lt: range.to } },
+    _sum: { budget: true, actualCost: true },
+  });
+  return { budget: _sum.budget ?? 0, actualCost: _sum.actualCost ?? 0 };
+}
+
 export const GET = handle(async (request: Request) => {
   await requireSession();
   const window = Math.min(Math.max(Number(new URL(request.url).searchParams.get('window') ?? 30) || 30, 1), 366);
@@ -37,7 +52,9 @@ export const GET = handle(async (request: Request) => {
   const todayStart = new Date(`${today}T00:00:00+07:00`);
   const windowEnd = new Date(todayStart.getTime() + (window + 1) * MS_PER_DAY);
 
-  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile] = await Promise.all([
+  const periods = budgetPeriods(today);
+
+  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile, careBudgetMonth, careBudgetYear] = await Promise.all([
     prisma.crmContact.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -88,10 +105,12 @@ export const GET = handle(async (request: Request) => {
       take: 50,
     }),
     reconcileWithExcel(prisma, today, RECONCILE_MONTHS),
+    sumCare(periods.month),
+    sumCare(periods.year),
   ]);
 
   // Mọi dịp của mọi hồ sơ, kèm hồ sơ sở hữu để hiển thị.
-  const sources: Array<DateSource & { id: string; target: Target }> = [];
+  const sources: OverviewSource[] = [];
   for (const c of contacts) {
     const p = c.positions[0];
     const target: Target = {
@@ -100,23 +119,41 @@ export const GET = handle(async (request: Request) => {
       subtitle: p ? [p.title, p.organization?.name].filter(Boolean).join(', ') || null : null,
     };
     const birthday = birthdaySource(c);
-    if (birthday) sources.push({ ...birthday, id: birthday.key, target });
+    if (birthday) {
+      sources.push({ ...birthday, id: birthday.key, target, importantDateId: null, remindDays: remindDaysFor(c.tier) });
+    }
     for (const d of c.importantDates) {
       const s = importantDateSource(d);
-      sources.push({ ...s, id: s.key, target });
+      sources.push({ ...s, id: s.key, target, importantDateId: d.id, remindDays: remindDaysFor(c.tier, d.remindDaysBefore) });
     }
   }
   for (const o of organizations) {
     const target: Target = { type: 'organization', id: o.id, name: o.name, tier: o.tier, subtitle: null };
     for (const d of o.importantDates) {
       const s = importantDateSource(d);
-      sources.push({ ...s, id: s.key, target });
+      sources.push({ ...s, id: s.key, target, importantDateId: d.id, remindDays: remindDaysFor(o.tier, d.remindDaysBefore) });
     }
   }
 
   const upcoming = upcomingOccurrences(sources, today, window).map((o) => ({
     key: o.item.key, kind: o.item.kind, label: o.item.label, date: o.date,
     daysUntil: o.daysUntil, years: o.years, isLunar: o.item.isLunar, target: o.item.target,
+  }));
+
+  // Dịp đã tới hạn chuẩn bị quà/hoa (trong số ngày nhắc trước), kèm việc đã lên kế hoạch nếu có.
+  const dueOccurrences = upcomingOccurrences(sources, today, MAX_REMIND_DAYS).filter((o) => o.daysUntil <= o.item.remindDays);
+  const dueTasks = dueOccurrences.length
+    ? await prisma.crmCareTask.findMany({
+        where: { occasionKey: { in: dueOccurrences.map((o) => careKey(o.item.key, o.date)) } },
+        include: careTaskInclude,
+      })
+    : [];
+  const taskByKey = new Map(dueTasks.map((t) => [t.occasionKey, toCareTaskDto(t)]));
+  const careDue = dueOccurrences.map((o) => ({
+    key: o.item.key, kind: o.item.kind, label: o.item.label, date: o.date,
+    daysUntil: o.daysUntil, years: o.years, isLunar: o.item.isLunar, target: o.item.target,
+    importantDateId: o.item.importantDateId, remindDays: o.item.remindDays,
+    task: taskByKey.get(careKey(o.item.key, o.date)) ?? null,
   }));
 
   const now = Date.parse(`${today}T00:00:00+07:00`);
@@ -151,6 +188,8 @@ export const GET = handle(async (request: Request) => {
     overduePlanned: overduePlanned.map(toInteractionDto),
     dormant,
     reconcile,
+    careDue,
+    careBudget: { month: careBudgetMonth, year: careBudgetYear },
     counts: {
       contacts: contactCount, organizations: organizationCount,
       interactionsThisMonth, vipEscortsThisMonth, delegationsThisMonth,

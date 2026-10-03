@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { toSearchKey } from './constants';
+import { careOccasionKey } from './care';
 import { HttpError } from './server';
 
 type Tx = Prisma.TransactionClient;
@@ -61,6 +62,20 @@ export async function mergeContacts(tx: Tx, targetId: string, sourceId: string):
     where: { id: { in: sourceDates.filter((d) => !hasDate.has(dateKey(d))).map((d) => d.id) } },
     data: { contactId: targetId },
   });
+
+  // Việc quà/hoa: chuyển sang người giữ lại, tính lại khoá chống trùng. Trùng dịp với
+  // việc đã có thì giữ khoá cũ (vẫn duy nhất) — không xoá lịch sử quà đã tặng.
+  const [targetCare, sourceCare] = await Promise.all([
+    tx.crmCareTask.findMany({ where: { contactId: targetId }, select: { occasionKey: true } }),
+    tx.crmCareTask.findMany({ where: { contactId: sourceId } }),
+  ]);
+  const careKeys = new Set(targetCare.map((t) => t.occasionKey));
+  for (const t of sourceCare) {
+    const key = careOccasionKey({ ...t, contactId: targetId, occasionDate: t.occasionDate.toISOString() });
+    const free = !careKeys.has(key);
+    if (free) careKeys.add(key);
+    await tx.crmCareTask.update({ where: { id: t.id }, data: { contactId: targetId, ...(free && { occasionKey: key }) } });
+  }
 
   await tx.crmRelation.updateMany({ where: { fromContactId: sourceId }, data: { fromContactId: targetId } });
   await tx.crmRelation.updateMany({ where: { toContactId: sourceId }, data: { toContactId: targetId } });

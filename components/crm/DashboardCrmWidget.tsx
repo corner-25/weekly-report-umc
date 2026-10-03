@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import useSWR from 'swr';
-import { AlertTriangle, ArrowRight, CalendarClock, HeartHandshake } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarClock, Gift, HeartHandshake } from 'lucide-react';
 import { DATE_KIND_LABELS, INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
 import { crmFetch } from './api';
 import { daysUntilLabel, displayName, formatDate } from './format';
@@ -20,6 +20,8 @@ export function DashboardCrmWidget() {
   const { data, error } = useSWR<OverviewDTO>(`/api/crm/overview?window=${WINDOW_DAYS}`, (url: string) => crmFetch<OverviewDTO>(url), {
     revalidateOnFocus: false,
   });
+  // Dịp đã tới hạn nhắc mà chưa ai lên kế hoạch quà/hoa.
+  const unplannedCare = data?.careDue.filter((d) => !d.task).length ?? 0;
 
   return (
     <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm" aria-labelledby="crm-widget-heading">
@@ -51,6 +53,15 @@ export function DashboardCrmWidget() {
             >
               <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
               {data.overduePlanned.length} lịch hẹn đã qua chưa cập nhật kết quả
+            </Link>
+          )}
+          {unplannedCare > 0 && (
+            <Link
+              href="/dashboard/crm"
+              className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 hover:bg-amber-100"
+            >
+              <Gift className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {unplannedCare} dịp cần chuẩn bị quà/hoa
             </Link>
           )}
 
