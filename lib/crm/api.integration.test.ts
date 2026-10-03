@@ -408,5 +408,16 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       const detail = await call(api.contact.GET, `/api/crm/contacts/${vipId}`, undefined, vipId);
       expect(detail.json.careTasks.map((t: { id: string }) => t.id).sort()).toEqual([taskId, dupTask.json.id].sort());
     });
+
+    it('dịp đã qua mà quà/hoa chưa trao vẫn được nhắc ở tổng quan', async () => {
+      const past = await addDays(-2);
+      const r = await call(api.careTasks.POST, '/api/crm/care-tasks', {
+        contactId: vipId, occasionKind: 'APPOINTMENT', occasionDate: past, giftType: 'FLOWERS', description: 'Hoa chúc mừng nhận chức',
+      });
+      expect(r.status).toBe(201);
+      const overview = await call(api.overview.GET, '/api/crm/overview?window=7');
+      expect(overview.json.careOverdue.map((t: { id: string }) => t.id)).toContain(r.json.id);
+      expect(overview.json.careOverdue.map((t: { id: string }) => t.id)).not.toContain(taskId);
+    });
   });
 });

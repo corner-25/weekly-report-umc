@@ -54,7 +54,7 @@ export const GET = handle(async (request: Request) => {
 
   const periods = budgetPeriods(today);
 
-  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile, careBudgetMonth, careBudgetYear] = await Promise.all([
+  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile, careBudgetMonth, careBudgetYear, careOverdue] = await Promise.all([
     prisma.crmContact.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -107,6 +107,13 @@ export const GET = handle(async (request: Request) => {
     reconcileWithExcel(prisma, today, RECONCILE_MONTHS),
     sumCare(periods.month),
     sumCare(periods.year),
+    // Dịp đã qua mà quà/hoa còn "Cần làm"/"Đã đặt" — không còn trong danh sách tới hạn nên nhắc riêng.
+    prisma.crmCareTask.findMany({
+      where: { status: { in: ['TODO', 'ORDERED'] }, occasionDate: { lt: new Date(`${today}T00:00:00Z`) } },
+      include: careTaskInclude,
+      orderBy: { occasionDate: 'desc' },
+      take: 50,
+    }),
   ]);
 
   // Mọi dịp của mọi hồ sơ, kèm hồ sơ sở hữu để hiển thị.
@@ -189,6 +196,7 @@ export const GET = handle(async (request: Request) => {
     dormant,
     reconcile,
     careDue,
+    careOverdue: careOverdue.map(toCareTaskDto),
     careBudget: { month: careBudgetMonth, year: careBudgetYear },
     counts: {
       contacts: contactCount, organizations: organizationCount,

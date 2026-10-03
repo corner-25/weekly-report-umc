@@ -135,6 +135,8 @@ export interface OverviewDTO {
   /** Đối chiếu với Excel báo cáo tuần, tháng gần nhất trước. */
   reconcile: ReconcileRow[];
   careDue: CareDueItem[];
+  /** Dịp đã qua mà quà/hoa chưa trao, chưa huỷ. */
+  careOverdue: CareTaskDTO[];
   /** Dự kiến và thực chi quà/hoa (chưa huỷ) theo ngày của dịp. */
   careBudget: { month: CareBudgetSum; year: CareBudgetSum };
   counts: {

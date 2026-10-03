@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Building2, CalendarClock, Clock, Handshake, History, Plus, UserRound, Users } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, Clock, Gift, Handshake, History, Plus, UserRound, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
-import { DATE_KIND_LABELS } from '@/lib/crm/constants';
+import { DATE_KIND_LABELS, GIFT_TYPE_LABELS } from '@/lib/crm/constants';
 import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { CareDueSection } from '@/components/crm/CareDueSection';
 import { CareTaskModal } from '@/components/crm/CareTaskModal';
+import { CareQuickActions } from '@/components/crm/CareTasksPanel';
 import { ContactModal } from '@/components/crm/ContactModal';
 import { InteractionModal, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
@@ -144,6 +145,25 @@ export default function CrmOverviewPage() {
           onEdit={(task) => setCareDialog({ task })}
           onStatusChange={changeCareStatus}
         />
+      )}
+
+      {data && data.careOverdue.length > 0 && (
+        <SectionCard title={`Dịp đã qua, quà/hoa chưa trao (${data.careOverdue.length})`} icon={<Gift className="h-4 w-4 text-amber-600" aria-hidden="true" />}>
+          <p className="mb-3 text-xs text-slate-500">Bấm “Đã trao” nếu đã tặng, “Huỷ” nếu không tặng nữa.</p>
+          <ul className="divide-y divide-slate-100">
+            {data.careOverdue.map((task) => (
+              <li key={task.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
+                <button type="button" onClick={() => setCareDialog({ task })} className="min-w-0 text-left text-sm hover:text-cyan-700">
+                  <span className="font-semibold tabular-nums text-slate-800">{formatDate(task.occasionDate)}</span>
+                  <span className="text-slate-500"> · {task.occasionLabel} · </span>
+                  <span className="font-semibold text-slate-900">{task.contact ? task.contact.fullName : task.organization?.name}</span>
+                  <span className="block truncate text-xs text-slate-500">{GIFT_TYPE_LABELS[task.giftType]}: {task.description}</span>
+                </button>
+                <CareQuickActions task={task} onStatusChange={changeCareStatus} />
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
       )}
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
