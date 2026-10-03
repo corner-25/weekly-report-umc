@@ -251,7 +251,7 @@ export async function runChatbotPipeline(input: PipelineInput, emit: Emit): Prom
             return `- "${h.metric}" thuộc ${h.department} (độ khớp ${h.score.toFixed(2)}${span})`;
           }).join('\n') +
           '\nChỉ số chuẩn: dùng v_chatbot_metric_facts (đã gộp mọi cách viết, mỗi tuần một số) và lọc metric_path = đúng ' +
-          'đường dẫn ở trên — KHÔNG lọc theo tiền tố nhóm khi SUM, vì một nhóm chứa nhiều đại lượng khác nhau ' +
+          'đường dẫn ở trên (nhiều chỉ số: metric_path IN (...), không nối OR) — KHÔNG lọc theo tiền tố nhóm khi SUM, vì một nhóm chứa nhiều đại lượng khác nhau ' +
           '(lượt, số khoa, tỷ lệ %) cộng vào nhau là sai. Tên thường: dùng đúng tên đầy đủ trong ILIKE. ' +
           'Ưu tiên chỉ số có nhiều tuần dữ liệu (chuỗi theo dõi thật) ' +
           'và có tuần mới nhất gần đây; chỉ số 1 tuần thường là con số nhắc thoáng qua.' +

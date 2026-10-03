@@ -222,6 +222,7 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
    WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90
    ORDER BY days_until_expiry ASC LIMIT 50;
 7. **Tìm theo tên không dấu**: nếu user gõ không dấu ("ghep gan"), vẫn dùng ILIKE '%ghép gan%' với dấu (DB có dấu đầy đủ). Khi câu hỏi mơ hồ → ILIKE từng từ chính, không OR rộng.
+   Nhiều giá trị cùng một cột → dùng IN ('a', 'b'), KHÔNG nối bằng OR; buộc phải dùng OR thì bọc cả cụm trong ngoặc — "a OR b AND week_number = 37" chỉ lọc tuần cho vế sau.
 8. **Khi không chắc tên metric chính xác**: tìm trước bằng query phụ — query DISTINCT metric_name LIKE '%từ%' để xem có tên gì, rồi mới lọc.
 9. **Câu hỏi định lượng** ("bao nhiêu", "tổng cộng", "số lượng") về thứ KHÔNG phải tích lũy (ví dụ "có bao nhiêu khách VIP được đón") → lấy GIÁ TRỊ TUẦN MỚI NHẤT (vì value đã là tích lũy hoặc số gần nhất). Tuyệt đối không SUM trừ khi user nói "tổng tất cả các tuần".
 10. **Sự kiện "tuần này / sắp tới"**: dùng event_date >= CURRENT_DATE và <= CURRENT_DATE + interval '7 days'. Nếu không có data thì DB chưa cập nhật, không phải lỗi.
