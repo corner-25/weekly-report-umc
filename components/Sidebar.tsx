@@ -129,7 +129,7 @@ const NAV: NavSection[] = [
     title: 'Số liệu',
     items: [
       { href: '/dashboard/reports/metrics', label: 'Phân tích nhiệm vụ', icon: LineChart, exact: true },
-      { href: '/dashboard/reports/metrics-data', label: 'Bảng số liệu', icon: Table2, exact: true },
+      { href: '/dashboard/reports/metrics-data', label: 'Số liệu theo dõi', icon: Table2, exact: true },
       { href: '/dashboard/reports/dashboards', label: 'Dashboard', icon: Gauge },
     ],
   },
