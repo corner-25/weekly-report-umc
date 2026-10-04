@@ -1286,6 +1286,8 @@ model MetricNode {
   unit         String?
   /// SUM: cộng theo kỳ | LAST: lấy cuối kỳ (số tồn) | AVG: trung bình (tỷ lệ)
   aggregation  String?
+  /// Cộng các khoản rời trong cùng tuần thay vì lấy một số (vd từng khoản tài trợ).
+  sumWithinWeek Boolean @default(false)
   /// Nguồn chính thức từ báo cáo Excel của phòng (hc_metrics), nếu có.
   hcCategory   String?
   hcContent    String?

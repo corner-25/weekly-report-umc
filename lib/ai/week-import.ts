@@ -333,6 +333,10 @@ async function extractMetricsForWeek(
     catalog.excel,
   );
 
+  // Số luỹ kế trong báo cáo tuần mà không ghi ngày: hiểu là tính đến hết tuần báo
+  // cáo. Trước đây gắn cờ CUMULATIVE_NO_DATE — chiếm 2/3 số cờ, toàn báo động giả.
+  const weekEnd = (await db.week.findUnique({ where: { id: weekId }, select: { endDate: true } }))?.endDate ?? null;
+
   let flagged = 0;
   const rows = result.metrics.map((metric, index) => {
     const issues = [
@@ -350,7 +354,8 @@ async function extractMetricsForWeek(
       ...(catalogIssues.get(index) ?? []),
     ];
 
-    const reviewFlags = [...metric.flags, ...issues.map((i) => i.flag)];
+    const assumeWeekEnd = !metric.asOfDate && metric.period === 'CUMULATIVE' && weekEnd !== null;
+    const reviewFlags = [...metric.flags, ...issues.map((i) => i.flag)].filter((f) => !(assumeWeekEnd && f === 'CUMULATIVE_NO_DATE'));
     if (reviewFlags.length > 0) flagged += 1;
 
     return {
@@ -361,7 +366,7 @@ async function extractMetricsForWeek(
       value: metric.value,
       unit: metric.unit,
       period: metric.period,
-      asOfDate: metric.asOfDate ? new Date(metric.asOfDate) : null,
+      asOfDate: metric.asOfDate ? new Date(metric.asOfDate) : assumeWeekEnd ? weekEnd : null,
       sourceText: metric.sourceText,
       confidence: metric.confidence,
       originalValue: metric.value,

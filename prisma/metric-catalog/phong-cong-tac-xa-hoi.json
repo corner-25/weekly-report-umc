@@ -2,7 +2,7 @@
  "department": "Phòng Công tác Xã hội",
  "model": "glm-5.2",
  "reviewedAt": null,
- "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%.",
+ "note": "Không có file số liệu đối chiếu. Cây do glm-5.2 đề xuất từ chuỗi >= 3 tuần; xung đột giá trị cùng chỉ số-tuần 0.0%. Ngày 04/10/2026 bổ sung tay 4 nhóm (khó khăn, tài trợ, đào tạo, cộng đồng) cho các khoản rời, cộng trong tuần.",
  "nodes": [
   {
    "code": "ctxh",
@@ -63,6 +63,200 @@
    "agg": "SUM",
    "hc": null,
    "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.ho_tro_y_te.chi_phi_ghep_tang",
+   "parent": "ctxh.ho_tro_y_te",
+   "name": "Chi phí ghép tạng hỗ trợ bệnh nhi",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.ho_tro_y_te.benh_nhi_ghep_tang",
+   "parent": "ctxh.ho_tro_y_te",
+   "name": "Số bệnh nhi được hỗ trợ chi phí ghép tạng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.kho_khan",
+   "parent": "ctxh",
+   "name": "Hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.kho_khan.so_nguoi",
+   "parent": "ctxh.kho_khan",
+   "name": "Số người bệnh khó khăn được hỗ trợ",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.kho_khan.so_tien",
+   "parent": "ctxh.kho_khan",
+   "name": "Số tiền hỗ trợ người bệnh khó khăn",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.kho_khan.ho_so_danh_gia",
+   "parent": "ctxh.kho_khan",
+   "name": "Số hồ sơ người bệnh khó khăn được đánh giá",
+   "kind": "METRIC",
+   "unit": "hồ sơ",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.tai_tro",
+   "parent": "ctxh",
+   "name": "Vận động, tiếp nhận tài trợ",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.tai_tro.gia_tri",
+   "parent": "ctxh.tai_tro",
+   "name": "Giá trị tài trợ tiếp nhận",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.tai_tro.ky_ket",
+   "parent": "ctxh.tai_tro",
+   "name": "Giá trị hợp tác tài trợ ký kết",
+   "kind": "METRIC",
+   "unit": "VND",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.tai_tro.hoc_bong",
+   "parent": "ctxh.tai_tro",
+   "name": "Số suất học bổng trao tặng",
+   "kind": "METRIC",
+   "unit": "suất",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.dao_tao",
+   "parent": "ctxh",
+   "name": "Hướng dẫn thực tập, trải nghiệm",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.dao_tao.sinh_vien",
+   "parent": "ctxh.dao_tao",
+   "name": "Số sinh viên được hướng dẫn thực tập, thực hành",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "parent": "ctxh.dao_tao",
+   "name": "Số học sinh trải nghiệm, tình nguyện được hướng dẫn",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.dao_tao.giang_vien",
+   "parent": "ctxh.dao_tao",
+   "name": "Số giảng viên, giáo viên đến tìm hiểu, hướng dẫn",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.cong_dong",
+   "parent": "ctxh",
+   "name": "Chăm sóc sức khoẻ cộng đồng, thiện nguyện",
+   "kind": "GROUP",
+   "unit": null,
+   "agg": null,
+   "hc": null,
+   "origin": "REPORT"
+  },
+  {
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "parent": "ctxh.cong_dong",
+   "name": "Số người tham gia chương trình chăm sóc sức khoẻ cộng đồng",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.cong_dong.phan_qua",
+   "parent": "ctxh.cong_dong",
+   "name": "Số phần quà trao tặng",
+   "kind": "METRIC",
+   "unit": "phần",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
+  },
+  {
+   "code": "ctxh.cong_dong.tinh_nguyen_vien",
+   "parent": "ctxh.cong_dong",
+   "name": "Số tình nguyện viên tham gia hỗ trợ",
+   "kind": "METRIC",
+   "unit": "người",
+   "agg": "SUM",
+   "hc": null,
+   "origin": "REPORT",
+   "sumWithinWeek": true
   }
  ],
  "aliases": [
@@ -1343,6 +1537,422 @@
    "unit": "VND",
    "code": null,
    "status": "SPORADIC",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí ghép tạng cho bệnh nhi",
+   "unit": "VND",
+   "code": "ctxh.ho_tro_y_te.chi_phi_ghep_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bệnh nhi nhận chi phí ghép tạng",
+   "unit": "người",
+   "code": "ctxh.ho_tro_y_te.benh_nhi_ghep_tang",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh có hoàn cảnh khó khăn tiếp đón MTQ hỗ trợ",
+   "unit": "người",
+   "code": "ctxh.kho_khan.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh tiếp nhận hỗ trợ chi phí điều trị",
+   "unit": "người",
+   "code": "ctxh.kho_khan.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh tiếp nhận tài trợ hỗ trợ hoàn cảnh khó khăn",
+   "unit": "người",
+   "code": "ctxh.kho_khan.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số bệnh nhi có hoàn cảnh khó khăn đánh giá tâm lý xã hội, hỗ trợ, hướng dẫn thực hiện hồ sơ xin tài trợ phẫu thuật tim",
+   "unit": "người",
+   "code": "ctxh.kho_khan.so_nguoi",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Chi phí hỗ trợ điều trị trao tặng",
+   "unit": "VND",
+   "code": "ctxh.kho_khan.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hỗ trợ chi phí điều trị cho người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.kho_khan.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.kho_khan.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tổng số tiền hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.kho_khan.so_tien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số hồ sơ người bệnh có hoàn cảnh khó khăn được đánh giá",
+   "unit": "hồ sơ",
+   "code": "ctxh.kho_khan.ho_so_danh_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ tiếp nhận",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ MTQ hỗ trợ sinh hoạt phí và nhu yếu phẩm",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ thùng mì Omachi",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tiếp nhận tài trợ hỗ trợ người bệnh có hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tiếp nhận tài trợ từ Mặt trận Tổ quốc",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tài trợ hỗ trợ người bệnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tiếp nhận tài trợ",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tiền tiếp nhận tài trợ hỗ trợ người bệnh hoàn cảnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận hỗ trợ cho người bệnh khó khăn",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ cho bệnh nhi ghép gan",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ hỗ trợ bệnh nhi ghép gan",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Tiếp nhận tài trợ hỗ trợ chi phí điều trị",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị tài trợ học bổng",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.gia_tri",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Giá trị hợp tác tài trợ ký kết",
+   "unit": "VND",
+   "code": "ctxh.tai_tro.ky_ket",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số suất học bổng trao tặng trực tiếp",
+   "unit": "suất",
+   "code": "ctxh.tai_tro.hoc_bong",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên thực tập được hướng dẫn",
+   "unit": "sinh viên",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn sinh viên thực tập",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Cao đẳng Kinh tế TP.HCM hướng dẫn",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Sinh viên CTXH trường Đại học Tôn Đức Thắng hướng dẫn",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên hướng dẫn thực hành CTXH",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên hướng dẫn thực hành CTXH",
+   "unit": "sinh viên",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên ngành Công tác xã hội tiếp nhận thực tập tốt nghiệp",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số sinh viên tìm hiểu về các hoạt động công tác xã hội tiếp nhận",
+   "unit": "người",
+   "code": "ctxh.dao_tao.sinh_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh tham gia trải nghiệm tại Bệnh viện hướng dẫn",
+   "unit": "người",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Học sinh trải nghiệm và tình nguyện được hướng dẫn",
+   "unit": "người",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Hướng dẫn học sinh trải nghiệm và tình nguyện",
+   "unit": "người",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh trải nghiệm và tình nguyện",
+   "unit": "học sinh",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh trải nghiệm và tình nguyện được hướng dẫn",
+   "unit": "học sinh",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh tham gia chương trình Trải nghiệm cùng UMC",
+   "unit": "người",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số học sinh tham gia chương trình định hướng nghề nghiệp",
+   "unit": "học sinh",
+   "code": "ctxh.dao_tao.hoc_sinh",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số giảng viên hướng dẫn thực hành CTXH",
+   "unit": "người",
+   "code": "ctxh.dao_tao.giang_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số giảng viên tìm hiểu về các hoạt động công tác xã hội tiếp nhận",
+   "unit": "người",
+   "code": "ctxh.dao_tao.giang_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số giáo viên tham gia chương trình Trải nghiệm cùng UMC",
+   "unit": "người",
+   "code": "ctxh.dao_tao.giang_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người dân tham gia chương trình CSSK cộng đồng",
+   "unit": "người",
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người dân khám bệnh, phát thuốc, tặng quà tại Đặc khu Côn Đảo",
+   "unit": "người",
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số mẹ VNAH tham gia chương trình CSSK",
+   "unit": "người",
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thương binh, cán bộ tiền khởi nghĩa tham gia chương trình CSSK",
+   "unit": "người",
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số người bệnh, người nhà người bệnh cắt tóc 0 đồng",
+   "unit": "người",
+   "code": "ctxh.cong_dong.nguoi_tham_gia",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Nhận và phát phần quà Vĩnh Hoàn tài trợ",
+   "unit": "phần",
+   "code": "ctxh.cong_dong.phan_qua",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số tình nguyện viên hỗ trợ",
+   "unit": "người",
+   "code": "ctxh.cong_dong.tinh_nguyen_vien",
+   "status": "MAPPED",
+   "candidates": [],
+   "weeks": 1
+  },
+  {
+   "name": "Số thợ cắt tóc hỗ trợ",
+   "unit": "người",
+   "code": "ctxh.cong_dong.tinh_nguyen_vien",
+   "status": "MAPPED",
    "candidates": [],
    "weeks": 1
   }

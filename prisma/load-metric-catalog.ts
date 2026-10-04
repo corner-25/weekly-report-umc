@@ -19,6 +19,8 @@ interface CatalogNode {
   agg: 'SUM' | 'LAST' | 'AVG' | null;
   hc: [string, string] | null;
   origin: 'EXCEL' | 'REPORT';
+  /** Cộng các khoản rời trong cùng tuần (mặc định: lấy một số). */
+  sumWithinWeek?: boolean;
 }
 
 interface CatalogAlias {
@@ -87,6 +89,7 @@ async function main(): Promise<void> {
       hcCategory: n.hc?.[0] ?? null,
       hcContent: n.hc?.[1] ?? null,
       origin: n.origin,
+      sumWithinWeek: n.sumWithinWeek ?? false,
       orderNumber: order,
       isActive: true,
     };
