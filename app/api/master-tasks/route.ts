@@ -33,6 +33,13 @@ export async function GET(request: Request) {
       where.departmentId = departmentId;
     }
 
+    // Cửa sổ hoạt động lấy TRƯỚC: danh sách không kèm lịch sử chỉ cần các tuần
+    // trong cửa sổ để phân loại, không phải toàn bộ ~3.000 dòng tiến độ.
+    const { weeks: windowWeeks } = await getActivityWindow();
+    const windowFilter = windowWeeks.length
+      ? { week: { OR: windowWeeks.map((w) => ({ weekNumber: w.weekNumber, year: w.year })) } }
+      : { id: '__none__' };
+
     const masterTasks = await prisma.masterTask.findMany({
       where,
       include: {
@@ -62,6 +69,7 @@ export async function GET(request: Request) {
               },
             }
           : {
+              where: windowFilter,
               select: {
                 id: true,
                 progress: true,
@@ -82,8 +90,6 @@ export async function GET(request: Request) {
       },
     });
 
-    // Compute activity window once for status classification.
-    const { weeks: windowWeeks } = await getActivityWindow();
 
     // Transform để thêm status (in_progress | completed) theo quy luật 4 tuần.
     const transformed = masterTasks.map((task) => {
@@ -91,9 +97,12 @@ export async function GET(request: Request) {
         ? task.weekProgress[task.weekProgress.length - 1]
         : task.weekProgress[0];
 
-      const taskWeekKeys = (task.weekProgress as Array<{ week?: { weekNumber: number; year: number } | null }>)
+      const inLoaded = (task.weekProgress as Array<{ week?: { weekNumber: number; year: number } | null }>)
         .map((wp) => wp.week)
         .filter((w): w is { weekNumber: number; year: number } => Boolean(w));
+      // Không kèm lịch sử thì chỉ có các tuần trong cửa sổ; nhiệm vụ từng báo cáo
+      // nhưng ngoài cửa sổ cần một tuần "ngoài cửa sổ" để không bị coi là chưa báo cáo.
+      const taskWeekKeys = inLoaded.length || !task._count.weekProgress ? inLoaded : [{ weekNumber: 0, year: 0 }];
       const status: MasterTaskStatus = classifyMasterTask({
         weekKeys: windowWeeks,
         taskWeekKeys,
