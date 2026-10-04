@@ -136,7 +136,8 @@ export async function GET(request: Request) {
         };
       }
 
-      return baseData;
+      // Nhiệm vụ chưa có tuần nào vẫn trả mảng rỗng — giao diện đọc .length trực tiếp.
+      return includeProgress ? { ...baseData, weeklyProgress: [], firstWeek: null, lastWeek: null } : baseData;
     });
 
     return NextResponse.json(transformed);

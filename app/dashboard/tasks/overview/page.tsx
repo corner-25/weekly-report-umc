@@ -32,9 +32,10 @@ interface TaskDetail {
   weekCount: number;
   estimatedDuration: number | null;
   createdAt: string;
-  weeklyProgress: WeekProgress[];
-  firstWeek?: { weekNumber: number; year: number };
-  lastWeek?: { weekNumber: number; year: number };
+  /** API cũ bỏ trường này với nhiệm vụ chưa có tuần nào — luôn đọc qua `?? []`. */
+  weeklyProgress?: WeekProgress[];
+  firstWeek?: { weekNumber: number; year: number } | null;
+  lastWeek?: { weekNumber: number; year: number } | null;
 }
 
 type ViewMode = 'list' | 'kanban';
@@ -127,14 +128,14 @@ function TaskRow({ task, expanded, onToggle }: { task: TaskDetail; expanded: boo
             className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-600 hover:text-cyan-700 font-medium"
           >
             {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            {expanded ? 'Thu gọn' : `Xem ${task.weeklyProgress.length} tuần đã cập nhật`}
+            {expanded ? 'Thu gọn' : `Xem ${task.weeklyProgress?.length ?? 0} tuần đã cập nhật`}
           </button>
         )}
       </div>
 
       {expanded && hasHistory && (
         <div className="border-t border-slate-100 bg-slate-50/50 p-4 space-y-2 max-h-96 overflow-y-auto">
-          {[...task.weeklyProgress].reverse().map((week, idx) => (
+          {[...(task.weeklyProgress ?? [])].reverse().map((week, idx) => (
             <div key={`${week.year}-${week.weekNumber}-${idx}`} className="bg-white rounded-lg border border-slate-200 p-3">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -488,11 +489,11 @@ export default function TasksOverview() {
               </div>
             </div>
             <div className="p-5 space-y-2">
-              <h3 className="text-sm font-semibold text-slate-700 mb-2">Lịch sử {detailTask.weeklyProgress.length} tuần</h3>
-              {detailTask.weeklyProgress.length === 0 ? (
+              <h3 className="text-sm font-semibold text-slate-700 mb-2">Lịch sử {(detailTask.weeklyProgress ?? []).length} tuần</h3>
+              {(detailTask.weeklyProgress ?? []).length === 0 ? (
                 <p className="text-sm text-slate-500 text-center py-6">Chưa có cập nhật tuần nào</p>
               ) : (
-                [...detailTask.weeklyProgress].reverse().map((week, idx) => (
+                [...(detailTask.weeklyProgress ?? [])].reverse().map((week, idx) => (
                   <div key={`${week.year}-${week.weekNumber}-${idx}`} className="bg-slate-50 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div>
