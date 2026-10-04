@@ -270,7 +270,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                     </div>
                     <div className="h-3 bg-slate-200 rounded-full overflow-hidden mb-3">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${overallProgress === 100 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-cyan-400 to-blue-500'}`}
+                        className={`h-full rounded-full transition-all duration-500 ${overallProgress === 100 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-cyan-600'}`}
                         style={{ width: `${overallProgress}%` }}
                       />
                     </div>
@@ -1104,7 +1104,7 @@ function ClauseTimeline({ clauses }: { clauses: Clause[] }) {
                       <div className="mt-2 flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className={`h-full rounded-full ${c.progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}
+                            className={`h-full rounded-full ${c.progress === 100 ? 'bg-emerald-500' : 'bg-cyan-600'}`}
                             style={{ width: `${c.progress}%` }}
                           />
                         </div>

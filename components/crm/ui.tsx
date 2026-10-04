@@ -7,7 +7,7 @@ import { TIER_LABELS } from '@/lib/crm/constants';
 import type { Tier } from './types';
 
 export const PRIMARY_BTN =
-  'inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20 transition hover:brightness-105 active:translate-y-px disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/30';
+  'inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20 transition hover:brightness-105 active:translate-y-px disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/30';
 export const ACCENT_BTN =
   'inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-500/20 transition hover:brightness-105 active:translate-y-px disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/30';
 export const SECONDARY_BTN =
@@ -271,13 +271,13 @@ export function ModalShell({ title, subtitle, onClose, children, size = 'lg' }: 
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 backdrop-blur-sm sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-50 flex animate-fade-in items-end justify-center bg-slate-950/45 backdrop-blur-sm sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn('max-h-[94vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl', size === 'lg' ? 'max-w-3xl' : 'max-w-xl')}
+        className={cn('max-h-[94vh] w-full animate-sheet-up overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:animate-pop-in sm:rounded-3xl', size === 'lg' ? 'max-w-3xl' : 'max-w-xl')}
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-6 sm:py-5">
           <div>

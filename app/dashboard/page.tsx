@@ -15,7 +15,7 @@ const QUICK_ACTIONS = [
   { href: '/dashboard/crm/interactions', icon: Handshake, label: 'Ghi lượt dẫn khách / đoàn' },
   { href: '/dashboard/hospital-events', icon: CalendarDays, label: 'Thêm sự kiện' },
   { href: '/dashboard/secretaries', icon: Users, label: 'Thêm thư ký' },
-  { href: '/dashboard/calendar', icon: CalendarClock, label: 'Xem lịch làm việc' },
+  { href: '/dashboard/hospital-events-calendar', icon: CalendarClock, label: 'Xem lịch sự kiện' },
 ];
 
 export default function Dashboard() {
@@ -60,7 +60,7 @@ export default function Dashboard() {
         actions={
           <Link
             href="/dashboard/weeks/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             <Plus className="w-4 h-4" />
             Tạo báo cáo tuần

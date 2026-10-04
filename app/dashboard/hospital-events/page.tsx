@@ -70,7 +70,7 @@ export default function HospitalEventsPage() {
   return (
     <div className="space-y-6">
       <ConfirmDialog open={Boolean(deleteTarget)} title="Xóa sự kiện" message={`Bạn có chắc muốn xóa “${deleteTarget?.name ?? ''}”?`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />
-      <PageHeader icon={CalendarRange} title="Sự kiện bệnh viện" description="Theo dõi lịch, đầu mối và tiến độ tổ chức tại một nơi" actions={<Link href="/dashboard/hospital-events/new" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20"><Plus className="h-4 w-4" /> Tạo sự kiện</Link>} />
+      <PageHeader icon={CalendarRange} title="Sự kiện bệnh viện" description="Theo dõi lịch, đầu mối và tiến độ tổ chức tại một nơi" actions={<Link href="/dashboard/hospital-events/new" className="inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20"><Plus className="h-4 w-4" /> Tạo sự kiện</Link>} />
       {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

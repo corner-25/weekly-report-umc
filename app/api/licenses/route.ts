@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
       ],
     });
 
-    return NextResponse.json(licenses);
+    return compressedJson(request, licenses);
   } catch (error) {
     console.error('Error fetching licenses:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -98,7 +98,7 @@ export default function NewHospitalEventPage() {
 
         {templates.length > 0 && <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 text-sm text-blue-800"><CalendarDays className="mt-0.5 h-5 w-5 shrink-0" /><p><strong>{templates.length} công việc mẫu</strong> sẽ được thêm tự động sau khi tạo. Bạn có thể xem, hoàn thành hoặc chỉnh sửa tại trang chi tiết sự kiện.</p></div>}
 
-        <div className="flex justify-end gap-3"><button type="button" onClick={() => router.back()} className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-white">Hủy</button><button disabled={loading} className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20 disabled:opacity-50">{loading ? 'Đang tạo...' : 'Tạo sự kiện'}</button></div>
+        <div className="flex justify-end gap-3"><button type="button" onClick={() => router.back()} className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-white">Hủy</button><button disabled={loading} className="rounded-xl bg-cyan-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20 disabled:opacity-50">{loading ? 'Đang tạo...' : 'Tạo sự kiện'}</button></div>
       </form>
     </div>
   );

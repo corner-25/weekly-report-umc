@@ -218,7 +218,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
     >
       <header className="flex items-center justify-between border-b border-slate-100 bg-white px-3.5 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-cyan-600 text-white shadow-sm shadow-cyan-500/30">
             <Sparkles className="h-4 w-4" />
           </div>
           <div className="min-w-0">
@@ -302,7 +302,7 @@ export function ChatbotPanel({ onClose }: { onClose: () => void }) {
             </button>
           ) : (
             <button type="submit" disabled={busy || !input.trim()} aria-label="Gửi"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white transition-all hover:shadow-md hover:shadow-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-40">
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-600 text-white transition-all hover:shadow-md hover:shadow-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-40">
               <Send className="h-4 w-4" />
             </button>
           )}

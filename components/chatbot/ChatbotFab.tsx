@@ -12,7 +12,7 @@ export function ChatbotFab() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Đóng trợ lý AI' : 'Mở trợ lý AI'}
-        className="fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all flex items-center justify-center group"
+        className="fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-cyan-600 text-white shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all flex items-center justify-center group"
       >
         {open ? (
           <X className="w-6 h-6" />

@@ -179,7 +179,7 @@ export default function ApplicationsPage() {
         actions={
           <button
             onClick={() => { setEditingApp(null); setShowForm(true); }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             <Plus className="w-4 h-4" />
             Thêm hồ sơ
@@ -308,7 +308,7 @@ function ApplicantCard({
     <div className="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col">
       <div className="p-4 cursor-pointer" onClick={onView}>
         <div className="flex items-start gap-3 mb-3">
-          <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+          <div className="shrink-0 w-12 h-12 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
             {initials(app.fullName)}
           </div>
           <div className="min-w-0 flex-1">
@@ -417,7 +417,7 @@ function DetailDrawer({ app, onClose, onEdit }: { app: Application; onClose: () 
       <div className="bg-white w-full max-w-2xl h-full overflow-y-auto shadow-2xl">
         <header className="sticky top-0 z-10 bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center font-semibold">
+            <div className="shrink-0 w-12 h-12 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-semibold">
               {initials(app.fullName)}
             </div>
             <div className="min-w-0">

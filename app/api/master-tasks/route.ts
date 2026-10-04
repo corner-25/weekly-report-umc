@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
 import { getActivityWindow, classifyMasterTask, type MasterTaskStatus } from '@/lib/master-task-status';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 const masterTaskSchema = z.object({
   departmentId: z.string(),
@@ -140,7 +141,7 @@ export async function GET(request: Request) {
       return includeProgress ? { ...baseData, weeklyProgress: [], firstWeek: null, lastWeek: null } : baseData;
     });
 
-    return NextResponse.json(transformed);
+    return compressedJson(request, transformed);
   } catch (error) {
     console.error('Error fetching master tasks:', error);
     return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 });

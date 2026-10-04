@@ -3,418 +3,347 @@
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import useSWR from 'swr';
 import { cn } from '@/lib/utils';
+import { toSearchKey } from '@/lib/crm/constants';
 import {
-  LayoutDashboard,
-  FileText,
-  CalendarDays,
-  Upload,
   Building2,
-  ClipboardCheck,
-  DoorOpen,
-  CalendarRange,
   CalendarClock,
-  Users,
-  Tag,
-  ArrowLeftRight,
-  FileUser,
-  Cake,
-  ShieldCheck,
+  CalendarDays,
+  ClipboardCheck,
+  ClipboardList,
+  DoorOpen,
+  FileText,
+  Gauge,
   Handshake,
-  BarChart3,
-  TrendingUp,
+  HeartHandshake,
+  LayoutDashboard,
   LineChart,
-  Table2,
+  LogOut,
   PanelLeft,
   PanelLeftClose,
-  Settings,
-  LogOut,
   RefreshCw,
-  Monitor,
-  Gauge,
-  ChevronDown,
+  Search,
+  Settings,
+  ShieldCheck,
+  Table2,
+  Tag,
   Truck,
-  Crown,
-  Contact,
-  HeartHandshake,
+  Users,
   type LucideIcon,
-  ClipboardList,
-  ListChecks,
 } from 'lucide-react';
 
-type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'crm' | 'work' | 'partnerships' | 'analytics' | 'settings';
+type BadgeKey = 'work' | 'crm' | 'vehicles';
 
-interface NavItem {
+interface NavLink {
   href: string;
   label: string;
-  icon: LucideIcon;
+  /** Mặc định: đang ở trang này hoặc trang con của nó. */
   exact?: boolean;
 }
 
-interface NavGroup {
-  id: MenuSection;
-  title: string;
+interface NavItem extends NavLink {
   icon: LucideIcon;
+  badge?: BadgeKey;
+  /** Trang con — chỉ hiện khi đang ở trong mục này. */
+  children?: NavLink[];
+}
+
+interface NavSection {
+  title: string;
   items: NavItem[];
 }
 
-const navGroups: NavGroup[] = [
+/** Menu gom theo việc thường làm; nhãn nhóm cố định, không xổ xuống. */
+const NAV: NavSection[] = [
   {
-    id: 'weekReports',
-    title: 'Báo cáo tuần',
-    icon: FileText,
+    title: 'Hằng ngày',
     items: [
-      { href: '/dashboard/weeks', label: 'Danh sách báo cáo', icon: FileText, exact: true },
-      { href: '/dashboard/weeks/new', label: 'Tạo báo cáo mới', icon: FileText, exact: true },
-      { href: '/dashboard/import', label: 'Nhập từ Excel', icon: Upload, exact: true },
+      { href: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/departments', label: 'Phòng ban', icon: Building2 },
     ],
   },
   {
-    id: 'calendar',
-    title: 'Lịch & Sự kiện',
-    icon: CalendarRange,
+    title: 'Điều hành',
     items: [
-      { href: '/dashboard/calendar', label: 'Lịch công tác', icon: CalendarDays, exact: false },
-      { href: '/dashboard/hospital-events', label: 'Sự kiện bệnh viện', icon: CalendarClock, exact: false },
+      {
+        href: '/dashboard/work', label: 'Quản lý công việc', icon: ClipboardList, badge: 'work',
+        children: [
+          { href: '/dashboard/work', label: 'Theo dõi', exact: true },
+          { href: '/dashboard/work/items', label: 'Danh sách công việc' },
+        ],
+      },
+      {
+        href: '/dashboard/crm', label: 'CRM đối tác', icon: HeartHandshake, badge: 'crm',
+        children: [
+          { href: '/dashboard/crm', label: 'Tổng quan', exact: true },
+          { href: '/dashboard/crm/contacts', label: 'Danh bạ' },
+          { href: '/dashboard/crm/interactions', label: 'Tiếp đón & dẫn đoàn' },
+        ],
+      },
+      {
+        href: '/dashboard/weeks', label: 'Báo cáo tuần', icon: FileText,
+        children: [
+          { href: '/dashboard/weeks', label: 'Danh sách báo cáo', exact: true },
+          { href: '/dashboard/weeks/new', label: 'Tạo báo cáo mới', exact: true },
+          { href: '/dashboard/import', label: 'Nhập từ Excel', exact: true },
+        ],
+      },
+      {
+        href: '/dashboard/tasks', label: 'Nhiệm vụ thường kỳ', icon: ClipboardCheck,
+        children: [
+          { href: '/dashboard/tasks', label: 'Danh sách nhiệm vụ', exact: true },
+          { href: '/dashboard/tasks/overview', label: 'Tổng hợp tiến độ', exact: true },
+          { href: '/dashboard/reports/timeline', label: 'Timeline', exact: true },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Quản lý sự kiện',
+    items: [
+      { href: '/dashboard/hospital-events', label: 'Sự kiện bệnh viện', icon: CalendarClock },
       { href: '/dashboard/hospital-events-calendar', label: 'Lịch sự kiện', icon: CalendarDays, exact: true },
-      { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen, exact: false },
+      { href: '/dashboard/meeting-rooms', label: 'Phòng họp', icon: DoorOpen },
     ],
   },
   {
-    id: 'tasks',
-    title: 'Nhiệm vụ',
-    icon: ClipboardCheck,
+    title: 'Nhân sự & tài sản',
     items: [
-      { href: '/dashboard/tasks', label: 'Nhiệm vụ thường kỳ', icon: ClipboardCheck, exact: true },
-      { href: '/dashboard/tasks/overview', label: 'Tổng hợp tiến độ', icon: BarChart3, exact: true },
-      { href: '/dashboard/reports/timeline', label: 'Timeline', icon: TrendingUp, exact: true },
+      {
+        href: '/dashboard/secretaries', label: 'Thư ký', icon: Users,
+        children: [
+          { href: '/dashboard/secretaries', label: 'Danh sách', exact: true },
+          { href: '/dashboard/secretaries/transfers', label: 'Luân chuyển', exact: true },
+          { href: '/dashboard/secretaries/birthdays', label: 'Sinh nhật', exact: true },
+          { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', exact: true },
+        ],
+      },
+      { href: '/dashboard/vehicles', label: 'Phương tiện', icon: Truck, badge: 'vehicles' },
+      { href: '/dashboard/mous', label: 'MOU', icon: Handshake },
+      { href: '/dashboard/licenses', label: 'Giấy phép', icon: ShieldCheck },
     ],
   },
   {
-    id: 'secretaries',
-    title: 'Thư ký',
-    icon: Users,
-    items: [
-      { href: '/dashboard/secretaries', label: 'Danh sách', icon: Users, exact: true },
-      { href: '/dashboard/secretaries/transfers', label: 'Luân chuyển', icon: ArrowLeftRight, exact: true },
-      { href: '/dashboard/secretaries/birthdays', label: 'Sinh nhật', icon: Cake, exact: true },
-      { href: '/dashboard/secretaries/applications', label: 'Hồ sơ ứng tuyển', icon: FileUser, exact: true },
-    ],
-  },
-  {
-    id: 'crm',
-    title: 'CRM đối tác',
-    icon: HeartHandshake,
-    items: [
-      { href: '/dashboard/crm', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
-      { href: '/dashboard/crm/contacts', label: 'Danh bạ', icon: Contact, exact: false },
-      { href: '/dashboard/crm/interactions', label: 'Tiếp đón & dẫn đoàn', icon: Crown, exact: false },
-    ],
-  },
-  {
-    id: 'work',
-    title: 'Quản lý công việc',
-    icon: ClipboardList,
-    items: [
-      { href: '/dashboard/work', label: 'Theo dõi công việc', icon: LayoutDashboard, exact: true },
-      { href: '/dashboard/work/items', label: 'Danh sách công việc', icon: ListChecks, exact: false },
-    ],
-  },
-  {
-    id: 'partnerships',
-    title: 'Hợp tác & Pháp lý',
-    icon: Handshake,
-    items: [
-      { href: '/dashboard/mous', label: 'MOU', icon: Handshake, exact: false },
-      { href: '/dashboard/licenses', label: 'Giấy phép', icon: ShieldCheck, exact: false },
-      { href: '/dashboard/vehicles', label: 'Phương tiện vận chuyển', icon: Truck, exact: false },
-    ],
-  },
-  {
-    id: 'analytics',
-    title: 'Phân tích & Số liệu',
-    icon: BarChart3,
+    title: 'Số liệu',
     items: [
       { href: '/dashboard/reports/metrics', label: 'Phân tích nhiệm vụ', icon: LineChart, exact: true },
       { href: '/dashboard/reports/metrics-data', label: 'Bảng số liệu', icon: Table2, exact: true },
-      { href: '/dashboard/reports/dashboards', label: 'Dashboard', icon: Gauge, exact: false },
+      { href: '/dashboard/reports/dashboards', label: 'Dashboard', icon: Gauge },
     ],
   },
   {
-    id: 'settings',
     title: 'Cài đặt',
-    icon: Settings,
     items: [
-      { href: '/dashboard/settings', label: 'Chung', icon: Settings, exact: true },
+      { href: '/dashboard/settings', label: 'Cài đặt chung', icon: Settings, exact: true },
       { href: '/dashboard/secretaries/types', label: 'Loại thư ký', icon: Tag, exact: true },
       { href: '/dashboard/data-sync', label: 'Đồng bộ dữ liệu', icon: RefreshCw, exact: true },
     ],
   },
 ];
 
+/** Trang con không thuộc mục cha theo đường dẫn (vd /dashboard/import thuộc Báo cáo tuần). */
+const isOn = (pathname: string, link: NavLink) =>
+  link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+/** Mục cha đang mở khi đang ở chính nó hoặc bất kỳ trang con nào — trừ trang con thuộc mục khác (Loại thư ký). */
+function itemActive(pathname: string, item: NavItem): boolean {
+  if (pathname === '/dashboard/secretaries/types' && item.href === '/dashboard/secretaries') return false;
+  return isOn(pathname, item) || Boolean(item.children?.some((c) => isOn(pathname, c)));
+}
+
+const COLLAPSED_KEY = 'sidebar-collapsed';
+
+const fetcher = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null));
+
 export function Sidebar() {
   const { data: session } = useSession();
-  const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('sidebar-collapsed') === 'true';
-    }
-    return false;
+  const pathname = usePathname() ?? '';
+  const [collapsed, setCollapsed] = useState(false);
+  const [query, setQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const { data: badges } = useSWR<Record<BadgeKey, number> | null>('/api/nav-badges', fetcher, {
+    refreshInterval: 5 * 60 * 1000,
+    revalidateOnFocus: false,
   });
-  const [openSections, setOpenSections] = useState<MenuSection[]>([]);
 
-  // Auto-expand section based on current path
   useEffect(() => {
-    for (const group of navGroups) {
-      const hasActiveItem = group.items.some(item =>
-        item.exact ? pathname === item.href : pathname?.startsWith(item.href)
-      );
-      if (hasActiveItem && !openSections.includes(group.id)) {
-        setOpenSections(prev => [...prev, group.id]);
-      }
+    try {
+      setCollapsed(localStorage.getItem(COLLAPSED_KEY) === 'true');
+    } catch {
+      /* trình duyệt chặn lưu trữ: mở rộng mặc định */
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  const toggleSection = (section: MenuSection) => {
-    setOpenSections(prev =>
-      prev.includes(section)
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
-    );
+  // Ctrl K / ⌘K: nhảy vào ô tìm trang.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCollapsed(false);
+        requestAnimationFrame(() => searchRef.current?.focus());
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const toggle = () => {
+    setCollapsed((prev) => {
+      try {
+        localStorage.setItem(COLLAPSED_KEY, String(!prev));
+      } catch {
+        /* bỏ qua */
+      }
+      return !prev;
+    });
   };
 
-  const isActivePath = (path: string, exact = true) => {
-    if (exact) return pathname === path;
-    return pathname?.startsWith(path);
-  };
+  // Tìm trang: lọc theo tên mục và tên trang con, gõ không dấu được.
+  const sections = useMemo(() => {
+    const q = toSearchKey(query);
+    if (!q) return NAV;
+    return NAV.map((s) => ({
+      ...s,
+      items: s.items.filter((i) => toSearchKey(i.label, s.title, ...(i.children?.map((c) => c.label) ?? [])).includes(q)),
+    })).filter((s) => s.items.length > 0);
+  }, [query]);
+
+  const name = session?.user?.name || session?.user?.email || 'Người dùng';
+  const initials = name.split(/\s+/).filter(Boolean).slice(-2).map((w) => w[0]).join('').toUpperCase();
 
   return (
     <aside
       className={cn(
-        'flex flex-col bg-white border-r border-slate-200/80 h-screen sticky top-0 transition-all duration-300 shadow-sm',
-        isCollapsed ? 'w-[68px]' : 'w-64'
+        'sticky top-0 flex h-screen shrink-0 flex-col border-r border-brand-100 bg-[#f5f9fe] transition-[width] duration-200 ease-out',
+        collapsed ? 'w-[68px]' : 'w-64',
       )}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between h-14 px-3 bg-gradient-to-r from-cyan-600 to-blue-600">
-        {!isCollapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 shrink-0 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-              <ClipboardCheck className="w-4 h-4 text-white" />
-            </div>
-            <div className="min-w-0 leading-tight">
-              <p className="text-[13px] font-bold text-white truncate">
-                Quản lý tập trung
-              </p>
-              <p className="text-[11px] text-white/75 truncate">Phòng Hành chính</p>
-            </div>
+      <div className={cn('flex h-16 items-center border-b border-brand-100', collapsed ? 'justify-center px-2' : 'justify-between gap-2 px-4')}>
+        {!collapsed && (
+          <Link href="/dashboard" className="flex min-w-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-[11px] font-extrabold tracking-wide text-white shadow-sm">UMC</span>
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate text-[13px] font-bold text-slate-900">Phòng Hành chính</span>
+              <span className="block truncate text-[11px] text-slate-500">BV Đại học Y Dược TP.HCM</span>
+            </span>
           </Link>
         )}
         <button
-          onClick={() => {
-            const next = !isCollapsed;
-            setIsCollapsed(next);
-            localStorage.setItem('sidebar-collapsed', String(next));
-          }}
-          className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors"
-          title={isCollapsed ? 'Mở rộng' : 'Thu gọn'}
+          type="button"
+          onClick={toggle}
+          className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-brand-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+          aria-label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+          title={collapsed ? 'Mở rộng' : 'Thu gọn'}
         >
-          {isCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+          {collapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
         </button>
       </div>
 
-      {/* Logo */}
-      {!isCollapsed && (
-        <div className="px-4 py-3 border-b border-slate-100">
-          <img src="/logo-ngang.png" alt="Logo" className="h-11 w-auto object-contain mx-auto" />
+      {!collapsed && (
+        <div className="px-3 pt-3">
+          <label className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm text-slate-500 ring-1 ring-inset ring-brand-100 focus-within:ring-2 focus-within:ring-brand-400">
+            <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="sr-only">Tìm trang</span>
+            <input
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Escape' && setQuery('')}
+              placeholder="Tìm trang..."
+              className="min-w-0 flex-1 bg-transparent text-slate-800 placeholder:text-slate-400 focus:outline-none"
+            />
+            <kbd className="rounded-md border border-slate-200 px-1.5 text-[10px] font-medium text-slate-400">Ctrl K</kbd>
+          </label>
         </div>
       )}
 
-      {/* Navigation */}
-      <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto min-h-0">
-        {/* Tổng quan */}
-        <Link
-          href="/dashboard"
-          className={cn(
-            'flex items-center rounded-lg transition-all duration-200 group',
-            isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
-            isActivePath('/dashboard')
-              ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-          )}
-          title="Tổng quan"
-        >
-          <LayoutDashboard className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard') && 'text-slate-400 group-hover:text-slate-600')} />
-          {!isCollapsed && <span className="text-sm font-medium">Tổng quan</span>}
-        </Link>
-
-        {/* Phòng ban */}
-        <Link
-          href="/dashboard/departments"
-          className={cn(
-            'flex items-center rounded-lg transition-all duration-200 group',
-            isCollapsed ? 'justify-center px-1 py-2.5' : 'gap-3 px-3 py-2.5',
-            isActivePath('/dashboard/departments', false)
-              ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md shadow-cyan-500/25'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-          )}
-          title="Phòng ban"
-        >
-          <Building2 className={cn('w-[18px] h-[18px] flex-shrink-0', !isActivePath('/dashboard/departments', false) && 'text-slate-400 group-hover:text-slate-600')} />
-          {!isCollapsed && <span className="text-sm font-medium">Phòng ban</span>}
-        </Link>
-
-        <div className="pt-1" />
-
-        {/* Menu Groups */}
-        {navGroups.map(group => {
-          const GroupIcon = group.icon;
-          const isOpen = openSections.includes(group.id);
-          const hasActiveChild = group.items.some(item =>
-            item.exact ? pathname === item.href : pathname?.startsWith(item.href)
-          );
-
-          if (isCollapsed) {
-            const firstItem = group.items[0];
-            return (
-              <div key={group.id} className="py-0.5 relative group/collapsed">
-                <Link
-                  href={firstItem.href}
-                  className={cn(
-                    'flex justify-center px-1 py-2.5 rounded-lg transition-colors',
-                    hasActiveChild
-                      ? 'text-cyan-600 bg-cyan-50'
-                      : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
-                  )}
-                  title={group.title}
-                >
-                  <GroupIcon className="w-[18px] h-[18px]" />
-                </Link>
-                {/* Flyout on hover */}
-                <div className="absolute left-full top-0 ml-2 hidden group-hover/collapsed:block z-50">
-                  <div className="bg-white rounded-xl shadow-lg border border-slate-200/80 py-1.5 min-w-[200px]">
-                    <div className="px-3 py-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100 mb-1">
-                      {group.title}
-                    </div>
-                    {group.items.map((item) => {
-                      const ItemIcon = item.icon;
-                      const isActive = isActivePath(item.href, item.exact);
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={cn(
-                            'flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors',
-                            isActive
-                              ? 'bg-cyan-50 text-cyan-700 font-medium'
-                              : 'text-slate-600 hover:bg-slate-50'
-                          )}
-                        >
-                          <ItemIcon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-cyan-600' : 'text-slate-400')} />
-                          <span>{item.label}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div key={group.id} className="space-y-0.5">
-              <button
-                onClick={() => toggleSection(group.id)}
-                className={cn(
-                  'w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all duration-200 group',
-                  hasActiveChild
-                    ? 'text-cyan-700 bg-cyan-50/60'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <GroupIcon className={cn('w-[18px] h-[18px]', hasActiveChild ? 'text-cyan-600' : 'text-slate-400 group-hover:text-slate-500')} />
-                  <span className="text-sm font-medium">{group.title}</span>
-                </div>
-                <ChevronDown
-                  className={cn(
-                    'w-3.5 h-3.5 transition-transform duration-200',
-                    hasActiveChild ? 'text-cyan-500' : 'text-slate-400',
-                    isOpen && 'rotate-180'
-                  )}
-                />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-200',
-                  isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                )}
-              >
-                <div className="ml-3 pl-3 border-l-2 border-slate-100 space-y-0.5 py-1">
-                  {group.items.map(item => {
-                    const ItemIcon = item.icon;
-                    const isActive = isActivePath(item.href, item.exact);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          'flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all duration-200 text-[13px] group/item',
-                          isActive
-                            ? 'bg-cyan-50 text-cyan-700 font-medium'
-                            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
-                        )}
-                        title={item.label}
-                      >
-                        <ItemIcon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-cyan-600' : 'text-slate-400 group-hover/item:text-slate-500')} />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
+      <nav aria-label="Menu chính" className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-3">
+        {sections.length === 0 && <p className="px-3 py-6 text-center text-sm text-slate-500">Không có trang nào khớp.</p>}
+        {sections.map((section) => (
+          <div key={section.title} className={collapsed ? 'border-t border-brand-100/70 pt-2 first:border-0' : ''}>
+            {!collapsed && (
+              <p className="px-3 pb-1.5 pt-4 text-[10.5px] font-bold uppercase tracking-[0.09em] text-slate-400">{section.title}</p>
+            )}
+            <ul className={cn('space-y-0.5', collapsed && 'py-1')}>
+              {section.items.map((item) => {
+                const active = itemActive(pathname, item);
+                const count = item.badge ? badges?.[item.badge] ?? 0 : 0;
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.children?.[0]?.href ?? item.href}
+                      title={collapsed ? item.label : undefined}
+                      aria-current={active && !item.children ? 'page' : undefined}
+                      className={cn(
+                        'group relative flex items-center rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
+                        collapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2',
+                        active ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/20' : 'text-slate-700 hover:bg-brand-100/70 hover:text-slate-900',
+                      )}
+                    >
+                      <Icon className={cn('h-[18px] w-[18px] shrink-0', active ? 'text-white' : 'text-slate-400 group-hover:text-brand-600')} aria-hidden="true" />
+                      {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
+                      {count > 0 &&
+                        (collapsed ? (
+                          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-[#f5f9fe]" aria-label={`${count} việc cần xử lý`} />
+                        ) : (
+                          <span className={cn('rounded-full px-1.5 text-[11px] font-bold tabular-nums', active ? 'bg-white/25 text-white' : 'bg-red-100 text-red-700')}>
+                            {count}
+                          </span>
+                        ))}
+                    </Link>
+                    {!collapsed && item.children && (active || query) && (
+                      <ul className="mb-1 ml-[22px] mt-0.5 space-y-0.5 border-l border-brand-200 pl-3">
+                        {item.children.map((child) => {
+                          const on = isOn(pathname, child);
+                          return (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                aria-current={on ? 'page' : undefined}
+                                className={cn(
+                                  'block rounded-lg px-2.5 py-1.5 text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
+                                  on ? 'font-semibold text-brand-700' : 'text-slate-500 hover:bg-brand-100/60 hover:text-slate-800',
+                                )}
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
-      {/* User Section */}
-      <div className="border-t border-slate-200 p-3 bg-slate-50/80">
-        {!isCollapsed ? (
+      <div className={cn('border-t border-brand-100 p-3', collapsed ? 'flex justify-center' : 'flex items-center gap-2.5')}>
+        {!collapsed && (
           <>
-            <div className="flex items-center gap-2.5 mb-2.5">
-              <div className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
-                {session?.user?.email?.[0].toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">
-                  {session?.user?.name || 'User'}
-                </p>
-                <p className="text-xs text-slate-500 truncate">
-                  {session?.user?.email}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-800 transition-all"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Đăng xuất
-            </button>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">{initials || 'U'}</span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="block truncate text-[13px] font-semibold text-slate-800">{name}</span>
+              <span className="block truncate text-[11px] text-slate-500">{session?.user?.role === 'ADMIN' ? 'Quản trị viên' : session?.user?.email}</span>
+            </span>
           </>
-        ) : (
-          <button
-            onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-            className="w-full p-2 text-slate-500 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-700 transition-all"
-            title="Đăng xuất"
-          >
-            <LogOut className="w-4 h-4 mx-auto" />
-          </button>
         )}
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+          className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+          aria-label="Đăng xuất"
+          title="Đăng xuất"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
     </aside>
   );
 }
+

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import NextTopLoader from "nextjs-toploader";
 import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
-  title: "Quản lý tập trung — Phòng Hành chính",
+  title: "Phòng Hành chính · BV Đại học Y Dược TP.HCM",
   description: "Hệ thống quản lý tập trung của Phòng Hành chính — Bệnh viện Đại học Y Dược TP.HCM",
 };
 
@@ -18,6 +19,8 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={inter.className}>
+        {/* Thanh tiến trình khi đổi trang: bấm là thấy phản hồi ngay, kể cả khi máy chủ còn đang trả lời. */}
+        <NextTopLoader color="#3d84e0" height={3} showSpinner={false} shadow={false} />
         <Providers>{children}</Providers>
       </body>
     </html>

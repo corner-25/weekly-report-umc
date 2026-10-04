@@ -526,7 +526,7 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
           <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50">
             Huỷ
           </button>
-          <button type="button" onClick={handleSubmit} disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg inline-flex items-center gap-2">
+          <button type="button" onClick={handleSubmit} disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg inline-flex items-center gap-2">
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {application ? 'Cập nhật' : 'Tạo mới'}
           </button>

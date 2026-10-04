@@ -163,7 +163,7 @@ export function MOUList({ items, onView, onEdit, onDelete }: Props) {
                     <span className="inline-flex items-center gap-1.5 min-w-[120px]">
                       <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full ${progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}
+                          className={`h-full rounded-full ${progress === 100 ? 'bg-emerald-500' : 'bg-cyan-600'}`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>

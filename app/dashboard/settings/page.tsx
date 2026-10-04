@@ -152,7 +152,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50 font-medium"
+              className="w-full px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50 font-medium"
             >
               {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
             </button>

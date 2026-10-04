@@ -270,7 +270,7 @@ export function MOUForm({ initialData, departments, onSuccess, onClose }: Props)
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
               Hủy
             </button>
-            <button type="submit" disabled={loading} className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50">
+            <button type="submit" disabled={loading} className="px-6 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 disabled:opacity-50">
               {loading ? 'Đang lưu...' : isEdit ? 'Cập nhật' : 'Tạo MOU'}
             </button>
           </div>

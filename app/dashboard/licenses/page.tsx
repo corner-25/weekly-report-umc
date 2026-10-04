@@ -141,7 +141,7 @@ export default function LicensesPage() {
         actions={
           <button
             onClick={() => { setEditingLicense(null); setShowForm(true); }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             + Thêm giấy phép
           </button>

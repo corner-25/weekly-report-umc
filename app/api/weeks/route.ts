@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 const weekSchema = z.object({
   weekNumber: z.number().min(1).max(53),
@@ -111,7 +112,7 @@ export async function GET(request: Request) {
       taskCount: week._count.taskProgress + week._count.tasks,
     }));
 
-    return NextResponse.json(transformedWeeks);
+    return compressedJson(request, transformedWeeks);
   } catch (error) {
     console.error('Error fetching weeks:', error);
     return NextResponse.json(

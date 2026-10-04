@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { NON_SECRETARY_TYPE } from '@/lib/birthday';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 // GET - Lấy danh sách thư ký với filter
 export async function GET(request: NextRequest) {
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json(filteredSecretaries);
+    return compressedJson(request, filteredSecretaries);
   } catch (error) {
     console.error('Error fetching secretaries:', error);
     return NextResponse.json(

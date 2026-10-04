@@ -165,7 +165,7 @@ export default function MeetingRoomsPage() {
         />
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+          className="px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
         >
           + Thêm phòng họp
         </button>
@@ -443,7 +443,7 @@ export default function MeetingRoomsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50"
+                    className="px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50"
                   >
                     {submitting ? 'Đang lưu...' : editingRoom ? 'Cập nhật' : 'Tạo mới'}
                   </button>

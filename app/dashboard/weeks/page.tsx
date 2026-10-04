@@ -49,7 +49,7 @@ export default function WeeksListPage() {
         actions={
           <Link
             href="/dashboard/weeks/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             <Plus className="w-4 h-4" />
             Tạo báo cáo mới
@@ -113,7 +113,7 @@ export default function WeeksListPage() {
           <p className="text-slate-500 mb-4">Chưa có báo cáo nào</p>
           <Link
             href="/dashboard/weeks/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700"
           >
             <Plus className="w-4 h-4" />
             Tạo báo cáo đầu tiên

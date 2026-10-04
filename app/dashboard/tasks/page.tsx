@@ -266,7 +266,7 @@ export default function MasterTasksPage() {
         actions={
           <button
             onClick={handleAdd}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
             <Plus className="w-4 h-4" />
             Thêm nhiệm vụ
@@ -385,7 +385,7 @@ export default function MasterTasksPage() {
           {!hasFilters && (
             <button
               onClick={handleAdd}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all text-sm font-medium shadow-sm shadow-cyan-500/20"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all text-sm font-medium shadow-sm shadow-cyan-500/20"
             >
               <Plus className="w-3.5 h-3.5" /> Thêm nhiệm vụ
             </button>
@@ -522,7 +522,7 @@ export default function MasterTasksPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 text-sm font-medium transition-all"
+                  className="px-4 py-2.5 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 text-sm font-medium transition-all"
                 >
                   Lưu
                 </button>
@@ -662,7 +662,7 @@ function ProgressBar({ value, small }: { value: number; small?: boolean }) {
   return (
     <div className={`w-full bg-slate-200 rounded-full ${small ? 'h-1.5' : 'h-2'}`}>
       <div
-        className={`rounded-full transition-all ${small ? 'h-1.5' : 'h-2'} ${done ? 'bg-emerald-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}
+        className={`rounded-full transition-all ${small ? 'h-1.5' : 'h-2'} ${done ? 'bg-emerald-500' : 'bg-cyan-600'}`}
         style={{ width: `${value}%` }}
       />
     </div>

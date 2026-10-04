@@ -14,6 +14,7 @@ export const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,        // Don't refetch when tab regains focus
   revalidateOnReconnect: true,     // Refetch when network reconnects
   dedupingInterval: 30000,         // Dedupe requests within 30s
+  keepPreviousData: true,          // Đổi bộ lọc vẫn giữ dữ liệu cũ trên màn hình, không nháy trắng
   errorRetryCount: 3,
 };
 

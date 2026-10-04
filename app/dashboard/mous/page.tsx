@@ -153,7 +153,7 @@ export default function MOUsPage() {
             </button>
             <button
               onClick={() => { setEditingItem(null); setShowForm(true); }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-600 hover:to-blue-700 shadow-sm shadow-cyan-500/20 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-cyan-600 rounded-xl hover:bg-cyan-700 shadow-sm shadow-cyan-500/20 transition-all"
             >
               <Plus className="w-4 h-4" />
               Thêm MOU

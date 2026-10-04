@@ -6,6 +6,7 @@ import { toSearchKey } from '@/lib/crm/constants';
 import { CLOSED_STATUSES } from '@/lib/work/constants';
 import { workItemCreateSchema } from '@/lib/work/schemas';
 import { toWorkItemDto, workItemInclude } from '@/lib/work/server';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 const STATUSES = new Set(['NOT_STARTED', 'IN_PROGRESS', 'PAUSED', 'DONE', 'CANCELLED']);
 const KINDS = new Set(['DIRECTIVE', 'PLAN', 'OTHER']);
@@ -51,7 +52,7 @@ export const GET = handle(async (request: Request) => {
     .filter((i) => !q || toSearchKey(i.title, i.leadUnit, i.directedBy, i.externalId, ...i.assignees).includes(q))
     .map((i) => toWorkItemDto(i, now))
     .filter((d) => !staleOnly || d.health.isStale);
-  return NextResponse.json(dtos);
+  return compressedJson(request, dtos);
 });
 
 /** Mở việc mới bằng tay — thường là việc theo kế hoạch của phòng. */

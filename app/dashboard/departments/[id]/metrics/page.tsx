@@ -183,7 +183,7 @@ export default function DepartmentMetricsPage() {
         </div>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
+          className="px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
         >
           + Thêm chỉ số
         </button>
@@ -201,7 +201,7 @@ export default function DepartmentMetricsPage() {
           </p>
           <button
             onClick={handleAdd}
-            className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
+            className="px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
           >
             + Thêm chỉ số đầu tiên
           </button>
@@ -366,7 +366,7 @@ export default function DepartmentMetricsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
+                  className="px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 font-medium"
                 >
                   Lưu
                 </button>

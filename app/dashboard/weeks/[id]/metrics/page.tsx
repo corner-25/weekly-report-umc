@@ -95,7 +95,7 @@ export default function WeekMetricsPage() {
         <p className="text-red-500">{error || 'Không tìm thấy tuần báo cáo'}</p>
         <Link
           href="/dashboard/weeks"
-          className="mt-4 inline-block px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20"
+          className="mt-4 inline-block px-4 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
         >
           Quay lại
         </Link>
@@ -158,7 +158,7 @@ export default function WeekMetricsPage() {
         <button
           onClick={handleSave}
           disabled={saving || metricValues.length === 0}
-          className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {saving ? (
             <>

@@ -273,7 +273,7 @@ export default function EditHospitalEventPage({
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50"
+            className="px-6 py-2 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20 disabled:opacity-50"
           >
             {submitting ? 'Đang cập nhật...' : 'Cập nhật'}
           </button>
