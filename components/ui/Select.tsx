@@ -4,6 +4,7 @@ import {
   isValidElement,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -15,6 +16,9 @@ import {
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+/** Khung chọn tối thiểu rộng ngần này, kể cả khi ô chọn hẹp (vd lọc Phòng ban). */
+const MIN_MENU_WIDTH = 280;
 
 type NativeOptionProps = {
   value?: string | number;
@@ -106,8 +110,14 @@ export function Select({
     if (value !== undefined) setInternalValue(String(value));
   }, [value]);
 
-  useEffect(() => {
-    if (!open) return;
+  // Định vị TRƯỚC khi trình duyệt vẽ (layout effect). Trước đây định vị sau khi
+  // vẽ: khung chọn hiện ở cuối trang một nhịp, ô tìm kiếm được focus ngay lúc đó
+  // nên cả trang cuộn tuột xuống dưới cùng.
+  useLayoutEffect(() => {
+    if (!open) {
+      setMenuStyle({});
+      return;
+    }
 
     const updatePosition = () => {
       const trigger = triggerRef.current;
@@ -118,10 +128,13 @@ export function Select({
       const spaceBelow = window.innerHeight - rect.bottom;
       const openUpward = spaceBelow < estimatedHeight && rect.top > spaceBelow;
 
+      // Đủ rộng để đọc hết tên phòng ban, không tràn khỏi màn hình.
+      const width = Math.min(Math.max(rect.width, MIN_MENU_WIDTH), window.innerWidth - 16);
+      const left = Math.min(rect.left, window.innerWidth - width - 8);
       setMenuStyle({
         position: 'fixed',
-        left: rect.left,
-        width: rect.width,
+        left: Math.max(8, left),
+        width,
         maxHeight: Math.min(360, openUpward ? rect.top - 10 : spaceBelow - 10),
         ...(openUpward
           ? { bottom: window.innerHeight - rect.top + 6 }
@@ -159,7 +172,7 @@ export function Select({
       (option) => option.value === selectedValue
     );
     setActiveIndex(Math.max(0, selectedIndex));
-    if (searchable) requestAnimationFrame(() => searchRef.current?.focus());
+    if (searchable) requestAnimationFrame(() => searchRef.current?.focus({ preventScroll: true }));
   }, [open, searchable, selectedValue, filteredOptions]);
 
   function choose(option: SelectOption) {
@@ -167,7 +180,7 @@ export function Select({
 
     setInternalValue(option.value);
     setOpen(false);
-    triggerRef.current?.focus();
+    triggerRef.current?.focus({ preventScroll: true });
 
     const nativeSelect = nativeRef.current;
     if (!nativeSelect) return;
@@ -208,7 +221,7 @@ export function Select({
     }
   }
 
-  const menu = open && typeof document !== 'undefined' && createPortal(
+  const menu = open && menuStyle.position && typeof document !== 'undefined' && createPortal(
     <div
       id={`${triggerId}-menu`}
       role="listbox"
