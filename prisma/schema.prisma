@@ -125,6 +125,7 @@ model Department {
   masterTasks           MasterTask[]
   tasks                 Task[]
   metricDefinitions     MetricDefinition[]
+  workItems             WorkItem[]
   secretaries           Secretary[]
   transfersFrom         SecretaryTransferLog[] @relation("TransferFrom")
   transfersTo           SecretaryTransferLog[] @relation("TransferTo")
@@ -1861,4 +1862,130 @@ model CrmPhoto {
   @@index([interactionId])
   @@index([careTaskId])
   @@map("crm_photos")
+}
+
+// ============================================
+// QUẢN LÝ CÔNG VIỆC — theo dõi chỉ đạo của BGĐ và việc theo kế hoạch
+// ============================================
+// Nguồn chính là phân hệ Quản lý công việc của ứng dụng nội bộ: không có API,
+// nên script cào chạy trong mạng UMC rồi đẩy file JSON lên (xem docs/WORK-MANAGEMENT.md).
+// Phòng HC bổ sung tính chất, lưu ý để AI gợi ý các bước và đánh giá tiến độ.
+
+enum WorkSource {
+  QLCV // Cào từ phân hệ Quản lý công việc
+  MANUAL // Phòng HC tự mở (việc theo kế hoạch)
+}
+
+enum WorkKind {
+  DIRECTIVE // Chỉ đạo của Ban Giám đốc
+  PLAN // Việc theo kế hoạch
+  OTHER
+}
+
+enum WorkStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PAUSED
+  DONE
+  CANCELLED
+}
+
+enum WorkPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model WorkItem {
+  id                String     @id @default(cuid())
+  source            WorkSource @default(MANUAL)
+  /// Mã công việc bên ứng dụng nội bộ; null với việc tự mở.
+  externalId        String?
+  externalUrl       String?
+  kind              WorkKind   @default(DIRECTIVE)
+  title             String     @db.Text
+  description       String?    @db.Text
+  /// Lãnh đạo chỉ đạo (vd "PGS.TS. Nguyễn Hoàng Bắc").
+  directedBy        String?
+  directedAt        DateTime?  @db.Date
+  /// Đơn vị chủ trì như ghi ở nguồn, và phòng ban khớp được trong hệ thống.
+  leadUnit          String?
+  departmentId      String?
+  coordinatingUnits String[]   @default([])
+  assignees         String[]   @default([])
+  dueDate           DateTime?  @db.Date
+  status            WorkStatus @default(NOT_STARTED)
+  /// Trạng thái nguyên văn ở nguồn, giữ để đối chiếu cách quy đổi.
+  externalStatus    String?
+  progressPercent   Int?
+  /// Lần cập nhật gần nhất (ở nguồn hoặc ghi tay) — dùng để tìm việc lâu không cập nhật.
+  lastActivityAt    DateTime?
+  /// Lần cào gần nhất còn thấy việc này.
+  lastSeenAt        DateTime?
+
+  // ── B2: Phòng HC ghi nhận tính chất, lưu ý để AI gợi ý ──
+  priority        WorkPriority @default(NORMAL)
+  tags            String[]     @default([])
+  /// Tính chất công việc: phạm vi, các bên liên quan, ràng buộc, nguồn lực…
+  characteristics String?      @db.Text
+  /// Lưu ý khi thực hiện.
+  notes           String?      @db.Text
+  /// Các bước AI gợi ý: [{ title, detail, dueDate?, done }].
+  aiPlan          Json?
+  /// Đánh giá tiến độ của AI: { level: on_track|at_risk|late, summary, nextAction }.
+  aiAssessment    Json?
+  aiUpdatedAt     DateTime?
+  /// Lần gần nhất đã gửi email nhắc thư ký — không nhắc dồn dập.
+  lastRemindedAt  DateTime?
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  department Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  updates    WorkUpdate[]
+
+  @@unique([source, externalId])
+  @@index([status, lastActivityAt])
+  @@index([departmentId])
+  @@index([dueDate])
+  @@map("work_items")
+}
+
+/// Một lần cập nhật tiến độ: cào từ nguồn hoặc ghi tay.
+model WorkUpdate {
+  id              String     @id @default(cuid())
+  workItemId      String
+  source          WorkSource @default(MANUAL)
+  occurredAt      DateTime
+  author          String?
+  content         String     @db.Text
+  progressPercent Int?
+  /// Hash (thời điểm + người + nội dung) — cào lại không tạo bản trùng.
+  contentHash     String
+  createdAt       DateTime   @default(now())
+
+  workItem WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  @@unique([workItemId, contentHash])
+  @@index([occurredAt])
+  @@map("work_updates")
+}
+
+/// Mỗi lần nạp file cào: bao nhiêu việc mới, đổi, bao nhiêu cập nhật mới.
+model WorkImportRun {
+  id           String    @id @default(cuid())
+  scrapedAt    DateTime?
+  importedAt   DateTime  @default(now())
+  triggeredBy  String?
+  itemsSeen    Int       @default(0)
+  itemsCreated Int       @default(0)
+  itemsChanged Int       @default(0)
+  updatesAdded Int       @default(0)
+  /// Dòng bị bỏ qua và lý do.
+  problems     Json?
+
+  @@index([importedAt])
+  @@map("work_import_runs")
 }

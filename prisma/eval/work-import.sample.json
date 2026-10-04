@@ -1,0 +1,26 @@
+{
+  "source": "qlcv",
+  "scrapedAt": "2026-10-04T08:00:00+07:00",
+  "items": [
+    {
+      "externalId": "CV-2026-00123",
+      "url": "https://qlcv.umc.edu.vn/cong-viec/00123",
+      "title": "Rà soát quy trình tiếp đón khách VIP và đoàn khách",
+      "description": "Giám đốc chỉ đạo Phòng Hành chính chủ trì rà soát, trình quy trình mới trước 30/10.",
+      "kind": "DIRECTIVE",
+      "directedBy": "PGS.TS. Nguyễn Văn A",
+      "directedAt": "05/09/2026",
+      "leadUnit": "Phòng Hành chính",
+      "coordinatingUnits": ["Phòng Kế hoạch Tổng hợp", "Phòng Công tác Xã hội"],
+      "assignees": ["Nguyễn Thị B"],
+      "dueDate": "30/10/2026",
+      "status": "Đang thực hiện",
+      "progressPercent": 40,
+      "lastUpdatedAt": "20/09/2026 15:30",
+      "updates": [
+        { "at": "12/09/2026 09:00", "author": "Nguyễn Thị B", "content": "Đã gửi công văn lấy ý kiến các khoa.", "progressPercent": 20 },
+        { "at": "20/09/2026 15:30", "author": "Nguyễn Thị B", "content": "Tổng hợp xong ý kiến, đang soạn dự thảo.", "progressPercent": 40 }
+      ]
+    }
+  ]
+}

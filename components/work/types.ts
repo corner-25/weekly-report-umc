@@ -1,0 +1,110 @@
+/** Dữ liệu giao diện Quản lý công việc nhận từ `/api/work/**`. */
+import type { WorkKindKey, WorkPriorityKey, WorkStatusKey } from '@/lib/work/constants';
+
+export interface WorkHealthDTO {
+  isClosed: boolean;
+  isOverdue: boolean;
+  daysToDue: number | null;
+  isDueSoon: boolean;
+  daysSinceActivity: number | null;
+  isStale: boolean;
+}
+
+export interface AiStep {
+  title: string;
+  detail?: string;
+  dueDate?: string;
+  owner?: string;
+  done: boolean;
+}
+
+export interface AiAssessment {
+  level: 'on_track' | 'at_risk' | 'late';
+  summary: string;
+  nextAction: string;
+}
+
+export interface WorkItemDTO {
+  id: string;
+  source: 'QLCV' | 'MANUAL';
+  externalId: string | null;
+  externalUrl: string | null;
+  kind: WorkKindKey;
+  title: string;
+  description: string | null;
+  directedBy: string | null;
+  directedAt: string | null;
+  leadUnit: string | null;
+  department: { id: string; name: string } | null;
+  coordinatingUnits: string[];
+  assignees: string[];
+  dueDate: string | null;
+  status: WorkStatusKey;
+  externalStatus: string | null;
+  progressPercent: number | null;
+  lastActivityAt: string | null;
+  lastSeenAt: string | null;
+  priority: WorkPriorityKey;
+  tags: string[];
+  characteristics: string | null;
+  notes: string | null;
+  aiPlan: AiStep[] | null;
+  aiAssessment: AiAssessment | null;
+  aiUpdatedAt: string | null;
+  updateCount: number;
+  createdAt: string;
+  health: WorkHealthDTO;
+}
+
+export interface WorkUpdateDTO {
+  id: string;
+  source: 'QLCV' | 'MANUAL';
+  occurredAt: string;
+  author: string | null;
+  content: string;
+  progressPercent: number | null;
+}
+
+export interface WorkItemDetail extends WorkItemDTO {
+  updates: WorkUpdateDTO[];
+}
+
+export interface WorkOverviewDTO {
+  counts: { open: number; directives: number; overdue: number; stale: number; dueSoon: number; done: number; updatedThisWeek: number };
+  overdue: WorkItemDTO[];
+  stale: WorkItemDTO[];
+  dueSoon: WorkItemDTO[];
+  recentUpdates: Array<WorkUpdateDTO & { item: { id: string; title: string; unit: string | null } }>;
+  byUnit: Array<{ unit: string; departmentId: string | null; open: number; overdue: number; stale: number }>;
+  lastImport: {
+    importedAt: string;
+    scrapedAt: string | null;
+    itemsSeen: number;
+    itemsCreated: number;
+    itemsChanged: number;
+    updatesAdded: number;
+    problemCount: number;
+  } | null;
+}
+
+export interface WorkImportResult {
+  itemsSeen: number;
+  itemsCreated: number;
+  itemsChanged: number;
+  updatesAdded: number;
+  problems: Array<{ index: number; externalId?: string; message: string }>;
+}
+
+export interface ReminderPreviewDTO {
+  canSend: boolean;
+  recipients: Array<{
+    secretaryId: string;
+    name: string;
+    email: string;
+    department: string;
+    subject: string;
+    items: Array<{ id: string; title: string; status: string; dueDate: string | null; reason: 'overdue' | 'due_soon' | 'stale'; health: WorkHealthDTO }>;
+  }>;
+  departmentsWithoutEmail: Array<{ department: string; itemCount: number }>;
+  unassignedCount: number;
+}

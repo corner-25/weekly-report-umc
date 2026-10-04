@@ -39,9 +39,11 @@ import {
   Contact,
   HeartHandshake,
   type LucideIcon,
+  ClipboardList,
+  ListChecks,
 } from 'lucide-react';
 
-type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'crm' | 'partnerships' | 'analytics' | 'settings';
+type MenuSection = 'weekReports' | 'calendar' | 'tasks' | 'secretaries' | 'crm' | 'work' | 'partnerships' | 'analytics' | 'settings';
 
 interface NavItem {
   href: string;
@@ -108,6 +110,15 @@ const navGroups: NavGroup[] = [
       { href: '/dashboard/crm', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
       { href: '/dashboard/crm/contacts', label: 'Danh bạ', icon: Contact, exact: false },
       { href: '/dashboard/crm/interactions', label: 'Tiếp đón & dẫn đoàn', icon: Crown, exact: false },
+    ],
+  },
+  {
+    id: 'work',
+    title: 'Quản lý công việc',
+    icon: ClipboardList,
+    items: [
+      { href: '/dashboard/work', label: 'Theo dõi công việc', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/work/items', label: 'Danh sách công việc', icon: ListChecks, exact: false },
     ],
   },
   {
