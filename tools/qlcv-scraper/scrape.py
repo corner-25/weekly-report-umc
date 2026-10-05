@@ -17,7 +17,8 @@ Bước 3 — cào và đẩy lên (link mặc định: Theo dõi chỉ đạo c
 
 Danh sách lấy từ API nội bộ /v1/tasks/getTasks mà chính trang gọi (bắt phản hồi
 khi mở trang, không tự gọi API): đủ tiêu đề, đơn vị, người thực hiện, người theo
-dõi, hạn, trạng thái, % và lịch sử "Mô tả tiến độ thực hiện".
+dõi, hạn, trạng thái, %. Sau đó gọi chi tiết từng việc (chậm rãi) để lấy toàn bộ
+lịch sử "Theo dõi tiến độ thực hiện" — cả việc đã hoàn thành từ 2023.
 """
 import json
 import os
@@ -148,28 +149,70 @@ def day(value: str | None) -> str | None:
     return value[:10] if value else None
 
 
-def to_contract(rows: list, list_url: str) -> dict:
+def person(value: str | None) -> str | None:
+    """"J18-132 Nguyễn Thị Mỹ Hạnh (Phòng HC)" → "Nguyễn Thị Mỹ Hạnh (Phòng HC)"."""
+    return re.sub(r"^[A-Z]\d{2}-\d{3,}\s+", "", value.strip()) if value and value.strip() else None
+
+
+def unit_of(value: str | None) -> str | None:
+    """Đơn vị trong ngoặc cuối tên người: "… (Phòng HC)" → "Phòng HC"."""
+    m = re.search(r"\(([^()]+)\)\s*$", value or "")
+    return m.group(1).strip() if m else None
+
+
+def log_updates(detail: dict) -> list:
+    """Bảng "Theo dõi tiến độ thực hiện" của trang chi tiết: ngày báo cáo, %, mô tả, người nhập."""
+    updates = []
+    for log in detail.get("logTimes") or []:
+        content = (log.get("notes") or "").replace("\r\n", "\n").strip()
+        at = log.get("entryDate") or log.get("createdDate")
+        if not content or not at:
+            continue
+        update = {"at": at[:16].replace(" ", "T"), "author": person(log.get("empName")), "content": content}
+        if log.get("percentDone") is not None:
+            update["progressPercent"] = log["percentDone"]
+        updates.append({k: v for k, v in update.items() if v is not None})
+    return updates
+
+
+def custom_field(detail: dict, code: str) -> dict:
+    return next((f for f in detail.get("customFields") or [] if f.get("cfCode") == code), {})
+
+
+def to_contract(rows: list, list_url: str, details: dict | None = None) -> dict:
+    details = details or {}
     items = []
     for r in rows:
-        updates = parse_notes(r.get("notes"))
+        external_id = str(r.get("taskID") or r.get("sys_TaskID"))
+        detail = details.get(external_id) or {}
+        # Hai nguồn lịch sử: bảng tiến độ ở trang chi tiết (việc đã báo cáo, kể cả đã xong)
+        # và cột "Mô tả tiến độ thực hiện" của danh sách (ghi chú của việc đang mở).
+        logged = log_updates(detail)
+        seen = {u["content"] for u in logged}
+        updates = logged + [u for u in parse_notes(r.get("notes")) if u["content"] not in seen]
+        watchers = [person(w.get("watcherName")) for w in detail.get("watchers") or []]
+        directed = custom_field(detail, "FN116")
         item = {
-            "externalId": str(r.get("taskID") or r.get("sys_TaskID")),
+            "externalId": external_id,
             "url": list_url,
             "title": (r.get("taskTitle") or "").strip(),
             "description": (r.get("description") or "").strip() or None,
             "kind": "DIRECTIVE",
-            "leadUnit": r.get("assigneeDeptName") or r.get("deptName"),
+            "leadUnit": r.get("assigneeDeptName") or r.get("deptName") or unit_of(r.get("assigneeName")),
             "directedBy": r.get("reporterName"),
-            "directedAt": day(r.get("createdDate")),
+            "directedAt": day(directed.get("dateValue") or directed.get("strValue")) or day(r.get("createdDate")),
             "assignees": [r["assigneeName"]] if r.get("assigneeName") else [],
-            "watchers": [w.strip() for w in (r.get("watcherName") or "").split(",") if w.strip()],
-            "category": r.get("fN1"),
+            "watchers": [w for w in watchers if w] or [w.strip() for w in (r.get("watcherName") or "").split(",") if w.strip()],
+            "category": custom_field(detail, "FN1").get("strValueName") or r.get("fN1"),
             "dueDate": day(r.get("deadline")),
             "status": r.get("statusName"),
             "progressPercent": r.get("percentDone"),
             "updates": updates,
         }
-        if updates:
+        stamps = [u["at"] for u in updates if u["at"][:4].isdigit()]
+        if stamps:
+            item["lastUpdatedAt"] = max(stamps)
+        elif updates:
             item["lastUpdatedAt"] = max(updates, key=lambda u: (u["at"][6:10], u["at"][3:5], u["at"][:2], u["at"][11:]))["at"]
         items.append({k: v for k, v in item.items() if v not in (None, "")})
     return {"source": "qlcv", "scrapedAt": time.strftime("%Y-%m-%dT%H:%M:%S+07:00"), "items": items}
@@ -197,8 +240,35 @@ GET_TASKS = "https://officeapi.umc.edu.vn/v1/tasks/getTasks"
 #   10252 "Dự án chỉ đạo BGĐ theo đơn vị của người thực hiện (chưa xử lý, đang xử lý)":
 #         đủ cột đơn vị, người theo dõi, hạn, lịch sử mô tả tiến độ — chỉ việc đang mở.
 #   65    "Xem công việc theo Đơn vị": mọi việc kể cả đã hoàn thành, có người giao,
-#         ngày tạo, ngày hoàn thành — nhưng không có lịch sử tiến độ.
-CUSTOM_QUERIES = (10252, 65)
+#         ngày tạo, ngày hoàn thành — nhưng không có lịch sử tiến độ (chỉ 2026).
+#   63    "Tất cả công việc": mọi việc của dự án từ 2023, ít cột.
+CUSTOM_QUERIES = (10252, 65, 63)
+DETAIL = "https://officeapi.umc.edu.vn/v1/m02MyTask/getM02MyTaskDetail?id={}"
+# Gọi chi tiết từng việc một, nghỉ giữa các lần — tường lửa của bệnh viện cắt kết nối nếu dồn dập.
+DETAIL_PAUSE_S = 0.3
+
+
+def fetch_details(page, headers: dict, task_ids: list) -> dict:
+    details, failed = {}, []
+    for n, task_id in enumerate(task_ids, 1):
+        for attempt in range(3):
+            try:
+                resp = page.request.get(DETAIL.format(task_id), headers=headers, timeout=30000)
+                data = resp.json() if resp.ok else {}
+                if data.get("succeeded") and data.get("data"):
+                    details[task_id] = data["data"]
+                    break
+            except Exception:  # mạng chập chờn / bị tường lửa cắt — thử lại sau
+                pass
+            time.sleep(3 * (attempt + 1))
+        else:
+            failed.append(task_id)
+        if n % 50 == 0:
+            print(f"  chi tiết {n}/{len(task_ids)}")
+        time.sleep(DETAIL_PAUSE_S)
+    if failed:
+        print(f"Không lấy được chi tiết {len(failed)} việc (dùng dữ liệu danh sách): {', '.join(failed[:20])}")
+    return details
 
 
 def cmd_run(url: str, push: bool) -> None:
@@ -237,12 +307,13 @@ def cmd_run(url: str, push: bool) -> None:
                 print(f"Mẫu truy vấn {query_id}: {len(data['data']['r'])} công việc")
             else:
                 print(f"Mẫu truy vấn {query_id}: lỗi HTTP {resp.status}")
+        rows = merge_rows(responses)
+        print(f"Gộp được {len(rows)} công việc — lấy chi tiết từng việc…")
+        details = fetch_details(page, captured["headers"], [str(r.get("taskID") or r.get("sys_TaskID")) for r in rows])
         ctx.close()
     if not responses:
         sys.exit("Không lấy được danh sách công việc")
-    rows = merge_rows(responses)
-    print(f"Gộp được {len(rows)} công việc")
-    payload = to_contract(rows, url)
+    payload = to_contract(rows, url, details)
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"qlcv-{time.strftime('%Y%m%d-%H%M')}.json"
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
