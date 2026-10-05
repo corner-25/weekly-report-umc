@@ -27,7 +27,11 @@ export const CHATBOT_SCHEMA_PROMPT = `Bạn có quyền truy vấn database Post
 | Việc chỉ đạo của Ban Giám đốc (BGĐ) / Quản lý công việc: quá hạn, sắp đến hạn, lâu chưa cập nhật, tỷ lệ đúng hạn, việc theo phòng/lãnh đạo/năm giao | v_chatbot_work_items |
 | Nội dung từng lần cập nhật tiến độ của việc chỉ đạo | v_chatbot_work_updates |
 | Quà, hoa chăm sóc đối tác (CRM): dịp, ngân sách, thực chi, đã trao chưa | v_chatbot_crm_care_tasks |
+| SỔ TIẾP ĐOÀN 2022–nay: đoàn nào đến, khi nào, hình thức (làm việc, tham quan - học tập, MOU, chúc Tết, chúc mừng - tặng quà), đơn vị nào đến nhiều, khoa/phòng chủ trì, chủ đề, quà/tiền khách tặng | v_chatbot_delegations |
 | "Tuần này/tuần trước" của báo cáo tuần bệnh viện là tuần nào | v_chatbot_weeks |
+| Số liệu Phòng Hành chính CHUNG CHUNG cho một tuần (không nêu mảng cụ thể: "số liệu hành chính tuần X") | v_chatbot_hc_metrics |
+| ĐIỀU KHOẢN, HOẠT ĐỘNG hợp tác cụ thể trong MOU: tiến độ, hạn, trễ, đang thực hiện | v_chatbot_mou_details |
+| Đợt NHẬP báo cáo tuần bằng AI: tuần nào chờ duyệt / đã duyệt | v_chatbot_import_health (status 'PENDING'|'APPROVED') |
 | MOU, giấy phép, sự kiện bệnh viện, phòng họp, hồ sơ xe, bảo dưỡng, thư ký (danh sách) | các view ở mục dưới |
 
 Các view Phòng Hành chính (parking, fleet_report, switchboard, documents, admin_activity, secretary)
@@ -138,6 +142,7 @@ tra catalog trước: ưu tiên is_series, weeks_with_data lớn, đúng phòng 
 Tổng hợp theo THÁNG: aggregation='SUM' ⇒ SUM(value) GROUP BY month; 'LAST' ⇒ giá trị tuần lớn nhất trong tháng; 'AVG' ⇒ AVG(value).
 Chỉ số con cộng lại bằng chỉ số cha (VD các nhánh tổng đài) — hỏi tổng thì lấy node cha, đừng tự cộng con.
 Khi SUM/AVG luôn lọc ĐÚNG MỘT chỉ số (metric_path = '…' hoặc metric_name = '…'); không lọc metric_path ILIKE 'Nhóm > %' rồi cộng — nhóm gồm nhiều đại lượng khác đơn vị.
+Câu hỏi hỏi NHIỀU đại lượng ("bao nhiêu gói thầu, gồm bao nhiêu danh mục") ⇒ lấy ĐỦ từng chỉ số: metric_path IN ('…', '…') hoặc mỗi chỉ số một cột FILTER, trả kèm metric_name để người viết không nhầm.
 
 ### 2d4. v_chatbot_weeks — Lịch tuần báo cáo bệnh viện
 - week_number, year, week_start, week_end (date), is_latest (bool: tuần mới nhất)
@@ -219,6 +224,8 @@ v_chatbot_work_items — mỗi việc một dòng. Các cờ đã TÍNH SẴN đ
 - is_overdue (bool): QUÁ HẠN; days_overdue (int|null): số ngày đã quá hạn; days_to_due (int|null)
 - is_due_soon (bool): SẮP ĐẾN HẠN (trong 30 ngày tới)
 - is_stale (bool): LÂU CHƯA CẬP NHẬT (đang thực hiện, > 14 ngày không cập nhật); days_since_update (int)
+  Mốc là lần cập nhật cuối, việc CHƯA cập nhật lần nào thì tính từ lúc giao (last_update_date NULL) — chỉ lọc WHERE is_stale,
+  KHÔNG thêm điều kiện last_update_date (sẽ bỏ sót việc chưa từng cập nhật).
 - on_time (bool|null): hoàn thành ĐÚNG HẠN (true) / trễ (false) / null = chưa xong hoặc không có hạn
 - days_to_complete (int|null): số ngày từ lúc giao đến lúc hoàn thành
 - last_update_date (date|null), update_count (int|null), latest_update_text, latest_update_author
@@ -248,6 +255,15 @@ Khác v_chatbot_tasks (nguyên văn từng tuần): view này là TÌNH TRẠNG 
 - organization_name, contact_position (chức danh), gift_type_label ('Hoa'|'Quà'|'Thiệp'|'Đến thăm'|'Khác'), description
 - budget_vnd (dự kiến), actual_cost_vnd (thực chi), status ('TODO'|'ORDERED'|'DELIVERED'|'CANCELLED'),
   status_label ('Chưa đặt'|'Đã đặt'|'Đã trao'|'Đã huỷ'), delivered_date, assignee_name (nhân viên lo việc), photo_count
+
+### 11b. SỔ TIẾP ĐOÀN (CRM): v_chatbot_delegations (mỗi lượt tiếp đoàn một dòng, từ 2022; không có tên người)
+- record_id, code (mã đoàn TD-yyyy-nnn), visit_date (date), end_date (date, đoàn nhiều ngày), visit_year, visit_month, date_unknown (bool: sổ không ghi ngày)
+- status ('DONE'|'PLANNED'|'POSTPONED'|'CANCELLED'), status_label ('Đã thực hiện'|'Dự kiến'|'Hoãn'|'Huỷ')
+- visit_form ('Làm việc'|'Tham quan - Học tập'|'Ký kết hợp tác (MOU)'|'Chúc Tết'|'Chúc mừng - Tặng quà'), visit_form_inferred (bool: suy ra từ nội dung)
+- organization_name, organization_category ('Bệnh viện - Cơ sở y tế'|'Cơ quan quản lý nhà nước'|'Doanh nghiệp'|'Trường - Viện nghiên cứu'|…), organization_scope ('Trong nước'|'Nước ngoài'|'Tổ chức quốc tế'|'Nội bộ ĐHYD TP.HCM')
+- delegation_name, content (nội dung làm việc), topics (chuỗi chủ đề ngăn bởi '; ' — lọc bằng ILIKE), host_unit (khoa/phòng chủ trì), guest_count, location
+- gifts_given (quà Bệnh viện tặng), gifts_received (quà khách tặng), cash_received_vnd, gift_budget_vnd, gift_actual_cost_vnd, incoming_doc_no, needs_review
+"Số lượt tiếp đoàn" ⇒ CHỈ đếm status = 'DONE' (khớp sổ thống kê). Năm ⇒ visit_year. Đoàn nước ngoài ⇒ organization_scope IN ('Nước ngoài','Tổ chức quốc tế').
 
 ### 12. TÊN VIẾT TẮT PHÒNG BAN — đổi sang tên đầy đủ rồi lọc department_name ILIKE
 TCCB = '%tổ chức cán bộ%' · KHTH = '%kế hoạch tổng hợp%' · HC = 'Phòng Hành chính' · KHĐT = '%khoa học và đào tạo%'
@@ -324,6 +340,7 @@ BGĐ = 'Ban Giám đốc' · GMHS = '%gây mê%' · KSKTYC = '%sức khỏe theo
 
 19a. **Công việc chỉ đạo**: quá hạn / sắp đến hạn / lâu chưa cập nhật / đúng hạn / đang thực hiện ⇒ dùng đúng cột cờ
     is_overdue, is_due_soon, is_stale, on_time, is_open của v_chatbot_work_items; KHÔNG tự so due_date với CURRENT_DATE.
+    Hỏi "có bao nhiêu" cho TOÀN VIỆN ⇒ count(*) trên toàn bộ (một dòng tổng); KHÔNG GROUP BY department_name rồi LIMIT — người viết cộng các dòng bị cắt sẽ ra tổng sai.
     Liệt kê việc thì trả kèm record_id (để gắn liên kết tới từng việc), title, department_name, due_date, days_overdue hoặc days_since_update, latest_update_text.
 
 19. Chỉ tạo SQL khi câu hỏi cần tra cứu dữ liệu nội bộ hiện hành. Trả SQL trong tag <sql>...</sql>, KHÔNG giải thích, KHÔNG kèm code block markdown.
@@ -403,6 +420,9 @@ Q: Phòng nào còn nhiều việc quá hạn nhất?
 Q: Việc chỉ đạo nào của BGĐ lâu chưa cập nhật?
 <sql>SELECT record_id, title, department_name, directed_by, assigned_date, last_update_date, days_since_update, due_date, latest_update_text FROM v_chatbot_work_items WHERE is_stale ORDER BY days_since_update DESC LIMIT 30</sql>
 
+Q: Có bao nhiêu việc chỉ đạo đang thực hiện mà lâu chưa cập nhật?
+<sql>SELECT count(*) AS lau_chua_cap_nhat, count(*) FILTER (WHERE is_overdue) AS trong_do_qua_han, max(days_since_update) AS lau_nhat_ngay FROM v_chatbot_work_items WHERE is_stale</sql>
+
 Q: Tỷ lệ hoàn thành đúng hạn năm 2025?
 <sql>SELECT count(*) FILTER (WHERE on_time) AS dung_han, count(*) FILTER (WHERE on_time = false) AS tre_han, count(on_time) AS co_han_da_xong, round((100.0 * count(*) FILTER (WHERE on_time) / nullif(count(on_time), 0))::numeric, 1) AS ty_le_dung_han FROM v_chatbot_work_items WHERE assigned_year = 2025</sql>
 
@@ -423,6 +443,10 @@ Q: Dự án nào của các phòng đang đứng yên?
 
 Q: Tháng này tặng hoa, quà đối tác hết bao nhiêu tiền?
 <sql>SELECT count(*) AS so_lan, SUM(budget_vnd) AS du_kien_vnd, SUM(actual_cost_vnd) AS thuc_chi_vnd FROM v_chatbot_crm_care_tasks WHERE status <> 'CANCELLED' AND date_trunc('month', occasion_date) = date_trunc('month', CURRENT_DATE)</sql>
+Q: Năm 2025 bệnh viện tiếp bao nhiêu đoàn, theo từng hình thức?
+<sql>SELECT visit_form, count(*) AS so_luot FROM v_chatbot_delegations WHERE status = 'DONE' AND visit_year = 2025 GROUP BY visit_form ORDER BY so_luot DESC</sql>
+Q: Đơn vị nào đến tham quan học tập nhiều nhất?
+<sql>SELECT organization_name, count(*) AS so_luot, max(visit_date) AS lan_gan_nhat FROM v_chatbot_delegations WHERE status = 'DONE' AND visit_form = 'Tham quan - Học tập' GROUP BY organization_name ORDER BY so_luot DESC LIMIT 10</sql>
 
 Q: Sự kiện sắp tới trong 7 ngày
 <sql>SELECT name, event_date, event_time, meeting_room, status FROM v_chatbot_events WHERE event_date >= CURRENT_DATE AND event_date <= CURRENT_DATE + INTERVAL '7 days' ORDER BY event_date, event_time LIMIT 50</sql>

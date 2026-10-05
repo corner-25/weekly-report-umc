@@ -126,12 +126,13 @@ model Department {
   tasks                 Task[]
   metricDefinitions     MetricDefinition[]
   workItems             WorkItem[]
+  crmInteractions       CrmInteraction[]
   taskThreads           TaskThread[]
   reportProfile         DepartmentReportProfile?
   secretaries           Secretary[]
-  transfersFrom         SecretaryTransferLog[] @relation("TransferFrom")
-  transfersTo           SecretaryTransferLog[] @relation("TransferTo")
-  secretaryApplications SecretaryApplication[] @relation("ApplicationDesiredDept")
+  transfersFrom         SecretaryTransferLog[]   @relation("TransferFrom")
+  transfersTo           SecretaryTransferLog[]   @relation("TransferTo")
+  secretaryApplications SecretaryApplication[]   @relation("ApplicationDesiredDept")
   licenses              License[]
   mous                  MOU[]
   extractedMetrics      ExtractedMetric[]
@@ -466,10 +467,10 @@ model Secretary {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  certificates SecretaryCertificate[]
-  transferLogs SecretaryTransferLog[]
-  application  SecretaryApplication?
-  examScores   SecretaryExamScore[]
+  certificates      SecretaryCertificate[]
+  transferLogs      SecretaryTransferLog[]
+  application       SecretaryApplication?
+  examScores        SecretaryExamScore[]
   birthdayEmailLogs BirthdayEmailLog[]
 
   @@index([secretaryTypeId])
@@ -480,15 +481,15 @@ model Secretary {
 }
 
 model BirthdayEmailLog {
-  id            String    @id @default(cuid())
-  secretaryId   String
-  secretary     Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
-  birthdayYear  Int
-  recipient     String
-  status        String
-  errorMessage  String?   @db.Text
-  sentAt        DateTime?
-  createdAt     DateTime  @default(now())
+  id           String    @id @default(cuid())
+  secretaryId  String
+  secretary    Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  birthdayYear Int
+  recipient    String
+  status       String
+  errorMessage String?   @db.Text
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
 
   @@unique([secretaryId, birthdayYear])
   @@index([birthdayYear, status])
@@ -610,19 +611,19 @@ model Vehicle {
   id                     String          @id @default(cuid())
   licensePlate           String          @unique // Biển số hiển thị (VD: 50A-007-20)
   licensePlateNormalized String          @unique // Chỉ chữ/số, viết hoa (VD: 50A00720)
-  brand              String? // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
-  model              String? // Số loại (HIACE, FORTUNER, ...)
-  category           VehicleCategory @default(OTHER)
-  color              String? // Màu sơn
-  engineNumber       String? // Số máy
-  chassisNumber      String? // Số khung
-  seatCount          String? // Số chỗ (giữ raw vì format không thống nhất: "07 ngồi + 1 nằm", "05 chỗ"...)
-  payloadKg          String? // Tải trọng hàng hóa
-  curbWeightKg       String? // Tự trọng
-  totalWeightKg      String? // Trọng lượng toàn bộ
-  manufactureYear    Int? // Năm sản xuất
-  manufactureCountry String? // Nước sản xuất
-  expiryYear         String? // Niên hạn sử dụng (có thể là "Không thời hạn")
+  brand                  String? // Nhãn hiệu (TOYOTA, HYUNDAI, ...)
+  model                  String? // Số loại (HIACE, FORTUNER, ...)
+  category               VehicleCategory @default(OTHER)
+  color                  String? // Màu sơn
+  engineNumber           String? // Số máy
+  chassisNumber          String? // Số khung
+  seatCount              String? // Số chỗ (giữ raw vì format không thống nhất: "07 ngồi + 1 nằm", "05 chỗ"...)
+  payloadKg              String? // Tải trọng hàng hóa
+  curbWeightKg           String? // Tự trọng
+  totalWeightKg          String? // Trọng lượng toàn bộ
+  manufactureYear        Int? // Năm sản xuất
+  manufactureCountry     String? // Nước sản xuất
+  expiryYear             String? // Niên hạn sử dụng (có thể là "Không thời hạn")
 
   // Hồ sơ đăng ký
   registrationNumber    String? // Giấy đăng ký số
@@ -678,6 +679,7 @@ model Vehicle {
   @@index([brand])
   @@map("vehicles")
 }
+
 /// File hồ sơ gốc của xe, lưu thẳng trong Postgres.
 ///
 /// App chạy trên Railway không có ổ đĩa bền vững (ghi vào public/uploads thì
@@ -703,7 +705,6 @@ model VehicleDocument {
   @@index([vehicleId])
   @@map("vehicle_documents")
 }
-
 
 // VehicleMaintenance - 1 record bảo dưỡng / sửa chữa / sự kiện
 model VehicleMaintenance {
@@ -1279,26 +1280,26 @@ model HospitalImportSnapshot {
 // (bản đã duyệt) bằng prisma/load-metric-catalog.ts.
 model MetricNode {
   /// Mã phân cấp, vd "hc.switchboard.tong_so_cuoc_goi_den_benh_vien"
-  code         String   @id
-  departmentId String
-  parentCode   String?
-  name         String
+  code          String   @id
+  departmentId  String
+  parentCode    String?
+  name          String
   /// GROUP: nhóm, không có số | METRIC: chỉ số có số
-  kind         String
-  unit         String?
+  kind          String
+  unit          String?
   /// SUM: cộng theo kỳ | LAST: lấy cuối kỳ (số tồn) | AVG: trung bình (tỷ lệ)
-  aggregation  String?
+  aggregation   String?
   /// Cộng các khoản rời trong cùng tuần thay vì lấy một số (vd từng khoản tài trợ).
-  sumWithinWeek Boolean @default(false)
+  sumWithinWeek Boolean  @default(false)
   /// Nguồn chính thức từ báo cáo Excel của phòng (hc_metrics), nếu có.
-  hcCategory   String?
-  hcContent    String?
+  hcCategory    String?
+  hcContent     String?
   /// EXCEL (từ file số liệu) | REPORT (từ báo cáo tuần, AI đề xuất, người duyệt)
-  origin       String
-  orderNumber  Int      @default(0)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  origin        String
+  orderNumber   Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   parent   MetricNode?   @relation("MetricTree", fields: [parentCode], references: [code])
   children MetricNode[]  @relation("MetricTree")
@@ -1524,12 +1525,12 @@ enum CrmTier {
 }
 
 enum CrmOrganizationType {
-  HOSPITAL      // Bệnh viện, cơ sở y tế
-  UNIVERSITY    // Trường, viện nghiên cứu
-  COMPANY       // Doanh nghiệp
-  GOVERNMENT    // Cơ quan nhà nước
+  HOSPITAL // Bệnh viện, cơ sở y tế
+  UNIVERSITY // Trường, viện nghiên cứu
+  COMPANY // Doanh nghiệp
+  GOVERNMENT // Cơ quan nhà nước
   INTERNATIONAL // Tổ chức quốc tế
-  PRESS         // Báo chí
+  PRESS // Báo chí
   OTHER
 }
 
@@ -1539,37 +1540,38 @@ enum CrmContactStatus {
 }
 
 enum CrmRelationKind {
-  SPOUSE    // Vợ/chồng
-  CHILD     // Con
-  PARENT    // Bố/mẹ
+  SPOUSE // Vợ/chồng
+  CHILD // Con
+  PARENT // Bố/mẹ
   ASSISTANT // Trợ lý
   SECRETARY // Thư ký riêng
   OTHER
 }
 
 enum CrmDateKind {
-  BIRTHDAY    // Sinh nhật
+  BIRTHDAY // Sinh nhật
   APPOINTMENT // Ngày nhận chức
-  FOUNDING    // Ngày thành lập
+  FOUNDING // Ngày thành lập
   ANNIVERSARY // Ngày kỷ niệm khác (cưới, hợp tác…)
   OTHER
 }
 
 /// Lượt dẫn khách/đoàn thường được hẹn trước: ghi lịch hẹn, đến ngày đánh dấu đã xong.
 enum CrmInteractionStatus {
-  PLANNED   // Lịch hẹn, chưa diễn ra
-  DONE      // Đã thực hiện
+  PLANNED // Lịch hẹn, chưa diễn ra
+  DONE // Đã thực hiện
+  POSTPONED // Hoãn / dời lịch chưa có ngày mới
   CANCELLED // Huỷ / khách không đến
 }
 
 enum CrmInteractionType {
   VIP_ESCORT // Dẫn khách VIP khám/chữa bệnh
   DELEGATION // Tiếp và dẫn đoàn
-  MEETING    // Gặp mặt, làm việc
-  CALL       // Gọi điện
-  EMAIL      // Email, thư
-  EVENT      // Mời/dự sự kiện
-  GIFT       // Tặng hoa, quà
+  MEETING // Gặp mặt, làm việc
+  CALL // Gọi điện
+  EMAIL // Email, thư
+  EVENT // Mời/dự sự kiện
+  GIFT // Tặng hoa, quà
   OTHER
 }
 
@@ -1591,6 +1593,14 @@ model CrmOrganization {
   tags           String[]            @default([])
   note           String?             @db.Text
   isActive       Boolean             @default(true)
+  /// Mã tổ chức trong sổ tiếp đoàn đã chuẩn hoá (vd TC-0088) — khoá nạp lại không tạo trùng.
+  externalCode   String?             @unique
+  /// Loại tổ chức chi tiết theo danh mục tiếp đoàn (Bệnh viện - Cơ sở y tế, Cơ quan quản lý nhà nước…).
+  category       String?
+  /// Phạm vi: Trong nước, Nước ngoài, Tổ chức quốc tế, Nội bộ ĐHYD TP.HCM.
+  scope          String?
+  /// Các cách viết tên khác đã gặp — tìm theo tên cũ vẫn ra.
+  aliases        String[]            @default([])
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
@@ -1604,40 +1614,40 @@ model CrmOrganization {
 }
 
 model CrmContact {
-  id             String           @id @default(cuid())
-  fullName       String
+  id            String           @id @default(cuid())
+  fullName      String
   /// Họ tên + SĐT viết thường, bỏ dấu — tìm "nguyen van a" ra "Nguyễn Văn A".
-  searchKey      String           @default("")
+  searchKey     String           @default("")
   /// Học hàm, học vị ghi trước tên: "PGS.TS.", "BS.CKII."
-  academicTitle  String?
+  academicTitle String?
   /// Cách xưng hô khi chúc mừng: "Thầy", "Chị", "Anh".
-  salutation     String?
-  gender         String?
+  salutation    String?
+  gender        String?
   /// Ngày sinh tách phần: nhiều đối tác chỉ biết ngày/tháng, không biết năm.
-  birthDay       Int?
-  birthMonth     Int?
-  birthYear      Int?
-  birthIsLunar   Boolean          @default(false)
-  phone          String?
-  email          String?
+  birthDay      Int?
+  birthMonth    Int?
+  birthYear     Int?
+  birthIsLunar  Boolean          @default(false)
+  phone         String?
+  email         String?
   /// Địa chỉ nhận hoa, quà.
-  giftAddress    String?          @db.Text
-  tier           CrmTier          @default(C)
-  tags           String[]         @default([])
-  ownerName      String?
+  giftAddress   String?          @db.Text
+  tier          CrmTier          @default(C)
+  tags          String[]         @default([])
+  ownerName     String?
   /// Sở thích có cấu trúc: { flowers, avoid, food, hobbies } — dùng khi chọn quà.
-  preferences    Json?
+  preferences   Json?
   /// Lưu ý nhạy cảm (sức khoẻ, gia đình): chỉ hiện cho người phụ trách và quản trị.
-  sensitiveNote  String?          @db.Text
-  status         CrmContactStatus @default(ACTIVE)
-  source         String?
-  note           String?          @db.Text
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  sensitiveNote String?          @db.Text
+  status        CrmContactStatus @default(ACTIVE)
+  source        String?
+  note          String?          @db.Text
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   positions      CrmPosition[]
-  relationsFrom  CrmRelation[]          @relation("RelationFrom")
-  relationsTo    CrmRelation[]          @relation("RelationTo")
+  relationsFrom  CrmRelation[]               @relation("RelationFrom")
+  relationsTo    CrmRelation[]               @relation("RelationTo")
   importantDates CrmImportantDate[]
   interactions   CrmInteraction[]
   participations CrmInteractionParticipant[]
@@ -1652,15 +1662,15 @@ model CrmContact {
 
 /// Chức vụ qua các thời kỳ — người chuyển công tác vẫn giữ lịch sử.
 model CrmPosition {
-  id             String           @id @default(cuid())
+  id             String    @id @default(cuid())
   contactId      String
   organizationId String?
   title          String
   department     String?
   fromDate       DateTime?
   toDate         DateTime?
-  isCurrent      Boolean          @default(true)
-  createdAt      DateTime         @default(now())
+  isCurrent      Boolean   @default(true)
+  createdAt      DateTime  @default(now())
 
   contact      CrmContact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
   organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
@@ -1720,47 +1730,83 @@ model CrmImportantDate {
 
 /// Dòng thời gian quan hệ: mỗi lần tiếp đón, dẫn khám, dẫn đoàn, gặp mặt… một dòng.
 model CrmInteraction {
-  id              String             @id @default(cuid())
-  type            CrmInteractionType
-  status          CrmInteractionStatus @default(DONE)
-  occurredAt      DateTime
+  id                String               @id @default(cuid())
+  type              CrmInteractionType
+  status            CrmInteractionStatus @default(DONE)
+  occurredAt        DateTime
   /// Khách chính (dẫn khám: khách VIP; dẫn đoàn: trưởng đoàn).
-  contactId       String?
-  organizationId  String?
-  title           String?
+  contactId         String?
+  organizationId    String?
+  title             String?
   /// Nội dung hỗ trợ / làm việc.
-  content         String             @db.Text
+  content           String               @db.Text
   /// Khoa/phòng hoặc nơi đến.
-  destination     String?            @db.Text
+  destination       String?              @db.Text
   // ── Dẫn khách VIP khám bệnh ──
   /// Người được khám khi không phải chính khách (người nhà khách VIP).
-  patientName     String?
+  patientName       String?
   /// Dịch vụ đã hỗ trợ: Khám, Xét nghiệm, Chẩn đoán hình ảnh, Nội trú…
-  services        String[]           @default([])
+  services          String[]             @default([])
   // ── Dẫn đoàn ──
-  guestCount      Int?
+  guestCount        Int?
   /// Mục đích đoàn: Làm việc, Tham quan, Học tập, Ký kết…
-  purpose         String?
+  purpose           String?
   /// Nhân viên dẫn chính và người đi cùng.
-  staffName       String
-  companions      String[]           @default([])
-  hospitalEventId String?
-  note            String?            @db.Text
-  createdById     String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  staffName         String
+  companions        String[]             @default([])
+  hospitalEventId   String?
+  note              String?              @db.Text
+  // ── Sổ tiếp đoàn ──
+  /// Mã đoàn trong sổ tiếp đoàn (vd TD-2025-014) — khoá nạp lại không tạo trùng.
+  externalCode      String?              @unique
+  /// Ngày kết thúc với đoàn làm việc nhiều ngày.
+  endAt             DateTime?
+  /// Giờ tiếp như ghi nhận ("09g00-09g30") khi không quy được về một giờ.
+  timeText          String?
+  /// Nguồn không ghi ngày — occurredAt chỉ là ngày đầu năm để xếp chỗ.
+  dateUnknown       Boolean              @default(false)
+  /// Số văn bản đến (công văn xin làm việc).
+  incomingDocNo     String?
+  /// Khoa/phòng chủ trì tiếp đoàn.
+  hostUnit          String?
+  hostDepartmentId  String?
+  /// Thành phần tiếp phía Bệnh viện và thành phần đoàn khách (danh sách người, ngăn bởi dấu ;).
+  hospitalAttendees String?              @db.Text
+  guestMembers      String?              @db.Text
+  /// Chủ đề làm việc (CNTT - Chuyển đổi số, Quản lý chất lượng…).
+  topics            String[]             @default([])
+  /// Các đơn vị đi cùng đoàn.
+  coOrganizations   String[]             @default([])
+  /// Hình thức tiếp không có trong nguồn, suy ra từ nội dung.
+  purposeInferred   Boolean              @default(false)
+  giftsGiven        String?              @db.Text
+  giftsReceived     String?              @db.Text
+  /// Tiền mặt khách tặng, dự trù và thực chi quà (đồng).
+  cashReceived      Int?
+  giftBudget        Int?
+  giftActualCost    Int?
+  /// Dữ liệu gốc có điểm cần người phụ trách xác minh.
+  needsReview       Boolean              @default(false)
+  reviewNote        String?              @db.Text
+  /// Nơi lấy dữ liệu (file | sheet | dòng).
+  sourceRef         String?
+  createdById       String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
 
-  contact      CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
-  organization CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  participants CrmInteractionParticipant[]
-  photos       CrmPhoto[]
-  careTask     CrmCareTask?
+  contact        CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  organization   CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  hostDepartment Department?                 @relation(fields: [hostDepartmentId], references: [id], onDelete: SetNull)
+  participants   CrmInteractionParticipant[]
+  photos         CrmPhoto[]
+  careTask       CrmCareTask?
 
   @@index([occurredAt])
   @@index([status, occurredAt])
   @@index([type, occurredAt])
   @@index([contactId])
   @@index([organizationId])
+  @@index([hostDepartmentId])
   @@map("crm_interactions")
 }
 
@@ -1781,15 +1827,15 @@ model CrmInteractionParticipant {
 
 enum CrmGiftType {
   FLOWERS // Hoa
-  GIFT    // Quà
-  CARD    // Thiệp chúc mừng
-  VISIT   // Đến thăm, chúc mừng trực tiếp
+  GIFT // Quà
+  CARD // Thiệp chúc mừng
+  VISIT // Đến thăm, chúc mừng trực tiếp
   OTHER
 }
 
 enum CrmCareStatus {
-  TODO      // Chưa chuẩn bị
-  ORDERED   // Đã đặt hoa/quà
+  TODO // Chưa chuẩn bị
+  ORDERED // Đã đặt hoa/quà
   DELIVERED // Đã trao
   CANCELLED // Không tặng nữa
 }
@@ -1829,7 +1875,7 @@ model CrmCareTask {
   importantDate CrmImportantDate? @relation(fields: [importantDateId], references: [id], onDelete: SetNull)
   interaction   CrmInteraction?   @relation(fields: [interactionId], references: [id], onDelete: SetNull)
 
-  photos        CrmPhoto[]
+  photos CrmPhoto[]
 
   @@index([status, occasionDate])
   @@index([contactId])
@@ -1841,7 +1887,7 @@ model CrmCareTask {
 /// quà phòng tặng đối tác (gắn việc chăm sóc). Lưu thẳng trong DB như hồ sơ xe.
 enum CrmPhotoKind {
   RECEIVED // Quà, hoa bệnh viện nhận
-  GIVEN    // Quà, hoa tặng đối tác
+  GIVEN // Quà, hoa tặng đối tác
   OTHER
 }
 
@@ -2037,44 +2083,44 @@ model DepartmentReportProfile {
 
 /// Một việc cụ thể, theo dõi qua nhiều tuần báo cáo.
 model TaskThread {
-  id              String            @id @default(cuid())
-  departmentId    String
-  year            Int
+  id            String            @id @default(cuid())
+  departmentId  String
+  year          Int
   /// Tên nhiệm vụ như phòng ghi (cột B) và nhóm cha.
-  rawName         String            @db.Text
-  parentGroup     String?           @db.Text
+  rawName       String            @db.Text
+  parentGroup   String?           @db.Text
   /// Tên ngắn của việc do AI đặt.
-  title           String            @db.Text
-  firstWeek       Int
-  lastWeek        Int
-  kind            TaskThreadKind?
-  status          TaskThreadStatus?
+  title         String            @db.Text
+  firstWeek     Int
+  lastWeek      Int
+  kind          TaskThreadKind?
+  status        TaskThreadStatus?
   /// % hoàn thành (chỉ việc có tiến độ). Thường kỳ để trống.
-  progress        Int?
-  completedWeek   Int?
+  progress      Int?
+  completedWeek Int?
   /// Căn cứ: câu trích trong báo cáo.
-  evidence        String?           @db.Text
-  reasoning       String?           @db.Text
-  confidence      Float?
+  evidence      String?           @db.Text
+  reasoning     String?           @db.Text
+  confidence    Float?
   /// AI chưa chắc — cần người xác nhận.
-  needsReview     Boolean           @default(false)
-  aiModel         String?
-  aiUpdatedAt     DateTime?
+  needsReview   Boolean           @default(false)
+  aiModel       String?
+  aiUpdatedAt   DateTime?
   /// Tuần mới nhất của phòng lúc AI đánh giá — phòng có tuần mới thì việc vắng mặt cần đánh giá lại.
-  judgedWeek      Int?
+  judgedWeek    Int?
   /// Lần nối dòng mới gần nhất — AI phải đánh giá lại khi mốc này mới hơn aiUpdatedAt.
-  changedAt       DateTime          @default(now())
+  changedAt     DateTime          @default(now())
 
   // Phòng HC sửa tay — AI không ghi đè.
   overrideKind     TaskThreadKind?
   overrideStatus   TaskThreadStatus?
   overrideProgress Int?
-  overrideNote     String?          @db.Text
+  overrideNote     String?           @db.Text
   overriddenBy     String?
   overriddenAt     DateTime?
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   department Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   entries    TaskThreadEntry[]
@@ -2086,19 +2132,19 @@ model TaskThread {
 
 /// Một dòng báo cáo tuần (đúng dòng trong file gốc) thuộc về một việc.
 model TaskThreadEntry {
-  id            String   @id @default(cuid())
-  threadId      String
-  departmentId  String
-  year          Int
-  week          Int
-  sourceRow     Int
-  rawName       String   @db.Text
-  parentGroup   String?  @db.Text
-  resultText    String   @db.Text
-  progress      Int?
-  timePeriod    String?
-  nextWeekPlan  String?  @db.Text
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  threadId     String
+  departmentId String
+  year         Int
+  week         Int
+  sourceRow    Int
+  rawName      String   @db.Text
+  parentGroup  String?  @db.Text
+  resultText   String   @db.Text
+  progress     Int?
+  timePeriod   String?
+  nextWeekPlan String?  @db.Text
+  createdAt    DateTime @default(now())
 
   thread TaskThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
@@ -2109,7 +2155,7 @@ model TaskThreadEntry {
 
 enum TaskStreamMode {
   ROUTINE // Cả luồng (cùng tên nhiệm vụ) là một việc thường kỳ — nối mọi tuần vào một việc
-  ITEMS   // Luồng gồm nhiều việc cụ thể nối tiếp — giữ tách theo nội dung
+  ITEMS // Luồng gồm nhiều việc cụ thể nối tiếp — giữ tách theo nội dung
 }
 
 /// Quyết định cho một "luồng" = các dòng cùng tên nhiệm vụ của một phòng trong năm.

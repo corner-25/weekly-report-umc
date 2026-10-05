@@ -40,6 +40,7 @@ const VIEW_SOURCES: Record<string, Omit<ChatbotSource, 'id'>> = {
   v_chatbot_work_updates: { title: 'Cập nhật tiến độ công việc chỉ đạo', href: '/dashboard/work/items' },
   v_chatbot_task_threads: { title: 'Tiến độ nhiệm vụ báo cáo tuần', href: '/dashboard/tasks/progress' },
   v_chatbot_crm_care_tasks: { title: 'Chăm sóc đối tác — quà, hoa (CRM)', href: '/dashboard/crm' },
+  v_chatbot_delegations: { title: 'Sổ tiếp đoàn (CRM)', href: '/dashboard/crm/interactions' },
   v_chatbot_secretary_qualifications: { title: 'Thống kê năng lực thư ký', href: '/dashboard/secretaries' },
   v_chatbot_secretary_transfers: { title: 'Thống kê điều chuyển thư ký', href: '/dashboard/secretaries/transfers' },
   v_chatbot_recruitment_summary: { title: 'Thống kê tuyển dụng thư ký', href: '/dashboard/secretaries/applications' },

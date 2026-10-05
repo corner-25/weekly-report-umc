@@ -6,7 +6,9 @@ import { Crown, Search } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/utils';
-import { VIP_STAFF } from '@/lib/crm/constants';
+import useSWR from 'swr';
+import { DELEGATION_PURPOSES, DELEGATION_TOPICS, VIP_STAFF } from '@/lib/crm/constants';
+import { DelegationStatsCard } from '@/components/crm/DelegationStatsCard';
 import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
@@ -18,11 +20,14 @@ type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'OTHER' | 'PLANNED';
 const TABS: Array<{ value: TypeTab; label: string }> = [
   { value: 'ALL', label: 'Tất cả' },
   { value: 'VIP_ESCORT', label: 'Dẫn khám VIP' },
-  { value: 'DELEGATION', label: 'Dẫn đoàn' },
+  { value: 'DELEGATION', label: 'Tiếp đoàn' },
   { value: 'OTHER', label: 'Khác' },
   { value: 'PLANNED', label: 'Lịch hẹn' },
 ];
 const SEARCH_DEBOUNCE_MS = 250;
+/** Sổ tiếp đoàn bắt đầu từ 2022. */
+const FIRST_DELEGATION_YEAR = 2022;
+const YEARS = Array.from({ length: new Date().getFullYear() - FIRST_DELEGATION_YEAR + 1 }, (_, i) => String(new Date().getFullYear() - i));
 
 const isOtherType = (item: InteractionDTO) => item.type !== 'VIP_ESCORT' && item.type !== 'DELEGATION';
 
@@ -34,6 +39,13 @@ export default function CrmInteractionsPage() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [search, setSearch] = useState('');
+  // Bộ lọc sổ tiếp đoàn (chỉ hiện ở tab Dẫn đoàn).
+  const [year, setYear] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [topic, setTopic] = useState('');
+  const [hostDepartmentId, setHostDepartmentId] = useState('');
+  const [needsReview, setNeedsReview] = useState(false);
+  const { data: departments } = useSWR<Array<{ id: string; name: string }>>('/api/departments', (url: string) => fetch(url).then((r) => (r.ok ? r.json() : [])), { revalidateOnFocus: false });
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [items, setItems] = useState<InteractionDTO[]>([]);
   const [monthItems, setMonthItems] = useState<InteractionDTO[] | null>(null);
@@ -59,6 +71,13 @@ export default function CrmInteractionsPage() {
     if (from) params.set('from', from);
     if (to) params.set('to', to);
     if (debouncedSearch) params.set('search', debouncedSearch);
+    if (tab === 'DELEGATION') {
+      if (year) params.set('year', year);
+      if (purpose) params.set('purpose', purpose);
+      if (topic) params.set('topic', topic);
+      if (hostDepartmentId) params.set('hostDepartmentId', hostDepartmentId);
+      if (needsReview) params.set('needsReview', '1');
+    }
     setLoading(true);
     setError('');
     crmFetch<InteractionDTO[]>(`/api/crm/interactions?${params}`, { signal: controller.signal })
@@ -72,7 +91,7 @@ export default function CrmInteractionsPage() {
         setLoading(false);
       });
     return () => controller.abort();
-  }, [tab, staffName, from, to, debouncedSearch, reloadKey]);
+  }, [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, reloadKey]);
 
   useEffect(() => {
     const now = new Date();
@@ -92,9 +111,15 @@ export default function CrmInteractionsPage() {
     return { escorts: escorts.length, delegations: delegations.length, guests, others: done.filter(isOtherType).length };
   }, [monthItems]);
 
-  const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL');
+  const delegationFilter = tab === 'DELEGATION' && Boolean(year || purpose || topic || hostDepartmentId || needsReview);
+  const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL' || delegationFilter);
   const resetFilters = () => {
     setTab('ALL');
+    setYear('');
+    setPurpose('');
+    setTopic('');
+    setHostDepartmentId('');
+    setNeedsReview(false);
     setStaffName('');
     setFrom('');
     setTo('');
@@ -130,6 +155,8 @@ export default function CrmInteractionsPage() {
         <Stat label="Đoàn tiếp tháng này" value={monthStats?.delegations ?? '—'} hint={monthStats ? `${monthStats.guests} khách` : undefined} tone="accent" />
         <Stat label="Tương tác khác tháng này" value={monthStats?.others ?? '—'} />
       </div>
+
+      {tab === 'DELEGATION' && <DelegationStatsCard year={year} topic={topic} onYear={setYear} onTopic={setTopic} />}
 
       <div className={PANEL}>
         <div className="space-y-3 border-b border-slate-100 p-4">
@@ -169,6 +196,30 @@ export default function CrmInteractionsPage() {
               <input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="input" />
             </label>
           </div>
+          {tab === 'DELEGATION' && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+              <Select aria-label="Năm" value={year} onChange={(e) => setYear(e.target.value)} className="px-3.5 py-2.5">
+                <option value="">Mọi năm</option>
+                {YEARS.map((y) => <option key={y} value={y}>{`Năm ${y}`}</option>)}
+              </Select>
+              <Select aria-label="Hình thức tiếp" value={purpose} onChange={(e) => setPurpose(e.target.value)} className="px-3.5 py-2.5">
+                <option value="">Mọi hình thức</option>
+                {DELEGATION_PURPOSES.map((p) => <option key={p} value={p}>{p}</option>)}
+              </Select>
+              <Select aria-label="Chủ đề" value={topic} onChange={(e) => setTopic(e.target.value)} className="px-3.5 py-2.5">
+                <option value="">Mọi chủ đề</option>
+                {DELEGATION_TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </Select>
+              <Select aria-label="Khoa/phòng chủ trì" value={hostDepartmentId} onChange={(e) => setHostDepartmentId(e.target.value)} className="px-3.5 py-2.5">
+                <option value="">Mọi khoa/phòng chủ trì</option>
+                {(departments ?? []).map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </Select>
+              <label className="flex items-center gap-2 whitespace-nowrap rounded-xl border border-orange-200 bg-orange-50/60 px-3 text-sm font-medium text-orange-900">
+                <input type="checkbox" checked={needsReview} onChange={(e) => setNeedsReview(e.target.checked)} className="h-4 w-4 rounded border-orange-300 text-orange-600" />
+                Cần xác minh
+              </label>
+            </div>
+          )}
           {hasFilter && (
             <button type="button" onClick={resetFilters} className="text-xs font-semibold text-cyan-700 hover:underline">Bỏ lọc</button>
           )}

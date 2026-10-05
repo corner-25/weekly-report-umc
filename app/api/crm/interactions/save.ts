@@ -24,6 +24,12 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
       if (found !== members.length) throw new HttpError(400, 'Có thành viên đoàn không còn trong danh bạ');
     }
 
+    // Khoa/phòng chủ trì chọn từ danh mục: kiểm tra còn tồn tại, lấy tên chuẩn.
+    const host = fields.hostDepartmentId
+      ? await tx.department.findFirst({ where: { id: fields.hostDepartmentId, deletedAt: null }, select: { id: true, name: true } })
+      : null;
+    if (fields.hostDepartmentId && !host) throw new HttpError(400, 'Khoa/phòng chủ trì đã chọn không còn trong danh mục');
+
     const values = {
       ...fields,
       title: fields.title ?? null,
@@ -32,6 +38,19 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
       guestCount: fields.guestCount ?? null,
       purpose: fields.purpose ?? null,
       note: fields.note ?? null,
+      endAt: fields.endAt ? new Date(`${fields.endAt}T00:00:00+07:00`) : null,
+      timeText: fields.timeText ?? null,
+      incomingDocNo: fields.incomingDocNo ?? null,
+      hostDepartmentId: host?.id ?? null,
+      hostUnit: host?.name ?? fields.hostUnit ?? null,
+      hospitalAttendees: fields.hospitalAttendees ?? null,
+      guestMembers: fields.guestMembers ?? null,
+      giftsGiven: fields.giftsGiven ?? null,
+      giftsReceived: fields.giftsReceived ?? null,
+      cashReceived: fields.cashReceived ?? null,
+      giftBudget: fields.giftBudget ?? null,
+      giftActualCost: fields.giftActualCost ?? null,
+      reviewNote: fields.reviewNote ?? null,
       // Người đi cùng không trùng người dẫn chính.
       companions: [...new Set(fields.companions)].filter((name) => name !== fields.staffName),
       occurredAt: new Date(occurredAt),
@@ -40,10 +59,13 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
     };
 
     if (options.id) {
+      // Lượt nạp từ sổ không có ngày: người dùng đặt ngày khác thì coi như đã có ngày thật.
+      const before = await tx.crmInteraction.findUnique({ where: { id: options.id }, select: { occurredAt: true, dateUnknown: true } });
+      const dateUnknown = Boolean(before?.dateUnknown && before.occurredAt.getTime() === values.occurredAt.getTime());
       await tx.crmInteractionParticipant.deleteMany({ where: { interactionId: options.id } });
       return tx.crmInteraction.update({
         where: { id: options.id },
-        data: { ...values, participants: { create: members.map((cid) => ({ contactId: cid })) } },
+        data: { ...values, dateUnknown, participants: { create: members.map((cid) => ({ contactId: cid })) } },
         include: interactionInclude,
       });
     }

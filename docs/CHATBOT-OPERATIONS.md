@@ -22,6 +22,8 @@ Gọi `POST /api/cron/chatbot-retention` với header `x-cron-secret` hàng ngà
 
 `npm run chatbot:eval` chạy bộ câu hỏi nghiệp vụ qua model và kiểm tra SQL được guard chấp nhận, đồng thời chọn đúng view. Lệnh cần `DEEPSEEK_API_KEY`; không thực thi SQL và không đọc dữ liệu thật.
 
+`npx tsx prisma/eval-chatbot-answers.ts [--only <tiền tố id>] [--out kq.json]` chạy pipeline thật và chấm con số trong câu trả lời với `prisma/eval/chatbot-answer-cases.json` (cần `ZAI_API_KEY`, `DATABASE_URL_RO` trỏ production). `DATABASE_URL_RO` trong `.env` máy local trỏ DB local; mật khẩu `chatbot_readonly` local khác production. Khi chạy từ laptop, ghi đè biến trên dòng lệnh (không sửa `.env`) và ép phiên chỉ đọc bằng `?options=-c%20default_transaction_read_only%3Don`. Một lượt đủ 36 câu tốn khoảng 0,5 triệu token GLM-4.5-Air (dưới 0,2 USD). Các câu `cv-*`, `nv-*` có trường `asOf`: chạy sau ngày đó phải tính lại đáp án.
+
 ## Kiểm tra lỗi quyền database
 
 Nếu chatbot báo lỗi truy vấn, kiểm tra database/username trong `DATABASE_URL_RO`, quyền `CONNECT`, `USAGE ON SCHEMA public` và `SELECT` trên đúng các view `v_chatbot_*`. Không cấp quyền đọc bảng gốc và không dùng `GRANT SELECT ON ALL TABLES`.

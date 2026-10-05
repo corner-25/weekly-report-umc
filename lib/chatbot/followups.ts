@@ -40,6 +40,7 @@ const FOLLOWUPS_BY_VIEW: Record<string, string[]> = {
   v_chatbot_work_items: ['Phòng nào còn nhiều việc quá hạn nhất?', 'Việc chỉ đạo nào lâu chưa cập nhật?', 'Tỷ lệ hoàn thành đúng hạn từng năm'],
   v_chatbot_work_updates: ['Việc chỉ đạo nào lâu chưa cập nhật?', 'Việc nào sắp đến hạn trong 30 ngày tới?'],
   v_chatbot_task_threads: ['Nhiệm vụ có tiến độ nào đang đứng yên?', 'Phòng nào có nhiều nhiệm vụ ngừng báo cáo nhất?', 'Nhiệm vụ nào đang chờ xác nhận tình trạng?'],
+  v_chatbot_delegations: ['Đơn vị nào đến bệnh viện nhiều nhất?', 'Năm nay đã tiếp bao nhiêu đoàn nước ngoài?'],
   v_chatbot_crm_care_tasks: ['Dịp nào sắp tới cần chuẩn bị quà, hoa?', 'Tổng ngân sách quà, hoa năm nay so với thực chi?'],
   v_chatbot_extraction_quality: ['Tuần nào còn chờ duyệt nhập liệu?', 'Số liệu nào đang có cờ cần rà soát?'],
 };

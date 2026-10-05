@@ -252,7 +252,7 @@ export function ModalShell({ title, subtitle, onClose, children, size = 'lg' }: 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const first = panelRef.current?.querySelector<HTMLElement>('[data-autofocus]') ?? panelRef.current?.querySelector<HTMLElement>(FOCUSABLE_FIELDS);
-    first?.focus();
+    first?.focus({ preventScroll: true });
 
     const onKey = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return;

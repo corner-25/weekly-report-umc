@@ -77,18 +77,67 @@ export const ESCORT_SERVICES = [
 ] as const;
 
 /** Mục đích đoàn — chọn một, có thể gõ thêm. */
+/** Hình thức tiếp đoàn — theo danh mục chuẩn hoá của sổ tiếp đoàn 2022–2026. */
 export const DELEGATION_PURPOSES = [
   'Làm việc',
-  'Tham quan',
-  'Học tập kinh nghiệm',
-  'Ký kết hợp tác',
-  'Kiểm tra, giám sát',
-  'Thăm hỏi',
+  'Tham quan - Học tập',
+  'Ký kết hợp tác (MOU)',
+  'Chúc Tết',
+  'Chúc mừng - Tặng quà',
 ] as const;
+
+export const DELEGATION_PURPOSE_HINTS: Record<(typeof DELEGATION_PURPOSES)[number], string> = {
+  'Làm việc': 'Đoàn đến làm việc, thanh tra, kiểm tra, kiểm toán, giám định, thẩm định, khảo sát, đánh giá, hội nghị, hỗ trợ chuyên môn theo hợp đồng',
+  'Tham quan - Học tập': 'Đoàn đến tham quan, học tập, trao đổi kinh nghiệm, tìm hiểu mô hình của Bệnh viện',
+  'Ký kết hợp tác (MOU)': 'Lễ ký kết biên bản ghi nhớ / thoả thuận hợp tác',
+  'Chúc Tết': 'Đoàn đến chúc Tết Nguyên đán',
+  'Chúc mừng - Tặng quà': 'Tổ chức/cá nhân gửi quà hoặc đến chúc mừng (sinh nhật Bệnh viện, tặng biểu trưng…)',
+};
+
+/** Chủ đề làm việc của đoàn — để lọc, thống kê; gắn được nhiều chủ đề. */
+export const DELEGATION_TOPICS = [
+  'Quản trị - Tổ chức bệnh viện',
+  'Chuyên môn - Chuyển giao kỹ thuật',
+  'CNTT - Chuyển đổi số',
+  'Bệnh án điện tử',
+  'Quản lý chất lượng',
+  'Đào tạo - Nghiên cứu khoa học',
+  'Hợp tác - Ký kết',
+  'Thanh tra - Kiểm tra - Kiểm toán',
+  'Tài chính - Giá dịch vụ',
+  'Bảo hiểm y tế',
+  'Dược - Vật tư - Thiết bị y tế',
+  'Đấu thầu - Mua sắm',
+  'Điều dưỡng - Chăm sóc người bệnh',
+  'Kiểm soát nhiễm khuẩn',
+  'Dinh dưỡng',
+  'Công tác xã hội - CSKH',
+  'Hạ tầng - Môi trường - An toàn',
+  'Ngoại giao - Chúc mừng',
+] as const;
+
+/** Loại tổ chức chi tiết (sổ tiếp đoàn) và loại gộp tương ứng của CRM. */
+export const ORGANIZATION_CATEGORIES: Record<string, CrmOrganizationType> = {
+  'Bệnh viện - Cơ sở y tế': 'HOSPITAL',
+  'Trường - Viện nghiên cứu': 'UNIVERSITY',
+  'Doanh nghiệp': 'COMPANY',
+  'Ngân hàng - Bảo hiểm': 'COMPANY',
+  'Cơ quan quản lý nhà nước': 'GOVERNMENT',
+  'Chính quyền - Đảng - Đoàn thể': 'GOVERNMENT',
+  'Công an - Quân đội': 'GOVERNMENT',
+  'Cơ quan ngoại giao': 'INTERNATIONAL',
+  'Báo chí - Truyền thông': 'PRESS',
+  'Hội - Tổ chức phi chính phủ': 'OTHER',
+  'Tổ chức đánh giá - Chứng nhận': 'OTHER',
+  'Cá nhân': 'OTHER',
+};
+
+export const ORGANIZATION_SCOPES = ['Trong nước', 'Nước ngoài', 'Tổ chức quốc tế', 'Nội bộ ĐHYD TP.HCM'] as const;
 
 export const INTERACTION_STATUS_LABELS: Record<CrmInteractionStatus, string> = {
   PLANNED: 'Lịch hẹn',
   DONE: 'Đã thực hiện',
+  POSTPONED: 'Hoãn',
   CANCELLED: 'Đã huỷ',
 };
 

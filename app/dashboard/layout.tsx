@@ -23,7 +23,7 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-x-hidden flex flex-col min-w-0">
-        <div className="flex-1 w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex-1 w-full max-w-[1600px] mx-auto py-6 px-4 sm:px-6 lg:px-8">
           {children}
         </div>
         <Footer />

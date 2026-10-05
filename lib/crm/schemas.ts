@@ -131,6 +131,31 @@ export const importantDateInputSchema = z
   });
 export type ImportantDateInput = z.infer<typeof importantDateInputSchema>;
 
+export const INTERACTION_STATUSES = ['PLANNED', 'DONE', 'POSTPONED', 'CANCELLED'] as const;
+
+const optionalMoney = z.number().int().min(0, 'Số tiền không âm').max(2_000_000_000).optional();
+const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Ngày không hợp lệ');
+
+/** Các trường của sổ tiếp đoàn — chỉ dùng với lượt tiếp đoàn, đều không bắt buộc. */
+const delegationFields = {
+  endAt: isoDay.optional(),
+  timeText: optionalText(100),
+  incomingDocNo: optionalText(200),
+  hostDepartmentId: z.string().optional(),
+  hostUnit: optionalText(300),
+  hospitalAttendees: optionalText(4000),
+  guestMembers: optionalText(4000),
+  topics: z.array(z.string().trim().min(1).max(100)).max(20).default([]),
+  coOrganizations: z.array(z.string().trim().min(1).max(300)).max(20).default([]),
+  giftsGiven: optionalText(2000),
+  giftsReceived: optionalText(2000),
+  cashReceived: optionalMoney,
+  giftBudget: optionalMoney,
+  giftActualCost: optionalMoney,
+  needsReview: z.boolean().default(false),
+  reviewNote: optionalText(2000),
+};
+
 /**
  * Một lượt tương tác. Ba loại hay dùng có modal riêng:
  *   VIP_ESCORT  dẫn khách VIP khám bệnh — cần nội dung, nên có khoa/phòng, dịch vụ
@@ -141,8 +166,8 @@ export type ImportantDateInput = z.infer<typeof importantDateInputSchema>;
 export const interactionInputSchema = z
   .object({
     type: z.enum(['VIP_ESCORT', 'DELEGATION', 'MEETING', 'CALL', 'EMAIL', 'EVENT', 'GIFT', 'OTHER']),
-    /** PLANNED: lịch hẹn dẫn khách/đoàn; DONE: đã thực hiện; CANCELLED: huỷ/khách không đến. */
-    status: z.enum(['PLANNED', 'DONE', 'CANCELLED']).default('DONE'),
+    /** PLANNED: lịch hẹn; DONE: đã thực hiện; POSTPONED: hoãn chưa có ngày mới; CANCELLED: huỷ/khách không đến. */
+    status: z.enum(INTERACTION_STATUSES).default('DONE'),
     occurredAt: z.string().datetime(),
     contactId: z.string().optional(),
     newContactName: optionalText(200),
@@ -157,9 +182,19 @@ export const interactionInputSchema = z
     guestCount: z.number().int().min(1).max(1000).optional(),
     purpose: optionalText(200),
     participantIds: z.array(z.string()).max(100).default([]),
-    staffName: z.string().trim().min(1, 'Chọn nhân viên phụ trách').max(200),
+    /** Tiếp đoàn do khoa/phòng khác chủ trì thì Phòng HC có thể không có người dẫn. */
+    staffName: z.string().trim().max(200).default(''),
     companions: z.array(z.string().trim().min(1).max(200)).max(20).default([]),
     note: optionalText(4000),
+    ...delegationFields,
+  })
+  .refine((v) => v.type === 'DELEGATION' || v.staffName.length > 0, {
+    message: 'Chọn nhân viên phụ trách',
+    path: ['staffName'],
+  })
+  .refine((v) => !v.endAt || v.endAt >= v.occurredAt.slice(0, 10), {
+    message: 'Ngày kết thúc không được trước ngày bắt đầu',
+    path: ['endAt'],
   })
   .refine((v) => v.type !== 'VIP_ESCORT' || v.contactId || v.newContactName, {
     message: 'Dẫn khách VIP cần chọn hoặc nhập tên khách',

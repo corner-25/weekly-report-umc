@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { handle, HttpError, interactionInclude, requireSession, toInteractionDto } from '@/lib/crm/server';
+import { INTERACTION_STATUSES } from '@/lib/crm/schemas';
 
 const bodySchema = z.object({
-  status: z.enum(['PLANNED', 'DONE', 'CANCELLED']),
+  status: z.enum(INTERACTION_STATUSES),
   /** Ghi chú kết quả khi đánh dấu xong/huỷ (vd "khách đổi lịch sang thứ 6"). */
   note: z.string().trim().max(2000).optional(),
 });

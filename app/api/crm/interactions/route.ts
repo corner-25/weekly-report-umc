@@ -5,6 +5,7 @@ import { interactionInputSchema } from '@/lib/crm/schemas';
 import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS, toSearchKey } from '@/lib/crm/constants';
 import { handle, interactionInclude, requireSession, toInteractionDto } from '@/lib/crm/server';
 import { saveInteraction } from './save';
+import { compressedJson } from '@/lib/http/compressed-json';
 
 const TYPES = new Set(Object.keys(INTERACTION_TYPE_LABELS));
 const STATUSES = new Set(Object.keys(INTERACTION_STATUS_LABELS));
@@ -21,6 +22,11 @@ export const GET = handle(async (request: Request) => {
   const contactId = params.get('contactId');
   const organizationId = params.get('organizationId');
   const status = params.get('status');
+  const purpose = params.get('purpose')?.trim();
+  const topic = params.get('topic')?.trim();
+  const hostDepartmentId = params.get('hostDepartmentId');
+  const year = params.get('year');
+  const needsReview = params.get('needsReview') === '1';
 
   // Mỗi bộ lọc là một điều kiện trong AND: nhiều bộ lọc cùng dùng OR, trải
   // chung vào một object thì cái sau ghi đè cái trước.
@@ -39,6 +45,13 @@ export const GET = handle(async (request: Request) => {
   }
   if (contactId) conditions.push({ OR: [{ contactId }, { participants: { some: { contactId } } }] });
   if (organizationId) conditions.push({ organizationId });
+  if (purpose) conditions.push({ purpose });
+  if (topic) conditions.push({ topics: { has: topic } });
+  if (hostDepartmentId) conditions.push({ hostDepartmentId });
+  if (needsReview) conditions.push({ needsReview: true });
+  if (year && /^\d{4}$/.test(year)) {
+    conditions.push({ occurredAt: { gte: new Date(`${year}-01-01T00:00:00+07:00`), lt: new Date(`${Number(year) + 1}-01-01T00:00:00+07:00`) } });
+  }
   if (search) {
     conditions.push({
       OR: [
@@ -46,6 +59,10 @@ export const GET = handle(async (request: Request) => {
         { destination: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { patientName: { contains: search, mode: 'insensitive' } },
+        { hostUnit: { contains: search, mode: 'insensitive' } },
+        { guestMembers: { contains: search, mode: 'insensitive' } },
+        { hospitalAttendees: { contains: search, mode: 'insensitive' } },
+        { externalCode: { equals: search.toUpperCase() } },
         { contact: { searchKey: { contains: toSearchKey(search) } } },
         { organization: { searchKey: { contains: toSearchKey(search) } } },
       ],
@@ -59,7 +76,7 @@ export const GET = handle(async (request: Request) => {
     orderBy: [{ occurredAt: 'desc' }, { createdAt: 'desc' }],
     take: 500,
   });
-  return NextResponse.json(interactions.map(toInteractionDto));
+  return compressedJson(request, interactions.map(toInteractionDto));
 });
 
 export const POST = handle(async (request: Request) => {

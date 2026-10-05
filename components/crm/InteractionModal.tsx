@@ -11,6 +11,7 @@ import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
 import type { InteractionDTO, InteractionType, InteractionStatus, PhotoKind } from './types';
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
+import { DelegationDetailsFields, detailsBody, detailsFrom, validateDetails, type DelegationDetails } from './DelegationDetailsFields';
 
 export type InteractionMode = 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
 
@@ -81,6 +82,7 @@ interface FormState {
   staffName: string;
   companions: string[];
   note: string;
+  details: DelegationDetails;
 }
 
 function initialState(mode: InteractionMode, initial?: InteractionDTO | null, preset?: InteractionPreset): FormState {
@@ -105,6 +107,7 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
       staffName: initial.staffName,
       companions: initial.companions,
       note: initial.note ?? '',
+      details: detailsFrom(initial),
     };
   }
   return {
@@ -126,6 +129,7 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     staffName: '',
     companions: [],
     note: '',
+    details: detailsFrom(null),
   };
 }
 
@@ -154,6 +158,7 @@ function buildBody(form: FormState): InteractionInput {
     staffName: form.staffName,
     companions: form.companions.filter((name) => name !== form.staffName),
     note: cleanText(form.note),
+    ...detailsBody(isDelegation ? form.details : detailsFrom(null)),
   };
 }
 
@@ -161,7 +166,8 @@ function validate(form: FormState): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!form.occurredAt || Number.isNaN(new Date(form.occurredAt).getTime())) errors.occurredAt = 'Chọn ngày giờ';
   if (!form.content.trim()) errors.content = 'Nội dung là bắt buộc';
-  if (!form.staffName) errors.staffName = 'Chọn nhân viên phụ trách';
+  if (!form.staffName && form.type !== 'DELEGATION') errors.staffName = 'Chọn nhân viên phụ trách';
+  Object.assign(errors, form.type === 'DELEGATION' ? validateDetails(form.details, form.occurredAt) : {});
   if (form.type === 'VIP_ESCORT' && !form.contact) errors.contactId = 'Chọn khách trong danh bạ hoặc nhập tên khách mới';
   if (form.type === 'DELEGATION' && !form.organization) errors.organizationId = 'Chọn hoặc nhập tên đơn vị';
   if (form.guestCount && (toInt(form.guestCount) === undefined || Number(form.guestCount) < 1)) errors.guestCount = 'Số người phải là số nguyên dương';
@@ -233,7 +239,13 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
 
   const staffAndCompanions = (
     <div className="grid gap-4 sm:grid-cols-2">
-      <Field label={mode === 'OTHER' ? 'Nhân viên phụ trách' : 'Nhân viên dẫn'} required htmlFor="ix-staff" error={errors.staffName}>
+      <Field
+        label={mode === 'OTHER' ? 'Nhân viên phụ trách' : mode === 'DELEGATION' ? 'Nhân viên Phòng HC dẫn' : 'Nhân viên dẫn'}
+        required={mode !== 'DELEGATION'}
+        hint={mode === 'DELEGATION' ? 'Để trống nếu khoa/phòng khác tự tiếp đoàn.' : undefined}
+        htmlFor="ix-staff"
+        error={errors.staffName}
+      >
         <Select
           id="ix-staff"
           value={form.staffName}
@@ -278,7 +290,7 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
                 setForm((prev) => ({
                   ...prev,
                   occurredAt,
-                  status: prev.status === 'CANCELLED' ? prev.status : future ? 'PLANNED' : 'DONE',
+                  status: prev.status === 'CANCELLED' || prev.status === 'POSTPONED' ? prev.status : future ? 'PLANNED' : 'DONE',
                 }));
               }}
               className={inputClass(errors.occurredAt)}
@@ -289,7 +301,7 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
         <fieldset>
           <legend className="mb-1.5 block text-sm font-semibold text-slate-700">Trạng thái</legend>
           <div className="inline-flex rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="Trạng thái">
-            {(['DONE', 'PLANNED', 'CANCELLED'] as const).map((status) => (
+            {(['DONE', 'PLANNED', 'POSTPONED', 'CANCELLED'] as const).map((status) => (
               <button
                 key={status}
                 type="button"
@@ -309,6 +321,9 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
 
         {mode === 'VIP_ESCORT' && <EscortFields form={form} set={set} errors={errors} />}
         {mode === 'DELEGATION' && <DelegationFields form={form} set={set} errors={errors} />}
+        {mode === 'DELEGATION' && (
+          <DelegationDetailsFields value={form.details} onChange={(details) => set('details', details)} errors={errors} />
+        )}
         {mode === 'OTHER' && <OtherFields form={form} set={set} errors={errors} />}
 
         {staffAndCompanions}
@@ -420,7 +435,7 @@ function DelegationFields({ form, set, errors }: SectionProps) {
 
       <div>
         <ChipGroup
-          legend="Mục đích"
+          legend="Hình thức tiếp"
           single
           options={DELEGATION_PURPOSES}
           value={purposeChips}
@@ -453,7 +468,10 @@ function DelegationFields({ form, set, errors }: SectionProps) {
         )}
       </div>
 
-      <Field label="Lộ trình, điểm tham quan" error={errors.destination}>
+      <Field label="Tên đoàn" error={errors.title} hint="Như ghi trong công văn/lịch tiếp, vd “Đoàn công tác Sở Y tế tỉnh Đồng Nai”.">
+        <input value={form.title} onChange={(event) => set('title', event.target.value)} className={inputClass(errors.title)} />
+      </Field>
+      <Field label="Địa điểm, lộ trình" error={errors.destination}>
         <input value={form.destination} onChange={(event) => set('destination', event.target.value)} className={inputClass(errors.destination)} placeholder="Ví dụ: Khối Cận lâm sàng → Trung tâm Đào tạo" />
       </Field>
       <Field label="Nội dung làm việc" required error={errors.content}>

@@ -14,7 +14,7 @@ import { ImportantDatesPanel } from '@/components/crm/ImportantDatesPanel';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
 import { OrganizationModal } from '@/components/crm/OrganizationModal';
-import { daysUntilLabel, displayName, initials } from '@/components/crm/format';
+import { daysUntilLabel, displayName, formatDate, initials } from '@/components/crm/format';
 import type { CareTaskDTO, ImportantDateDTO, InteractionDTO, OrganizationDetail } from '@/components/crm/types';
 import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
@@ -74,6 +74,13 @@ export default function OrganizationProfilePage() {
   const nextOccasion = org.upcoming[0];
   const currentContacts = org.contacts.filter((c) => c.isCurrent);
   const formerContacts = org.contacts.filter((c) => !c.isCurrent);
+  // Tóm tắt tiếp đoàn: số lượt đã tiếp, lần gần nhất, các hình thức.
+  const doneVisits = org.interactions.filter((x) => x.type === 'DELEGATION' && x.status === 'DONE');
+  const visits = {
+    done: doneVisits.length,
+    last: doneVisits[0]?.occurredAt ?? null,
+    purposes: [...new Set(doneVisits.map((x) => x.purpose).filter(Boolean))].join(' · '),
+  };
   const website = org.website && (/^https?:\/\//i.test(org.website) ? org.website : `https://${org.website}`);
 
   return (
@@ -137,7 +144,19 @@ export default function OrganizationProfilePage() {
           <SectionCard title="Thông tin" icon={<Building2 className="h-4 w-4 text-cyan-600" aria-hidden="true" />}>
             <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm">
               <dt className="text-slate-500">Loại</dt>
-              <dd className="text-slate-800">{ORGANIZATION_TYPE_LABELS[org.type]}</dd>
+              <dd className="text-slate-800">{org.category ?? ORGANIZATION_TYPE_LABELS[org.type]}</dd>
+              {org.scope && <><dt className="text-slate-500">Phạm vi</dt><dd className="text-slate-800">{org.scope}</dd></>}
+              {visits.done > 0 && (
+                <>
+                  <dt className="text-slate-500">Tiếp đoàn</dt>
+                  <dd className="text-slate-800">
+                    <b className="text-emerald-700">{visits.done}</b> lượt đã tiếp{visits.last && ` · gần nhất ${formatDate(visits.last)}`}
+                    {visits.purposes && <span className="block text-xs text-slate-500">{visits.purposes}</span>}
+                  </dd>
+                </>
+              )}
+              {org.aliases.length > 0 && <><dt className="text-slate-500">Tên khác</dt><dd className="text-slate-800">{org.aliases.join(' · ')}</dd></>}
+              {org.externalCode && <><dt className="text-slate-500">Mã sổ tiếp đoàn</dt><dd className="tabular-nums text-slate-500">{org.externalCode}</dd></>}
               {org.address && <><dt className="text-slate-500">Địa chỉ</dt><dd className="text-slate-800">{org.address}</dd></>}
               {org.phone && <><dt className="text-slate-500">Điện thoại</dt><dd><a href={`tel:${org.phone.replace(/\s+/g, '')}`} className="text-cyan-700 hover:underline">{org.phone}</a></dd></>}
               {org.email && <><dt className="text-slate-500">Email</dt><dd className="break-words"><a href={`mailto:${org.email}`} className="text-cyan-700 hover:underline">{org.email}</a></dd></>}

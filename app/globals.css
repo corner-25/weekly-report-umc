@@ -15,6 +15,26 @@
   --primary-foreground: #ffffff;
 }
 
+/*
+ * Khi có lớp phủ toàn màn hình (modal, khung xem nhanh, xem ảnh — đều là
+ * .fixed.inset-0) thì khoá cuộn trang phía sau: cuộn trong modal không kéo theo
+ * trang. scrollbar-gutter giữ chỗ thanh cuộn để trang không giật ngang khi khoá.
+ */
+html {
+  scrollbar-gutter: stable;
+}
+html:has(body .fixed.inset-0) {
+  overflow: hidden;
+}
+.fixed.inset-0,
+.fixed.inset-0 * {
+  overscroll-behavior: contain;
+}
+/* Lớp phủ đặt cuối một khối space-y-* bị cộng margin-top — lệch xuống, hở dải trắng phía trên. */
+.fixed.inset-0 {
+  margin: 0 !important;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
@@ -125,7 +145,7 @@ body {
  */
 @layer utilities {
   div[class*="fixed"][class*="inset-0"][class*="z-50"] {
-    animation: fade-in 160ms ease-out both;
+    animation: fade-in 160ms ease-out backwards;
   }
 }
 

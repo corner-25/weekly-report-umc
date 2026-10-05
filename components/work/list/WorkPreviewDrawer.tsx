@@ -57,7 +57,7 @@ export function WorkPreviewDrawer({
 
   useEffect(() => {
     returnFocus.current = document.activeElement;
-    closeRef.current?.focus();
+    closeRef.current?.focus({ preventScroll: true });
     return () => (returnFocus.current as HTMLElement | null)?.focus?.();
   }, []);
 

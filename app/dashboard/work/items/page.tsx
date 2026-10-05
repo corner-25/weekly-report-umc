@@ -78,10 +78,12 @@ function WorkItemsList() {
         else next.delete(k);
       }
       const qs = next.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      // Đổi URL tại chỗ (Next đồng bộ useSearchParams với history API): không gọi lại máy chủ,
+      // không treo trang chờ tải — router.replace làm trang nháy và nhảy về đầu khi mở xem nhanh.
+      window.history.replaceState(null, '', qs ? `${pathname}?${qs}` : pathname);
       if (!('xem' in changes)) setShown(PAGE_SIZE);
     },
-    [pathname, router],
+    [pathname],
   );
 
   const { items: filtered, counts } = useMemo(() => (all ? filterItems(all, filters) : { items: [], counts: null }), [all, search]);

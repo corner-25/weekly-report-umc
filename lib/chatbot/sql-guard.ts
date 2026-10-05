@@ -79,6 +79,7 @@ export const GENERAL_CHATBOT_VIEWS = [
   'v_chatbot_work_updates',
   'v_chatbot_task_threads',
   'v_chatbot_crm_care_tasks',
+  'v_chatbot_delegations',
 ];
 
 export const PERSONNEL_CHATBOT_VIEWS = [

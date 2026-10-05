@@ -38,6 +38,24 @@ export const INTERACTION_ICONS: Record<InteractionType, LucideIcon> = {
   OTHER: MessageSquare,
 };
 
+const STATUS_TONES: Record<InteractionStatus, string> = {
+  PLANNED: 'bg-amber-100 text-amber-800',
+  DONE: 'bg-emerald-100 text-emerald-800',
+  POSTPONED: 'bg-violet-100 text-violet-800',
+  CANCELLED: 'bg-slate-100 text-slate-500 line-through',
+};
+
+/** Ngày giờ hiện trên dòng thời gian: khoảng ngày với đoàn nhiều ngày, giờ như ghi nhận, "chưa rõ ngày". */
+function whenLabel(item: InteractionDTO): string {
+  if (item.dateUnknown) return `Chưa rõ ngày (${formatDate(item.occurredAt, 'yyyy')})`;
+  const start = formatDate(item.occurredAt, 'dd/MM/yyyy');
+  const range = item.endAt ? `${start} – ${formatDate(item.endAt, 'dd/MM/yyyy')}` : start;
+  const time = item.timeText ?? (formatDate(item.occurredAt, 'HH:mm') === '00:00' ? null : formatDate(item.occurredAt, 'HH:mm'));
+  return time ? `${range} · ${time}` : range;
+}
+
+const money = (v: number) => `${v.toLocaleString('vi-VN')} đ`;
+
 const TONES: Record<InteractionType, string> = {
   VIP_ESCORT: 'bg-cyan-50 text-cyan-700 ring-cyan-200',
   DELEGATION: 'bg-orange-50 text-orange-700 ring-orange-200',
@@ -106,12 +124,17 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
         <header className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
           <div className="min-w-0">
             <p className="text-xs font-medium text-slate-500">
-              <time dateTime={item.occurredAt} className="font-semibold tabular-nums text-slate-700">{formatDate(item.occurredAt, 'dd/MM/yyyy · HH:mm')}</time>
+              <time dateTime={item.occurredAt} className="font-semibold tabular-nums text-slate-700">{whenLabel(item)}</time>
               <span className="mx-1.5 text-slate-300">|</span>
               {INTERACTION_TYPE_LABELS[item.type]}
               {item.status !== 'DONE' && (
-                <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold', item.status === 'PLANNED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500 line-through')}>
+                <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold', STATUS_TONES[item.status])}>
                   {INTERACTION_STATUS_LABELS[item.status]}
+                </span>
+              )}
+              {item.needsReview && (
+                <span className="ml-2 rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-semibold text-orange-800" title={item.reviewNote ?? undefined}>
+                  Cần xác minh
                 </span>
               )}
             </p>
@@ -183,9 +206,35 @@ function InteractionMeta({ item }: { item: InteractionDTO }) {
           <span className="inline-flex items-center gap-1"><Users className="h-3 w-3" aria-hidden="true" />Đoàn {item.guestCount} người</span>
         )}
         {item.purpose && (
-          <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" aria-hidden="true" />{item.purpose}</span>
+          <span className="inline-flex items-center gap-1" title={item.purposeInferred ? 'Hình thức suy ra từ nội dung, sổ gốc không ghi' : undefined}>
+            <Building2 className="h-3 w-3" aria-hidden="true" />{item.purpose}{item.purposeInferred && '*'}
+          </span>
         )}
+        {item.hostUnit && <span>Chủ trì: <b className="font-semibold text-slate-700">{item.hostUnit}</b></span>}
+        {item.incomingDocNo && <span>Văn bản đến: {item.incomingDocNo}</span>}
       </div>
+      {item.topics.length > 0 && (
+        <ul className="flex flex-wrap gap-1" aria-label="Chủ đề làm việc">
+          {item.topics.map((t) => <li key={t} className="rounded-full bg-brand-50 px-2 py-0.5 font-medium text-brand-800">{t}</li>)}
+        </ul>
+      )}
+      {item.coOrganizations.length > 0 && <p>Đi cùng: {item.coOrganizations.join('; ')}</p>}
+      {item.hospitalAttendees && <p><span className="font-medium text-slate-600">Bệnh viện tiếp:</span> {item.hospitalAttendees}</p>}
+      {item.guestMembers && <p><span className="font-medium text-slate-600">Thành phần đoàn:</span> {item.guestMembers}</p>}
+      {(item.giftsGiven || item.giftsReceived || item.cashReceived || item.giftBudget || item.giftActualCost) && (
+        <div className="rounded-lg bg-rose-50/50 px-2.5 py-1.5">
+          {item.giftsGiven && <p><Gift className="mr-1 inline h-3 w-3 text-rose-500" aria-hidden="true" />Bệnh viện tặng: {item.giftsGiven}</p>}
+          {item.giftsReceived && <p><Gift className="mr-1 inline h-3 w-3 text-emerald-600" aria-hidden="true" />Khách tặng: {item.giftsReceived}</p>}
+          {item.cashReceived != null && <p>Tiền mặt khách tặng: <b className="text-emerald-700">{money(item.cashReceived)}</b></p>}
+          {(item.giftBudget != null || item.giftActualCost != null) && (
+            <p>
+              Kinh phí quà: {item.giftBudget != null && <>dự trù <b className="text-slate-700">{money(item.giftBudget)}</b></>}
+              {item.giftBudget != null && item.giftActualCost != null && ' · '}
+              {item.giftActualCost != null && <>thực chi <b className="text-slate-700">{money(item.giftActualCost)}</b></>}
+            </p>
+          )}
+        </div>
+      )}
       {item.services.length > 0 && (
         <ul className="flex flex-wrap gap-1" aria-label="Dịch vụ hỗ trợ">
           {item.services.map((s) => <li key={s} className="rounded-full bg-cyan-50 px-2 py-0.5 font-medium text-cyan-800">{s}</li>)}
@@ -202,11 +251,15 @@ function InteractionMeta({ item }: { item: InteractionDTO }) {
           ))}
         </p>
       )}
-      <p>
-        <span className="font-medium text-slate-600">{team[0]}</span>
-        {team.length > 1 && <> · đi cùng {team.slice(1).join(', ')}</>}
-      </p>
-      {item.note && <p className="italic">Ghi chú: {item.note}</p>}
+      {team[0] && (
+        <p>
+          <span className="font-medium text-slate-600">{team[0]}</span>
+          {team.length > 1 && <> · đi cùng {team.slice(1).join(', ')}</>}
+        </p>
+      )}
+      {item.note && <p className="whitespace-pre-line italic">Ghi chú: {item.note}</p>}
+      {item.needsReview && item.reviewNote && <p className="text-orange-700">Cần xác minh: {item.reviewNote}</p>}
+      {item.externalCode && <p className="text-[11px] text-slate-400">Sổ tiếp đoàn {item.externalCode}{item.sourceRef && ` · ${item.sourceRef}`}</p>}
     </div>
   );
 }

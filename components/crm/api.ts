@@ -3,7 +3,7 @@
  * `CrmApiError` để form hiện lỗi cạnh đúng trường.
  */
 
-import type { PhotoDTO, PhotoKind } from './types';
+import type { InteractionStatus, PhotoDTO, PhotoKind } from './types';
 
 export interface ApiIssue {
   path: string;
@@ -88,7 +88,7 @@ export function errorMessage(error: unknown, fallback = 'Đã xảy ra lỗi. Vu
 }
 
 /** Chốt lịch hẹn dẫn khách/đoàn: đã xong hoặc huỷ. */
-export function changeInteractionStatus(id: string, status: 'PLANNED' | 'DONE' | 'CANCELLED'): Promise<unknown> {
+export function changeInteractionStatus(id: string, status: InteractionStatus): Promise<unknown> {
   return crmSend(`/api/crm/interactions/${id}/status`, 'POST', { status });
 }
 

@@ -41,6 +41,27 @@ export interface InteractionDTO {
   staffName: string;
   companions: string[];
   note: string | null;
+  /** Sổ tiếp đoàn (mã đoàn TD-…) và các trường đi kèm. */
+  externalCode: string | null;
+  endAt: string | null;
+  timeText: string | null;
+  dateUnknown: boolean;
+  incomingDocNo: string | null;
+  hostUnit: string | null;
+  hostDepartmentId: string | null;
+  hospitalAttendees: string | null;
+  guestMembers: string | null;
+  topics: string[];
+  coOrganizations: string[];
+  purposeInferred: boolean;
+  giftsGiven: string | null;
+  giftsReceived: string | null;
+  cashReceived: number | null;
+  giftBudget: number | null;
+  giftActualCost: number | null;
+  needsReview: boolean;
+  reviewNote: string | null;
+  sourceRef: string | null;
   contact: { id: string; fullName: string; academicTitle: string | null } | null;
   organization: { id: string; name: string } | null;
   participants: Array<{ id: string; fullName: string }>;
@@ -262,6 +283,11 @@ export interface OrganizationDetail {
   ownerName: string | null;
   tags: string[];
   note: string | null;
+  /** Từ sổ tiếp đoàn: mã tổ chức, loại chi tiết, phạm vi, các tên khác đã gặp. */
+  externalCode: string | null;
+  category: string | null;
+  scope: string | null;
+  aliases: string[];
   contacts: Array<{ id: string; fullName: string; academicTitle: string | null; title: string | null; isCurrent: boolean }>;
   importantDates: ImportantDateDTO[];
   interactions: InteractionDTO[];
