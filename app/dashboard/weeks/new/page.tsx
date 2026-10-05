@@ -9,6 +9,7 @@ import { FilePlus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import MetricsInput from '@/components/MetricsInput';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Department {
   id: string;
@@ -470,7 +471,7 @@ function NewWeekReport() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Chọn ngày trong tuần
             </label>
-            <input
+            <DateInput
               type="date"
               value={selectedKey}
               onChange={(e) => { if (isDateKey(e.target.value)) setSelectedKey(e.target.value); }}

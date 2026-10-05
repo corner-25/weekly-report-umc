@@ -10,6 +10,7 @@ import {
 import { withBack } from '@/lib/weeks/list-filters';
 import MetricsInput from '@/components/MetricsInput';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Department {
   id: string;
@@ -523,7 +524,7 @@ function EditWeekReport({ params }: { params: Promise<{ id: string }> }) {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Chọn ngày trong tuần
             </label>
-            <input
+            <DateInput
               type="date"
               value={selectedKey}
               onChange={(e) => handleDateChange(e.target.value)}

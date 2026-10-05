@@ -9,6 +9,7 @@ import { PhotoField } from './CrmPhotos';
 import { cleanText, formatDate, toInt, withCurrent } from './format';
 import type { CareTaskDTO, DateKind, GiftType, UpcomingDTO } from './types';
 import { ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
+import { DateInput } from '@/components/ui/DateInput';
 
 export type CareOwner = { contactId: string } | { organizationId: string };
 
@@ -175,7 +176,7 @@ export function CareTaskModal({ initial, occasion, owner, occasions = [], giftHi
                   </Select>
                 </Field>
                 <Field label="Ngày (dương lịch)" required error={errors.occasionDate}>
-                  <input type="date" value={customDate} onChange={(e) => setCustomDate(e.target.value)} className={inputClass(errors.occasionDate)} />
+                  <DateInput type="date" value={customDate} onChange={(e) => setCustomDate(e.target.value)} className={inputClass(errors.occasionDate)} />
                 </Field>
               </div>
             )}

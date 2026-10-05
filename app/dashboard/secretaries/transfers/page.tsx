@@ -4,6 +4,7 @@ import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { ArrowLeftRight } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Transfer {
   id: string;
@@ -279,7 +280,7 @@ export default function SecretaryTransfersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Ngày luân chuyển</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={formData.transferDate}
                     onChange={(e) => setFormData({ ...formData, transferDate: e.target.value })}

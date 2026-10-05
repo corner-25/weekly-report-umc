@@ -15,6 +15,7 @@ import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/Interac
 import type { InteractionDTO } from '@/components/crm/types';
 import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, Stat } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
+import { DateInput } from '@/components/ui/DateInput';
 
 type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'OTHER' | 'PLANNED';
 const TABS: Array<{ value: TypeTab; label: string }> = [
@@ -189,11 +190,11 @@ export default function CrmInteractionsPage() {
             </div>
             <label className="block">
               <span className="sr-only">Từ ngày</span>
-              <input type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="input" />
+              <DateInput type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="input" />
             </label>
             <label className="block">
               <span className="sr-only">Đến ngày</span>
-              <input type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="input" />
+              <DateInput type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="input" />
             </label>
           </div>
           {tab === 'DELEGATION' && (

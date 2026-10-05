@@ -3,6 +3,7 @@
 import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
 import { CATEGORY_LABELS } from './LicenseUtils';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Department { id: string; name: string; }
 interface LicenseFormData {
@@ -151,7 +152,7 @@ export default function LicenseForm({ initialData, departments, onSuccess, onClo
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Ngày cấp</label>
-              <input
+              <DateInput
                 type="date" value={form.issuedDate} onChange={(e) => set('issuedDate', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -162,7 +163,7 @@ export default function LicenseForm({ initialData, departments, onSuccess, onClo
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn <span className="text-gray-400 font-normal">(để trống nếu không hết hạn)</span></label>
-              <input
+              <DateInput
                 type="date" value={form.expiryDate} onChange={(e) => set('expiryDate', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

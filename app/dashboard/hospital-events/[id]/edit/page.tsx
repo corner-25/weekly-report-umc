@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MeetingRoomSelector } from '@/components/hospital-events/MeetingRoomSelector';
 import { EventTypeSelector } from '@/components/hospital-events/EventTypeSelector';
 import { VIP_STAFF } from '@/lib/vip';
+import { DateInput } from '@/components/ui/DateInput';
 
 export default function EditHospitalEventPage({
   params,
@@ -140,7 +141,7 @@ export default function EditHospitalEventPage({
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Ngày diễn ra <span className="text-red-500">*</span>
                 </label>
-                <input
+                <DateInput
                   type="date"
                   required
                   value={formData.date}
@@ -153,7 +154,7 @@ export default function EditHospitalEventPage({
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Giờ diễn ra
                 </label>
-                <input
+                <DateInput
                   type="time"
                   value={formData.time}
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}

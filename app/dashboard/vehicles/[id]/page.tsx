@@ -9,6 +9,7 @@ import {
   Truck, ArrowLeft, Wrench, Calendar, FileText, FileBadge, History,
   Plus, Loader2, Ambulance, Car, Bus, Package, HelpCircle,
 } from 'lucide-react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Vehicle {
   id: string;
@@ -356,7 +357,7 @@ function AddMaintenanceModal({ vehicleId, onClose, onSuccess }: { vehicleId: str
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">Ngày</label>
-              <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg" />
+              <DateInput type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">Cây số (km)</label>

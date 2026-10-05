@@ -9,6 +9,7 @@ import { parseExcelFile, listSheets, type ParsedWeekData } from '@/lib/excel-par
 import { matchTasksToMaster, type MatchResult, type MasterTaskRef, type MatchedTask } from '@/lib/task-matcher';
 import { extractMetrics, type MetricDefinitionRef, type ExtractedMetric } from '@/lib/metric-extractor';
 import { hospitalWeekRange } from '@/lib/weeks/hospital-week';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface ReferenceData {
   departments: { id: string; name: string }[];
@@ -325,7 +326,7 @@ export default function ImportPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Từ ngày</label>
-              <input
+              <DateInput
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
@@ -334,7 +335,7 @@ export default function ImportPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Đến ngày</label>
-              <input
+              <DateInput
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
@@ -428,11 +429,11 @@ export default function ImportPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Từ ngày</label>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
+                <DateInput type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Đến ngày</label>
-                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
+                <DateInput type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" />
               </div>
             </div>
           </div>

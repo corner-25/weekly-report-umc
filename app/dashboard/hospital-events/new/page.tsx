@@ -6,6 +6,7 @@ import { Building2, CalendarDays, ChevronDown, ChevronUp, Sparkles, UsersRound }
 import { MeetingRoomSelector } from '@/components/hospital-events/MeetingRoomSelector';
 import { Select } from '@/components/ui/Select';
 import { VIP_STAFF } from '@/lib/vip';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface ChecklistTemplate { id: string; title: string }
 
@@ -76,8 +77,8 @@ export default function NewHospitalEventPage() {
               </div>
             </Field>
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Ngày diễn ra" required><input required type="date" value={formData.date} onChange={(event) => setFormData({ ...formData, date: event.target.value })} className="input" /></Field>
-              <Field label="Giờ"><input type="time" value={formData.time} onChange={(event) => setFormData({ ...formData, time: event.target.value })} className="input" /></Field>
+              <Field label="Ngày diễn ra" required><DateInput required type="date" value={formData.date} onChange={(event) => setFormData({ ...formData, date: event.target.value })} className="input" /></Field>
+              <Field label="Giờ"><DateInput type="time" value={formData.time} onChange={(event) => setFormData({ ...formData, time: event.target.value })} className="input" /></Field>
               <Field label="Nhân viên đầu mối" required><Select required value={formData.chair} onChange={(event) => setFormData({ ...formData, chair: event.target.value })} className="px-3.5 py-2.5"><option value="">Chọn nhân viên</option>{VIP_STAFF.map((name) => <option key={name} value={name}>{name}</option>)}</Select></Field>
             </div>
           </div>

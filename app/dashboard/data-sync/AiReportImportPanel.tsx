@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles, CheckCircle2, AlertTriangle, Loader2, FileSpreadsheet, RefreshCw, Plus, Database, Trash2 } from 'lucide-react';
 import { computeFileHash, loadCache, saveResultsToCache, clearCache, listCachedDepartments } from '@/lib/chatbot/ai-import-cache';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface AiTask { masterTaskId: string; taskName: string; result: string; confidence: number }
 interface AiMetric { metricId: string; metricName: string; value: number | null; note: string | null; confidence: number }
@@ -420,7 +421,7 @@ export function AiReportImportPanel() {
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1.5">Từ ngày *</label>
-                <input
+                <DateInput
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -429,7 +430,7 @@ export function AiReportImportPanel() {
               </div>
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1.5">Đến ngày *</label>
-                <input
+                <DateInput
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}

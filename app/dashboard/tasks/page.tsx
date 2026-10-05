@@ -9,6 +9,7 @@ import {
   LayoutGrid, List as ListIcon, Calendar, CheckCircle2, PlayCircle, Circle,
   ArrowUpDown, ArrowUp, ArrowDown, Star,
 } from 'lucide-react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Department {
   id: string;
@@ -478,7 +479,7 @@ export default function MasterTasksPage() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Ngày bắt đầu</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
@@ -487,7 +488,7 @@ export default function MasterTasksPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Ngày kết thúc</label>
-                  <input
+                  <DateInput
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}

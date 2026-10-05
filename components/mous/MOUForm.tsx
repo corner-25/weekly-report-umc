@@ -3,6 +3,7 @@
 import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { CATEGORY_LABELS, STATUS_LABELS } from './MOUUtils';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Department {
   id: string;
@@ -206,15 +207,15 @@ export function MOUForm({ initialData, departments, onSuccess, onClose }: Props)
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Ngày ký kết</label>
-                <input type="date" value={form.signedDate} onChange={e => setForm(p => ({ ...p, signedDate: e.target.value }))} className={inputClass} />
+                <DateInput type="date" value={form.signedDate} onChange={e => setForm(p => ({ ...p, signedDate: e.target.value }))} className={inputClass} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Ngày hiệu lực</label>
-                <input type="date" value={form.effectiveDate} onChange={e => setForm(p => ({ ...p, effectiveDate: e.target.value }))} className={inputClass} />
+                <DateInput type="date" value={form.effectiveDate} onChange={e => setForm(p => ({ ...p, effectiveDate: e.target.value }))} className={inputClass} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Ngày hết hạn</label>
-                <input type="date" value={form.expiryDate} onChange={e => setForm(p => ({ ...p, expiryDate: e.target.value }))} className={inputClass} />
+                <DateInput type="date" value={form.expiryDate} onChange={e => setForm(p => ({ ...p, expiryDate: e.target.value }))} className={inputClass} />
               </div>
             </div>
             <label className="flex items-center mt-3 text-sm text-gray-600">

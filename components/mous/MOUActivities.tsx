@@ -13,6 +13,7 @@ import {
   ChevronUp,
   Activity,
 } from 'lucide-react';
+import { DateInput } from '@/components/ui/DateInput';
 
 const ACTIVITY_STATUS_LABELS: Record<string, string> = {
   PLANNED: 'Kế hoạch',
@@ -123,8 +124,8 @@ export function MOUActivities({ mouId, activities, onRefresh }: Props) {
                 <option key={k} value={k}>{v}</option>
               ))}
             </Select>
-            <input name="startDate" type="date" className={inputClass} placeholder="Ngày bắt đầu" />
-            <input name="endDate" type="date" className={inputClass} placeholder="Ngày kết thúc" />
+            <DateInput name="startDate" type="date" className={inputClass} placeholder="Ngày bắt đầu" />
+            <DateInput name="endDate" type="date" className={inputClass} placeholder="Ngày kết thúc" />
             <input name="location" placeholder="Địa điểm" className={inputClass} />
             <input name="responsible" placeholder="Người phụ trách" className={inputClass} />
             <div className="col-span-2">

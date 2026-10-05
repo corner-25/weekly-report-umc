@@ -12,6 +12,7 @@ import type { InteractionInput } from '@/lib/crm/schemas';
 import { cleanText, toInt } from './format';
 import type { InteractionDTO } from './types';
 import { ChipGroup, Field, inputClass } from './ui';
+import { DateInput } from '@/components/ui/DateInput';
 
 export interface DelegationDetails {
   endAt: string;
@@ -117,7 +118,7 @@ export function DelegationDetailsFields({ value, onChange, errors }: { value: De
       <div className="space-y-4 border-t border-slate-100 px-4 pb-4 pt-3">
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Đến ngày" error={errors.endAt} hint="Đoàn làm việc nhiều ngày">
-            <input type="date" value={value.endAt} onChange={(e) => set('endAt', e.target.value)} className={inputClass(errors.endAt)} />
+            <DateInput type="date" value={value.endAt} onChange={(e) => set('endAt', e.target.value)} className={inputClass(errors.endAt)} />
           </Field>
           {text('timeText', 'Giờ (như ghi nhận)', 'vd 09g00-09g30')}
           {text('incomingDocNo', 'Số văn bản đến', 'vd 1234/SYT-NVY')}

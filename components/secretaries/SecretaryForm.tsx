@@ -2,6 +2,7 @@
 
 import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Secretary {
   id: string;
@@ -139,7 +140,7 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ngày sinh</label>
-                <input
+                <DateInput
                   type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
@@ -169,7 +170,7 @@ export function SecretaryForm({ secretary, types, departments, onClose, onSucces
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
-                <input
+                <DateInput
                   type="date"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}

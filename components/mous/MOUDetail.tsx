@@ -11,6 +11,7 @@ import {
 import { MOUActivities } from './MOUActivities';
 import { MOUDocuments } from './MOUDocuments';
 import { AlertTriangle, X as XIcon, Pencil, Calendar, CheckCircle2, Clock as ClockIcon } from 'lucide-react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface ClauseProgressLog {
   id: string;
@@ -782,7 +783,7 @@ function ClauseFormModal({ mouId, initialData, onClose, onSuccess }: {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Hạn thực hiện</label>
-            <input type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className={inputClass} />
+            <DateInput type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className={inputClass} />
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
 import type { InteractionDTO, InteractionType, InteractionStatus, PhotoKind } from './types';
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
+import { DateInput } from '@/components/ui/DateInput';
 import { DelegationDetailsFields, detailsBody, detailsFrom, validateDetails, type DelegationDetails } from './DelegationDetailsFields';
 
 export type InteractionMode = 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
@@ -279,9 +280,10 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
             </Field>
           )}
           <Field label="Ngày giờ" required error={errors.occurredAt}>
-            <input
+            <DateInput
               data-autofocus={mode !== 'OTHER' || undefined}
               type="datetime-local"
+              required
               value={form.occurredAt}
               onChange={(event) => {
                 const occurredAt = event.target.value;

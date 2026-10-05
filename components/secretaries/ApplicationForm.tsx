@@ -3,6 +3,7 @@
 import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
 import { User, GraduationCap, Briefcase, ClipboardCheck, MessageSquare, X, Loader2 } from 'lucide-react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Application {
   id: string;
@@ -287,7 +288,7 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
                 </div>
                 <div>
                   <label className={labelCls}>Ngày sinh</label>
-                  <input type="date" value={formData.dateOfBirth} onChange={(e) => update('dateOfBirth', e.target.value)} className={inputCls} />
+                  <DateInput type="date" value={formData.dateOfBirth} onChange={(e) => update('dateOfBirth', e.target.value)} className={inputCls} />
                 </div>
                 <div>
                   <label className={labelCls}>Nơi sinh</label>
@@ -417,7 +418,7 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Ngày sơ tuyển</label>
-                  <input type="date" value={formData.screeningDate} onChange={(e) => update('screeningDate', e.target.value)} className={inputCls} />
+                  <DateInput type="date" value={formData.screeningDate} onChange={(e) => update('screeningDate', e.target.value)} className={inputCls} />
                 </div>
                 <div>
                   <label className={labelCls}>Địa điểm sơ tuyển</label>
@@ -503,7 +504,7 @@ export function ApplicationForm({ application, types, departments, onClose, onSu
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Ngày phỏng vấn</label>
-                  <input type="date" value={formData.interviewDate} onChange={(e) => update('interviewDate', e.target.value)} className={inputCls} />
+                  <DateInput type="date" value={formData.interviewDate} onChange={(e) => update('interviewDate', e.target.value)} className={inputCls} />
                 </div>
                 <div>
                   <label className={labelCls}>Điểm phỏng vấn (/10)</label>

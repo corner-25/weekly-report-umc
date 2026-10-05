@@ -8,6 +8,7 @@ import { CrmApiError, crmSend, errorMessage } from '@/components/crm/api';
 import { cleanText, toInt } from '@/components/crm/format';
 import { ErrorBanner, Field, ModalFooter, ModalShell, TagInput, inputClass } from '@/components/crm/ui';
 import type { WorkItemDTO } from './types';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface WorkItemModalProps {
   /** Sửa việc tự mở; bỏ trống là mở việc mới. */
@@ -97,7 +98,7 @@ export function WorkItemModal({ initial, onClose, onSaved }: WorkItemModalProps)
             </Select>
           </Field>
           <Field label="Hạn chót" error={errors.dueDate}>
-            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={inputClass(errors.dueDate)} />
+            <DateInput type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={inputClass(errors.dueDate)} />
           </Field>
           <Field label="Trạng thái" htmlFor="wk-status">
             <Select id="wk-status" value={status} onChange={(e) => setStatus(e.target.value as WorkStatusKey)} className="px-3.5 py-2.5">

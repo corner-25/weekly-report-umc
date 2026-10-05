@@ -6,6 +6,7 @@ import { CrmApiError, crmSend, errorMessage } from './api';
 import { EntityCombobox, comboLabel, type ComboValue } from './EntityCombobox';
 import { cleanText } from './format';
 import { ErrorBanner, Field, ModalFooter, ModalShell, Toggle, inputClass } from './ui';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface PositionModalProps {
   contactId: string;
@@ -75,11 +76,11 @@ export function PositionModal({ contactId, onClose, onSaved }: PositionModalProp
         )}
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Từ ngày" error={errors.fromDate}>
-            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className={inputClass(errors.fromDate)} />
+            <DateInput type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className={inputClass(errors.fromDate)} />
           </Field>
           {!isCurrent && (
             <Field label="Đến ngày" error={errors.toDate}>
-              <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className={inputClass(errors.toDate)} />
+              <DateInput type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className={inputClass(errors.toDate)} />
             </Field>
           )}
         </div>

@@ -2,6 +2,7 @@
 
 import { Select } from '@/components/ui/Select';
 import { useState } from 'react';
+import { DateInput } from '@/components/ui/DateInput';
 
 interface Application {
   id: string;
@@ -92,7 +93,7 @@ export function AdvanceModal({ application, action, departments, onClose, onSucc
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ngày phỏng vấn</label>
-                <input
+                <DateInput
                   type="date"
                   value={interviewDate}
                   onChange={(e) => setInterviewDate(e.target.value)}
@@ -141,7 +142,7 @@ export function AdvanceModal({ application, action, departments, onClose, onSucc
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu làm việc</label>
-                <input
+                <DateInput
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}

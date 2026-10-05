@@ -161,3 +161,14 @@ body {
     transition-duration: 1ms !important;
   }
 }
+
+/*
+ * Điện thoại: 90vh tính cả phần thanh địa chỉ/thanh công cụ Safari đang hiện, nên
+ * modal cao hơn vùng nhìn thấy — đầu modal (tiêu đề, nút đóng) bị che. dvh là chiều
+ * cao vùng nhìn thấy thật.
+ */
+@supports (height: 100dvh) {
+  .max-h-\[90vh\] { max-height: 90dvh; }
+  .max-h-\[92vh\] { max-height: 92dvh; }
+  .max-h-\[94vh\] { max-height: 94dvh; }
+}
