@@ -12,7 +12,8 @@ Bước 2 — khảo sát (chạy một lần để lập trình viên biết d�
     → ghi mọi phản hồi JSON của trang danh sách và trang chi tiết đầu tiên vào ~/.qlcv/survey/
 
 Bước 3 — cào và đẩy lên (link mặc định: Theo dõi chỉ đạo của BGĐ):
-    WORK_IMPORT_TOKEN=... python3 tools/qlcv-scraper/scrape.py run --push
+    python3 tools/qlcv-scraper/scrape.py run --push
+    (mã nạp dữ liệu đọc từ biến WORK_IMPORT_TOKEN hoặc file ~/.qlcv/token)
 
 Danh sách lấy từ API nội bộ /v1/tasks/getTasks mà chính trang gọi (bắt phản hồi
 khi mở trang, không tự gọi API): đủ tiêu đề, đơn vị, người thực hiện, người theo
@@ -192,9 +193,10 @@ def cmd_run(url: str, push: bool) -> None:
     if push:
         import urllib.request
 
-        token = os.environ.get("WORK_IMPORT_TOKEN")
+        token_file = HOME / "token"
+        token = os.environ.get("WORK_IMPORT_TOKEN") or (token_file.read_text().strip() if token_file.exists() else "")
         if not token:
-            sys.exit("Thiếu biến môi trường WORK_IMPORT_TOKEN để đẩy lên hệ thống")
+            sys.exit(f"Thiếu mã nạp dữ liệu: đặt WORK_IMPORT_TOKEN hoặc ghi vào {token_file}")
         req = urllib.request.Request(
             f"{APP_URL}/api/work/import",
             data=out.read_bytes(),
