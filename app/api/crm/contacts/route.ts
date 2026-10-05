@@ -13,9 +13,15 @@ export const GET = handle(async (request: Request) => {
   const tier = parseTier(params.get('tier'));
   const tag = params.get('tag')?.trim();
   const owner = params.get('owner')?.trim();
+  // Hai loại: VIP (Phòng HC tự gắn) và Đối tác (mọi người còn lại — đầu mối, người liên hệ của tổ chức).
+  const kind = params.get('kind');
+  const focalOnly = params.get('focal') === '1';
 
   const where: Prisma.CrmContactWhereInput = {
     ...(tier && { tier }),
+    ...(kind === 'vip' && { tier: 'VIP' as const }),
+    ...(kind === 'partner' && { tier: { not: 'VIP' as const } }),
+    ...(focalOnly && { positions: { some: { isFocalPoint: true, isCurrent: true } } }),
     ...(tag && { tags: { has: tag } }),
     ...(owner && { ownerName: owner }),
     ...(search && {
@@ -38,9 +44,8 @@ export const GET = handle(async (request: Request) => {
       ownerName: true, phone: true, email: true, status: true,
       positions: {
         where: { isCurrent: true },
-        orderBy: { createdAt: 'desc' },
-        take: 1,
-        select: { title: true, organization: { select: { id: true, name: true } } },
+        orderBy: [{ isFocalPoint: 'desc' }, { createdAt: 'desc' }],
+        select: { title: true, isFocalPoint: true, organization: { select: { id: true, name: true } } },
       },
       interactions: { orderBy: { occurredAt: 'desc' }, take: 1, select: { occurredAt: true } },
       participations: {
@@ -55,7 +60,12 @@ export const GET = handle(async (request: Request) => {
     contacts.map(({ positions, interactions, participations, ...c }) => {
       const dates = [interactions[0]?.occurredAt, participations[0]?.interaction.occurredAt].filter(Boolean) as Date[];
       const last = dates.sort((a, b) => b.getTime() - a.getTime())[0];
-      return { ...c, currentPosition: positions[0] ?? null, lastInteractionAt: last?.toISOString() ?? null };
+      return {
+        ...c,
+        currentPosition: positions[0] ?? null,
+        focalCount: positions.filter((p) => p.isFocalPoint).length,
+        lastInteractionAt: last?.toISOString() ?? null,
+      };
     }),
   );
 });

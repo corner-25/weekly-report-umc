@@ -30,6 +30,9 @@ const organizationShape = {
   ownerName: optionalText(200),
   tags: z.array(z.string().trim().min(1).max(50)).max(20),
   note: optionalText(4000),
+  /** Loại chi tiết (Bệnh viện - Cơ sở y tế…) và phạm vi (Trong nước…) theo danh mục sổ tiếp đoàn. */
+  category: optionalText(100),
+  scope: optionalText(100),
 };
 
 export const organizationInputSchema = z.object({
@@ -247,3 +250,26 @@ export const careTaskStatusSchema = z.object({
   note: optionalText(2000),
 });
 export type CareTaskStatusInput = z.infer<typeof careTaskStatusSchema>;
+
+/**
+ * Thêm đầu mối liên hệ cho tổ chức: chọn người có sẵn trong danh bạ, hoặc nhập
+ * nhanh người mới (họ tên, điện thoại, email). Chức vụ không bắt buộc.
+ */
+export const focalPointInputSchema = z
+  .object({
+    contactId: z.string().optional(),
+    newContact: z
+      .object({
+        fullName: z.string().trim().min(1, 'Họ tên là bắt buộc').max(200),
+        academicTitle: optionalText(50),
+        phone: optionalText(50),
+        email: z.string().trim().email('Email không hợp lệ').max(200).optional().or(z.literal('').transform(() => undefined)),
+      })
+      .optional(),
+    title: optionalText(200),
+  })
+  .refine((v) => Boolean(v.contactId) !== Boolean(v.newContact), {
+    message: 'Chọn một người trong danh bạ hoặc nhập người mới',
+    path: ['contactId'],
+  });
+export type FocalPointInput = z.infer<typeof focalPointInputSchema>;

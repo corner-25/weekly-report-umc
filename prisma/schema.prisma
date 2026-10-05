@@ -1670,6 +1670,8 @@ model CrmPosition {
   fromDate       DateTime?
   toDate         DateTime?
   isCurrent      Boolean   @default(true)
+  /// Người này là đầu mối liên hệ của tổ chức (Phòng HC liên lạc qua người này).
+  isFocalPoint   Boolean   @default(false)
   createdAt      DateTime  @default(now())
 
   contact      CrmContact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
@@ -1677,6 +1679,7 @@ model CrmPosition {
 
   @@index([contactId])
   @@index([organizationId])
+  @@index([organizationId, isFocalPoint])
   @@map("crm_positions")
 }
 

@@ -3,7 +3,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { AlertCircle, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TIER_LABELS } from '@/lib/crm/constants';
 import type { Tier } from './types';
 
 export const PRIMARY_BTN =
@@ -16,20 +15,23 @@ export const ICON_BTN =
   'rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500';
 export const PANEL = 'rounded-2xl border border-slate-200/80 bg-white shadow-sm';
 
-const TIER_STYLES: Record<Tier, string> = {
-  VIP: 'bg-slate-900 text-white',
-  A: 'bg-blue-600 text-white',
-  B: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200',
-  C: 'bg-slate-100 text-slate-500',
-};
-
-export function TierBadge({ tier, className }: { tier: Tier; className?: string }) {
+/**
+ * Danh bạ cá nhân chỉ chia hai loại: VIP (Phòng HC tự gắn) và Đối tác (đầu mối,
+ * người liên hệ của các tổ chức). Hạng A/B/C cũ không còn hiện — coi như Đối tác.
+ * Tổ chức không phân hạng: không truyền `partner` thì chỉ hiện khi là VIP.
+ */
+export function TierBadge({ tier, partner = false, className }: { tier: Tier; partner?: boolean; className?: string }) {
+  if (tier !== 'VIP' && !partner) return null;
   return (
     <span
-      className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold tracking-wide', TIER_STYLES[tier], className)}
-      title={`Hạng ${TIER_LABELS[tier]}`}
+      className={cn(
+        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold tracking-wide',
+        tier === 'VIP' ? 'bg-slate-900 text-amber-300' : 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200',
+        className,
+      )}
+      title={tier === 'VIP' ? 'Khách VIP — Phòng HC tự gắn' : 'Đối tác — đầu mối, người liên hệ của tổ chức'}
     >
-      {TIER_LABELS[tier]}
+      {tier === 'VIP' ? 'VIP' : 'Đối tác'}
     </span>
   );
 }

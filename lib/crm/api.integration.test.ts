@@ -44,6 +44,9 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       contacts: await import('@/app/api/crm/contacts/route'),
       contact: await import('@/app/api/crm/contacts/[id]/route'),
       orgs: await import('@/app/api/crm/organizations/route'),
+      org: await import('@/app/api/crm/organizations/[id]/route'),
+      focal: await import('@/app/api/crm/organizations/[id]/focal-points/route'),
+      position: await import('@/app/api/crm/positions/[id]/route'),
       interactions: await import('@/app/api/crm/interactions/route'),
       interaction: await import('@/app/api/crm/interactions/[id]/route'),
       dates: await import('@/app/api/crm/important-dates/route'),
@@ -79,6 +82,36 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
     const list = await call(api.contacts.GET, '/api/crm/contacts?search=bệnh viện x');
     expect(list.json).toHaveLength(1);
     expect(list.json[0].currentPosition.organization.name).toBe('Bệnh viện X');
+  });
+
+  it('đầu mối liên hệ: thêm người mới, đánh dấu người có sẵn, bỏ đánh dấu; lọc VIP/đối tác', async () => {
+    const orgs = await call(api.orgs.GET, '/api/crm/organizations?search=benh vien x');
+    const orgId = orgs.json[0].id as string;
+    expect(orgs.json[0].focalPoints).toEqual([]);
+
+    const added = await call(api.focal.POST, `/api/crm/organizations/${orgId}/focal-points`, { newContact: { fullName: 'Trần Thị Đầu Mối', phone: '0901000111' } }, orgId);
+    expect(added.status).toBe(201);
+    // Người đã có chức vụ ở đơn vị: chỉ đánh dấu, không tạo chức vụ thứ hai.
+    const marked = await call(api.focal.POST, `/api/crm/organizations/${orgId}/focal-points`, { contactId: khachId }, orgId);
+    expect(marked.status).toBe(201);
+
+    const detail = await call(api.org.GET, `/api/crm/organizations/${orgId}`, undefined, orgId);
+    const focal = detail.json.contacts.filter((c: { isFocalPoint: boolean }) => c.isFocalPoint);
+    expect(focal.map((c: { fullName: string }) => c.fullName).sort()).toEqual(['Nguyễn Văn A', 'Trần Thị Đầu Mối']);
+    expect(detail.json.contacts.filter((c: { id: string }) => c.id === khachId)).toHaveLength(1);
+
+    const listed = await call(api.orgs.GET, '/api/crm/organizations?focal=yes&search=benh vien x');
+    expect(listed.json[0].focalPoints.map((f: { phone: string | null }) => f.phone)).toContain('0901000111');
+
+    const vip = await call(api.contacts.GET, '/api/crm/contacts?kind=vip');
+    expect(vip.json.map((c: { fullName: string }) => c.fullName)).toEqual(['Nguyễn Văn A']);
+    const partners = await call(api.contacts.GET, '/api/crm/contacts?kind=partner&focal=1');
+    expect(partners.json.map((c: { fullName: string }) => c.fullName)).toEqual(['Trần Thị Đầu Mối']);
+
+    const req = new Request(`http://test/api/crm/organizations/${orgId}/focal-points?positionId=${added.json.positionId}`, { method: 'DELETE' });
+    expect((await api.focal.DELETE(req, { params: Promise.resolve({ id: orgId }) })).status).toBe(200);
+    const after = await call(api.orgs.GET, '/api/crm/organizations?focal=yes&search=benh vien x');
+    expect(after.json[0].focalPoints).toHaveLength(1);
   });
 
   it('từ chối ngày sinh thiếu tháng', async () => {
@@ -178,7 +211,8 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
     const kinds = r.json.upcoming.filter((u: { target: { id: string } }) => u.target.id === khachId).map((u: { kind: string }) => u.kind);
     expect(kinds).toContain('BIRTHDAY');
     expect(kinds).toContain('APPOINTMENT');
-    expect(r.json.counts.contacts).toBe(2);
+    // Khách VIP, khách dẫn khám, đầu mối thêm ở bài kiểm tra đầu mối.
+    expect(r.json.counts.contacts).toBe(3);
   });
 
   it('tìm nhanh cho ô chọn khách', async () => {

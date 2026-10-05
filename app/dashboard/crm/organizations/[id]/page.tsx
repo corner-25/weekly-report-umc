@@ -6,7 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Building2, MessagesSquare, Pencil, Trash2, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ORGANIZATION_TYPE_LABELS } from '@/lib/crm/constants';
-import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { changeCareTaskStatus, changeInteractionStatus, crmFetch, crmSend, errorMessage } from '@/components/crm/api';
+import { FocalPointModal, FocalPointsCard } from '@/components/crm/FocalPoints';
 import { CareTaskModal } from '@/components/crm/CareTaskModal';
 import { CareTasksPanel } from '@/components/crm/CareTasksPanel';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
@@ -16,14 +17,15 @@ import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/Interac
 import { OrganizationModal } from '@/components/crm/OrganizationModal';
 import { daysUntilLabel, displayName, formatDate, initials } from '@/components/crm/format';
 import type { CareTaskDTO, ImportantDateDTO, InteractionDTO, OrganizationDetail } from '@/components/crm/types';
-import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
+import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
 type Dialog =
   | { kind: 'interaction'; mode: InteractionMode; initial?: InteractionDTO }
   | { kind: 'edit' }
   | { kind: 'date'; initial?: ImportantDateDTO }
-  | { kind: 'care'; initial?: CareTaskDTO };
+  | { kind: 'care'; initial?: CareTaskDTO }
+  | { kind: 'focal' };
 
 const SOON_DAYS = 30;
 
@@ -96,10 +98,10 @@ export default function OrganizationProfilePage() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">{org.name}</h1>
-              <TierBadge tier={org.tier} />
             </div>
             <p className="mt-0.5 text-sm text-slate-600">
-              {ORGANIZATION_TYPE_LABELS[org.type]}
+              {org.category ?? ORGANIZATION_TYPE_LABELS[org.type]}
+              {org.scope && ` · ${org.scope}`}
               {website && <> · <a href={website} target="_blank" rel="noopener noreferrer" className="text-cyan-700 hover:underline">{org.website}</a></>}
             </p>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
@@ -141,6 +143,13 @@ export default function OrganizationProfilePage() {
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <div className="grid gap-4">
+          <FocalPointsCard
+            contacts={org.contacts}
+            onAdd={() => setDialog({ kind: 'focal' })}
+            onToggle={(c, isFocalPoint) => {
+              crmSend(`/api/crm/positions/${c.positionId}`, 'PATCH', { isFocalPoint }).then(() => load()).catch((e) => setError(errorMessage(e)));
+            }}
+          />
           <SectionCard title="Thông tin" icon={<Building2 className="h-4 w-4 text-cyan-600" aria-hidden="true" />}>
             <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm">
               <dt className="text-slate-500">Loại</dt>
@@ -194,21 +203,7 @@ export default function OrganizationProfilePage() {
             }}
           />
 
-          <SectionCard title="Người liên hệ" icon={<Users className="h-4 w-4 text-blue-600" aria-hidden="true" />} action={<span className="text-xs text-slate-500">{currentContacts.length} người</span>}>
-            {org.contacts.length === 0 ? (
-              <p className="text-sm text-slate-500">Chưa có ai. Thêm chức vụ tại tổ chức này trong hồ sơ cá nhân.</p>
-            ) : (
-              <>
-                <ContactList items={currentContacts} />
-                {formerContacts.length > 0 && (
-                  <div className="mt-4">
-                    <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">Đã từng làm việc tại đây</p>
-                    <ContactList items={formerContacts} muted />
-                  </div>
-                )}
-              </>
-            )}
-          </SectionCard>
+
         </div>
 
         <SectionCard title="Dòng thời gian tương tác" icon={<MessagesSquare className="h-4 w-4 text-cyan-600" aria-hidden="true" />} action={<span className="text-xs text-slate-500">{org.interactions.length} lượt</span>}>
@@ -244,6 +239,7 @@ export default function OrganizationProfilePage() {
           onSaved={closeAndReload}
         />
       )}
+      {dialog?.kind === 'focal' && <FocalPointModal organizationId={org.id} organizationName={org.name} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'edit' && <OrganizationModal initial={org} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
       {dialog?.kind === 'care' && (
         <CareTaskModal
@@ -256,21 +252,6 @@ export default function OrganizationProfilePage() {
       )}
       {dialog?.kind === 'date' && <ImportantDateModal owner={{ organizationId: org.id }} initial={dialog.initial} onClose={() => setDialog(null)} onSaved={closeAndReload} />}
     </div>
-  );
-}
-
-function ContactList({ items, muted = false }: { items: OrganizationDetail['contacts']; muted?: boolean }) {
-  return (
-    <ul className="divide-y divide-dashed divide-slate-200">
-      {items.map((c) => (
-        <li key={`${c.id}-${c.title ?? ''}`} className="py-2 first:pt-0 last:pb-0 text-sm">
-          <Link href={`/dashboard/crm/contacts/${c.id}`} className={cn('font-semibold hover:text-cyan-700 hover:underline', muted ? 'text-slate-500' : 'text-slate-900')}>
-            {displayName(c)}
-          </Link>
-          {c.title && <span className="text-slate-500"> · {c.title}</span>}
-        </li>
-      ))}
-    </ul>
   );
 }
 

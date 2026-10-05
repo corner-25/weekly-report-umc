@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Building2, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
-import { changeCareTaskStatus, changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
+import { changeCareTaskStatus, changeInteractionStatus, crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { CareTaskModal } from '@/components/crm/CareTaskModal';
 import { CareTasksPanel } from '@/components/crm/CareTasksPanel';
 import { ContactModal } from '@/components/crm/ContactModal';
@@ -94,7 +94,7 @@ export default function ContactProfilePage() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">{name}</h1>
-              <TierBadge tier={contact.tier} />
+              <TierBadge tier={contact.tier} partner />
               {contact.status === 'INACTIVE' && <span className="text-xs font-medium text-slate-400">Ngừng quan hệ</span>}
             </div>
             <p className="mt-0.5 text-sm text-slate-600">
@@ -186,6 +186,9 @@ export default function ContactProfilePage() {
           <PositionsCard
             positions={contact.positions}
             onAdd={() => setDialog({ kind: 'position' })}
+            onToggleFocal={(p, isFocalPoint) => {
+              crmSend(`/api/crm/positions/${p.id}`, 'PATCH', { isFocalPoint }).then(() => load()).catch((e) => setError(errorMessage(e)));
+            }}
             onDelete={(p) => askDelete({
               title: 'Xoá chức vụ',
               message: `Xoá chức vụ “${p.title}”${p.organization ? ` tại ${p.organization.name}` : ''}?`,
@@ -195,6 +198,7 @@ export default function ContactProfilePage() {
           />
         </div>
 
+        <div className="grid gap-4">
         <SectionCard title="Dòng thời gian tương tác" icon={<MessagesSquare className="h-4 w-4 text-cyan-600" aria-hidden="true" />} action={<span className="text-xs text-slate-500">{contact.interactions.length} lượt</span>}>
           {contact.interactions.length === 0 ? (
             <EmptyState title="Chưa có tương tác" hint="Dùng “Ghi tương tác” để ghi lượt dẫn khám, gặp mặt, gọi điện…" />
@@ -215,6 +219,16 @@ export default function ContactProfilePage() {
             />
           )}
         </SectionCard>
+        {contact.orgActivity.length > 0 && (
+          <SectionCard
+            title="Hoạt động gần đây của đơn vị"
+            icon={<Building2 className="h-4 w-4 text-brand-600" aria-hidden="true" />}
+            action={<span className="text-xs text-slate-500">đoàn, tương tác với đơn vị</span>}
+          >
+            <InteractionTimeline items={contact.orgActivity} compact />
+          </SectionCard>
+        )}
+        </div>
       </div>
 
       {deleteDialog}

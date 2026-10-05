@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Briefcase, HeartHandshake, Lock, Phone, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Briefcase, HeartHandshake, Lock, Phone, Plus, Sparkles, Star, StarOff, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CONTACT_STATUS_LABELS, RELATION_KIND_LABELS } from '@/lib/crm/constants';
 import { formatDate } from './format';
@@ -113,7 +113,17 @@ function period(p: PositionDTO): string {
   return `${from} → ${to}`;
 }
 
-export function PositionsCard({ positions, onAdd, onDelete }: { positions: PositionDTO[]; onAdd: () => void; onDelete: (p: PositionDTO) => void }) {
+export function PositionsCard({
+  positions,
+  onAdd,
+  onDelete,
+  onToggleFocal,
+}: {
+  positions: PositionDTO[];
+  onAdd: () => void;
+  onDelete: (p: PositionDTO) => void;
+  onToggleFocal?: (p: PositionDTO, isFocalPoint: boolean) => void;
+}) {
   const sorted = [...positions].sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent) || (b.fromDate ?? '').localeCompare(a.fromDate ?? ''));
   return (
     <SectionCard
@@ -127,10 +137,11 @@ export function PositionsCard({ positions, onAdd, onDelete }: { positions: Posit
         <ul className="divide-y divide-dashed divide-slate-200">
           {sorted.map((p) => (
             <li key={p.id} className="flex items-start justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-              <div className="min-w-0 text-sm">
+              <div className="min-w-0 flex-1 text-sm">
                 <p className="font-semibold text-slate-900">
                   {p.title}
                   {p.isCurrent && <span className="ml-2 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">hiện tại</span>}
+                  {p.isFocalPoint && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">đầu mối liên hệ</span>}
                 </p>
                 <p className="text-slate-600">
                   {p.department && `${p.department}, `}
@@ -140,6 +151,17 @@ export function PositionsCard({ positions, onAdd, onDelete }: { positions: Posit
                 </p>
                 <p className="text-xs tabular-nums text-slate-500">{period(p)}</p>
               </div>
+              {onToggleFocal && p.isCurrent && p.organization && (
+                <button
+                  type="button"
+                  onClick={() => onToggleFocal(p, !p.isFocalPoint)}
+                  className={cn(ICON_BTN, p.isFocalPoint ? 'text-amber-500' : '')}
+                  title={p.isFocalPoint ? 'Bỏ đầu mối của đơn vị này' : 'Đặt làm đầu mối của đơn vị này'}
+                >
+                  {p.isFocalPoint ? <StarOff className="h-3.5 w-3.5" aria-hidden="true" /> : <Star className="h-3.5 w-3.5" aria-hidden="true" />}
+                  <span className="sr-only">{p.isFocalPoint ? 'Bỏ đầu mối' : 'Đặt làm đầu mối'}</span>
+                </button>
+              )}
               <button type="button" onClick={() => onDelete(p)} aria-label={`Xoá chức vụ ${p.title}`} className={cn(ICON_BTN, '-mr-1 hover:bg-red-50 hover:text-red-600')}>
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

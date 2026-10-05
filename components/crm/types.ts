@@ -198,7 +198,9 @@ export interface ContactListItem {
   phone: string | null;
   email: string | null;
   status: ContactStatus;
-  currentPosition: { title: string; organization: { id: string; name: string } | null } | null;
+  currentPosition: { title: string; isFocalPoint: boolean; organization: { id: string; name: string } | null } | null;
+  /** Số tổ chức người này là đầu mối liên hệ. */
+  focalCount: number;
   lastInteractionAt: string | null;
 }
 
@@ -209,7 +211,12 @@ export interface OrganizationListItem {
   tier: Tier;
   ownerName: string | null;
   tags: string[];
+  category: string | null;
+  scope: string | null;
   contactCount: number;
+  /** Đầu mối liên hệ hiện tại (tối đa vài người). */
+  focalPoints: Array<{ id: string; fullName: string; academicTitle: string | null; title: string; phone: string | null; email: string | null }>;
+  delegationCount: number;
   lastInteractionAt: string | null;
   nextAnniversary: { date: string; label: string } | null;
 }
@@ -228,6 +235,7 @@ export interface PositionDTO {
   fromDate: string | null;
   toDate: string | null;
   isCurrent: boolean;
+  isFocalPoint: boolean;
   organization: { id: string; name: string } | null;
 }
 
@@ -269,6 +277,22 @@ export interface ContactDetail {
   interactions: InteractionDTO[];
   careTasks: CareTaskDTO[];
   upcoming: UpcomingDTO[];
+  /** Hoạt động gần đây của đơn vị người này đang làm (không có người này). */
+  orgActivity: InteractionDTO[];
+}
+
+export interface OrganizationContact {
+  id: string;
+  fullName: string;
+  academicTitle: string | null;
+  tier: Tier;
+  title: string | null;
+  department: string | null;
+  isCurrent: boolean;
+  positionId: string;
+  isFocalPoint: boolean;
+  phone: string | null;
+  email: string | null;
 }
 
 export interface OrganizationDetail {
@@ -288,7 +312,7 @@ export interface OrganizationDetail {
   category: string | null;
   scope: string | null;
   aliases: string[];
-  contacts: Array<{ id: string; fullName: string; academicTitle: string | null; title: string | null; isCurrent: boolean }>;
+  contacts: OrganizationContact[];
   importantDates: ImportantDateDTO[];
   interactions: InteractionDTO[];
   careTasks: CareTaskDTO[];

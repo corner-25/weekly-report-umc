@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { Lock } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
-import { CONTACT_STATUS_LABELS, TIER_LABELS, VIP_STAFF } from '@/lib/crm/constants';
+import { CONTACT_STATUS_LABELS, VIP_STAFF } from '@/lib/crm/constants';
 import type { ContactInput } from '@/lib/crm/schemas';
 import { CrmApiError, crmSend, errorMessage } from './api';
 import { cleanText, textOrClear, toInt, withCurrent, type Clearable } from './format';
@@ -175,11 +175,27 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
                 <option value="Nữ">Nữ</option>
               </Select>
             </Field>
-            <Field label="Hạng" htmlFor="ct-tier" error={errors.tier}>
-              <Select id="ct-tier" value={form.tier} onChange={(e) => set('tier', e.target.value as Tier)} className="px-3.5 py-2.5">
-                {(Object.keys(TIER_LABELS) as Tier[]).map((tier) => <option key={tier} value={tier}>Hạng {TIER_LABELS[tier]}</option>)}
-              </Select>
-            </Field>
+            <fieldset>
+              <legend className="mb-1.5 block text-sm font-semibold text-slate-700">Loại</legend>
+              <div className="inline-flex rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="Loại">
+                {([['C', 'Đối tác'], ['VIP', 'VIP']] as const).map(([value, label]) => {
+                  const on = value === 'VIP' ? form.tier === 'VIP' : form.tier !== 'VIP';
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => set('tier', value)}
+                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${on ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-1 text-xs text-slate-500">Đối tác: đầu mối, người liên hệ của tổ chức. VIP: Phòng HC tự gắn.</p>
+            </fieldset>
           </div>
           {!isEdit && (
             <div className="grid gap-4 sm:grid-cols-2">

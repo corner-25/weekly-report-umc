@@ -2,11 +2,11 @@
 
 import { useState, type FormEvent } from 'react';
 import { Select } from '@/components/ui/Select';
-import { ORGANIZATION_TYPE_LABELS, TIER_LABELS, VIP_STAFF } from '@/lib/crm/constants';
+import { ORGANIZATION_CATEGORIES, ORGANIZATION_SCOPES, VIP_STAFF } from '@/lib/crm/constants';
 import type { OrganizationInput } from '@/lib/crm/schemas';
 import { CrmApiError, crmSend, errorMessage } from './api';
 import { textOrClear, withCurrent, type Clearable } from './format';
-import type { OrganizationDetail, OrganizationType, Tier } from './types';
+import type { OrganizationDetail, OrganizationType } from './types';
 import { ErrorBanner, Field, ModalFooter, ModalShell, TagInput, inputClass } from './ui';
 
 interface OrganizationModalProps {
@@ -18,7 +18,8 @@ interface OrganizationModalProps {
 interface FormState {
   name: string;
   type: OrganizationType;
-  tier: Tier;
+  category: string;
+  scope: string;
   address: string;
   website: string;
   phone: string;
@@ -32,7 +33,8 @@ function initialState(initial?: OrganizationDetail | null): FormState {
   return {
     name: initial?.name ?? '',
     type: initial?.type ?? 'OTHER',
-    tier: initial?.tier ?? 'C',
+    category: initial?.category ?? '',
+    scope: initial?.scope ?? '',
     address: initial?.address ?? '',
     website: initial?.website ?? '',
     phone: initial?.phone ?? '',
@@ -63,8 +65,10 @@ export function OrganizationModal({ initial, onClose, onSaved }: OrganizationMod
       const isEdit = Boolean(initial);
       const body: Clearable<OrganizationInput> = {
         name: form.name.trim(),
-        type: form.type,
-        tier: form.tier,
+        // Loại gộp của CRM suy từ loại chi tiết; tổ chức quốc tế theo phạm vi. Không phân hạng tổ chức.
+        type: form.scope === 'Tổ chức quốc tế' ? 'INTERNATIONAL' : ORGANIZATION_CATEGORIES[form.category] ?? form.type,
+        category: textOrClear(form.category, isEdit),
+        scope: textOrClear(form.scope, isEdit),
         address: textOrClear(form.address, isEdit),
         website: textOrClear(form.website, isEdit),
         phone: textOrClear(form.phone, isEdit),
@@ -93,14 +97,16 @@ export function OrganizationModal({ initial, onClose, onSaved }: OrganizationMod
           <input data-autofocus value={form.name} onChange={(e) => set('name', e.target.value)} className={inputClass(errors.name)} placeholder="Bệnh viện X" />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Loại" htmlFor="org-type" error={errors.type}>
-            <Select id="org-type" value={form.type} onChange={(e) => set('type', e.target.value as OrganizationType)} className="px-3.5 py-2.5">
-              {(Object.keys(ORGANIZATION_TYPE_LABELS) as OrganizationType[]).map((t) => <option key={t} value={t}>{ORGANIZATION_TYPE_LABELS[t]}</option>)}
+          <Field label="Loại tổ chức" htmlFor="org-category" error={errors.category}>
+            <Select id="org-category" value={form.category} onChange={(e) => set('category', e.target.value)} className="px-3.5 py-2.5">
+              <option value="">Chưa phân loại</option>
+              {withCurrent(Object.keys(ORGANIZATION_CATEGORIES), form.category).map((c) => <option key={c} value={c}>{c}</option>)}
             </Select>
           </Field>
-          <Field label="Hạng" htmlFor="org-tier" error={errors.tier}>
-            <Select id="org-tier" value={form.tier} onChange={(e) => set('tier', e.target.value as Tier)} className="px-3.5 py-2.5">
-              {(Object.keys(TIER_LABELS) as Tier[]).map((t) => <option key={t} value={t}>Hạng {TIER_LABELS[t]}</option>)}
+          <Field label="Phạm vi" htmlFor="org-scope" error={errors.scope}>
+            <Select id="org-scope" value={form.scope} onChange={(e) => set('scope', e.target.value)} className="px-3.5 py-2.5">
+              <option value="">Chưa ghi</option>
+              {withCurrent(ORGANIZATION_SCOPES, form.scope).map((c) => <option key={c} value={c}>{c}</option>)}
             </Select>
           </Field>
         </div>

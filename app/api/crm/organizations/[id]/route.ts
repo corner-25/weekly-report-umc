@@ -17,7 +17,7 @@ import {
 
 type Ctx = { params: Promise<{ id: string }> };
 
-const CLEARABLE = ['address', 'website', 'phone', 'email', 'ownerName', 'note'] as const;
+const CLEARABLE = ['address', 'website', 'phone', 'email', 'ownerName', 'note', 'category', 'scope'] as const;
 
 /** Hồ sơ tổ chức: người liên hệ (theo chức vụ), ngày quan trọng, dòng thời gian. */
 export const GET = handle(async (_request: Request, { params }: Ctx) => {
@@ -27,8 +27,8 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     where: { id },
     include: {
       positions: {
-        orderBy: [{ isCurrent: 'desc' }, { createdAt: 'desc' }],
-        include: { contact: { select: { id: true, fullName: true, academicTitle: true, tier: true } } },
+        orderBy: [{ isCurrent: 'desc' }, { isFocalPoint: 'desc' }, { createdAt: 'desc' }],
+        include: { contact: { select: { id: true, fullName: true, academicTitle: true, tier: true, phone: true, email: true, salutation: true } } },
       },
       importantDates: { orderBy: [{ month: 'asc' }, { day: 'asc' }] },
       interactions: { include: interactionInclude, orderBy: { occurredAt: 'desc' }, take: 200 },
@@ -43,6 +43,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     contacts: positions.map((p) => ({
       id: p.contact.id, fullName: p.contact.fullName, academicTitle: p.contact.academicTitle,
       tier: p.contact.tier, title: p.title, isCurrent: p.isCurrent,
+      positionId: p.id, isFocalPoint: p.isFocalPoint, phone: p.contact.phone, email: p.contact.email, department: p.department,
     })),
     importantDates: importantDates.map(toImportantDateDto),
     interactions: interactions.map(toInteractionDto),

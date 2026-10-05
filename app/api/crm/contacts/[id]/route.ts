@@ -28,6 +28,7 @@ const CLEARABLE = [
   'giftAddress', 'ownerName', 'sensitiveNote', 'source', 'note', 'preferences',
 ] as const;
 type Clearable = (typeof CLEARABLE)[number];
+const ORG_ACTIVITY_LIMIT = 8;
 
 /** Hồ sơ 360° một cá nhân. */
 export const GET = handle(async (_request: Request, { params }: Ctx) => {
@@ -48,7 +49,9 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   if (!contact) throw new HttpError(404, 'Không tìm thấy hồ sơ');
 
   // Dòng thời gian gồm cả lượt người này là khách chính lẫn là thành viên đoàn.
-  const [interactions, careTasks] = await Promise.all([
+  // Hoạt động gần đây của các đơn vị người này đang làm (đoàn, tương tác với đơn vị) — để thấy qua lại hai bên.
+  const currentOrgIds = contact.positions.filter((p) => p.isCurrent && p.organizationId).map((p) => p.organizationId as string);
+  const [interactions, careTasks, orgActivity] = await Promise.all([
     prisma.crmInteraction.findMany({
       where: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] },
       include: interactionInclude,
@@ -59,6 +62,14 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     prisma.crmCareTask.findMany({
       where: { contactId: id }, include: careTaskInclude, orderBy: { occasionDate: 'desc' }, take: 100,
     }),
+    currentOrgIds.length
+      ? prisma.crmInteraction.findMany({
+          where: { organizationId: { in: currentOrgIds }, NOT: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] } },
+          include: interactionInclude,
+          orderBy: { occurredAt: 'desc' },
+          take: ORG_ACTIVITY_LIMIT,
+        })
+      : Promise.resolve([]),
   ]);
 
   const { relationsFrom, sensitiveNote, ...rest } = contact;
@@ -72,7 +83,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     ...(allowed && { sensitiveNote }),
     canSeeSensitive: allowed,
     positions: contact.positions.map((p) => ({
-      id: p.id, title: p.title, department: p.department, isCurrent: p.isCurrent,
+      id: p.id, title: p.title, department: p.department, isCurrent: p.isCurrent, isFocalPoint: p.isFocalPoint,
       fromDate: p.fromDate?.toISOString() ?? null, toDate: p.toDate?.toISOString() ?? null,
       organization: p.organization,
     })),
@@ -82,6 +93,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     importantDates: contact.importantDates.map(toImportantDateDto),
     interactions: interactions.map(toInteractionDto),
     careTasks: careTasks.map(toCareTaskDto),
+    orgActivity: orgActivity.map(toInteractionDto),
     upcoming: upcomingFor(sources),
   });
 });
