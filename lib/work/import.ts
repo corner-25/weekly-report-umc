@@ -38,6 +38,18 @@ const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
   'Phòng QTTN': 'Phòng Quản trị Tòa nhà',
   'Trung tâm TT': 'Trung tâm Truyền thông',
   'Đơn vị QLMSĐT': 'Đơn vị Quản lý Đấu thầu',
+  'Đơn vị PCKTNB': 'Đơn vị Pháp chế & Kiểm toán nội bộ',
+  'Đơn vị CTNM': 'Đơn vị Can thiệp nội mạch',
+  'Khoa GMHS': 'Khoa Gây mê - Hồi sức',
+  'Khoa KSKTYC': 'Khoa Khám sức khỏe theo yêu cầu',
+  'Khoa NS': 'Khoa Nội soi',
+  'Khoa KB': 'Khoa Khám bệnh',
+  'Khoa LNMM': 'Khoa Lồng ngực- Mạch máu',
+  'Khoa KSNK': 'Khoa Kiểm soát nhiễm khuẩn',
+  'Khoa CDHA': 'Khoa Chẩn đoán hình ảnh',
+  'Khoa CC': 'Khoa Cấp cứu',
+  'Khoa GPB': 'Khoa Giải phẫu bệnh',
+  'Khoa NTTNT': 'Khoa Nội thận - Thận nhân tạo',
 };
 /** Số việc ghi trong một transaction — file vài nghìn việc vẫn không giữ khoá quá lâu. */
 const CHUNK = 100;

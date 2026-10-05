@@ -160,6 +160,12 @@ def unit_of(value: str | None) -> str | None:
     return m.group(1).strip() if m else None
 
 
+def shared_unit(names: list) -> str | None:
+    """Việc không ghi đơn vị mà mọi người theo dõi cùng một đơn vị → coi là đơn vị chủ trì."""
+    units = {unit_of(n) for n in names if n}
+    return units.pop() if len(units) == 1 and None not in units else None
+
+
 def log_updates(detail: dict) -> list:
     """Bảng "Theo dõi tiến độ thực hiện" của trang chi tiết: ngày báo cáo, %, mô tả, người nhập."""
     updates = []
@@ -198,7 +204,7 @@ def to_contract(rows: list, list_url: str, details: dict | None = None) -> dict:
             "title": (r.get("taskTitle") or "").strip(),
             "description": (r.get("description") or "").strip() or None,
             "kind": "DIRECTIVE",
-            "leadUnit": r.get("assigneeDeptName") or r.get("deptName") or unit_of(r.get("assigneeName")),
+            "leadUnit": r.get("assigneeDeptName") or r.get("deptName") or unit_of(r.get("assigneeName")) or shared_unit(watchers),
             "directedBy": r.get("reporterName"),
             "directedAt": day(directed.get("dateValue") or directed.get("strValue")) or day(r.get("createdDate")),
             "assignees": [r["assigneeName"]] if r.get("assigneeName") else [],
