@@ -4,7 +4,7 @@ export const WORK_KIND_LABELS = { DIRECTIVE: 'Chỉ đạo BGĐ', PLAN: 'Theo k�
 
 export const WORK_STATUS_LABELS = {
   NOT_STARTED: 'Chưa thực hiện',
-  IN_PROGRESS: 'Đang thực hiện',
+  IN_PROGRESS: 'Đang xử lý',
   PAUSED: 'Tạm dừng',
   DONE: 'Hoàn thành',
   CANCELLED: 'Đã huỷ',
@@ -21,7 +21,7 @@ export type WorkPriorityKey = keyof typeof WORK_PRIORITY_LABELS;
 /** Việc đang làm mà quá ngần này ngày không có cập nhật thì coi là "lâu chưa cập nhật". */
 export const STALE_DAYS = 14;
 /** Hạn chót trong ngần này ngày tới thì nhắc "sắp đến hạn". */
-export const DUE_SOON_DAYS = 7;
+export const DUE_SOON_DAYS = 30;
 
 /** Trạng thái đã khép lại — không nhắc, không tính quá hạn. */
 export const CLOSED_STATUSES: readonly WorkStatusKey[] = ['DONE', 'CANCELLED'];

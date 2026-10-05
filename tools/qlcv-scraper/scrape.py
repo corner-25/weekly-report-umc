@@ -213,6 +213,7 @@ def to_contract(rows: list, list_url: str, details: dict | None = None) -> dict:
             "dueDate": day(r.get("deadline")),
             "status": r.get("statusName"),
             "progressPercent": r.get("percentDone"),
+            "completedAt": r.get("finishDate") if r.get("statusName") == "Hoàn thành" else None,
             "updates": updates,
         }
         stamps = [u["at"] for u in updates if u["at"][:4].isdigit()]

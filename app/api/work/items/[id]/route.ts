@@ -45,6 +45,7 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
       ...rest,
       ...(directedAt !== undefined && { directedAt: directedAt ? new Date(`${directedAt}T00:00:00Z`) : null }),
       ...(dueDate !== undefined && { dueDate: dueDate ? new Date(`${dueDate}T00:00:00Z`) : null }),
+      ...(rest.status !== undefined && { completedAt: rest.status === 'DONE' ? (item.completedAt ?? new Date()) : null }),
     },
     include: workItemInclude,
   });

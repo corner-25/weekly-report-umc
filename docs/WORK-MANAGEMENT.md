@@ -76,6 +76,6 @@ Nếu trang danh sách có nút "Xuất Excel", dùng file đó thay cho việc 
 ## Nhắc việc
 
 - Người nhận: thư ký **đang làm việc**, **có email**, thuộc đơn vị chủ trì.
-- Việc được nhắc: quá hạn, đến hạn trong 7 ngày, hoặc quá 14 ngày không cập nhật (`lib/work/constants.ts`).
+- Việc được nhắc: quá hạn, đến hạn trong 30 ngày, hoặc quá 14 ngày không cập nhật (`lib/work/constants.ts`).
 - Mỗi thư ký nhận một email gom việc của đơn vị mình; việc đã nhắc trong 7 ngày không nhắc lại.
 - Gửi thật cần biến SMTP (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`) trên service `web`. Chưa có thì chỉ xem trước.

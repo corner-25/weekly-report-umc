@@ -70,7 +70,7 @@ const NAV: NavSection[] = [
       {
         href: '/dashboard/work', label: 'Quản lý công việc', icon: ClipboardList, badge: 'work',
         children: [
-          { href: '/dashboard/work', label: 'Theo dõi', exact: true },
+          { href: '/dashboard/work', label: 'Bảng điều hành', exact: true },
           { href: '/dashboard/work/items', label: 'Danh sách công việc' },
         ],
       },
@@ -155,6 +155,7 @@ function itemActive(pathname: string, item: NavItem): boolean {
 }
 
 const COLLAPSED_KEY = 'sidebar-collapsed';
+const MOBILE_MAX_WIDTH = 1024;
 
 const fetcher = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null));
 
@@ -171,9 +172,11 @@ export function Sidebar() {
 
   useEffect(() => {
     try {
-      setCollapsed(localStorage.getItem(COLLAPSED_KEY) === 'true');
+      const saved = localStorage.getItem(COLLAPSED_KEY);
+      // Chưa chọn lần nào: màn hình hẹp (điện thoại, máy tính bảng dọc) thu gọn để nội dung đủ chỗ.
+      setCollapsed(saved === null ? window.innerWidth < MOBILE_MAX_WIDTH : saved === 'true');
     } catch {
-      /* trình duyệt chặn lưu trữ: mở rộng mặc định */
+      setCollapsed(window.innerWidth < MOBILE_MAX_WIDTH);
     }
   }, []);
 

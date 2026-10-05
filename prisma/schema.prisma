@@ -1925,6 +1925,8 @@ model WorkItem {
   /// Trạng thái nguyên văn ở nguồn, giữ để đối chiếu cách quy đổi.
   externalStatus    String?
   progressPercent   Int?
+  /// Ngày hoàn thành (ở nguồn hoặc lúc Phòng HC chuyển Hoàn thành) — tính đúng hạn, thời gian xử lý.
+  completedAt       DateTime?
   /// Lần cập nhật gần nhất (ở nguồn hoặc ghi tay) — dùng để tìm việc lâu không cập nhật.
   lastActivityAt    DateTime?
   /// Lần cào gần nhất còn thấy việc này.
@@ -1956,6 +1958,7 @@ model WorkItem {
   @@index([status, lastActivityAt])
   @@index([departmentId])
   @@index([dueDate])
+  @@index([completedAt])
   @@map("work_items")
 }
 

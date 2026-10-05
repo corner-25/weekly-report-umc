@@ -64,6 +64,7 @@ run('Quản lý công việc (tích hợp)', { timeout: 30_000 }, () => {
       item: await import('@/app/api/work/items/[id]/route'),
       updates: await import('@/app/api/work/items/[id]/updates/route'),
       overview: await import('@/app/api/work/overview/route'),
+      analytics: await import('@/app/api/work/analytics/route'),
       reminders: await import('@/app/api/work/reminders/route'),
     } as never;
     // Không bao giờ gửi email thật khi chạy test (đặt sau import vì có module nạp lại .env).
@@ -134,5 +135,17 @@ run('Quản lý công việc (tích hợp)', { timeout: 30_000 }, () => {
     expect(reminders.json.recipients[0]).toMatchObject({ email: 'thuky.a@umc.edu.vn', department: 'Phòng Hành chính' });
     expect(reminders.json.recipients[0].items.map((i: { reason: string }) => i.reason).sort()).toEqual(['due_soon', 'overdue']);
     expect((await call(api.reminders.POST, '/api/work/reminders', { body: {} })).status).toBe(403);
+  });
+
+  it('bảng điều hành: tổng quan, theo đơn vị, lọc theo đơn vị', async () => {
+    const all = await call(api.analytics.GET, '/api/work/analytics');
+    expect(all.status).toBe(200);
+    expect(all.json.kpi).toMatchObject({ open: 2, overdue: 1, done: 1 });
+    expect(all.json.units.find((u: { departmentId: string | null }) => u.departmentId === deptId)).toBeTruthy();
+    expect(all.json.lists.overdue).toHaveLength(1);
+
+    const scoped = await call(api.analytics.GET, `/api/work/analytics?phong=${deptId}`);
+    expect(scoped.json.filters.departmentId).toBe(deptId);
+    expect(scoped.json.units.every((u: { departmentId: string | null }) => u.departmentId === deptId)).toBe(true);
   });
 });

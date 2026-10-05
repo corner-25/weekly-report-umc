@@ -62,6 +62,8 @@ export const workImportItemSchema = z.object({
   dueDate: looseDate.optional(),
   status: optionalText(200),
   progressPercent: percent.optional(),
+  /** Ngày hoàn thành ở nguồn (chỉ có với việc đã xong). */
+  completedAt: looseDateTime.optional(),
   /** Lần sửa gần nhất ở nguồn, nếu trang có hiện. */
   lastUpdatedAt: looseDateTime.optional(),
   updates: z.array(workImportUpdateSchema).default([]),

@@ -1,144 +1,188 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, BellRing, ClipboardList, Plus } from 'lucide-react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { BellRing, ClipboardList, ListChecks, Plus, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Select } from '@/components/ui/Select';
 import { crmFetch, errorMessage } from '@/components/crm/api';
-import { formatDateTime } from '@/components/crm/format';
-import { ErrorBanner, PRIMARY_BTN, SECONDARY_BTN, SectionCard, Stat } from '@/components/crm/ui';
+import { ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN, SectionCard } from '@/components/crm/ui';
 import { ImportCard } from '@/components/work/ImportCard';
 import { RemindersModal } from '@/components/work/RemindersModal';
 import { WorkItemModal } from '@/components/work/WorkItemModal';
-import { WorkItemRow } from '@/components/work/WorkBits';
-import type { WorkItemDTO, WorkOverviewDTO } from '@/components/work/types';
+import { MonthlyChart } from '@/components/work/dashboard/charts';
+import { KpiBand } from '@/components/work/dashboard/KpiBand';
+import { UnitScoreboard } from '@/components/work/dashboard/UnitScoreboard';
+import { AgingCard, GroupBars, ProgressCard } from '@/components/work/dashboard/Breakdowns';
+import { ActionLists, RecentUpdates } from '@/components/work/dashboard/ActionLists';
+import { GlossaryCard, Term } from '@/components/work/dashboard/Glossary';
+import type { WorkAnalyticsDTO } from '@/components/work/types';
 
-function ItemList({ items, empty }: { items: WorkItemDTO[]; empty: string }) {
-  if (items.length === 0) return <p className="py-4 text-center text-sm text-slate-500">{empty}</p>;
-  return <ul className="-mx-2 divide-y divide-slate-100">{items.map((i) => <WorkItemRow key={i.id} item={i} />)}</ul>;
+function Skeleton() {
+  return (
+    <div className="space-y-4" aria-hidden="true">
+      <div className={cn(PANEL, 'h-[232px] animate-pulse bg-slate-50')} />
+      <div className="grid gap-4 xl:grid-cols-3">
+        <div className={cn(PANEL, 'h-80 animate-pulse bg-slate-50 xl:col-span-2')} />
+        <div className={cn(PANEL, 'h-80 animate-pulse bg-slate-50')} />
+      </div>
+    </div>
+  );
 }
 
-const viewLink = (view: string, label: string) => (
-  <Link href={`/dashboard/work/items?view=${view}`} className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-700 hover:underline">
-    {label} <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-  </Link>
-);
-
-/** B3: theo dõi công việc chỉ đạo — việc quá hạn, lâu chưa cập nhật, vừa cập nhật gì. */
-export default function WorkOverviewPage() {
-  const [data, setData] = useState<WorkOverviewDTO | null>(null);
+/** Bảng điều hành công việc chỉ đạo: tồn đọng, hoàn thành, tiến độ theo đơn vị, lãnh đạo, thời gian. */
+function WorkDashboard() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const year = params.get('nam') ?? '';
+  const departmentId = params.get('phong') ?? '';
+  const [data, setData] = useState<WorkAnalyticsDTO | null>(null);
   const [error, setError] = useState('');
   const [showReminders, setShowReminders] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
 
   const load = useCallback(async () => {
     setError('');
+    const query = new URLSearchParams();
+    if (year) query.set('nam', year);
+    if (departmentId) query.set('phong', departmentId);
     try {
-      setData(await crmFetch<WorkOverviewDTO>('/api/work/overview'));
+      setData(await crmFetch<WorkAnalyticsDTO>(`/api/work/analytics?${query.toString()}`));
     } catch (loadError) {
-      setError(errorMessage(loadError, 'Không tải được bảng theo dõi công việc.'));
+      setError(errorMessage(loadError, 'Không tải được bảng điều hành công việc.'));
     }
-  }, []);
+  }, [year, departmentId]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  const c = data?.counts;
+  const hrefWith = (changes: Record<string, string>) => {
+    const next = new URLSearchParams(params.toString());
+    for (const [k, v] of Object.entries(changes)) {
+      if (v) next.set(k, v);
+      else next.delete(k);
+    }
+    const qs = next.toString();
+    return qs ? `${pathname}?${qs}` : pathname;
+  };
+  const setParam = (key: string, value: string) => router.replace(hrefWith({ [key]: value }), { scroll: false });
+  const listHref = (view: string, dept = departmentId) => {
+    const q = new URLSearchParams({ view });
+    if (dept) q.set('departmentId', dept);
+    if (year) q.set('nam', year);
+    return `/dashboard/work/items?${q.toString()}`;
+  };
+
+  const department = data?.filters.departments.find((d) => d.id === departmentId);
+  const scopeLabel = [department?.name ?? (departmentId ? 'Một đơn vị' : 'Toàn bệnh viện'), year ? `năm ${year}` : 'mọi năm'].join(' · ');
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         icon={ClipboardList}
-        title="Theo dõi công việc"
-        description="Chỉ đạo của Ban Giám đốc và việc theo kế hoạch"
+        title="Điều hành công việc"
+        description={`Chỉ đạo của Ban Giám đốc — ${scopeLabel}`}
         className="flex-wrap gap-4"
         actions={
           <div className="flex flex-wrap gap-2">
+            <Link href={listHref('all')} className={SECONDARY_BTN}>
+              <ListChecks className="h-4 w-4" aria-hidden="true" /> Danh sách
+            </Link>
             <button type="button" onClick={() => setShowReminders(true)} className={SECONDARY_BTN}>
-              <BellRing className="h-4 w-4" aria-hidden="true" /> Nhắc việc qua email
+              <BellRing className="h-4 w-4" aria-hidden="true" /> Nhắc việc
             </button>
             <button type="button" onClick={() => setShowCreate(true)} className={PRIMARY_BTN}>
-              <Plus className="h-4 w-4" aria-hidden="true" /> Mở việc theo kế hoạch
+              <Plus className="h-4 w-4" aria-hidden="true" /> Mở việc
             </button>
           </div>
         }
       />
 
+      <div className={cn(PANEL, 'flex flex-wrap items-center gap-3 px-4 py-3')}>
+        <div role="group" aria-label="Năm giao việc" className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
+          {['', ...(data?.filters.years.map(String) ?? [])].map((y) => (
+            <button
+              key={y || 'all'}
+              type="button"
+              aria-pressed={year === y}
+              onClick={() => setParam('nam', y)}
+              className={cn('rounded-lg px-3 py-1.5 text-[13px] font-semibold tabular-nums transition', year === y ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-600 hover:text-slate-900')}
+            >
+              {y || 'Mọi năm'}
+            </button>
+          ))}
+        </div>
+        <div className="flex min-w-[240px] flex-1 items-center gap-2 sm:max-w-sm">
+          <label htmlFor="work-dept" className="shrink-0 text-sm font-medium text-slate-600">Đơn vị</label>
+          <Select id="work-dept" value={departmentId} onChange={(e) => setParam('phong', e.target.value)} className="px-3 py-2">
+            <option value="">Toàn bệnh viện</option>
+            {data?.filters.departments.map((d) => <option key={d.id} value={d.id}>{`${d.name} (${d.count})`}</option>)}
+          </Select>
+        </div>
+        {(year || departmentId) && (
+          <Link href={pathname} className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+            <X className="h-4 w-4" aria-hidden="true" /> Bỏ lọc
+          </Link>
+        )}
+      </div>
+
       <ErrorBanner message={error} />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <Stat label="Đang mở" value={c?.open ?? '—'} hint={c ? `${c.directives} chỉ đạo BGĐ` : undefined} />
-        <Stat label="Quá hạn" value={c?.overdue ?? '—'} tone={c && c.overdue > 0 ? 'accent' : 'default'} />
-        <Stat label="Lâu chưa cập nhật" value={c?.stale ?? '—'} hint="quá 14 ngày" />
-        <Stat label="Sắp đến hạn" value={c?.dueSoon ?? '—'} hint="trong 7 ngày" />
-        <Stat label="Có cập nhật tuần này" value={c?.updatedThisWeek ?? '—'} />
-        <Stat label="Đã hoàn thành" value={c?.done ?? '—'} />
-      </div>
+      {!data ? (
+        <Skeleton />
+      ) : (
+        <div className="space-y-5 animate-fade-in">
+          <KpiBand data={data} listHref={(view) => listHref(view)} />
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <div className="space-y-4">
-          <SectionCard title="Quá hạn" action={viewLink('overdue', 'Xem tất cả')}>
-            <ItemList items={data?.overdue ?? []} empty={data ? 'Không có việc nào quá hạn.' : 'Đang tải...'} />
-          </SectionCard>
-          <SectionCard title="Lâu chưa cập nhật" action={viewLink('stale', 'Xem tất cả')}>
-            <ItemList items={data?.stale ?? []} empty={data ? 'Việc nào cũng có cập nhật trong 14 ngày qua.' : 'Đang tải...'} />
-          </SectionCard>
-          <SectionCard title="Sắp đến hạn" action={viewLink('open', 'Mọi việc đang mở')}>
-            <ItemList items={data?.dueSoon ?? []} empty={data ? 'Không có việc nào đến hạn trong 7 ngày tới.' : 'Đang tải...'} />
-          </SectionCard>
+          <div className="grid items-start gap-5 xl:grid-cols-3">
+            <SectionCard title="Giao việc và hoàn thành theo tháng" className="xl:col-span-2" action={<span className="text-xs text-slate-500">rê chuột để xem số từng tháng</span>}>
+              <MonthlyChart
+                data={data.monthly}
+                legend={
+                  <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-600">
+                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-brand-500" aria-hidden="true" /><Term term="assigned" align="left" /></span>
+                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" aria-hidden="true" /><Term term="done" align="left" /></span>
+                    <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-amber-500" aria-hidden="true" /><Term term="backlog">Còn tồn cuối tháng (trục phải)</Term></span>
+                  </div>
+                }
+              />
+            </SectionCard>
+            <AgingCard aging={data.aging} />
+          </div>
+
+          {!departmentId && (
+            <UnitScoreboard
+              units={data.units}
+              scopeHref={(id) => hrefWith({ phong: id })}
+              listHref={(id) => listHref('open', id)}
+            />
+          )}
+
+          <div className="grid items-start gap-5 lg:grid-cols-3">
+            <ProgressCard progress={data.progress} />
+            <GroupBars title="Theo lãnh đạo chỉ đạo" term="leader" rows={data.leaders} empty="Chưa ghi người chỉ đạo." />
+            <GroupBars title="Theo hình thức chỉ đạo" term="category" rows={data.categories} empty="Chưa có phân loại." />
+          </div>
+
+          <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <ActionLists
+              lists={data.lists}
+              counts={{ overdue: data.kpi.overdue, stale: data.kpi.staleOnly, dueSoon: data.kpi.dueSoon }}
+              listHref={(view) => listHref(view)}
+            />
+            <div className="space-y-5">
+              <RecentUpdates updates={data.recentUpdates} />
+              <ImportCard lastImport={data.lastImport} onImported={load} />
+            </div>
+          </div>
+
+          <GlossaryCard />
         </div>
-
-        <div className="space-y-4">
-          <SectionCard title="Cập nhật gần đây" action={<span className="text-xs text-slate-500">7 ngày qua</span>}>
-            {!data?.recentUpdates.length ? (
-              <p className="py-4 text-center text-sm text-slate-500">{data ? 'Chưa có cập nhật nào trong tuần.' : 'Đang tải...'}</p>
-            ) : (
-              <ol className="space-y-3">
-                {data.recentUpdates.map((u) => (
-                  <li key={u.id} className="text-sm">
-                    <Link href={`/dashboard/work/items/${u.item.id}`} className="font-semibold text-slate-900 line-clamp-1 hover:text-cyan-700">{u.item.title}</Link>
-                    <p className="text-xs text-slate-500">
-                      {formatDateTime(u.occurredAt)}{u.author && ` · ${u.author}`}{u.progressPercent != null && ` · ${u.progressPercent}%`}
-                    </p>
-                    <p className="mt-0.5 whitespace-pre-line text-slate-700 line-clamp-3">{u.content}</p>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </SectionCard>
-
-          <SectionCard title="Theo đơn vị chủ trì">
-            {!data?.byUnit.length ? (
-              <p className="py-4 text-center text-sm text-slate-500">{data ? 'Chưa có việc đang mở.' : 'Đang tải...'}</p>
-            ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs text-slate-500">
-                    <th scope="col" className="py-1.5 font-semibold">Đơn vị</th>
-                    <th scope="col" className="py-1.5 text-right font-semibold">Mở</th>
-                    <th scope="col" className="py-1.5 text-right font-semibold">Quá hạn</th>
-                    <th scope="col" className="py-1.5 text-right font-semibold">Lâu chưa CN</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {data.byUnit.map((u) => (
-                    <tr key={u.unit}>
-                      <th scope="row" className="py-1.5 pr-2 text-left font-medium text-slate-700">
-                        {u.departmentId ? <Link href={`/dashboard/work/items?departmentId=${u.departmentId}`} className="hover:text-cyan-700">{u.unit}</Link> : u.unit}
-                      </th>
-                      <td className="py-1.5 text-right tabular-nums">{u.open}</td>
-                      <td className={`py-1.5 text-right tabular-nums ${u.overdue ? 'font-semibold text-red-600' : 'text-slate-400'}`}>{u.overdue}</td>
-                      <td className={`py-1.5 text-right tabular-nums ${u.stale ? 'font-semibold text-amber-700' : 'text-slate-400'}`}>{u.stale}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </SectionCard>
-
-          <ImportCard lastImport={data?.lastImport ?? null} onImported={load} />
-        </div>
-      </div>
+      )}
 
       {showReminders && <RemindersModal onClose={() => setShowReminders(false)} />}
       {showCreate && (
@@ -151,5 +195,13 @@ export default function WorkOverviewPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function WorkDashboardPage() {
+  return (
+    <Suspense>
+      <WorkDashboard />
+    </Suspense>
   );
 }

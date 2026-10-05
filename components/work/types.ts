@@ -1,5 +1,6 @@
 /** Dữ liệu giao diện Quản lý công việc nhận từ `/api/work/**`. */
 import type { WorkKindKey, WorkPriorityKey, WorkStatusKey } from '@/lib/work/constants';
+import type { WorkAnalytics } from '@/lib/work/analytics';
 
 export interface WorkHealthDTO {
   isClosed: boolean;
@@ -43,6 +44,7 @@ export interface WorkItemDTO {
   status: WorkStatusKey;
   externalStatus: string | null;
   progressPercent: number | null;
+  completedAt: string | null;
   lastActivityAt: string | null;
   lastSeenAt: string | null;
   priority: WorkPriorityKey;
@@ -87,6 +89,13 @@ export interface WorkOverviewDTO {
     problemCount: number;
   } | null;
 }
+
+export type WorkAnalyticsDTO = WorkAnalytics & {
+  filters: { year: number | null; departmentId: string | null; years: number[]; departments: Array<{ id: string; name: string; count: number }> };
+  lists: { overdue: WorkItemDTO[]; dueSoon: WorkItemDTO[]; stale: WorkItemDTO[] };
+  recentUpdates: Array<Omit<WorkUpdateDTO, 'source'> & { item: { id: string; title: string; unit: string | null } }>;
+  lastImport: WorkOverviewDTO['lastImport'];
+};
 
 export interface WorkImportResult {
   itemsSeen: number;

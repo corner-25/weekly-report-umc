@@ -30,6 +30,7 @@ export function toWorkItemDto(item: WorkItemWithRelations, now: Date = new Date(
     status: item.status,
     externalStatus: item.externalStatus,
     progressPercent: item.progressPercent,
+    completedAt: item.completedAt?.toISOString() ?? null,
     lastActivityAt: item.lastActivityAt?.toISOString() ?? null,
     lastSeenAt: item.lastSeenAt?.toISOString() ?? null,
     priority: item.priority,

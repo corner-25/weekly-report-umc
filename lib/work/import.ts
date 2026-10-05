@@ -54,6 +54,8 @@ const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
   'Khoa PHCN': 'Khoa Phục hồi chức năng',
   'Khoa DLTMD': 'Khoa Da liễu - Thẩm mỹ da',
   'Khoa PS': 'Khoa Phụ sản',
+  'Khoa NT': 'Khoa Nội tiết',
+  BGĐ: 'Ban Giám đốc',
 };
 /** Số việc ghi trong một transaction — file vài nghìn việc vẫn không giữ khoá quá lâu. */
 const CHUNK = 100;
@@ -76,6 +78,7 @@ function sourceFields(item: WorkImportItem, departmentId: string | null) {
     watchers: item.watchers,
     dueDate: dateOrNull(item.dueDate),
     status: mapExternalStatus(item.status, item.progressPercent),
+    completedAt: item.completedAt ?? null,
     externalStatus: item.status ?? null,
     progressPercent: item.progressPercent ?? null,
   } satisfies Prisma.WorkItemUncheckedUpdateInput;
@@ -90,6 +93,12 @@ function changedFrom(existing: Record<string, unknown>, next: Record<string, unk
     }
     return JSON.stringify(old ?? null) !== JSON.stringify(value ?? null);
   });
+}
+
+/** Việc đã xong: ngày nguồn ghi, không có thì giữ ngày đã biết, không nữa thì lấy lúc thấy xong. Chưa xong: không có. */
+export function completedAtFor(status: string, fromSource: Date | null, known: Date | null, fallback: Date): Date | null {
+  if (status !== 'DONE') return null;
+  return fromSource ?? known ?? fallback;
 }
 
 function latest(dates: Array<Date | null | undefined>): Date | null {
@@ -164,14 +173,18 @@ export async function importWorkPayload(
         if (!old) {
           const created = await tx.workItem.create({
             // Phân loại ở nguồn (Giao ban tuần/tháng) làm nhãn ban đầu; sau đó nhãn là của Phòng HC.
-            data: { ...fields, source: 'QLCV', externalId: item.externalId, tags: item.category ? [item.category] : [], lastActivityAt: activity, lastSeenAt: now },
+            data: { ...fields, completedAt: completedAtFor(fields.status, fields.completedAt, null, activity ?? now), source: 'QLCV', externalId: item.externalId, tags: item.category ? [item.category] : [], lastActivityAt: activity, lastSeenAt: now },
             select: { id: true },
           });
           workItemId = created.id;
           itemsCreated += 1;
         } else {
           // Phòng ban đã gán tay thì giữ, chỉ điền khi còn trống.
-          const next = { ...fields, departmentId: old.departmentId ?? fields.departmentId };
+          const next = {
+            ...fields,
+            departmentId: old.departmentId ?? fields.departmentId,
+            completedAt: completedAtFor(fields.status, fields.completedAt, old.completedAt, now),
+          };
           if (changedFrom(old, next)) itemsChanged += 1;
           await tx.workItem.update({
             where: { id: old.id },

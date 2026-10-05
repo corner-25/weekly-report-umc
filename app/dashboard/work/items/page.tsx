@@ -14,7 +14,7 @@ import { WorkItemRow } from '@/components/work/WorkBits';
 import type { WorkItemDTO } from '@/components/work/types';
 
 const VIEWS = [
-  ['open', 'Đang mở'],
+  ['open', 'Đang thực hiện'],
   ['overdue', 'Quá hạn'],
   ['stale', 'Lâu chưa cập nhật'],
   ['done', 'Đã xong'],
@@ -29,6 +29,7 @@ function WorkItemsList() {
   const view = params.get('view') ?? 'open';
   const kind = params.get('kind') ?? '';
   const departmentId = params.get('departmentId') ?? '';
+  const year = params.get('nam') ?? '';
   const [q, setQ] = useState(params.get('q') ?? '');
   const [items, setItems] = useState<WorkItemDTO[] | null>(null);
   const [error, setError] = useState('');
@@ -47,6 +48,7 @@ function WorkItemsList() {
     if (view !== 'all') query.set('view', view);
     if (kind) query.set('kind', kind);
     if (departmentId) query.set('departmentId', departmentId);
+    if (year) query.set('nam', year);
     const search = params.get('q');
     if (search) query.set('q', search);
     try {
@@ -54,7 +56,7 @@ function WorkItemsList() {
     } catch (loadError) {
       setError(errorMessage(loadError, 'Không tải được danh sách công việc.'));
     }
-  }, [view, kind, departmentId, params]);
+  }, [view, kind, departmentId, year, params]);
 
   useEffect(() => {
     load();
@@ -63,12 +65,12 @@ function WorkItemsList() {
   return (
     <div className="space-y-5">
       <Link href="/dashboard/work" className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}>
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Theo dõi công việc
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Điều hành công việc
       </Link>
       <PageHeader
         icon={ListChecks}
         title="Danh sách công việc"
-        description={items ? `${items.length} việc${items.length >= 300 ? ' (hiện 300 việc đầu, lọc thêm để thu hẹp)' : ''}` : 'Đang tải...'}
+        description={items ? `${items.length} việc${items.length >= 1000 ? ' (hiện 1.000 việc đầu, lọc thêm để thu hẹp)' : ''}` : 'Đang tải...'}
         className="flex-wrap gap-4"
         actions={
           <button type="button" onClick={() => setShowCreate(true)} className={PRIMARY_BTN}>
@@ -111,7 +113,12 @@ function WorkItemsList() {
           </select>
           {departmentId && (
             <button type="button" onClick={() => setParam('departmentId', '')} className="rounded-xl bg-cyan-50 px-3 text-sm font-medium text-cyan-800 hover:bg-cyan-100">
-              Đang lọc 1 đơn vị · bỏ lọc
+              {items?.find((i) => i.department?.id === departmentId)?.department?.name ?? 'Đang lọc 1 đơn vị'} · bỏ lọc
+            </button>
+          )}
+          {year && (
+            <button type="button" onClick={() => setParam('nam', '')} className="rounded-xl bg-cyan-50 px-3 text-sm font-medium text-cyan-800 hover:bg-cyan-100">
+              Giao năm {year} · bỏ lọc
             </button>
           )}
         </div>

@@ -10,7 +10,7 @@ import { compressedJson } from '@/lib/http/compressed-json';
 
 const STATUSES = new Set(['NOT_STARTED', 'IN_PROGRESS', 'PAUSED', 'DONE', 'CANCELLED']);
 const KINDS = new Set(['DIRECTIVE', 'PLAN', 'OTHER']);
-const LIST_LIMIT = 300;
+const LIST_LIMIT = 1000;
 
 /**
  * Danh sách công việc. Lọc: status, kind, departmentId, q (tìm không dấu theo
@@ -29,6 +29,12 @@ export const GET = handle(async (request: Request) => {
   if (kind && KINDS.has(kind)) and.push({ kind: kind as Prisma.EnumWorkKindFilter['equals'] });
   const departmentId = params.get('departmentId');
   if (departmentId) and.push({ departmentId });
+  // Năm giao việc: theo ngày chỉ đạo, việc không ghi ngày chỉ đạo thì theo ngày tạo.
+  const year = params.get('nam');
+  if (year && /^\d{4}$/.test(year)) {
+    const range = { gte: new Date(`${year}-01-01T00:00:00Z`), lt: new Date(`${Number(year) + 1}-01-01T00:00:00Z`) };
+    and.push({ OR: [{ directedAt: range }, { directedAt: null, createdAt: range }] });
+  }
 
   const open: Prisma.WorkItemWhereInput = { status: { notIn: [...CLOSED_STATUSES] } };
   switch (params.get('view')) {
@@ -65,6 +71,7 @@ export const POST = handle(async (request: Request) => {
       source: 'MANUAL',
       directedAt: data.directedAt ? new Date(`${data.directedAt}T00:00:00Z`) : null,
       dueDate: data.dueDate ? new Date(`${data.dueDate}T00:00:00Z`) : null,
+      completedAt: data.status === 'DONE' ? new Date() : null,
       createdById: session.user.id,
       lastActivityAt: new Date(),
     },
