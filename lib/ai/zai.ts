@@ -12,6 +12,10 @@ const API_URL = 'https://api.z.ai/api/paas/v4/chat/completions';
 
 /** Mặc định cho tác vụ phân loại: cần ổn định, không cần sáng tạo. */
 const DEFAULT_MODEL = 'glm-4.5';
+/** Model không cho tắt suy luận. */
+const ALWAYS_THINKING = /^glm-5\.3/;
+/** Token chừa thêm cho phần suy luận của các model trên. */
+const THINKING_HEADROOM = 3000;
 const DEFAULT_TEMPERATURE = 0.1;
 const DEFAULT_MAX_TOKENS = 16000;
 
@@ -94,7 +98,12 @@ export async function callJson<T>(prompt: string, options: CallOptions = {}): Pr
 
   // Mặc định tắt thinking. Ở tác vụ phân loại có ràng buộc chặt, bật vào làm
   // giảm chất lượng và tốn token.
-  if (!options.thinking) {
+  // Model luôn suy luận (glm-5.3*) không cho tắt — dùng mức thấp nhất và chừa
+  // thêm token cho phần suy luận, nếu không model trả rỗng.
+  if (ALWAYS_THINKING.test(model)) {
+    body.thinking = { type: 'enabled', level: 'low' };
+    body.max_tokens = (options.maxTokens ?? DEFAULT_MAX_TOKENS) + THINKING_HEADROOM;
+  } else if (!options.thinking) {
     body.thinking = { type: 'disabled' };
   }
 

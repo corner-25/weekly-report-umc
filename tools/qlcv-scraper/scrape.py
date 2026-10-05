@@ -158,7 +158,9 @@ def to_contract(rows: list, list_url: str) -> dict:
             "title": (r.get("taskTitle") or "").strip(),
             "description": (r.get("description") or "").strip() or None,
             "kind": "DIRECTIVE",
-            "leadUnit": r.get("assigneeDeptName"),
+            "leadUnit": r.get("assigneeDeptName") or r.get("deptName"),
+            "directedBy": r.get("reporterName"),
+            "directedAt": day(r.get("createdDate")),
             "assignees": [r["assigneeName"]] if r.get("assigneeName") else [],
             "watchers": [w.strip() for w in (r.get("watcherName") or "").split(",") if w.strip()],
             "category": r.get("fN1"),
@@ -173,17 +175,73 @@ def to_contract(rows: list, list_url: str) -> dict:
     return {"source": "qlcv", "scrapedAt": time.strftime("%Y-%m-%dT%H:%M:%S+07:00"), "items": items}
 
 
+def merge_rows(responses: list) -> list:
+    """
+    Trang gọi /v1/tasks/getTasks nhiều lần với các mẫu truy vấn khác nhau: một lần
+    đủ cột (đơn vị, người theo dõi, hạn, lịch sử tiến độ) cho việc đang mở, một lần
+    ít cột nhưng gồm cả việc đã hoàn thành. Gộp theo mã việc, ô nào trống thì lấy
+    từ phản hồi khác — không để phản hồi ít cột xoá mất dữ liệu.
+    """
+    merged: dict = {}
+    for body in responses:
+        for r in body.get("data", {}).get("r", []) or []:
+            key = str(r.get("taskID") or r.get("sys_TaskID"))
+            current = merged.setdefault(key, {})
+            for k, v in r.items():
+                if v not in (None, "", []) and current.get(k) in (None, "", []):
+                    current[k] = v
+    return list(merged.values())
+
+
+GET_TASKS = "https://officeapi.umc.edu.vn/v1/tasks/getTasks"
+#   10252 "Dự án chỉ đạo BGĐ theo đơn vị của người thực hiện (chưa xử lý, đang xử lý)":
+#         đủ cột đơn vị, người theo dõi, hạn, lịch sử mô tả tiến độ — chỉ việc đang mở.
+#   65    "Xem công việc theo Đơn vị": mọi việc kể cả đã hoàn thành, có người giao,
+#         ngày tạo, ngày hoàn thành — nhưng không có lịch sử tiến độ.
+CUSTOM_QUERIES = (10252, 65)
+
+
 def cmd_run(url: str, push: bool) -> None:
+    """
+    Mở trang (để có phiên đăng nhập và mã xác thực trang tự gửi), rồi gọi lại
+    đúng API trang dùng với hai mẫu truy vấn cố định — không phụ thuộc mẫu truy
+    vấn người dùng đang chọn trên giao diện.
+    """
+    captured: dict = {}
     with sync_playwright() as p:
         ctx = open_context(p, headless=True)
         page = ctx.new_page()
-        with page.expect_response(lambda r: "/v1/tasks/getTasks" in r.url and r.status == 200, timeout=60000) as info:
-            page.goto(url)
-        body = info.value.json()
+
+        def on_request(req):
+            if "/v1/tasks/getTasks" in req.url and "headers" not in captured:
+                captured["headers"] = {k: v for k, v in req.headers.items() if k.lower() in ("authorization", "func", "content-type")}
+                captured["body"] = json.loads(req.post_data or "{}")
+
+        page.on("request", on_request)
+        page.goto(url, wait_until="networkidle")
+        # Danh sách được gọi sau khi trang dựng xong menu, có khi trễ vài giây.
+        for _ in range(60):
+            if "headers" in captured:
+                break
+            page.wait_for_timeout(500)
+        if "headers" not in captured:
+            ctx.close()
+            sys.exit("Trang không gọi danh sách công việc — phiên đăng nhập có thể đã hết, chạy lại: scrape.py login")
+        responses = []
+        for query_id in CUSTOM_QUERIES:
+            body = {**captured["body"], "CustomQueryID": query_id}
+            resp = page.request.post(GET_TASKS, data=json.dumps(body), headers=captured["headers"])
+            data = resp.json() if resp.ok else {}
+            if data.get("succeeded"):
+                responses.append(data)
+                print(f"Mẫu truy vấn {query_id}: {len(data['data']['r'])} công việc")
+            else:
+                print(f"Mẫu truy vấn {query_id}: lỗi HTTP {resp.status}")
         ctx.close()
-    if "sign-in" in str(body)[:200] or not body.get("succeeded"):
-        sys.exit("Không lấy được danh sách — phiên đăng nhập có thể đã hết, chạy lại: scrape.py login")
-    rows = body["data"]["r"]
+    if not responses:
+        sys.exit("Không lấy được danh sách công việc")
+    rows = merge_rows(responses)
+    print(f"Gộp được {len(rows)} công việc")
     payload = to_contract(rows, url)
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"qlcv-{time.strftime('%Y%m%d-%H%M')}.json"
