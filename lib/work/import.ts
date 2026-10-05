@@ -50,6 +50,10 @@ const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
   'Khoa CC': 'Khoa Cấp cứu',
   'Khoa GPB': 'Khoa Giải phẫu bệnh',
   'Khoa NTTNT': 'Khoa Nội thận - Thận nhân tạo',
+  'Khoa TN': 'Khoa Tiết niệu',
+  'Khoa PHCN': 'Khoa Phục hồi chức năng',
+  'Khoa DLTMD': 'Khoa Da liễu - Thẩm mỹ da',
+  'Khoa PS': 'Khoa Phụ sản',
 };
 /** Số việc ghi trong một transaction — file vài nghìn việc vẫn không giữ khoá quá lâu. */
 const CHUNK = 100;
