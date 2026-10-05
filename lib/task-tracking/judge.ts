@@ -5,8 +5,9 @@
  */
 import { z } from 'zod';
 import { callJson } from '@/lib/ai/zai';
+import { AI_MODELS } from '@/lib/ai/models';
 
-export const JUDGE_MODEL = 'glm-5.2';
+export const JUDGE_MODEL = AI_MODELS.tracking;
 /** Số việc mỗi lần gọi AI. */
 export const JUDGE_BATCH = 8;
 /** Giữ tối đa ngần này lần báo cáo gần nhất mỗi việc trong prompt. */

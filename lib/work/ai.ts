@@ -5,8 +5,9 @@
  */
 import { z } from 'zod';
 import { callJson } from '@/lib/ai/zai';
+import { AI_MODELS } from '@/lib/ai/models';
 
-const AI_MODEL = 'glm-5.2';
+const AI_MODEL = AI_MODELS.work;
 /** Đủ ngữ cảnh mà không phình prompt với việc có hàng trăm cập nhật. */
 const MAX_UPDATES_IN_PROMPT = 15;
 

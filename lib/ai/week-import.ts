@@ -13,6 +13,7 @@ import { validateMetric, validateMetricGroup } from './metric-validation';
 import { validateAgainstCatalog, type CatalogNodeInfo } from './catalog-validation';
 import { extractMetrics, buildHistory, type MetricExtractionInput } from './metric-extraction';
 import type { MetricCatalogEntry } from './prompts';
+import { AI_MODELS } from './models';
 import {
   matchWeekTasks,
   saveAliases,
@@ -25,7 +26,7 @@ const DEFAULT_MODEL = 'glm-4.5';
  * Trích số liệu theo danh mục chuẩn cần model mạnh hơn khớp nhiệm vụ: glm-5.2 (tắt
  * thinking) đúng mã chỉ số hơn hẳn glm-4.5 trên 14 phòng, giá vẫn rẻ.
  */
-const METRIC_MODEL = 'glm-5.2';
+const METRIC_MODEL = AI_MODELS.extraction;
 
 /** Nhiều dòng Excel cùng thuộc một nghiệp vụ, gộp lại trước khi ghi. */
 interface MergedTask {

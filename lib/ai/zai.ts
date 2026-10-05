@@ -15,7 +15,7 @@ const DEFAULT_MODEL = 'glm-4.5';
 /** Model không cho tắt suy luận. */
 const ALWAYS_THINKING = /^glm-5\.3/;
 /** Token chừa thêm cho phần suy luận của các model trên. */
-const THINKING_HEADROOM = 3000;
+const THINKING_HEADROOM = 12000;
 const DEFAULT_TEMPERATURE = 0.1;
 const DEFAULT_MAX_TOKENS = 16000;
 
