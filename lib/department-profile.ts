@@ -1,12 +1,14 @@
 /**
  * Hồ sơ 360 của một phòng ban: gom mọi thứ hệ thống biết về phòng — báo cáo
- * tuần đã nộp, nhiệm vụ tuần gần nhất, chỉ số chuẩn theo tuần, công việc chỉ đạo,
- * thư ký, giấy phép, MOU. Mỗi phần một truy vấn, chạy song song.
+ * tuần đã nộp, nhiệm vụ báo cáo tuần (task threads), nhiệm vụ tuần gần nhất,
+ * chỉ số chuẩn theo tuần, công việc chỉ đạo (số liệu điều hành + danh sách cần
+ * chú ý), thư ký, giấy phép, MOU. Mỗi phần một truy vấn, chạy song song; phần
+ * tính thuần nằm ở lib/department-profile-sections.ts và lib/department-signals.ts.
  */
 import type { PrismaClient } from '@prisma/client';
 import { NON_SECRETARY_TYPE } from '@/lib/birthday';
-import { CLOSED_STATUSES } from '@/lib/work/constants';
-import { workHealth } from '@/lib/work/status';
+import { buildThreadSection, buildWorkSection } from '@/lib/department-profile-sections';
+import { buildSubmissionStrip, weeksBetween } from '@/lib/department-signals';
 
 /** Số tuần gần nhất hiện trên dải nộp báo cáo và đường xu hướng chỉ số. */
 const WEEKS_SHOWN = 12;
@@ -37,7 +39,7 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
   const latestWeek = weeks[0] ?? null;
   const weekKeys = weeks.map((w) => ({ year: w.year, week: w.weekNumber }));
 
-  const [snapshots, tasksPerWeek, latestTasks, masterTaskCount, facts, flagged, workItems, secretaries, licenses, mous, accounts] = await Promise.all([
+  const [snapshots, tasksPerWeek, latestTasks, masterTaskCount, facts, flagged, workItems, threads, secretaries, licenses, mous, accounts] = await Promise.all([
     db.hospitalImportSnapshot.findMany({
       where: { departmentId, OR: weekKeys.length ? weekKeys : [{ year: -1, week: -1 }] },
       select: { year: true, week: true, taskCount: true, importedAt: true },
@@ -64,12 +66,23 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
         AND (f.year * 100 + f.week_number) >= ${weeks.length ? weeks[weeks.length - 1].year * 100 + weeks[weeks.length - 1].weekNumber : 0}
       ORDER BY f.metric_path, f.year, f.week_number`,
     db.extractedMetric.count({ where: { departmentId, reviewStatus: 'PENDING', NOT: { reviewFlags: { isEmpty: true } } } }),
+    // Mọi công việc của phòng (vài trăm dòng là nhiều) — cần đủ để tính tỷ lệ hoàn thành, đúng hạn.
     db.workItem.findMany({
-      where: { departmentId, status: { notIn: [...CLOSED_STATUSES] } },
-      orderBy: [{ dueDate: { sort: 'asc', nulls: 'last' } }],
-      select: { id: true, title: true, status: true, dueDate: true, directedAt: true, lastActivityAt: true, createdAt: true, progressPercent: true, kind: true },
-      take: 100,
+      where: { departmentId },
+      select: {
+        id: true, title: true, status: true, kind: true, priority: true, dueDate: true, directedAt: true, directedBy: true,
+        lastActivityAt: true, createdAt: true, completedAt: true, progressPercent: true, leadUnit: true, tags: true, departmentId: true,
+      },
     }),
+    latestWeek
+      ? db.taskThread.findMany({
+          where: { departmentId, year: latestWeek.year, entries: { some: {} } },
+          select: {
+            id: true, title: true, kind: true, status: true, overrideKind: true, overrideStatus: true, progress: true, overrideProgress: true,
+            firstWeek: true, lastWeek: true, completedWeek: true, needsReview: true, overriddenAt: true,
+          },
+        })
+      : Promise.resolve([]),
     db.secretary.findMany({
       where: { currentDepartmentId: departmentId, deletedAt: null, status: 'ACTIVE', secretaryType: { is: { name: { not: NON_SECRETARY_TYPE } } } },
       select: { id: true, fullName: true, email: true, phone: true, dateOfBirth: true, secretaryType: { select: { name: true, color: true } } },
@@ -91,13 +104,11 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
   ]);
 
   // Dải nộp báo cáo: tuần nào phòng có trong file báo cáo chung.
-  const submittedKey = new Map(snapshots.map((s) => [`${s.year}-${s.week}`, s]));
-  const taskCountByWeek = new Map(tasksPerWeek.map((t) => [t.weekId, t._count]));
-  const submissions = [...weeks].reverse().map((w) => {
-    const s = submittedKey.get(`${w.year}-${w.weekNumber}`);
-    const tasks = taskCountByWeek.get(w.id) ?? 0;
-    return { year: w.year, week: w.weekNumber, submitted: Boolean(s) || tasks > 0, taskCount: s?.taskCount ?? (tasks || null) };
-  });
+  const submissions = buildSubmissionStrip(
+    weeks,
+    new Map(snapshots.map((s) => [`${s.year}-${s.week}`, s.taskCount])),
+    new Map(tasksPerWeek.map((t) => [t.weekId, t._count])),
+  );
 
   // Chỉ số: gom theo nhóm (đoạn đầu đường dẫn), mỗi chỉ số giữ chuỗi theo tuần.
   const byMetric = new Map<string, { path: string; name: string; unit: string | null; series: Array<{ year: number; week: number; value: number }> }>();
@@ -122,7 +133,10 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
     }))
     .sort((a, b) => b.total - a.total);
 
-  const work = workItems.map((w) => ({ ...w, health: workHealth(w, now) }));
+  const work = buildWorkSection(workItems.map((w) => ({ ...w, departmentName: department.name })), now);
+  const latestKey = latestWeek ? latestWeek.year * 100 + latestWeek.weekNumber : null;
+  const metricKeys = [...byMetric.values()].map((m) => { const l = m.series[m.series.length - 1]; return l.year * 100 + l.week; });
+  const metricsLatestKey = metricKeys.length ? Math.max(...metricKeys) : null;
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
   return {
@@ -137,9 +151,11 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
       weeksShown: submissions.length,
       metrics: byMetric.size,
       flaggedMetrics: flagged,
-      openWork: work.length,
-      overdueWork: work.filter((w) => w.health.isOverdue).length,
-      staleWork: work.filter((w) => w.health.isStale).length,
+      metricsLatestKey,
+      metricsWeeksBehind: weeksBetween(metricsLatestKey, latestKey),
+      openWork: work.kpi.open,
+      overdueWork: work.kpi.overdue,
+      staleWork: work.kpi.stale,
       secretaries: secretaries.length,
       accounts,
     },
@@ -149,10 +165,8 @@ export async function buildDepartmentProfile(db: PrismaClient, departmentId: str
       progress: t.progress, isImportant: t.isImportant, nextWeekPlan: t.nextWeekPlan,
     })),
     metricGroups,
-    work: work.slice(0, 12).map((w) => ({
-      id: w.id, title: w.title, status: w.status, kind: w.kind, progressPercent: w.progressPercent,
-      dueDate: w.dueDate?.toISOString().slice(0, 10) ?? null, health: w.health,
-    })),
+    work,
+    threads: buildThreadSection(threads, latestWeek?.year ?? null),
     secretaries: secretaries.map((s) => ({
       id: s.id, fullName: s.fullName, email: s.email, phone: s.phone,
       type: s.secretaryType?.name ?? null, color: s.secretaryType?.color ?? null,

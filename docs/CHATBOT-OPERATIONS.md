@@ -25,3 +25,16 @@ Gọi `POST /api/cron/chatbot-retention` với header `x-cron-secret` hàng ngà
 ## Kiểm tra lỗi quyền database
 
 Nếu chatbot báo lỗi truy vấn, kiểm tra database/username trong `DATABASE_URL_RO`, quyền `CONNECT`, `USAGE ON SCHEMA public` và `SELECT` trên đúng các view `v_chatbot_*`. Không cấp quyền đọc bảng gốc và không dùng `GRANT SELECT ON ALL TABLES`.
+
+## Dữ liệu chatbot đọc được (bổ sung 05/10/2026)
+
+Migration `20261005150000_chatbot_cong_viec_nhiem_vu` thêm view cho các phân hệ mới (mở cho mọi vai trò, như giao diện):
+
+| View | Nội dung |
+|---|---|
+| `v_chatbot_work_items` | Quản lý công việc — mỗi việc chỉ đạo của BGĐ một dòng, kèm cờ tính sẵn `is_open`, `is_overdue`, `days_overdue`, `is_due_soon`, `is_stale`, `days_since_update`, `on_time`, tên lãnh đạo đã bỏ mã nhân viên, nội dung cập nhật gần nhất |
+| `v_chatbot_work_updates` | Lịch sử cập nhật tiến độ của từng việc |
+| `v_chatbot_task_threads` | Theo dõi nhiệm vụ báo cáo tuần — tình trạng hiệu lực (Phòng HC sửa tay thắng AI), loại việc, %, tuần báo cáo cuối, nội dung lần cuối |
+| `v_chatbot_crm_care_tasks` | CRM chăm sóc đối tác — quà/hoa theo dịp, ngân sách, thực chi, số ảnh; không có tên khách |
+
+Cờ quá hạn / sắp đến hạn (30 ngày) / lâu chưa cập nhật (14 ngày) / đúng hạn tính theo giờ Việt Nam, khớp `lib/work/status.ts` và `lib/work/analytics.ts`. Đổi ngưỡng ở `lib/work/constants.ts` thì sửa cả view. `v_chatbot_vip_summary` từ migration này chỉ đếm lượt CRM đã thực hiện (bỏ lịch hẹn và lượt huỷ).

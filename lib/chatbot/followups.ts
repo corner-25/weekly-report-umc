@@ -37,6 +37,10 @@ const FOLLOWUPS_BY_VIEW: Record<string, string[]> = {
   v_chatbot_metric_tree: ['Phòng Hành chính theo dõi những chỉ số nào?', 'Nhóm tổng đài gồm những chỉ số con nào?'],
   v_chatbot_metric_facts: ['So với tháng trước thì thế nào?', 'Chỉ số con nào đóng góp nhiều nhất?'],
   v_chatbot_weeks: ['Tuần này các phòng làm gì?', 'Chỉ số nào giảm mạnh so với tuần trước?'],
+  v_chatbot_work_items: ['Phòng nào còn nhiều việc quá hạn nhất?', 'Việc chỉ đạo nào lâu chưa cập nhật?', 'Tỷ lệ hoàn thành đúng hạn từng năm'],
+  v_chatbot_work_updates: ['Việc chỉ đạo nào lâu chưa cập nhật?', 'Việc nào sắp đến hạn trong 30 ngày tới?'],
+  v_chatbot_task_threads: ['Nhiệm vụ có tiến độ nào đang đứng yên?', 'Phòng nào có nhiều nhiệm vụ ngừng báo cáo nhất?', 'Nhiệm vụ nào đang chờ xác nhận tình trạng?'],
+  v_chatbot_crm_care_tasks: ['Dịp nào sắp tới cần chuẩn bị quà, hoa?', 'Tổng ngân sách quà, hoa năm nay so với thực chi?'],
   v_chatbot_extraction_quality: ['Tuần nào còn chờ duyệt nhập liệu?', 'Số liệu nào đang có cờ cần rà soát?'],
 };
 

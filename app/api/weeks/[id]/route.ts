@@ -18,12 +18,31 @@ const weekUpdateSchema = z.object({
       orderNumber: z.number(),
       result: z.string(),
       timePeriod: z.string(),
-      progress: z.number().min(0).max(100),
+      // null = nhiệm vụ không theo dõi tiến độ
+      progress: z.number().min(0).max(100).nullable(),
+      nextWeekPlan: z.string(),
+      isImportant: z.boolean().optional(),
+    })
+  ).optional(),
+  // Nhiệm vụ phát sinh (bảng tasks cũ). Có gửi thì thay toàn bộ; không gửi thì giữ nguyên.
+  tasks: z.array(
+    z.object({
+      departmentId: z.string(),
+      orderNumber: z.number(),
+      taskName: z.string(),
+      result: z.string(),
+      timePeriod: z.string(),
+      progress: z.number().min(0).max(100).nullable(),
       nextWeekPlan: z.string(),
       isImportant: z.boolean().optional(),
     })
   ).optional(),
 });
+
+type TaskProgressInput = NonNullable<z.infer<typeof weekUpdateSchema>['taskProgress']>[number];
+
+/** Giao dịch sửa tuần có thể chạm ~90 dòng qua mạng tới Railway — nới thời gian chờ. */
+const TX_OPTIONS = { maxWait: 10_000, timeout: 30_000 } as const;
 
 // GET single week with all tasks
 export async function GET(
@@ -61,10 +80,13 @@ export async function GET(
             nextWeekPlan: true,
             isImportant: true,
             completedAt: true,
+            subject: true,
             masterTask: {
               select: {
                 id: true,
                 name: true,
+                description: true,
+                progressMeaning: true,
                 department: {
                   select: { id: true, name: true },
                 },
@@ -83,6 +105,7 @@ export async function GET(
             progress: true,
             nextWeekPlan: true,
             isImportant: true,
+            departmentId: true,
             department: {
               select: { id: true, name: true },
             },
@@ -91,6 +114,9 @@ export async function GET(
         },
         createdBy: {
           select: { id: true, name: true, email: true },
+        },
+        _count: {
+          select: { metricValues: true, extractedMetrics: true },
         },
       },
     });
@@ -193,8 +219,7 @@ export async function PUT(
     }
 
     // Update week and task progress in a transaction
-    const week = await prisma.$transaction(async (tx) => {
-      // Update week basic info
+    await prisma.$transaction(async (tx) => {
       const updatedWeek = await tx.week.update({
         where: { id },
         data: {
@@ -207,31 +232,31 @@ export async function PUT(
         },
       });
 
-      // If task progress is provided, replace all task progress
       if (data.taskProgress) {
-        // Delete existing task progress
-        await tx.weekTaskProgress.deleteMany({
-          where: { weekId: id },
-        });
+        await syncTaskProgress(tx, id, data.taskProgress);
+      }
 
-        // Create new task progress
-        await tx.weekTaskProgress.createMany({
-          data: data.taskProgress.map((tp) => ({
-            weekId: id,
-            masterTaskId: tp.masterTaskId,
-            orderNumber: tp.orderNumber,
-            result: tp.result,
-            timePeriod: tp.timePeriod,
-            progress: tp.progress,
-            nextWeekPlan: tp.nextWeekPlan,
-            isImportant: tp.isImportant || false,
-            completedAt: tp.progress === 100 ? new Date() : null,
-          })),
-        });
+      if (data.tasks) {
+        await tx.task.deleteMany({ where: { weekId: id } });
+        if (data.tasks.length > 0) {
+          await tx.task.createMany({
+            data: data.tasks.map((t) => ({
+              weekId: id,
+              departmentId: t.departmentId,
+              orderNumber: t.orderNumber,
+              taskName: t.taskName,
+              result: t.result,
+              timePeriod: t.timePeriod,
+              progress: t.progress,
+              nextWeekPlan: t.nextWeekPlan,
+              isImportant: t.isImportant || false,
+            })),
+          });
+        }
       }
 
       return updatedWeek;
-    });
+    }, TX_OPTIONS);
 
     // Fetch updated week with task progress
     const fullWeek = await prisma.week.findUnique({
@@ -291,5 +316,78 @@ export async function DELETE(
       { error: 'Có lỗi xảy ra' },
       { status: 500 }
     );
+  }
+}
+
+type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+/**
+ * Đồng bộ tiến độ nhiệm vụ của tuần theo danh sách gửi lên.
+ *
+ * Trước đây xoá hết rồi tạo lại, làm mất các trường do pipeline AI ghi
+ * (subject, rawTaskName, rawResultText, matchConfidence, reviewFlags…) và đặt
+ * lại completedAt mỗi lần lưu. Giờ chỉ cập nhật dòng có thay đổi, xoá dòng bị
+ * bỏ, tạo dòng mới — khoá theo masterTaskId (duy nhất trong một tuần).
+ */
+async function syncTaskProgress(tx: TxClient, weekId: string, incoming: TaskProgressInput[]) {
+  const byMasterTask = new Map(incoming.map((tp) => [tp.masterTaskId, tp]));
+  const existing = await tx.weekTaskProgress.findMany({
+    where: { weekId },
+    select: {
+      id: true, masterTaskId: true, orderNumber: true, result: true, timePeriod: true,
+      progress: true, nextWeekPlan: true, isImportant: true, completedAt: true,
+    },
+  });
+
+  const removedIds = existing.filter((e) => !byMasterTask.has(e.masterTaskId)).map((e) => e.id);
+  if (removedIds.length > 0) {
+    await tx.weekTaskProgress.deleteMany({ where: { id: { in: removedIds } } });
+  }
+
+  const existingByMasterTask = new Map(existing.map((e) => [e.masterTaskId, e]));
+  const toCreate: TaskProgressInput[] = [];
+  for (const tp of byMasterTask.values()) {
+    const current = existingByMasterTask.get(tp.masterTaskId);
+    if (!current) {
+      toCreate.push(tp);
+      continue;
+    }
+    const isImportant = tp.isImportant || false;
+    const unchanged =
+      current.orderNumber === tp.orderNumber &&
+      current.result === tp.result &&
+      current.timePeriod === tp.timePeriod &&
+      current.progress === tp.progress &&
+      current.nextWeekPlan === tp.nextWeekPlan &&
+      current.isImportant === isImportant;
+    if (unchanged) continue;
+    await tx.weekTaskProgress.update({
+      where: { id: current.id },
+      data: {
+        orderNumber: tp.orderNumber,
+        result: tp.result,
+        timePeriod: tp.timePeriod,
+        progress: tp.progress,
+        nextWeekPlan: tp.nextWeekPlan,
+        isImportant,
+        completedAt: tp.progress === 100 ? (current.completedAt ?? new Date()) : null,
+      },
+    });
+  }
+
+  if (toCreate.length > 0) {
+    await tx.weekTaskProgress.createMany({
+      data: toCreate.map((tp) => ({
+        weekId,
+        masterTaskId: tp.masterTaskId,
+        orderNumber: tp.orderNumber,
+        result: tp.result,
+        timePeriod: tp.timePeriod,
+        progress: tp.progress,
+        nextWeekPlan: tp.nextWeekPlan,
+        isImportant: tp.isImportant || false,
+        completedAt: tp.progress === 100 ? new Date() : null,
+      })),
+    });
   }
 }

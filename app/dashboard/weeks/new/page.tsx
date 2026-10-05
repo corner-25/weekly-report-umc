@@ -2,10 +2,9 @@
 
 import { Select } from '@/components/ui/Select';
 import { getDefaultProgress, getTaskTypeInfo } from '@/lib/task-type';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { getWeek, getYear, startOfWeek, endOfWeek, format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { Suspense, useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { dateKeyToUtc, formatDateKey, hospitalWeekOf, isDateKey, vnTodayKey } from '@/lib/weeks/hospital-week';
 import { FilePlus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import MetricsInput from '@/components/MetricsInput';
@@ -59,8 +58,17 @@ interface DepartmentData {
   adHocTasks: AdHocTask[]; // Ad-hoc tasks
 }
 
-export default function NewWeekReport() {
+export default function NewWeekReportPage() {
+  return (
+    <Suspense fallback={<p className="py-12 text-center text-slate-500">Đang tải...</p>}>
+      <NewWeekReport />
+    </Suspense>
+  );
+}
+
+function NewWeekReport() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
@@ -68,11 +76,18 @@ export default function NewWeekReport() {
   const [masterTasks, setMasterTasks] = useState<MasterTask[]>([]);
   const [allMetrics, setAllMetrics] = useState<any[]>([]); // For filtering metric values by department
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [weekNumber, setWeekNumber] = useState(getWeek(new Date(), { locale: vi }));
-  const [year, setYear] = useState(getYear(new Date()));
-  const [startDate, setStartDate] = useState(startOfWeek(new Date(), { locale: vi, weekStartsOn: 1 }));
-  const [endDate, setEndDate] = useState(endOfWeek(new Date(), { locale: vi, weekStartsOn: 1 }));
+  // Ngày chọn dạng YYYY-MM-DD; tuần suy theo lịch bệnh viện (Thứ Bảy → Thứ Sáu),
+  // không dùng tuần ISO/Thứ Hai của date-fns như trước (gây lệch ngày tuần 9–16).
+  // ?date=YYYY-MM-DD (từ trang danh sách, ô "Thiếu tuần") chọn sẵn tuần đó.
+  const initialDate = searchParams.get('date');
+  const [selectedKey, setSelectedKey] = useState(
+    initialDate && isDateKey(initialDate) ? initialDate : vnTodayKey(),
+  );
+  const weekRange = useMemo(() => hospitalWeekOf(selectedKey), [selectedKey]);
+  const weekNumber = weekRange.weekNumber;
+  const year = weekRange.year;
+  const startDate = useMemo(() => dateKeyToUtc(weekRange.startKey), [weekRange.startKey]);
+  const endDate = useMemo(() => dateKeyToUtc(weekRange.endKey), [weekRange.endKey]);
   const [reportFile, setReportFile] = useState<File | null>(null);
   const [reportFileUrl, setReportFileUrl] = useState<string | null>(null);
 
@@ -93,17 +108,6 @@ export default function NewWeekReport() {
     checkWeekExists();
   }, [weekNumber, year]);
 
-  useEffect(() => {
-    const wn = getWeek(selectedDate, { locale: vi });
-    const y = getYear(selectedDate);
-    const start = startOfWeek(selectedDate, { locale: vi, weekStartsOn: 1 });
-    const end = endOfWeek(selectedDate, { locale: vi, weekStartsOn: 1 });
-
-    setWeekNumber(wn);
-    setYear(y);
-    setStartDate(start);
-    setEndDate(end);
-  }, [selectedDate]);
 
   const fetchDepartments = async () => {
     try {
@@ -420,7 +424,7 @@ export default function NewWeekReport() {
           );
           await Promise.all(metricPromises);
         }
-        router.push('/dashboard');
+        router.push(data.id ? `/dashboard/weeks/${data.id}` : '/dashboard/weeks');
       }
     } catch (error) {
       setError('Có lỗi xảy ra');
@@ -468,8 +472,8 @@ export default function NewWeekReport() {
             </label>
             <input
               type="date"
-              value={format(selectedDate, 'yyyy-MM-dd')}
-              onChange={(e) => setSelectedDate(new Date(e.target.value))}
+              value={selectedKey}
+              onChange={(e) => { if (isDateKey(e.target.value)) setSelectedKey(e.target.value); }}
               className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
@@ -489,11 +493,16 @@ export default function NewWeekReport() {
               )}
             </div>
             <p className="text-sm text-slate-600">
-              <strong>Từ ngày:</strong> {format(startDate, 'dd/MM/yyyy', { locale: vi })}
+              <strong>Từ ngày:</strong> {formatDateKey(weekRange.startKey, true)} (Thứ Bảy)
             </p>
             <p className="text-sm text-slate-600">
-              <strong>Đến ngày:</strong> {format(endDate, 'dd/MM/yyyy', { locale: vi })}
+              <strong>Đến ngày:</strong> {formatDateKey(weekRange.endKey, true)} (Thứ Sáu)
             </p>
+            {weekRange.isEstimated && (
+              <p className="text-xs text-amber-700">
+                Năm {year} chưa có mốc tuần chính thức — ngày được suy theo quy tắc Thứ Bảy → Thứ Sáu, vui lòng đối chiếu lịch bệnh viện.
+              </p>
+            )}
           </div>
         </div>
       </div>

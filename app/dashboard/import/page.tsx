@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { parseExcelFile, listSheets, type ParsedWeekData } from '@/lib/excel-parser';
 import { matchTasksToMaster, type MatchResult, type MasterTaskRef, type MatchedTask } from '@/lib/task-matcher';
 import { extractMetrics, type MetricDefinitionRef, type ExtractedMetric } from '@/lib/metric-extractor';
+import { hospitalWeekRange } from '@/lib/weeks/hospital-week';
 
 interface ReferenceData {
   departments: { id: string; name: string }[];
@@ -43,6 +44,15 @@ export default function ImportPage() {
 
   // Submit step
   const [submitResult, setSubmitResult] = useState<{ message: string; weekId: string } | null>(null);
+
+  // Tự điền ngày theo lịch tuần bệnh viện (Thứ Bảy → Thứ Sáu) mỗi khi đổi số tuần/năm.
+  // Trước đây phải gõ tay nên các tuần 9–11 bị lưu Thứ Hai → Thứ Sáu. Vẫn sửa tay được sau đó.
+  useEffect(() => {
+    if (!weekNumber || weekNumber > 53 || !year) return;
+    const range = hospitalWeekRange(weekNumber, year);
+    setStartDate(range.startKey);
+    setEndDate(range.endKey);
+  }, [weekNumber, year]);
 
   // Fetch reference data on mount
   useEffect(() => {

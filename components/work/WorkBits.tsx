@@ -20,20 +20,63 @@ export function StatusChip({ status }: { status: WorkItemDTO['status'] }) {
   return <span className={cn(CHIP, STATUS_TONES[status])}>{WORK_STATUS_LABELS[status]}</span>;
 }
 
-/** Tình trạng cần chú ý nhất của một việc: quá hạn > sắp đến hạn > lâu chưa cập nhật. */
+/** Mọi tình trạng cần chú ý của một việc — quá hạn và lâu chưa cập nhật có thể cùng lúc. */
 export function HealthChip({ health }: { health: WorkHealthDTO }) {
-  if (health.isOverdue) return <span className={cn(CHIP, 'bg-red-50 text-red-700 ring-red-200')}>Quá hạn {-(health.daysToDue ?? 0)} ngày</span>;
-  if (health.isDueSoon) {
-    return <span className={cn(CHIP, 'bg-orange-50 text-orange-700 ring-orange-200')}>{health.daysToDue === 0 ? 'Đến hạn hôm nay' : `Còn ${health.daysToDue} ngày`}</span>;
-  }
-  if (health.isStale) {
-    return (
-      <span className={cn(CHIP, 'bg-amber-50 text-amber-800 ring-amber-200')}>
-        {health.daysSinceActivity === null ? 'Chưa có cập nhật' : `${health.daysSinceActivity} ngày chưa cập nhật`}
-      </span>
-    );
-  }
-  return null;
+  return (
+    <>
+      {health.isOverdue && <span className={cn(CHIP, 'bg-red-50 text-red-700 ring-red-200')}>Quá hạn {-(health.daysToDue ?? 0)} ngày</span>}
+      {health.isDueSoon && (
+        <span className={cn(CHIP, 'bg-orange-50 text-orange-700 ring-orange-200')}>{health.daysToDue === 0 ? 'Đến hạn hôm nay' : `Còn ${health.daysToDue} ngày`}</span>
+      )}
+      {health.isStale && (
+        <span className={cn(CHIP, 'bg-amber-50 text-amber-800 ring-amber-200')}>
+          {health.daysSinceActivity === null ? 'Chưa có cập nhật' : `${health.daysSinceActivity} ngày chưa cập nhật`}
+        </span>
+      )}
+    </>
+  );
+}
+
+export interface BadgeSource {
+  status: WorkItemDTO['status'];
+  isOpen: boolean;
+  isOverdue: boolean;
+  isDueSoon: boolean;
+  isStale: boolean;
+  daysToDue: number | null;
+  silentDays: number;
+  updateCount: number;
+  dueDate: string | null;
+  lateDays: number | null;
+  priority: WorkItemDTO['priority'];
+}
+
+/** Đủ badge cho một dòng danh sách: hạn, im lặng, chưa có hạn, xong đúng/trễ hạn, ưu tiên. */
+export function WorkBadges({ item }: { item: BadgeSource }) {
+  return (
+    <>
+      {(item.priority === 'URGENT' || item.priority === 'HIGH') && (
+        <span className={cn(CHIP, 'bg-rose-600 text-white ring-rose-600')}>{item.priority === 'URGENT' ? 'Khẩn' : 'Ưu tiên cao'}</span>
+      )}
+      {item.isOverdue && <span className={cn(CHIP, 'bg-red-50 text-red-700 ring-red-200')}>Quá hạn {-(item.daysToDue ?? 0)} ngày</span>}
+      {item.isDueSoon && (
+        <span className={cn(CHIP, 'bg-orange-50 text-orange-700 ring-orange-200')}>{item.daysToDue === 0 ? 'Đến hạn hôm nay' : `Còn ${item.daysToDue} ngày đến hạn`}</span>
+      )}
+      {item.isStale && (
+        <span className={cn(CHIP, 'bg-amber-50 text-amber-800 ring-amber-200')}>
+          {item.updateCount === 0 ? `Chưa từng cập nhật · ${item.silentDays} ngày` : `${item.silentDays} ngày chưa cập nhật`}
+        </span>
+      )}
+      {item.isOpen && !item.dueDate && <span className={cn(CHIP, 'bg-white text-slate-500 ring-slate-200')}>Chưa có hạn</span>}
+      {item.status === 'DONE' && item.lateDays !== null && (
+        item.lateDays === 0 ? (
+          <span className={cn(CHIP, 'bg-emerald-50 text-emerald-700 ring-emerald-200')}>Xong đúng hạn</span>
+        ) : (
+          <span className={cn(CHIP, 'bg-rose-50 text-rose-700 ring-rose-200')}>Xong trễ {item.lateDays} ngày</span>
+        )
+      )}
+    </>
+  );
 }
 
 export function ProgressBar({ value }: { value: number | null }) {

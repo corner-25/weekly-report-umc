@@ -1,10 +1,13 @@
 'use client';
 
 import { Select } from '@/components/ui/Select';
-import { use, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { getWeek, getYear, startOfWeek, endOfWeek, format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { Suspense, use, useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  dateKeyToUtc, formatDateKey, hospitalWeekOf, hospitalWeekRange, isDateKey, storedDateKey,
+} from '@/lib/weeks/hospital-week';
+import { withBack } from '@/lib/weeks/list-filters';
 import MetricsInput from '@/components/MetricsInput';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
@@ -29,7 +32,8 @@ interface TaskProgress {
   orderNumber: number;
   result: string;
   timePeriod: string;
-  progress: number;
+  /** null = nhiệm vụ không theo dõi tiến độ (dữ liệu nhập từ Excel/AI). */
+  progress: number | null;
   nextWeekPlan: string;
   isImportant: boolean;
 }
@@ -41,7 +45,7 @@ interface AdHocTask {
   taskName: string;
   result: string;
   timePeriod: string;
-  progress: number;
+  progress: number | null;
   nextWeekPlan: string;
   isImportant: boolean;
 }
@@ -52,9 +56,20 @@ interface DepartmentData {
   adHocTasks: AdHocTask[];
 }
 
-export default function EditWeekReport({ params }: { params: Promise<{ id: string }> }) {
+export default function EditWeekReportPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense fallback={<p className="py-12 text-center text-slate-500">Đang tải...</p>}>
+      <EditWeekReport params={params} />
+    </Suspense>
+  );
+}
+
+function EditWeekReport({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  // Bộ lọc của trang danh sách, chuyển tiếp để "Quay lại" giữ nguyên bộ lọc.
+  const back = useSearchParams().get('back') ?? '';
+  const detailHref = withBack(`/dashboard/weeks/${resolvedParams.id}`, back);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
@@ -64,7 +79,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
   const [allMetrics, setAllMetrics] = useState<any[]>([]); // For filtering metric values by department
 
   const [weekId, setWeekId] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedKey, setSelectedKey] = useState('');
   const [weekNumber, setWeekNumber] = useState(0);
   const [year, setYear] = useState(0);
   const [startDate, setStartDate] = useState(new Date());
@@ -83,17 +98,30 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
     fetchWeek();
   }, []);
 
-  useEffect(() => {
-    const wn = getWeek(selectedDate, { locale: vi });
-    const y = getYear(selectedDate);
-    const start = startOfWeek(selectedDate, { locale: vi, weekStartsOn: 1 });
-    const end = endOfWeek(selectedDate, { locale: vi, weekStartsOn: 1 });
+  // Chỉ suy lại tuần khi người dùng đổi ngày. Trước đây effect chạy ngay khi
+  // tải trang và ghi đè ngày đã lưu bằng tuần Thứ Hai → Chủ Nhật của date-fns.
+  const handleDateChange = (key: string) => {
+    if (!isDateKey(key)) return;
+    const range = hospitalWeekOf(key);
+    setSelectedKey(key);
+    setWeekNumber(range.weekNumber);
+    setYear(range.year);
+    setStartDate(dateKeyToUtc(range.startKey));
+    setEndDate(dateKeyToUtc(range.endKey));
+  };
 
-    setWeekNumber(wn);
-    setYear(y);
-    setStartDate(start);
-    setEndDate(end);
-  }, [selectedDate]);
+  const expectedRange = weekNumber && year ? hospitalWeekRange(weekNumber, year) : null;
+  const storedStartKey = storedDateKey(startDate);
+  const storedEndKey = storedDateKey(endDate);
+  const isDateOffRule = !!expectedRange && weekNumber > 2 &&
+    (expectedRange.startKey !== storedStartKey || expectedRange.endKey !== storedEndKey);
+
+  const applyRuleDates = () => {
+    if (!expectedRange) return;
+    setStartDate(dateKeyToUtc(expectedRange.startKey));
+    setEndDate(dateKeyToUtc(expectedRange.endKey));
+    setSelectedKey(expectedRange.startKey);
+  };
 
   const fetchDepartments = async () => {
     try {
@@ -143,7 +171,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
         setStartDate(new Date(data.startDate));
         setEndDate(new Date(data.endDate));
         setReportFileUrl(data.reportFileUrl);
-        setSelectedDate(new Date(data.startDate));
+        setSelectedKey(storedDateKey(data.startDate));
 
         // Group data by department
         const grouped: { [key: string]: DepartmentData } = {};
@@ -172,7 +200,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
 
         // Load old Tasks (Ad-hoc tasks)
         data.tasks?.forEach((task: any) => {
-          const deptId = task.departmentId;
+          const deptId: string = task.departmentId ?? task.department?.id;
           if (!grouped[deptId]) {
             grouped[deptId] = {
               departmentId: deptId,
@@ -182,7 +210,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
           }
           grouped[deptId].adHocTasks.push({
             id: task.id,
-            departmentId: task.departmentId,
+            departmentId: deptId,
             orderNumber: task.orderNumber,
             taskName: task.taskName,
             result: task.result,
@@ -444,7 +472,7 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
           );
           await Promise.all(metricPromises);
         }
-        router.push('/dashboard');
+        router.push(detailHref);
       }
     } catch (error) {
       setError('Có lỗi xảy ra');
@@ -475,12 +503,9 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
         onCancel={() => setPendingAction(null)}
       />
       <div className="mb-6">
-        <button
-          onClick={() => router.back()}
-          className="text-blue-600 hover:text-blue-800 mb-4"
-        >
-          &larr; Quay lại
-        </button>
+        <Link href={detailHref} className="mb-4 inline-block text-brand-600 hover:text-brand-800">
+          &larr; Quay lại báo cáo
+        </Link>
         <h1 className="text-3xl font-bold text-slate-900">Chỉnh sửa Báo cáo Tuần {weekNumber}/{year}</h1>
       </div>
 
@@ -500,8 +525,8 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
             </label>
             <input
               type="date"
-              value={format(selectedDate, 'yyyy-MM-dd')}
-              onChange={(e) => setSelectedDate(new Date(e.target.value))}
+              value={selectedKey}
+              onChange={(e) => handleDateChange(e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
@@ -510,11 +535,21 @@ export default function EditWeekReport({ params }: { params: Promise<{ id: strin
               <strong>Tuần:</strong> {weekNumber} / {year}
             </p>
             <p className="text-sm text-slate-600">
-              <strong>Từ ngày:</strong> {format(startDate, 'dd/MM/yyyy', { locale: vi })}
+              <strong>Từ ngày:</strong> {formatDateKey(storedStartKey, true)}
             </p>
             <p className="text-sm text-slate-600">
-              <strong>Đến ngày:</strong> {format(endDate, 'dd/MM/yyyy', { locale: vi })}
+              <strong>Đến ngày:</strong> {formatDateKey(storedEndKey, true)}
             </p>
+            {isDateOffRule && expectedRange && (
+              <div role="alert" className="rounded-lg border border-orange-200 bg-orange-50 p-2.5 text-xs text-orange-800">
+                Ngày đang lưu lệch quy tắc Thứ Bảy → Thứ Sáu. Tuần {weekNumber} đúng ra là{' '}
+                {formatDateKey(expectedRange.startKey)} – {formatDateKey(expectedRange.endKey, true)}.
+                <button type="button" onClick={applyRuleDates} className="ml-1 font-semibold underline hover:no-underline">
+                  Sửa theo quy tắc
+                </button>
+                {' '}(áp dụng khi bấm Lưu)
+              </div>
+            )}
           </div>
         </div>
       </div>

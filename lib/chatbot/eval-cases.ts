@@ -27,5 +27,13 @@ export const CHATBOT_EVAL_CASES: ChatbotEvalCase[] = [
   { id: 'recruitment', question: 'Có bao nhiêu ứng viên đang ở vòng phỏng vấn?', expectedView: 'v_chatbot_recruitment_summary', category: 'personnel-admin' },
   { id: 'sync-failed', question: 'Nguồn đồng bộ nào vừa thất bại?', expectedView: 'v_chatbot_sync_health', category: 'operations' },
   { id: 'imports-pending', question: 'Tuần nào còn báo cáo AI chờ duyệt?', expectedView: 'v_chatbot_import_health', category: 'operations' },
+  { id: 'work-overdue-unit', question: 'Phòng nào còn nhiều việc quá hạn nhất?', expectedView: 'v_chatbot_work_items', category: 'work' },
+  { id: 'work-stale', question: 'Việc chỉ đạo nào của BGĐ lâu chưa cập nhật?', expectedView: 'v_chatbot_work_items', category: 'work' },
+  { id: 'work-on-time', question: 'Tỷ lệ hoàn thành đúng hạn năm 2025?', expectedView: 'v_chatbot_work_items', category: 'work' },
+  { id: 'work-open-tccb', question: 'Phòng TCCB đang thực hiện bao nhiêu việc?', expectedView: 'v_chatbot_work_items', category: 'work' },
+  { id: 'work-updates', question: 'Việc rà soát các hội đồng, ban, tổ đã cập nhật những gì?', expectedView: 'v_chatbot_work_updates', category: 'work' },
+  { id: 'thread-stopped', question: 'Nhiệm vụ nào của Phòng Hành chính đã ngừng báo cáo?', expectedView: 'v_chatbot_task_threads', category: 'task-tracking' },
+  { id: 'thread-stalled', question: 'Dự án nào của Phòng Bảo hiểm Y tế đang đứng yên?', expectedView: 'v_chatbot_task_threads', category: 'task-tracking' },
+  { id: 'crm-care-budget', question: 'Năm nay tặng hoa, quà đối tác dự kiến bao nhiêu tiền, đã chi bao nhiêu?', expectedView: 'v_chatbot_crm_care_tasks', category: 'crm' },
   { id: 'ai-quality', question: 'Model trích xuất nào có nhiều bản ghi cần rà soát?', expectedView: 'v_chatbot_extraction_quality', category: 'operations' },
 ];

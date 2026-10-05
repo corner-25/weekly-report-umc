@@ -318,6 +318,7 @@ export function Select({
         aria-controls={`${triggerId}-menu`}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-label={props['aria-label']}
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
         onKeyDown={handleKeyDown}

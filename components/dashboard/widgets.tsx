@@ -25,8 +25,8 @@ interface WidgetCardProps {
 export function WidgetCard({ icon: Icon, tone, title, subtitle, href, linkLabel = 'Xem', children }: WidgetCardProps) {
   return (
     <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-slate-100 px-4 py-4 sm:px-5">
+        <div className="flex min-w-[12rem] flex-1 items-center gap-3">
           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${tone}`}>
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>

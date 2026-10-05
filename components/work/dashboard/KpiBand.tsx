@@ -84,7 +84,7 @@ export function KpiBand({ data, listHref }: { data: WorkAnalyticsDTO; listHref: 
         </div>
       </div>
       <div className="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-3">
-        <Kpi term="active" tone="active" value={k.open} hint={`${k.open - k.notStarted - k.paused} đang xử lý · ${k.notStarted} chưa bắt đầu · ${k.paused} tạm dừng`} href={listHref('open')} />
+        <Kpi term="active" tone="active" value={k.open} hint={`${k.open - k.notStarted - k.paused} đang xử lý · ${k.notStarted} chưa thực hiện · ${k.paused} tạm dừng`} href={listHref('open')} />
         <Kpi term="overdue" tone="overdue" value={k.overdue} hint="Đã qua hạn chót, chưa xong" href={listHref('overdue')} />
         <Kpi term="dueSoon" tone="dueSoon" value={k.dueSoon} hint={`Hạn chót trong ${DUE_SOON_DAYS} ngày tới`} />
         <Kpi term="stale" tone="stale" value={k.stale} hint={`Quá ${STALE_DAYS} ngày không có báo cáo tiến độ`} href={listHref('stale')} />

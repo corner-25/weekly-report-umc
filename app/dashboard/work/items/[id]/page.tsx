@@ -15,6 +15,7 @@ import { UpdatesPanel } from '@/components/work/UpdatesPanel';
 import { WorkItemModal } from '@/components/work/WorkItemModal';
 import { HealthChip, ProgressBar, StatusChip } from '@/components/work/WorkBits';
 import type { WorkItemDetail, WorkItemDTO } from '@/components/work/types';
+import { LIST_PATH, lastListUrl } from '@/components/work/list/list-session';
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -32,6 +33,9 @@ export default function WorkItemPage() {
   const [error, setError] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [editing, setEditing] = useState(false);
+  // Về đúng danh sách vừa xem (bộ lọc, vị trí cuộn) — đọc sau khi gắn vào trang vì sessionStorage chỉ có ở trình duyệt.
+  const [backHref, setBackHref] = useState(LIST_PATH);
+  useEffect(() => setBackHref(lastListUrl()), []);
 
   const load = useCallback(async () => {
     try {
@@ -59,7 +63,10 @@ export default function WorkItemPage() {
   };
 
   const back = (
-    <Link href="/dashboard/work/items" className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}>
+    <Link
+      href={backHref}
+      className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}
+    >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Danh sách công việc
     </Link>
   );

@@ -72,6 +72,13 @@ export const GENERAL_CHATBOT_VIEWS = [
   // Danh mục chỉ số chuẩn cây cha/con + số liệu hợp nhất (migration 20261001110000_metric_catalog).
   'v_chatbot_metric_tree',
   'v_chatbot_metric_facts',
+  // Quản lý công việc (chỉ đạo BGĐ), theo dõi nhiệm vụ báo cáo tuần, chăm sóc
+  // đối tác CRM (migration 20261005150000_chatbot_cong_viec_nhiem_vu). Giao diện
+  // các phân hệ này mở cho mọi tài khoản đăng nhập nên view cũng vậy.
+  'v_chatbot_work_items',
+  'v_chatbot_work_updates',
+  'v_chatbot_task_threads',
+  'v_chatbot_crm_care_tasks',
 ];
 
 export const PERSONNEL_CHATBOT_VIEWS = [

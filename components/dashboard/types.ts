@@ -69,3 +69,24 @@ export interface DashboardStats {
   recentTransfers: DashboardTransfer[];
   expiringMOUs: DashboardMou[];
 }
+
+/** Tóm tắt Quản lý công việc trên trang Tổng quan, trả về từ `/api/work/summary`. */
+export interface DashboardWorkSummary {
+  kpi: {
+    total: number;
+    /** Đang thực hiện: chưa hoàn thành, chưa huỷ. */
+    open: number;
+    done: number;
+    overdue: number;
+    dueSoon: number;
+    /** Lâu chưa cập nhật — gồm cả việc đã quá hạn. */
+    stale: number;
+    /** 0–100, null khi chưa có việc. */
+    completionRate: number | null;
+    onTimeRate: number | null;
+  };
+  /** Đơn vị còn việc đang thực hiện, nhiều việc quá hạn nhất trước. */
+  units: Array<{ key: string; departmentId: string | null; unit: string; open: number; overdue: number; stale: number }>;
+  unitsWithOpen: number;
+  lastImportAt: string | null;
+}

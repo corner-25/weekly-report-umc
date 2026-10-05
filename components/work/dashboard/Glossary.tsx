@@ -4,7 +4,8 @@
  * Thuật ngữ của bảng điều hành — mỗi con số đều phải nói rõ nó đếm gì. Nút ⓘ
  * cạnh chỉ số và khung "Giải thích thuật ngữ" cuối trang dùng chung một nguồn.
  */
-import { useId, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PANEL } from '@/components/crm/ui';
@@ -14,10 +15,10 @@ export const TERMS = {
   total: { label: 'Tổng việc', def: 'Mọi công việc chỉ đạo trong phạm vi đang lọc (năm giao việc, đơn vị).' },
   active: {
     label: 'Đang thực hiện',
-    def: 'Việc chưa hoàn thành và chưa huỷ — gồm việc đang xử lý, việc chưa bắt đầu và việc tạm dừng.',
+    def: 'Việc chưa hoàn thành và chưa huỷ — gồm việc đang xử lý, việc chưa thực hiện và việc tạm dừng.',
   },
   inProgress: { label: 'Đang xử lý', def: 'Trạng thái "Đang xử lý" ở phân hệ Quản lý công việc: đơn vị đã nhận và đang làm.' },
-  notStarted: { label: 'Chưa bắt đầu', def: 'Trạng thái "Mới" ở phân hệ Quản lý công việc: đã giao, chưa có ai nhận xử lý.' },
+  notStarted: { label: 'Chưa thực hiện', def: 'Trạng thái "Mới" ở phân hệ Quản lý công việc: đã giao, chưa có ai nhận xử lý.' },
   paused: { label: 'Tạm dừng', def: 'Trạng thái "Ngưng" ở phân hệ Quản lý công việc: tạm dừng theo chỉ đạo, vẫn tính là việc đang thực hiện.' },
   cancelled: { label: 'Đã huỷ', def: 'Việc bị huỷ/thu hồi — không tính vào tỷ lệ hoàn thành.' },
   done: { label: 'Hoàn thành', def: 'Trạng thái "Hoàn thành" ở phân hệ Quản lý công việc.' },
@@ -47,28 +48,72 @@ export const TERMS = {
 
 export type TermKey = keyof typeof TERMS;
 
-/** Nút ⓘ: rê chuột hoặc Tab tới để đọc định nghĩa. */
-export function InfoTip({ term, className, align = 'center' }: { term: TermKey; className?: string; align?: 'center' | 'left' | 'right' }) {
+const TIP_WIDTH = 256;
+const TIP_GAP = 6;
+const EDGE = 8;
+
+/**
+ * Nút ⓘ: rê chuột hoặc Tab tới để đọc định nghĩa. Bong bóng vẽ ra ngoài cùng
+ * trang (portal, vị trí cố định) nên không bị khung có overflow che mất; gần
+ * mép dưới thì lật lên trên, gần mép trái/phải thì dịch vào trong.
+ */
+export function InfoTip({ term, className }: { term: TermKey; className?: string; align?: 'center' | 'left' | 'right' }) {
   const id = useId();
   const t = TERMS[term];
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const tipRef = useRef<HTMLSpanElement>(null);
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) return;
+    const place = () => {
+      const b = buttonRef.current!.getBoundingClientRect();
+      const h = tipRef.current?.offsetHeight ?? 80;
+      const left = Math.min(Math.max(EDGE, b.left + b.width / 2 - TIP_WIDTH / 2), window.innerWidth - TIP_WIDTH - EDGE);
+      const below = b.bottom + TIP_GAP;
+      const top = below + h > window.innerHeight - EDGE ? b.top - TIP_GAP - h : below;
+      setPos({ left, top });
+    };
+    place();
+    window.addEventListener('scroll', place, true);
+    window.addEventListener('resize', place);
+    return () => {
+      window.removeEventListener('scroll', place, true);
+      window.removeEventListener('resize', place);
+    };
+  }, [open]);
+
   return (
-    <span className={cn('group/tip relative inline-flex align-middle', className)}>
-      <button type="button" aria-describedby={id} aria-label={`Giải thích: ${t.label}`} className="rounded-full p-0.5 text-slate-400 transition hover:text-brand-600 focus-visible:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+    <span className={cn('inline-flex align-middle', className)}>
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-describedby={open ? id : undefined}
+        aria-label={`Giải thích: ${t.label}`}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
+        className="rounded-full p-0.5 text-slate-400 transition hover:text-brand-600 focus-visible:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      >
         <Info className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
-      <span
-        role="tooltip"
-        id={id}
-        className={cn(
-          'pointer-events-none invisible absolute top-full z-30 mt-1.5 w-64 rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-normal normal-case leading-relaxed tracking-normal text-white opacity-0 shadow-xl transition duration-150 group-hover/tip:visible group-hover/tip:opacity-100 group-focus-within/tip:visible group-focus-within/tip:opacity-100',
-          align === 'center' && 'left-1/2 -translate-x-1/2',
-          align === 'left' && 'left-0',
-          align === 'right' && 'right-0',
+      {open &&
+        createPortal(
+          <span
+            ref={tipRef}
+            role="tooltip"
+            id={id}
+            style={{ left: pos?.left ?? -9999, top: pos?.top ?? -9999, width: TIP_WIDTH }}
+            className="pointer-events-none fixed z-[100] rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-normal normal-case leading-relaxed tracking-normal text-white shadow-xl animate-fade-in"
+          >
+            <b className="mb-0.5 block text-[13px]">{t.label}</b>
+            {t.def}
+          </span>,
+          document.body,
         )}
-      >
-        <b className="mb-0.5 block text-[13px]">{t.label}</b>
-        {t.def}
-      </span>
     </span>
   );
 }

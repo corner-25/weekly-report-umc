@@ -7,6 +7,7 @@ import { useDashboardStats } from '@/lib/swr';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { StatCard } from '@/components/ui/StatCard';
 import { DashboardCrmWidget } from '@/components/crm/DashboardCrmWidget';
+import { DashboardWorkWidget } from '@/components/dashboard/DashboardWorkWidget';
 import { LayoutDashboard, ClipboardCheck, Clock, CheckCircle2, FileText, CalendarDays, Users, Plus, CalendarClock, Handshake } from 'lucide-react';
 import { BirthdayCard, EventsCard, MouCard, QuickActions, RecentWeeksCard, SecretaryCard, TransfersCard } from '@/components/dashboard/widgets';
 import type { DashboardStats } from '@/components/dashboard/types';
@@ -72,16 +73,17 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard label="NV thường kỳ" value={data.totalMasterTasks} icon={ClipboardCheck} color="purple" href="/dashboard/tasks" />
-        <StatCard label="Đang thực hiện" value={data.tasksInProgress} icon={Clock} color="orange" href="/dashboard/tasks/overview" />
-        <StatCard label="Đã hoàn thành" value={data.tasksCompleted} icon={CheckCircle2} color="green" href="/dashboard/tasks/overview" />
+        <StatCard label="NV thường kỳ đang làm" value={data.tasksInProgress} icon={Clock} color="orange" href="/dashboard/tasks/overview" />
+        <StatCard label="NV thường kỳ đã xong" value={data.tasksCompleted} icon={CheckCircle2} color="green" href="/dashboard/tasks/overview" />
         <StatCard label="Tuần báo cáo" value={data.totalWeeks} icon={FileText} color="cyan" href="/dashboard/weeks" />
         <StatCard label="Sự kiện sắp tới" value={data.upcomingEvents.length} icon={CalendarDays} color="pink" href="/dashboard/hospital-events" />
         <StatCard label="Thư ký" value={data.activeSecretaries} subValue={`/${data.totalSecretaries}`} icon={Users} color="blue" href="/dashboard/secretaries" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Cột chính: báo cáo và lịch — việc của phòng hằng tuần */}
+        {/* Cột chính: việc BGĐ chỉ đạo, báo cáo và lịch — việc của phòng hằng tuần */}
         <div className="lg:col-span-2 space-y-6">
+          <DashboardWorkWidget />
           <RecentWeeksCard weeks={data.recentWeeks} />
           <DashboardCrmWidget />
           <EventsCard today={data.todayEvents} upcoming={data.upcomingEvents} />
