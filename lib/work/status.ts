@@ -12,7 +12,7 @@ const MS_PER_DAY = 86_400_000;
 const STATUS_RULES: Array<[RegExp, WorkStatusKey]> = [
   [/\bhuy\b|thu hoi/, 'CANCELLED'],
   [/tam dung|tam hoan|ngung/, 'PAUSED'],
-  [/chua (thuc hien|xu ly|bat dau)|moi giao|cho xu ly/, 'NOT_STARTED'],
+  [/chua (thuc hien|xu ly|bat dau)|moi giao|cho xu ly|^moi$/, 'NOT_STARTED'],
   [/chua hoan thanh|dang|tre han|qua han|cho duyet/, 'IN_PROGRESS'],
   [/hoan thanh|da xong|ket thuc|da xu ly/, 'DONE'],
 ];

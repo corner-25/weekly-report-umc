@@ -38,6 +38,7 @@ export interface WorkItemDTO {
   department: { id: string; name: string } | null;
   coordinatingUnits: string[];
   assignees: string[];
+  watchers: string[];
   dueDate: string | null;
   status: WorkStatusKey;
   externalStatus: string | null;

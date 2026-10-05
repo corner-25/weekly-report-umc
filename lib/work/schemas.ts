@@ -56,6 +56,9 @@ export const workImportItemSchema = z.object({
   leadUnit: optionalText(300),
   coordinatingUnits: z.array(text(300)).default([]),
   assignees: z.array(text(200)).default([]),
+  watchers: z.array(text(200)).default([]),
+  /** Phân loại ở nguồn (vd "Giao ban tuần") — lưu thành nhãn. */
+  category: optionalText(100),
   dueDate: looseDate.optional(),
   status: optionalText(200),
   progressPercent: percent.optional(),

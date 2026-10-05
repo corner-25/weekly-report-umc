@@ -25,6 +25,7 @@ export function toWorkItemDto(item: WorkItemWithRelations, now: Date = new Date(
     department: item.department,
     coordinatingUnits: item.coordinatingUnits,
     assignees: item.assignees,
+    watchers: item.watchers,
     dueDate: day(item.dueDate),
     status: item.status,
     externalStatus: item.externalStatus,

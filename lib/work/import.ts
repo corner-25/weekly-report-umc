@@ -20,6 +20,25 @@ export interface WorkImportSummary {
 }
 
 const TRANSACTION = { maxWait: 10_000, timeout: 60_000 };
+
+/** Ứng dụng nội bộ ghi đơn vị viết tắt ("Phòng TCCB") — đổi sang tên phòng ban trong hệ thống. */
+const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
+  'Phòng TCCB': 'Phòng Tổ chức Cán bộ',
+  'Phòng KHTH': 'Phòng Kế hoạch Tổng hợp',
+  'Phòng HC': 'Phòng Hành chính',
+  'Phòng KHĐT': 'Phòng Khoa học và Đào tạo',
+  'Phòng QLCLBV': 'Phòng Quản lý Chất lượng Bệnh viện',
+  'Phòng QLCL': 'Phòng Quản lý Chất lượng Bệnh viện',
+  'Phòng ĐD': 'Phòng Điều dưỡng',
+  'Phòng CNTT': 'Phòng Công nghệ Thông tin',
+  'Phòng TCKT': 'Phòng Tài chính Kế toán',
+  'Phòng BHYT': 'Phòng Bảo hiểm Y tế',
+  'Phòng CTXH': 'Phòng Công tác Xã hội',
+  'Phòng VTTB': 'Phòng Vật tư Thiết bị',
+  'Phòng QTTN': 'Phòng Quản trị Tòa nhà',
+  'Trung tâm TT': 'Trung tâm Truyền thông',
+  'Đơn vị QLMSĐT': 'Đơn vị Quản lý Đấu thầu',
+};
 /** Số việc ghi trong một transaction — file vài nghìn việc vẫn không giữ khoá quá lâu. */
 const CHUNK = 100;
 
@@ -38,6 +57,7 @@ function sourceFields(item: WorkImportItem, departmentId: string | null) {
     departmentId,
     coordinatingUnits: item.coordinatingUnits,
     assignees: item.assignees,
+    watchers: item.watchers,
     dueDate: dateOrNull(item.dueDate),
     status: mapExternalStatus(item.status, item.progressPercent),
     externalStatus: item.status ?? null,
@@ -93,7 +113,11 @@ export async function importWorkPayload(
   });
 
   const departments = await db.department.findMany({ where: { deletedAt: null }, select: { id: true, name: true } });
-  const departmentOf = (unit?: string) => (unit ? matchDepartment(unit, departments).departmentId ?? null : null);
+  const departmentOf = (unit?: string) => {
+    if (!unit) return null;
+    const full = UNIT_ABBREVIATIONS[unit.trim()] ?? unit;
+    return departments.find((d) => d.name === full)?.id ?? matchDepartment(full, departments).departmentId ?? null;
+  };
 
   let itemsCreated = 0;
   let itemsChanged = 0;
@@ -123,7 +147,8 @@ export async function importWorkPayload(
         let workItemId: string;
         if (!old) {
           const created = await tx.workItem.create({
-            data: { ...fields, source: 'QLCV', externalId: item.externalId, lastActivityAt: activity, lastSeenAt: now },
+            // Phân loại ở nguồn (Giao ban tuần/tháng) làm nhãn ban đầu; sau đó nhãn là của Phòng HC.
+            data: { ...fields, source: 'QLCV', externalId: item.externalId, tags: item.category ? [item.category] : [], lastActivityAt: activity, lastSeenAt: now },
             select: { id: true },
           });
           workItemId = created.id;

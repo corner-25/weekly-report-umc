@@ -1918,6 +1918,8 @@ model WorkItem {
   departmentId      String?
   coordinatingUnits String[]   @default([])
   assignees         String[]   @default([])
+  /// Người theo dõi việc ở ứng dụng nội bộ (thường là chuyên viên đôn đốc).
+  watchers          String[]   @default([])
   dueDate           DateTime?  @db.Date
   status            WorkStatus @default(NOT_STARTED)
   /// Trạng thái nguyên văn ở nguồn, giữ để đối chiếu cách quy đổi.

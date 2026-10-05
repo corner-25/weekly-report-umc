@@ -102,6 +102,7 @@ export default function WorkItemPage() {
               <Info label="Đơn vị chủ trì">{item.department?.name ?? item.leadUnit ?? <span className="text-slate-400">Chưa rõ</span>}</Info>
               {item.coordinatingUnits.length > 0 && <Info label="Phối hợp">{item.coordinatingUnits.join(', ')}</Info>}
               {item.assignees.length > 0 && <Info label="Người thực hiện">{item.assignees.join(', ')}</Info>}
+              {item.watchers.length > 0 && <Info label="Người theo dõi">{item.watchers.join(', ')}</Info>}
               <Info label="Hạn chót">{item.dueDate ? formatDate(item.dueDate) : <span className="text-slate-400">Chưa có</span>}</Info>
               {item.externalStatus && <Info label="Trạng thái ở nguồn">{item.externalStatus}</Info>}
               <Info label="Cập nhật gần nhất">{item.lastActivityAt ? formatDateTime(item.lastActivityAt) : <span className="text-slate-400">Chưa có</span>}</Info>

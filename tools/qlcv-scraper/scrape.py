@@ -11,8 +11,12 @@ Bước 2 — khảo sát (chạy một lần để lập trình viên biết d�
     python3 tools/qlcv-scraper/scrape.py survey "<link trang Theo dõi chỉ đạo của BGĐ>"
     → ghi mọi phản hồi JSON của trang danh sách và trang chi tiết đầu tiên vào ~/.qlcv/survey/
 
-Bước 3 (sau khi đã viết phần trích xuất) — cào và đẩy lên:
-    python3 tools/qlcv-scraper/scrape.py run "<link>" --push
+Bước 3 — cào và đẩy lên (link mặc định: Theo dõi chỉ đạo của BGĐ):
+    WORK_IMPORT_TOKEN=... python3 tools/qlcv-scraper/scrape.py run --push
+
+Danh sách lấy từ API nội bộ /v1/tasks/getTasks mà chính trang gọi (bắt phản hồi
+khi mở trang, không tự gọi API): đủ tiêu đề, đơn vị, người thực hiện, người theo
+dõi, hạn, trạng thái, % và lịch sử "Mô tả tiến độ thực hiện".
 """
 import json
 import os
@@ -86,7 +90,7 @@ def capture(page):
 
 def cmd_survey(url: str) -> None:
     with sync_playwright() as p:
-        ctx = open_context(p, headless=False)
+        ctx = open_context(p, headless=True)
         page = ctx.new_page()
         bucket = capture(page)
         page.goto(url, wait_until="networkidle")
@@ -114,6 +118,97 @@ def cmd_survey(url: str) -> None:
     print(f"Đã ghi khảo sát vào {SURVEY}")
 
 
+OUT = HOME / "out"
+DEFAULT_URL = "https://office.umc.edu.vn/#/M02/M02PROJECT/cHJvamVjdElEPTU%3D"  # Theo dõi chỉ đạo của Ban Giám đốc
+APP_URL = os.environ.get("APP_URL", "https://umc.up.railway.app")
+
+NOTE_HEAD = re.compile(r"^-\s*Ngày\s+(\d{1,2}/\d{1,2}/\d{4})(?:\s+(\d{1,2}:\d{2})(?::\d{2})?)?\s*$")
+
+
+def parse_notes(notes: str | None) -> list:
+    """Cột "Mô tả tiến độ thực hiện": các khối "- Ngày dd/mm/yyyy hh:mm:ss" + nội dung, mới nhất trước."""
+    updates, current = [], None
+    for line in (notes or "").splitlines():
+        m = NOTE_HEAD.match(line.strip())
+        if m:
+            if current and current["content"].strip():
+                updates.append(current)
+            current = {"at": f"{m.group(1)} {m.group(2) or '00:00'}", "content": ""}
+        elif current is not None:
+            current["content"] += line + "\n"
+    if current and current["content"].strip():
+        updates.append(current)
+    for u in updates:
+        u["content"] = u["content"].strip()
+    return updates
+
+
+def day(value: str | None) -> str | None:
+    return value[:10] if value else None
+
+
+def to_contract(rows: list, list_url: str) -> dict:
+    items = []
+    for r in rows:
+        updates = parse_notes(r.get("notes"))
+        item = {
+            "externalId": str(r.get("taskID") or r.get("sys_TaskID")),
+            "url": list_url,
+            "title": (r.get("taskTitle") or "").strip(),
+            "description": (r.get("description") or "").strip() or None,
+            "kind": "DIRECTIVE",
+            "leadUnit": r.get("assigneeDeptName"),
+            "assignees": [r["assigneeName"]] if r.get("assigneeName") else [],
+            "watchers": [w.strip() for w in (r.get("watcherName") or "").split(",") if w.strip()],
+            "category": r.get("fN1"),
+            "dueDate": day(r.get("deadline")),
+            "status": r.get("statusName"),
+            "progressPercent": r.get("percentDone"),
+            "updates": updates,
+        }
+        if updates:
+            item["lastUpdatedAt"] = max(updates, key=lambda u: (u["at"][6:10], u["at"][3:5], u["at"][:2], u["at"][11:]))["at"]
+        items.append({k: v for k, v in item.items() if v not in (None, "")})
+    return {"source": "qlcv", "scrapedAt": time.strftime("%Y-%m-%dT%H:%M:%S+07:00"), "items": items}
+
+
+def cmd_run(url: str, push: bool) -> None:
+    with sync_playwright() as p:
+        ctx = open_context(p, headless=True)
+        page = ctx.new_page()
+        with page.expect_response(lambda r: "/v1/tasks/getTasks" in r.url and r.status == 200, timeout=60000) as info:
+            page.goto(url)
+        body = info.value.json()
+        ctx.close()
+    if "sign-in" in str(body)[:200] or not body.get("succeeded"):
+        sys.exit("Không lấy được danh sách — phiên đăng nhập có thể đã hết, chạy lại: scrape.py login")
+    rows = body["data"]["r"]
+    payload = to_contract(rows, url)
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = OUT / f"qlcv-{time.strftime('%Y%m%d-%H%M')}.json"
+    out.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+    n_updates = sum(len(i.get("updates", [])) for i in payload["items"])
+    print(f"Lấy được {len(rows)} công việc, {n_updates} lần cập nhật tiến độ → {out}")
+    if push:
+        import urllib.request
+
+        token = os.environ.get("WORK_IMPORT_TOKEN")
+        if not token:
+            sys.exit("Thiếu biến môi trường WORK_IMPORT_TOKEN để đẩy lên hệ thống")
+        req = urllib.request.Request(
+            f"{APP_URL}/api/work/import",
+            data=out.read_bytes(),
+            headers={"Content-Type": "application/json", "x-import-token": token},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            result = json.loads(resp.read())
+        print(
+            f"Đã nạp: {result['itemsCreated']} việc mới, {result['itemsChanged']} việc thay đổi, "
+            f"{result['updatesAdded']} cập nhật mới, {len(result.get('problems', []))} dòng lỗi"
+        )
+
+
 def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in ("login", "survey", "run"):
         print(__doc__)
@@ -125,7 +220,8 @@ def main() -> None:
             sys.exit("Cần link trang danh sách")
         cmd_survey(sys.argv[2])
     else:
-        sys.exit("Bước run sẽ có sau khi khảo sát xong dữ liệu trang.")
+        args = [a for a in sys.argv[2:] if not a.startswith("--")]
+        cmd_run(args[0] if args else DEFAULT_URL, "--push" in sys.argv)
 
 
 if __name__ == "__main__":
