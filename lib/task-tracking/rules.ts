@@ -8,6 +8,11 @@ import type { ReportStyle } from './profile';
 export const STALL_ENTRIES = 6;
 /** Dưới ngưỡng này cần người xác nhận. */
 export const REVIEW_CONFIDENCE = 0.6;
+/**
+ * Chỉ nhờ người xác nhận việc còn "nóng" (báo cáo trong ngần này tuần gần đây).
+ * Việc ngừng từ lâu là lịch sử — hiện ở mục Ngừng báo cáo, không dồn vào hàng chờ.
+ */
+export const REVIEW_RECENT_WEEKS = 8;
 
 export interface FinalJudgement {
   title: string;
@@ -69,7 +74,10 @@ export function applyRules(j: Judgement, entries: JudgeEntry[], style: ReportSty
     evidence: j.can_cu?.trim() || null,
     reasoning: [j.ly_do?.trim(), ...notes].filter(Boolean).join(' ') || null,
     confidence,
-    // Ngừng báo cáo mà chưa xong luôn cần người xem — có thể đã xong nhưng phòng không ghi.
-    needsReview: confidence < REVIEW_CONFIDENCE || status === 'STOPPED',
+    // Việc cụ thể vừa ngừng báo cáo mà chưa xong cần người xem — có thể đã xong nhưng phòng không ghi.
+    // Việc thường kỳ ngừng thì thường chỉ là đổi tên/gộp mục, không cần hỏi.
+    needsReview:
+      latestWeek - last.week <= REVIEW_RECENT_WEEKS &&
+      (confidence < REVIEW_CONFIDENCE || (status === 'STOPPED' && kind !== 'ROUTINE')),
   };
 }

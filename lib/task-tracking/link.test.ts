@@ -91,8 +91,10 @@ describe('applyRules', () => {
   it('còn báo cáo tuần mới nhất thì không thể là ngừng báo cáo', () => {
     expect(applyRules(j({ tinh_trang: 'STOPPED' }), entries([10, 20]), 'PROGRESSIVE', 31).status).toBe('IN_PROGRESS');
   });
-  it('ngừng báo cáo thì cần người xác nhận', () => {
-    expect(applyRules(j({ tinh_trang: 'STOPPED' }), entries([10, 20]), 'PROGRESSIVE', 40).needsReview).toBe(true);
+  it('việc cụ thể vừa ngừng báo cáo thì cần người xác nhận, ngừng từ lâu thì không', () => {
+    expect(applyRules(j({ tinh_trang: 'STOPPED' }), entries([10, 20]), 'PROGRESSIVE', 36).needsReview).toBe(true);
+    expect(applyRules(j({ tinh_trang: 'STOPPED' }), entries([10, 20]), 'PROGRESSIVE', 50).needsReview).toBe(false);
+    expect(applyRules(j({ loai: 'ROUTINE', tinh_trang: 'STOPPED' }), entries([null, null]), 'NO_PERCENT', 36).needsReview).toBe(false);
   });
 });
 
