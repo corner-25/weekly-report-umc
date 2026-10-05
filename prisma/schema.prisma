@@ -126,6 +126,8 @@ model Department {
   tasks                 Task[]
   metricDefinitions     MetricDefinition[]
   workItems             WorkItem[]
+  taskThreads           TaskThread[]
+  reportProfile         DepartmentReportProfile?
   secretaries           Secretary[]
   transfersFrom         SecretaryTransferLog[] @relation("TransferFrom")
   transfersTo           SecretaryTransferLog[] @relation("TransferTo")
@@ -1990,4 +1992,136 @@ model WorkImportRun {
 
   @@index([importedAt])
   @@map("work_import_runs")
+}
+
+// ============================================
+// THEO DÕI NHIỆM VỤ — tình trạng từng việc cụ thể trong báo cáo tuần
+// ============================================
+// Mỗi phòng ghi báo cáo một kiểu: có phòng ghi 100% mọi tuần cho việc thường kỳ,
+// có phòng ghi % tăng dần cho việc có tiến độ, có phòng không ghi % gì. Pipeline
+// nối các dòng báo cáo qua các tuần thành "việc" (thread), rồi AI quyết định loại
+// việc và tình trạng dựa trên cách báo cáo của phòng. Xem docs/TASK-TRACKING.md.
+
+enum TaskThreadKind {
+  ROUTINE // Thường kỳ — tuần nào cũng làm, không gán %
+  PROJECT // Có tiến độ — theo dõi %
+  ONE_OFF // Việc một lần
+}
+
+enum TaskThreadStatus {
+  IN_PROGRESS
+  DONE
+  STALLED // Đứng yên nhiều tuần
+  STOPPED // Ngừng báo cáo mà chưa xong
+}
+
+/// Cách báo cáo của một phòng, tính từ lịch sử — ngữ cảnh cho AI.
+model DepartmentReportProfile {
+  departmentId String   @id
+  year         Int
+  /// Số liệu thống kê: tỷ lệ dòng có %, ghi 100%, % thay đổi, % đứng yên…
+  stats        Json
+  /// Mô tả ngắn bằng lời đưa vào prompt.
+  summary      String   @db.Text
+  computedAt   DateTime @default(now())
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@map("department_report_profiles")
+}
+
+/// Một việc cụ thể, theo dõi qua nhiều tuần báo cáo.
+model TaskThread {
+  id              String            @id @default(cuid())
+  departmentId    String
+  year            Int
+  /// Tên nhiệm vụ như phòng ghi (cột B) và nhóm cha.
+  rawName         String            @db.Text
+  parentGroup     String?           @db.Text
+  /// Tên ngắn của việc do AI đặt.
+  title           String            @db.Text
+  firstWeek       Int
+  lastWeek        Int
+  kind            TaskThreadKind?
+  status          TaskThreadStatus?
+  /// % hoàn thành (chỉ việc có tiến độ). Thường kỳ để trống.
+  progress        Int?
+  completedWeek   Int?
+  /// Căn cứ: câu trích trong báo cáo.
+  evidence        String?           @db.Text
+  reasoning       String?           @db.Text
+  confidence      Float?
+  /// AI chưa chắc — cần người xác nhận.
+  needsReview     Boolean           @default(false)
+  aiModel         String?
+  aiUpdatedAt     DateTime?
+  /// Tuần mới nhất của phòng lúc AI đánh giá — phòng có tuần mới thì việc vắng mặt cần đánh giá lại.
+  judgedWeek      Int?
+  /// Lần nối dòng mới gần nhất — AI phải đánh giá lại khi mốc này mới hơn aiUpdatedAt.
+  changedAt       DateTime          @default(now())
+
+  // Phòng HC sửa tay — AI không ghi đè.
+  overrideKind     TaskThreadKind?
+  overrideStatus   TaskThreadStatus?
+  overrideProgress Int?
+  overrideNote     String?          @db.Text
+  overriddenBy     String?
+  overriddenAt     DateTime?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  department Department        @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  entries    TaskThreadEntry[]
+
+  @@index([departmentId, year, lastWeek])
+  @@index([status])
+  @@map("task_threads")
+}
+
+/// Một dòng báo cáo tuần (đúng dòng trong file gốc) thuộc về một việc.
+model TaskThreadEntry {
+  id            String   @id @default(cuid())
+  threadId      String
+  departmentId  String
+  year          Int
+  week          Int
+  sourceRow     Int
+  rawName       String   @db.Text
+  parentGroup   String?  @db.Text
+  resultText    String   @db.Text
+  progress      Int?
+  timePeriod    String?
+  nextWeekPlan  String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  thread TaskThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, year, week, sourceRow])
+  @@index([threadId, week])
+  @@map("task_thread_entries")
+}
+
+enum TaskStreamMode {
+  ROUTINE // Cả luồng (cùng tên nhiệm vụ) là một việc thường kỳ — nối mọi tuần vào một việc
+  ITEMS   // Luồng gồm nhiều việc cụ thể nối tiếp — giữ tách theo nội dung
+}
+
+/// Quyết định cho một "luồng" = các dòng cùng tên nhiệm vụ của một phòng trong năm.
+model TaskStream {
+  id           String         @id @default(cuid())
+  departmentId String
+  year         Int
+  /// Tên nhiệm vụ đã bỏ dấu, viết thường.
+  nameKey      String
+  rawName      String         @db.Text
+  mode         TaskStreamMode
+  reasoning    String?        @db.Text
+  /// "AI" hoặc tên người sửa.
+  decidedBy    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([departmentId, year, nameKey])
+  @@map("task_streams")
 }

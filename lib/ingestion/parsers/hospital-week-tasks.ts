@@ -15,6 +15,9 @@ export interface DepartmentWeekTasks {
     resultText: string;
     parentGroup: string | null;
     progress: number | null;
+    /** Thời gian thực hiện (cột D) và kế hoạch tuần sau (cột F) — dùng khi theo dõi tình trạng việc. */
+    timePeriod?: string;
+    nextWeekPlan?: string;
     /**
      * Dòng trong sheet gốc. Nhiều dòng con không có tên nên đều mang tên nhóm
      * cha; không có định danh riêng thì chúng đè lên nhau khi tra cứu.
@@ -63,6 +66,8 @@ export function extractWeekTasksByDepartment(sheet: HospitalWeekSheet): Departme
       resultText: row.result,
       parentGroup: currentParent,
       progress: row.progress,
+      timePeriod: row.timePeriod,
+      nextWeekPlan: row.nextWeekPlan,
       sourceRow: row.sourceRow,
     });
     byDept.set(row.department, entry);

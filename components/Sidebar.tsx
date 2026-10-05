@@ -94,7 +94,8 @@ const NAV: NavSection[] = [
         href: '/dashboard/tasks', label: 'Nhiệm vụ thường kỳ', icon: ClipboardCheck,
         children: [
           { href: '/dashboard/tasks', label: 'Danh sách nhiệm vụ', exact: true },
-          { href: '/dashboard/tasks/overview', label: 'Tổng hợp tiến độ', exact: true },
+          { href: '/dashboard/tasks/progress', label: 'Tiến độ nhiệm vụ', exact: true },
+          { href: '/dashboard/tasks/overview', label: 'Tổng hợp theo đầu mục', exact: true },
           { href: '/dashboard/reports/timeline', label: 'Timeline', exact: true },
         ],
       },

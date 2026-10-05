@@ -25,6 +25,7 @@ import { extractWeekTasksByDepartment } from '../parsers/hospital-week-tasks';
 import { matchDepartment } from '../parsers/department-matcher';
 import { departmentContentHash, isUneditedCopy } from '../parsers/department-snapshot';
 import { importWeekForDepartment } from '@/lib/ai/week-import';
+import { rowsFromSheets, syncDepartment } from '@/lib/task-tracking/pipeline';
 import { computeWeekDates } from '@/lib/report-week';
 import type { Connector, FetchResult, SyncContext, UpsertResult } from '../types';
 
@@ -63,6 +64,8 @@ const MAX_DEPARTMENT_IMPORTS_PER_RUN = 42;
 interface HospitalWeekJob {
   sheet: HospitalWeekSheet;
   previousHashes: Map<string, string>;
+  /** Mọi sheet trong file — bước theo dõi nhiệm vụ cần cả năm, không chỉ tuần đang nạp. */
+  allSheets: HospitalWeekSheet[];
 }
 
 function weekKey(year: number, week: number): string {
@@ -314,6 +317,7 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekJob> = {
       .map((sheet) => ({
         sheet,
         previousHashes: departmentHashes(bySheetKey.get(weekKey(sheet.year, sheet.week - 1))),
+        allSheets: sheets,
       }));
   },
 
@@ -332,6 +336,8 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekJob> = {
     let upserted = 0;
     let skipped = 0;
     let importsLeft = MAX_DEPARTMENT_IMPORTS_PER_RUN;
+    /** Phòng có nội dung mới trong lần chạy này — cập nhật theo dõi nhiệm vụ sau khi nạp. */
+    const changedDepartments = new Set<string>();
 
     for (const { sheet, previousHashes } of jobs) {
       const weekId = await findOrCreateWeek(sheet, ctx);
@@ -428,6 +434,7 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekJob> = {
 
           upserted += summary.tasksMatched;
           skipped += summary.tasksUnmatched;
+          changedDepartments.add(departmentId);
 
           await ctx.log(
             'info',
@@ -458,6 +465,32 @@ export const hospitalAiImport: Connector<Buffer, HospitalWeekJob> = {
       }
     }
 
+    await syncTaskTracking(ctx, jobs[0].allSheets, departments, changedDepartments);
     return { upserted, skipped };
   },
 };
+
+/**
+ * Theo dõi nhiệm vụ (docs/TASK-TRACKING.md) cho các phòng vừa có nội dung mới:
+ * nối dòng mới vào các việc, AI đánh giá lại việc đổi. Lỗi ở đây không làm hỏng
+ * lần nạp báo cáo — chỉ ghi log, lần chạy sau làm lại.
+ */
+async function syncTaskTracking(
+  ctx: SyncContext,
+  sheets: HospitalWeekSheet[],
+  departments: Array<{ id: string; name: string }>,
+  changed: ReadonlySet<string>,
+): Promise<void> {
+  if (changed.size === 0) return;
+  const years = [...new Set(sheets.map((s) => s.year))];
+  for (const year of years) {
+    for (const input of rowsFromSheets(sheets, departments, year).filter((d) => changed.has(d.departmentId))) {
+      try {
+        const r = await syncDepartment(ctx.prisma, input, { log: (m) => void ctx.log('warn', m) });
+        await ctx.log('info', `Theo dõi nhiệm vụ · ${input.departmentName}: ${r.entries} dòng nối mới · AI đánh giá ${r.judged} việc · ${r.tokens.toLocaleString('vi-VN')} token`);
+      } catch (error) {
+        await ctx.log('error', `Theo dõi nhiệm vụ · ${input.departmentName}: ${error instanceof Error ? error.message.slice(0, 200) : error}`);
+      }
+    }
+  }
+}
