@@ -15,4 +15,6 @@ export const AI_MODELS = {
   tracking: process.env.ZAI_MODEL_TRACKING || 'glm-4.5-air',
   /** Quản lý công việc: gợi ý các bước, đánh giá tiến độ. */
   work: process.env.ZAI_MODEL_WORK || 'glm-4.5-air',
+  /** Báo cáo tóm tắt hoạt động tuần: 4 lần gọi mỗi tuần (~30k token). glm-4.5-air hay chép mẫu, gán nhầm mảng, suy diễn "được trao giải" — dùng glm-5.2. */
+  summary: process.env.ZAI_MODEL_SUMMARY || 'glm-5.2',
 } as const;

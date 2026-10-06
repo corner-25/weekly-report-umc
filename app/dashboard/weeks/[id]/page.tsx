@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   AlertTriangle, ArrowLeft, BarChart3, Building2, FileDown, FileText, Filter, Layers,
   ListChecks, Pencil, Search, Star, Trash2,
+  Sparkles,
 } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -205,6 +206,9 @@ function WeekDetailView({ params }: { params: Promise<{ id: string }> }) {
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" /> {deleting ? 'Đang xoá…' : 'Xoá'}
           </button>
+          <Link href={`/dashboard/weeks/${week.id}/summary`} className={SECONDARY_BTN} title="Báo cáo tóm tắt hoạt động Bệnh viện do AI viết">
+            <Sparkles className="h-4 w-4" aria-hidden="true" /> Báo cáo tóm tắt
+          </Link>
           <Link href={withBack(`/dashboard/weeks/${week.id}/edit`, back)} className={PRIMARY_BTN}>
             <Pencil className="h-4 w-4" aria-hidden="true" /> Chỉnh sửa
           </Link>

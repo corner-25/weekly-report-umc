@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BarChart3, Eye, FileDown, Pencil } from 'lucide-react';
+import { BarChart3, Eye, FileDown, Pencil, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDateKey, formatRange, storedDateKey, vnTodayKey } from '@/lib/weeks/hospital-week';
 import { worstSeverity, type WeekIssue } from '@/lib/weeks/audit';
@@ -91,7 +91,7 @@ export function WeekRow({ week, issues, detailHref, editHref, metricsHref }: Wee
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 md:flex md:flex-col lg:flex-row">
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 md:flex md:flex-col lg:flex-row">
         <Link href={detailHref} className={cn(ACTION, 'bg-brand-50 text-brand-700 hover:bg-brand-100')}>
           <Eye className="h-3.5 w-3.5" aria-hidden="true" /> Xem
         </Link>
@@ -104,6 +104,13 @@ export function WeekRow({ week, issues, detailHref, editHref, metricsHref }: Wee
           className={cn(ACTION, 'bg-violet-50 text-violet-700 hover:bg-violet-100')}
         >
           <BarChart3 className="h-3.5 w-3.5" aria-hidden="true" /> Số liệu
+        </Link>
+        <Link
+          href={`/dashboard/weeks/${week.id}/summary`}
+          title="Báo cáo tóm tắt hoạt động Bệnh viện do AI viết"
+          className={cn(ACTION, 'bg-amber-50 text-amber-800 hover:bg-amber-100')}
+        >
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Tóm tắt
         </Link>
       </div>
     </article>

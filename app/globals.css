@@ -172,3 +172,13 @@ body {
   .max-h-\[92vh\] { max-height: 92dvh; }
   .max-h-\[94vh\] { max-height: 94dvh; }
 }
+
+/* In báo cáo (vd báo cáo tóm tắt tuần): chỉ in nội dung trang, bỏ menu, chân trang, nút chatbot. */
+@media print {
+  @page { size: A4; margin: 1.8cm 1.8cm 1.8cm 2.5cm; }
+  html, body { background: #fff !important; }
+  aside, footer, #nprogress, .fixed.bottom-5.right-5 { display: none !important; }
+  main > div { max-width: none !important; padding: 0 !important; }
+  .summary-doc { font-size: 13pt; }
+  .summary-doc table, .summary-doc tr { break-inside: avoid; }
+}

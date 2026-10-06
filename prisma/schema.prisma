@@ -107,6 +107,7 @@ model Week {
   taskProgress     WeekTaskProgress[] // NEW
   metricValues     WeekMetricValue[] // NEW - Số liệu định lượng
   extractedMetrics ExtractedMetric[]
+  summary          WeeklySummary?
 
   @@unique([weekNumber, year])
   @@index([createdById])
@@ -2178,4 +2179,27 @@ model TaskStream {
 
   @@unique([departmentId, year, nameKey])
   @@map("task_streams")
+}
+
+/// Báo cáo tóm tắt hoạt động Bệnh viện của một tuần — AI viết từ báo cáo các
+/// phòng, Phòng HC sửa rồi chốt. Bản đã chốt làm mẫu văn phong cho lần sau.
+model WeeklySummary {
+  id          String    @id @default(cuid())
+  weekId      String    @unique
+  /// Nội dung theo cấu trúc lib/weekly-summary/types.ts (mục, đoạn, bảng, kế hoạch).
+  content     Json
+  /// DRAFT: AI vừa viết hoặc đang sửa; FINAL: Phòng HC đã chốt.
+  status      String    @default("DRAFT")
+  model       String?
+  tokens      Int?
+  generatedAt DateTime?
+  editedAt    DateTime?
+  editedBy    String?
+  finalizedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  week Week @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@map("weekly_summaries")
 }
