@@ -66,7 +66,7 @@ export function RecentWeeksCard({ weeks }: { weeks: DashboardWeek[] }) {
           {weeks.map((week) => (
             <Link
               key={week.id}
-              href={`/dashboard/weeks/${week.id}`}
+              href={`/dashboard/weeks/${week.id}/summary`}
               className="group block rounded-xl border border-slate-200 p-4 transition-all hover:border-cyan-300 hover:shadow-sm"
             >
               <div className="mb-1 flex items-center justify-between">

@@ -234,6 +234,11 @@ export function embeddingsAvailable(): boolean {
   return getProvider() !== null;
 }
 
+/** Nhúng nhiều đoạn văn (dùng cho kho tri thức chatbot); trả vector cùng thứ tự và tên model. */
+export async function embedTexts(inputs: string[]): Promise<{ vectors: number[][]; model: string }> {
+  return embedBatch(inputs);
+}
+
 /**
  * Build / refresh the in-process cache of metric vectors. Pulls the distinct
  * (metric_name, department_name) pairs from v_chatbot_metrics, embeds each

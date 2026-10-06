@@ -2203,3 +2203,31 @@ model WeeklySummary {
 
   @@map("weekly_summaries")
 }
+
+/// Kho tri thức cho chatbot: mọi đoạn văn tự do trong hệ thống (báo cáo tuần các
+/// phòng, báo cáo tóm tắt, tiếp đoàn/CRM, công việc chỉ đạo, sự kiện) cắt thành
+/// đoạn, có khoá tìm không dấu và vector ngữ nghĩa. Ghi bằng lib/chatbot/knowledge/indexer.ts.
+model KnowledgeChunk {
+  /// "<nguồn>:<id bản ghi>[:phần]"
+  id             String                 @id
+  source         String
+  refId          String                 @map("ref_id")
+  title          String
+  body           String
+  department     String?
+  organization   String?
+  occurredOn     DateTime?              @map("occurred_on") @db.Date
+  year           Int?
+  week           Int?
+  href           String?
+  /// Viết thường, bỏ dấu — tìm "nguyen phuoc loc" ra "Nguyễn Phước Lộc".
+  searchKey      String                 @map("search_key")
+  contentHash    String                 @map("content_hash")
+  embedding      Unsupported("vector")?
+  embeddingModel String?                @map("embedding_model")
+  updatedAt      DateTime               @default(now()) @map("updated_at")
+
+  @@index([source])
+  @@index([occurredOn])
+  @@map("knowledge_chunks")
+}

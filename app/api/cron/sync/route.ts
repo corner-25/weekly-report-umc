@@ -5,6 +5,9 @@ import { authOptions } from '@/lib/auth';
 import { runAllEnabled, runSource } from '@/lib/ingestion/runner';
 import type { SyncTrigger } from '@/lib/ingestion/types';
 
+import { prisma } from '@/lib/prisma';
+import { syncKnowledge } from '@/lib/chatbot/knowledge/indexer';
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 /**
@@ -46,10 +49,18 @@ export async function POST(request: Request) {
 
     const failed = results.filter((r) => r.status === 'FAILED').length;
 
+    // Sau khi nạp dữ liệu: cập nhật kho tri thức chatbot (chỉ ghi, nhúng phần mới/đổi).
+    // Lỗi ở đây không làm hỏng kết quả đồng bộ.
+    const knowledge = await syncKnowledge(prisma).catch((err) => {
+      console.error('Cập nhật kho tri thức chatbot lỗi:', err);
+      return null;
+    });
+
     return NextResponse.json({
       success: failed === 0,
       summary: `${results.length - failed}/${results.length} nguồn đồng bộ thành công`,
       results,
+      knowledge,
       ranAt: new Date().toISOString(),
     });
   } catch (error) {

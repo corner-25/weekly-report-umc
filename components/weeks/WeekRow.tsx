@@ -12,12 +12,15 @@ const ACTION =
 interface WeekRowProps {
   week: WeekListItem;
   issues: WeekIssue[];
+  /** Bấm vào tuần: báo cáo tóm tắt. */
   detailHref: string;
+  /** Chi tiết nhiệm vụ từng phòng. */
+  tasksHref: string;
   editHref: string;
   metricsHref: string;
 }
 
-export function WeekRow({ week, issues, detailHref, editHref, metricsHref }: WeekRowProps) {
+export function WeekRow({ week, issues, detailHref, tasksHref, editHref, metricsHref }: WeekRowProps) {
   const worst = worstSeverity(issues.filter((i) => i.severity !== 'info'));
   const accent = worst
     ? SEVERITY_META[worst].accent
@@ -92,8 +95,11 @@ export function WeekRow({ week, issues, detailHref, editHref, metricsHref }: Wee
       </div>
 
       <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 md:flex md:flex-col lg:flex-row">
-        <Link href={detailHref} className={cn(ACTION, 'bg-brand-50 text-brand-700 hover:bg-brand-100')}>
-          <Eye className="h-3.5 w-3.5" aria-hidden="true" /> Xem
+        <Link href={detailHref} title="Báo cáo tóm tắt hoạt động Bệnh viện" className={cn(ACTION, 'bg-brand-50 text-brand-700 hover:bg-brand-100')}>
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Tóm tắt
+        </Link>
+        <Link href={tasksHref} title="Chi tiết nhiệm vụ từng phòng" className={cn(ACTION, 'bg-slate-100 text-slate-700 hover:bg-slate-200')}>
+          <Eye className="h-3.5 w-3.5" aria-hidden="true" /> Nhiệm vụ
         </Link>
         <Link href={editHref} className={cn(ACTION, 'bg-slate-100 text-slate-700 hover:bg-slate-200')}>
           <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Sửa
@@ -104,13 +110,6 @@ export function WeekRow({ week, issues, detailHref, editHref, metricsHref }: Wee
           className={cn(ACTION, 'bg-violet-50 text-violet-700 hover:bg-violet-100')}
         >
           <BarChart3 className="h-3.5 w-3.5" aria-hidden="true" /> Số liệu
-        </Link>
-        <Link
-          href={`/dashboard/weeks/${week.id}/summary`}
-          title="Báo cáo tóm tắt hoạt động Bệnh viện do AI viết"
-          className={cn(ACTION, 'bg-amber-50 text-amber-800 hover:bg-amber-100')}
-        >
-          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Tóm tắt
         </Link>
       </div>
     </article>

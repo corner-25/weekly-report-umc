@@ -94,7 +94,9 @@ function WeeksList() {
     [weeks],
   );
 
-  const weekHref = useCallback((id: string) => withBack(`/dashboard/weeks/${id}`, listQuery), [listQuery]);
+  // Bấm vào tuần là xem báo cáo tóm tắt; chi tiết nhiệm vụ là trang phụ.
+  const weekHref = useCallback((id: string) => withBack(`/dashboard/weeks/${id}/summary`, listQuery), [listQuery]);
+  const tasksHref = useCallback((id: string) => withBack(`/dashboard/weeks/${id}`, listQuery), [listQuery]);
   const newReportHref = useCallback((dateKey: string) => `/dashboard/weeks/new?date=${dateKey}`, []);
 
   const baseYears = Array.from({ length: YEARS_BACK + 2 }, (_, i) => currentYear + 1 - i);
@@ -152,7 +154,7 @@ function WeeksList() {
 
           <WeekStrip year={filters.year} weeks={weeks} audit={audit} weekHref={weekHref} newReportHref={newReportHref} />
 
-          <WeeksAuditPanel weeks={weeks} audit={audit} weekHref={weekHref} newReportHref={newReportHref} />
+          <WeeksAuditPanel weeks={weeks} audit={audit} weekHref={tasksHref} newReportHref={newReportHref} />
 
           <section aria-labelledby="weeks-list-heading" className="space-y-3">
             <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm lg:flex-row lg:items-center">
@@ -238,6 +240,7 @@ function WeeksList() {
                       week={w}
                       issues={audit.issuesByWeek[w.id] ?? []}
                       detailHref={weekHref(w.id)}
+                      tasksHref={tasksHref(w.id)}
                       editHref={withBack(`/dashboard/weeks/${w.id}/edit`, listQuery)}
                       metricsHref={`/dashboard/weeks/${w.id}/metrics`}
                     />

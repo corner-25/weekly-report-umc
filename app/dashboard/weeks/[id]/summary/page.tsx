@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Check, Copy, FileText, Lock, LockOpen, Pencil, Printer, Sparkles } from 'lucide-react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { weekListHref, withBack } from '@/lib/weeks/list-filters';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import { ArrowLeft, Check, Copy, FileText, ListChecks, Lock, LockOpen, Pencil, Printer, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { ErrorBanner, ICON_BTN, PANEL, PRIMARY_BTN, SECONDARY_BTN } from '@/components/crm/ui';
@@ -37,8 +38,9 @@ const tidy = (c: SummaryContent): SummaryContent => ({
   })),
 });
 
-export default function WeeklySummaryPage() {
+function WeeklySummary() {
   const { id } = useParams<{ id: string }>();
+  const back = useSearchParams().get('back') ?? '';
   const [data, setData] = useState<SummaryDto | null>(null);
   const [draft, setDraft] = useState<SummaryContent | null>(null);
   const [editing, setEditing] = useState(false);
@@ -64,6 +66,15 @@ export default function WeeklySummaryPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Tuần chưa có tóm tắt: cho AI viết luôn — bấm vào tuần là thấy báo cáo, không phải bấm thêm.
+  const [autoStarted, setAutoStarted] = useState(false);
+  useEffect(() => {
+    if (data && !data.summary && !autoStarted && busy === '') {
+      setAutoStarted(true);
+      generate();
+    }
+  }, [data, autoStarted, busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const generate = async () => {
     setBusy('generate');
@@ -110,8 +121,11 @@ export default function WeeklySummaryPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2 print:hidden">
-        <Link href={`/dashboard/weeks/${id}`} className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}>
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Báo cáo tuần {week ? `${week.weekNumber}/${week.year}` : ''}
+        <Link href={weekListHref(back)} className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}>
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Danh sách báo cáo tuần
+        </Link>
+        <Link href={withBack(`/dashboard/weeks/${id}`, back)} className="ml-auto inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+          <ListChecks className="h-4 w-4" aria-hidden="true" /> Chi tiết nhiệm vụ từng phòng
         </Link>
       </div>
 
@@ -210,5 +224,13 @@ export default function WeeklySummaryPage() {
       )}
       {draft && <SummaryDocument content={draft} editing={editing} onChange={setDraft} />}
     </div>
+  );
+}
+
+export default function WeeklySummaryPage() {
+  return (
+    <Suspense>
+      <WeeklySummary />
+    </Suspense>
   );
 }
