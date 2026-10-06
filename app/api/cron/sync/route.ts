@@ -7,6 +7,10 @@ import type { SyncTrigger } from '@/lib/ingestion/types';
 
 import { prisma } from '@/lib/prisma';
 import { syncKnowledge } from '@/lib/chatbot/knowledge/indexer';
+import { ensureWeeklySummaries } from '@/lib/weekly-summary/auto';
+
+/** Số tuần viết tóm tắt tối đa mỗi lần cron chạy (~20 giây/tuần). */
+const SUMMARIES_PER_RUN = 4;
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -49,6 +53,12 @@ export async function POST(request: Request) {
 
     const failed = results.filter((r) => r.status === 'FAILED').length;
 
+    // Viết sẵn báo cáo tóm tắt cho tuần mới có dữ liệu (vài tuần mỗi lần để cron không quá lâu).
+    const summaries = await ensureWeeklySummaries(prisma, { limit: SUMMARIES_PER_RUN }).catch((err) => {
+      console.error('Viết báo cáo tóm tắt tuần lỗi:', err);
+      return null;
+    });
+
     // Sau khi nạp dữ liệu: cập nhật kho tri thức chatbot (chỉ ghi, nhúng phần mới/đổi).
     // Lỗi ở đây không làm hỏng kết quả đồng bộ.
     const knowledge = await syncKnowledge(prisma).catch((err) => {
@@ -60,6 +70,7 @@ export async function POST(request: Request) {
       success: failed === 0,
       summary: `${results.length - failed}/${results.length} nguồn đồng bộ thành công`,
       results,
+      summaries,
       knowledge,
       ranAt: new Date().toISOString(),
     });
