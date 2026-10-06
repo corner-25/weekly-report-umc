@@ -19,9 +19,9 @@ export const GET = handle(async () => {
       select: {
         id: true, title: true, partnerName: true, partnerCountry: true, category: true, status: true,
         externalStatus: true, cooperationField: true, departmentId: true, contactPerson: true,
-        signedDate: true, expiryDate: true, progressPercent: true, updatedAt: true,
+        signedDate: true, expiryDate: true, progressPercent: true, updatedAt: true, assessment: true, evaluation: true,
         department: { select: { name: true } },
-        clauses: { select: { progress: true, clauseProgress: { select: { date: true }, orderBy: { date: 'desc' }, take: 1 } } },
+        clauses: { orderBy: { orderNumber: 'asc' }, select: { progress: true, clauseType: true, clauseStatus: true, clauseProgress: { select: { date: true }, orderBy: { date: 'desc' }, take: 1 } } },
         progressLogs: { select: { date: true }, orderBy: { date: 'desc' }, take: 1 },
         activities: { select: { startDate: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 },
         _count: { select: { documents: true, activities: true } },
@@ -46,7 +46,8 @@ export const GET = handle(async () => {
       contactPerson: m.contactPerson,
       signedDate: iso(m.signedDate),
       expiryDate: iso(m.expiryDate),
-      progress: clauseProgress ?? m.progressPercent,
+      // Khía cạnh đã có tiến độ (AI đối chiếu hoặc Phòng HC ghi) thì lấy; chưa thì lấy % phòng đầu mối ghi trên office.
+      progress: clauseProgress ? clauseProgress : m.progressPercent ?? clauseProgress,
       clauseCount: m.clauses.length,
       documentCount: m._count.documents,
       activityCount: m._count.activities,
@@ -58,6 +59,9 @@ export const GET = handle(async () => {
         ),
       ),
       updatedAt: m.updatedAt.toISOString(),
+      aiVerdict: (m.assessment as { verdict?: string } | null)?.verdict ?? null,
+      evaluation: m.evaluation,
+      aspects: m.clauses.map((c) => ({ type: c.clauseType, status: c.clauseStatus })),
     };
   });
 

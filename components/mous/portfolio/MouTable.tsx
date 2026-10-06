@@ -4,6 +4,8 @@ import { AlertTriangle, FileText, Globe2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PANEL } from '@/components/crm/ui';
 import { needsDecision, type MouView } from '@/lib/mou/portfolio';
+import type { Verdict } from '@/lib/mou/assess';
+import { VerdictChip } from '../MouReview';
 import { ExpiryText, LifecycleChip, ProgressBar, fmtDate, fmtMonths } from './terms';
 
 /** Huy hiệu "cần chú ý" — đủ lý do trên cùng một dòng, như danh sách công việc. */
@@ -29,14 +31,14 @@ function Flags({ v }: { v: MouView }) {
 export function MouTable({ views, onOpen }: { views: MouView[]; onOpen: (id: string) => void }) {
   return (
     <div className={cn(PANEL, 'overflow-hidden')}>
-      <div className="hidden grid-cols-[minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,1.2fr)_110px_120px_130px_110px] gap-3 border-b border-slate-100 bg-slate-50/70 px-4 py-2.5 text-xs font-semibold text-slate-500 lg:grid">
+      <div className="hidden grid-cols-[minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,1.2fr)_100px_115px_125px_130px] gap-3 border-b border-slate-100 bg-slate-50/70 px-4 py-2.5 text-xs font-semibold text-slate-500 lg:grid">
         <span>Đối tác</span>
         <span>Phòng đầu mối</span>
         <span>Lĩnh vực</span>
         <span>Ngày ký</span>
         <span>Hết hạn</span>
         <span>Tiến độ</span>
-        <span className="text-right">Vòng đời</span>
+        <span className="text-right">Vòng đời · hiệu quả</span>
       </div>
       <ul className="divide-y divide-slate-100">
         {views.map((v) => (
@@ -44,7 +46,7 @@ export function MouTable({ views, onOpen }: { views: MouView[]; onOpen: (id: str
             <button
               type="button"
               onClick={() => onOpen(v.id)}
-              className="grid w-full gap-x-3 gap-y-1.5 px-4 py-3 text-left transition hover:bg-brand-50/40 focus-visible:bg-brand-50/60 focus-visible:outline-none lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,1.2fr)_110px_120px_130px_110px] lg:items-center"
+              className="grid w-full gap-x-3 gap-y-1.5 px-4 py-3 text-left transition hover:bg-brand-50/40 focus-visible:bg-brand-50/60 focus-visible:outline-none lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,1.2fr)_100px_115px_125px_130px] lg:items-center"
             >
               <span className="min-w-0">
                 <span className="flex items-start justify-between gap-2">
@@ -63,6 +65,7 @@ export function MouTable({ views, onOpen }: { views: MouView[]; onOpen: (id: str
                   )}
                 </span>
                 <Flags v={v} />
+                {v.verdict && <span className="mt-1 block lg:hidden"><VerdictChip verdict={v.verdict as Verdict} prefix={v.verdictByPeople ? undefined : '✦ '} /></span>}
               </span>
               <span className="min-w-0 text-sm text-slate-700">
                 <span className={cn('block truncate', !v.departmentName && 'text-slate-400')}>{v.departmentName ?? 'Chưa có phòng'}</span>
@@ -74,7 +77,10 @@ export function MouTable({ views, onOpen }: { views: MouView[]; onOpen: (id: str
               <span className="text-xs tabular-nums text-slate-600"><span className="text-slate-400 lg:hidden">Ký </span>{fmtDate(v.signedDate)}</span>
               <span><ExpiryText days={v.daysToExpiry} iso={v.expiryDate} /></span>
               <span>{v.lifecycle === 'PENDING' ? <span className="text-xs text-slate-400">Chưa ký</span> : <ProgressBar value={v.progress} stage={v.stage} />}</span>
-              <span className="hidden justify-end lg:flex"><LifecycleChip lifecycle={v.lifecycle} /></span>
+              <span className="hidden flex-col items-end gap-1 lg:flex">
+                <LifecycleChip lifecycle={v.lifecycle} />
+                {v.verdict && <VerdictChip verdict={v.verdict as Verdict} prefix={v.verdictByPeople ? undefined : '✦ '} />}
+              </span>
             </button>
           </li>
         ))}

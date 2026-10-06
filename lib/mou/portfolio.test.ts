@@ -116,3 +116,21 @@ describe('computePortfolio', () => {
     expect(p.countries).toEqual([{ name: 'Nhật Bản', count: 1 }]);
   });
 });
+
+describe('hiệu quả', () => {
+  it('ưu tiên đánh giá người chốt, đếm khía cạnh theo loại', () => {
+    const views = [
+      view({ aiVerdict: 'AT_RISK', evaluation: 'FAILED', aspects: [{ type: 'TRAINING', status: 'NOT_STARTED' }] }),
+      view({ aiVerdict: 'SUCCESS', aspects: [{ type: 'TRAINING', status: 'COMPLETED' }, { type: 'RESEARCH', status: 'IN_PROGRESS' }] }),
+      view({ status: 'DRAFT', aiVerdict: 'TOO_EARLY', aspects: [{ type: 'TRAINING', status: 'NOT_STARTED' }] }),
+    ];
+    const p = computePortfolio(views, NOW);
+    expect(p.verdicts.find((v) => v.key === 'FAILED')).toEqual({ key: 'FAILED', total: 1, byPeople: 1 });
+    expect(p.verdicts.find((v) => v.key === 'SUCCESS')?.total).toBe(1);
+    expect(p.verdicts.find((v) => v.key === 'TOO_EARLY')?.total).toBe(0);
+    expect(p.evaluatedCount).toBe(1);
+    expect(p.aspectTypes[0]).toEqual({ type: 'TRAINING', total: 2, completed: 1, inProgress: 0, mous: 2 });
+    expect(p.aspectTotals).toEqual({ total: 3, completed: 1, inProgress: 1, mousWithAspects: 2 });
+    expect(filterMous(views, { view: 'all', verdict: 'FAILED' })).toHaveLength(1);
+  });
+});

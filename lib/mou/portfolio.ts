@@ -36,6 +36,11 @@ export interface MouRow {
   /** Lần gần nhất có tin triển khai: nhật ký tiến độ, hoạt động, tiến độ hạng mục. */
   lastActivityAt: string | null;
   updatedAt: string;
+  /** Đánh giá AI gợi ý và đánh giá người chốt (SUCCESS | ON_TRACK | AT_RISK | FAILED | TOO_EARLY). */
+  aiVerdict?: string | null;
+  evaluation?: string | null;
+  /** Khía cạnh đã ký (từ văn bản) và mức triển khai từng khía cạnh. */
+  aspects?: Array<{ type: string; status: string }>;
 }
 
 /** Vòng đời theo ngày hết hạn — không tin trạng thái lưu, vì "hiệu lực" lưu từ lúc ký không tự đổi. */
@@ -53,6 +58,9 @@ export interface MouView extends MouRow {
   scope: 'INTERNATIONAL' | 'DOMESTIC';
   partnerType: PartnerType;
   fields: string[];
+  /** Đánh giá hiệu lực: người chốt, chưa chốt thì AI gợi ý. */
+  verdict: string | null;
+  verdictByPeople: boolean;
 }
 
 export const LIFECYCLE_LABELS: Record<Lifecycle, string> = {
@@ -140,6 +148,8 @@ export function toView(row: MouRow, now: Date): MouView {
     missing: missingOf(row, lifecycle),
     scope: row.category === 'INTERNATIONAL' || (row.partnerCountry && row.partnerCountry !== 'Việt Nam') ? 'INTERNATIONAL' : 'DOMESTIC',
     partnerType: partnerTypeOf(row.partnerName),
+    verdict: row.evaluation ?? row.aiVerdict ?? null,
+    verdictByPeople: Boolean(row.evaluation),
     fields: (row.cooperationField ?? '').split(/\s*;\s*/).map((f) => f.trim()).filter(Boolean),
   };
 }
@@ -181,6 +191,7 @@ export interface MouFilter {
   scope?: '' | 'INTERNATIONAL' | 'DOMESTIC';
   partnerType?: string;
   stage?: string;
+  verdict?: string;
 }
 
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase();
@@ -195,6 +206,7 @@ export function filterMous(views: MouView[], f: MouFilter): MouView[] {
       (!f.scope || v.scope === f.scope) &&
       (!f.partnerType || v.partnerType === f.partnerType) &&
       (!f.stage || v.stage === f.stage) &&
+      (!f.verdict || (f.verdict === 'none' ? !v.verdict : v.verdict === f.verdict)) &&
       (!q || fold(`${v.title} ${v.partnerName} ${v.cooperationField ?? ''} ${v.contactPerson ?? ''} ${v.departmentName ?? ''}`).includes(q)),
   );
 }
@@ -273,7 +285,15 @@ export interface Portfolio {
   signedByYear: Array<{ year: number; domestic: number; international: number }>;
   expiryByYear: Array<{ label: string; count: number }>;
   lists: { decide: MouView[]; dormant: MouView[]; pending: MouView[]; incomplete: MouView[] };
+  /** Hiệu quả: phân bố đánh giá (người chốt ưu tiên, chưa chốt lấy AI) của MOU đã ký. */
+  verdicts: Array<{ key: string; total: number; byPeople: number }>;
+  evaluatedCount: number;
+  /** Khía cạnh đã ký theo loại: bao nhiêu đạt, đang làm, chưa làm. */
+  aspectTypes: Array<{ type: string; total: number; completed: number; inProgress: number; mous: number }>;
+  aspectTotals: { total: number; completed: number; inProgress: number; mousWithAspects: number };
 }
+
+export const VERDICT_ORDER = ['SUCCESS', 'ON_TRACK', 'AT_RISK', 'FAILED', 'TOO_EARLY'] as const;
 
 const avg = (xs: number[]) => (xs.length ? Math.round(xs.reduce((s, x) => s + x, 0) / xs.length) : null);
 const countBy = <K extends string>(keys: readonly K[], views: MouView[], pick: (v: MouView) => K) =>
@@ -332,6 +352,27 @@ export function computePortfolio(views: MouView[], now: Date): Portfolio {
     { label: 'Không thời hạn', count: live.filter((v) => !v.expiryDate).length },
   ];
 
+  const signedViews = views.filter((v) => v.lifecycle !== 'PENDING');
+  const verdicts = VERDICT_ORDER.map((key) => ({
+    key,
+    total: signedViews.filter((v) => v.verdict === key).length,
+    byPeople: signedViews.filter((v) => v.verdict === key && v.verdictByPeople).length,
+  }));
+  const typeMap = new Map<string, { total: number; completed: number; inProgress: number; mous: Set<string> }>();
+  for (const v of signedViews) {
+    for (const a of v.aspects ?? []) {
+      const e = typeMap.get(a.type) ?? { total: 0, completed: 0, inProgress: 0, mous: new Set<string>() };
+      e.total += 1;
+      if (a.status === 'COMPLETED') e.completed += 1;
+      if (a.status === 'IN_PROGRESS') e.inProgress += 1;
+      e.mous.add(v.id);
+      typeMap.set(a.type, e);
+    }
+  }
+  const aspectTypes = [...typeMap.entries()]
+    .map(([type, e]) => ({ type, total: e.total, completed: e.completed, inProgress: e.inProgress, mous: e.mous.size }))
+    .sort((a, b) => b.total - a.total);
+
   const bySigned = (a: MouView, b: MouView) => time(a.signedDate, Infinity) - time(b.signedDate, Infinity);
   return {
     kpi: {
@@ -364,6 +405,15 @@ export function computePortfolio(views: MouView[], now: Date): Portfolio {
     countries: [...countryMap.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
     signedByYear,
     expiryByYear,
+    verdicts,
+    evaluatedCount: signedViews.filter((v) => v.verdictByPeople).length,
+    aspectTypes,
+    aspectTotals: {
+      total: aspectTypes.reduce((s, a) => s + a.total, 0),
+      completed: aspectTypes.reduce((s, a) => s + a.completed, 0),
+      inProgress: aspectTypes.reduce((s, a) => s + a.inProgress, 0),
+      mousWithAspects: signedViews.filter((v) => (v.aspects ?? []).length > 0).length,
+    },
     lists: {
       decide: [...decide].sort((a, b) => time(a.expiryDate, Infinity) - time(b.expiryDate, Infinity)),
       dormant: views.filter((v) => v.dormant).sort(bySigned),

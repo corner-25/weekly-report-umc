@@ -960,6 +960,18 @@ model MOU {
   progressPercent  Int? // % tiến độ ghi trên office
   watchers         String? @db.Text // Người theo dõi
 
+  // AI đọc biên bản ký kết (OCR → trích xuất) và đối chiếu dữ liệu triển khai
+  extraction  Json? // Kết quả trích xuất văn bản ký (lib/mou/extract.ts)
+  extractedAt DateTime?
+  assessment  Json? // Đánh giá triển khai từng khía cạnh kèm bằng chứng (lib/mou/assess.ts)
+  assessedAt  DateTime?
+
+  // Lãnh đạo / Phòng HC chốt đánh giá — AI chỉ gợi ý
+  evaluation     String? // SUCCESS | ON_TRACK | AT_RISK | FAILED
+  evaluationNote String? @db.Text
+  evaluatedAt    DateTime?
+  evaluatedBy    String?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -1041,6 +1053,8 @@ model MOUClause {
   deadline         DateTime? // Hạn thực hiện
   progress         Int              @default(0) // 0-100%
   clauseStatus     ClauseStatus     @default(NOT_STARTED) // Trạng thái triển khai
+  aiGenerated      Boolean          @default(false) // Do AI trích từ văn bản ký
+  evidence         Json? // Bằng chứng triển khai AI tìm được: [{date, source, text, href}]
   isCompleted      Boolean          @default(false)
   completedAt      DateTime?
 
@@ -1160,6 +1174,9 @@ model MOUDocument {
   sha256       String?
   data         Bytes? // Nội dung file lưu trong DB (null: chỉ có liên kết fileUrl)
   externalCode String? @unique // Mã file đính kèm trên office (attchFileID)
+  ocrText      String? @db.Text // Chữ đọc được từ file (lớp chữ PDF hoặc OCR bản scan)
+  pageCount    Int?
+  ocrAt        DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

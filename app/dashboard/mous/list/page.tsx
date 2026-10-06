@@ -17,6 +17,7 @@ import { MouTable } from '@/components/mous/portfolio/MouTable';
 import { MouDetailHost, type HostMode } from '@/components/mous/portfolio/MouDetailHost';
 import { downloadMouCsv } from '@/components/mous/portfolio/export-csv';
 import { HintTip } from '@/components/work/dashboard/Glossary';
+import { VERDICTS, VERDICT_LABELS } from '@/lib/mou/assess';
 import { MOU_TERMS, type MouTermKey } from '@/components/mous/portfolio/terms';
 
 const VIEW_TERM: Partial<Record<MouViewKey, MouTermKey>> = {
@@ -41,6 +42,7 @@ function MouList() {
     doitac: params.get('doitac') ?? '',
     phamvi: params.get('phamvi') ?? '',
     giaidoan: params.get('giaidoan') ?? '',
+    danhgia: params.get('danhgia') ?? '',
     sapxep: isSort(params.get('sapxep')) ? (params.get('sapxep') as MouSortKey) : 'attention',
   }));
   const [mode, setMode] = useState<HostMode>(() => {
@@ -59,15 +61,15 @@ function MouList() {
     });
   }, []);
 
-  const { q, phong, linhvuc, doitac, phamvi, giaidoan } = state;
+  const { q, phong, linhvuc, doitac, phamvi, giaidoan, danhgia } = state;
   const scoped = useMemo(
-    () => filterMous(views, { view: 'all', q, departmentId: phong, field: linhvuc, scope: phamvi as MouFilter['scope'], partnerType: doitac, stage: giaidoan }),
-    [views, q, phong, linhvuc, doitac, phamvi, giaidoan],
+    () => filterMous(views, { view: 'all', q, departmentId: phong, field: linhvuc, scope: phamvi as MouFilter['scope'], partnerType: doitac, stage: giaidoan, verdict: danhgia }),
+    [views, q, phong, linhvuc, doitac, phamvi, giaidoan, danhgia],
   );
   const shown = useMemo(() => sortMous(scoped.filter((v) => matchesView(v, state.view)), state.sapxep), [scoped, state.view, state.sapxep]);
   const fields = useMemo(() => [...new Set(views.flatMap((v) => v.fields))].sort((a, b) => a.localeCompare(b, 'vi')), [views]);
   const ownerIds = useMemo(() => new Set(views.map((v) => v.departmentId)), [views]);
-  const hasFilters = Boolean(state.q || state.phong || state.linhvuc || state.doitac || state.phamvi || state.giaidoan);
+  const hasFilters = Boolean(state.q || state.phong || state.linhvuc || state.doitac || state.phamvi || state.giaidoan || state.danhgia);
 
   return (
     <div className="space-y-4">
@@ -140,6 +142,7 @@ function MouList() {
           <span>
             <b className="text-slate-800">{shown.length}</b> MOU
           </span>
+          <span className="text-violet-600" title="Đánh giá có dấu ✦ là AI gợi ý, chưa được lãnh đạo/Phòng HC chốt">✦ = AI gợi ý</span>
           <span className="mx-1 h-3 w-px bg-slate-200" aria-hidden="true" />
           <span>Triển khai:</span>
           {(['', 'NONE', 'STARTED', 'DONE'] as Array<'' | Stage>).map((s) => (
@@ -147,15 +150,24 @@ function MouList() {
               {s ? STAGE_LABELS[s] : 'Tất cả'}
             </button>
           ))}
+          <div className="w-44">
+          <Select value={state.danhgia} onChange={(e) => update({ danhgia: e.target.value })} aria-label="Đánh giá hiệu quả" className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs">
+            <option value="">Mọi đánh giá</option>
+            {VERDICTS.map((v) => <option key={v} value={v}>{VERDICT_LABELS[v]}</option>)}
+            <option value="none">Chưa đánh giá</option>
+          </Select>
+          </div>
           <span className="ml-auto flex items-center gap-2">
             {hasFilters && (
-              <button type="button" onClick={() => update({ q: '', phong: '', linhvuc: '', doitac: '', phamvi: '', giaidoan: '' })} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600">
+              <button type="button" onClick={() => update({ q: '', phong: '', linhvuc: '', doitac: '', phamvi: '', giaidoan: '', danhgia: '' })} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600">
                 <X className="h-3.5 w-3.5" aria-hidden="true" /> Xoá bộ lọc
               </button>
             )}
-            <Select value={state.sapxep} onChange={(e) => update({ sapxep: e.target.value as MouSortKey })} aria-label="Sắp xếp" className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs">
-              {MOU_SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
-            </Select>
+            <span className="w-44">
+              <Select value={state.sapxep} onChange={(e) => update({ sapxep: e.target.value as MouSortKey })} aria-label="Sắp xếp" className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs">
+                {MOU_SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+              </Select>
+            </span>
           </span>
         </div>
       </div>

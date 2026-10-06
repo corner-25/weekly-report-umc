@@ -10,6 +10,7 @@ import {
 } from './MOUUtils';
 import { MOUActivities } from './MOUActivities';
 import { MOUDocuments } from './MOUDocuments';
+import { MouReview, type ReviewMou } from './MouReview';
 import { AlertTriangle, X as XIcon, Pencil, Calendar, CheckCircle2, Clock as ClockIcon } from 'lucide-react';
 import { DateInput } from '@/components/ui/DateInput';
 
@@ -98,10 +99,10 @@ interface Props {
   onRefresh: () => void;
 }
 
-type Tab = 'info' | 'clauses' | 'timeline' | 'activities' | 'documents' | 'progress';
+type Tab = 'review' | 'info' | 'clauses' | 'timeline' | 'activities' | 'documents' | 'progress';
 
 export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>('clauses');
+  const [activeTab, setActiveTab] = useState<Tab>('review');
   const [showClauseForm, setShowClauseForm] = useState(false);
   const [showProgressForm, setShowProgressForm] = useState(false);
   const [editingClause, setEditingClause] = useState<Clause | null>(null);
@@ -123,7 +124,7 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-start justify-between">
+        <div className="shrink-0 px-6 py-4 border-b border-slate-200 flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[mou.category]}`}>
@@ -170,10 +171,11 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
         })()}
 
         {/* Tabs */}
-        <div className="flex space-x-1 px-6 pt-3 bg-slate-50 border-b border-slate-200 overflow-x-auto">
+        <div className="flex shrink-0 space-x-1 px-6 pt-3 bg-slate-50 border-b border-slate-200 overflow-x-auto">
           {([
+            ['review', 'Đánh giá'],
             ['info', 'Thông tin'],
-            ['clauses', `Hạng mục (${mou.clauses.length})`],
+            ['clauses', `Khía cạnh (${mou.clauses.length})`],
             ['timeline', 'Timeline'],
             ['activities', `Hoạt động (${mou.activities?.length || 0})`],
             ['documents', `Văn bản (${mou.documents?.length || 0})`],
@@ -193,6 +195,8 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
+          {activeTab === 'review' && <MouReview mou={mou as unknown as ReviewMou} onRefresh={onRefresh} />}
+
           {/* Info Tab */}
           {activeTab === 'info' && (
             <div className="space-y-6">

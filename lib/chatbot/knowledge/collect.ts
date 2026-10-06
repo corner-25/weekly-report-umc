@@ -248,8 +248,11 @@ async function mous(db: PrismaClient): Promise<KnowledgeDoc[]> {
       department: { select: { name: true } },
       progressLogs: { orderBy: { date: 'asc' } },
       documents: { select: { title: true, documentType: true } },
+      clauses: { orderBy: { orderNumber: 'asc' }, select: { title: true, clauseStatus: true, progress: true } },
     },
   });
+  const CLAUSE_STATUS: Record<string, string> = { NOT_STARTED: 'chưa triển khai', IN_PROGRESS: 'đang triển khai', COMPLETED: 'đạt cam kết', ON_HOLD: 'tạm dừng', CANCELLED: 'đã huỷ' };
+  const VERDICT: Record<string, string> = { SUCCESS: 'thành công', ON_TRACK: 'đang tiến triển', AT_RISK: 'có nguy cơ', FAILED: 'không hiệu quả', TOO_EARLY: 'mới ký, chưa đánh giá' };
   return rows.flatMap((m) =>
     withParts({
       id: `mou:${m.id}`,
@@ -265,7 +268,10 @@ async function mous(db: PrismaClient): Promise<KnowledgeDoc[]> {
         m.contactPerson && `Người phụ trách: ${m.contactPerson}`,
         m.purpose && `Nội dung hợp tác: ${clean(m.purpose)}`,
         m.notes && `Ghi chú: ${clean(m.notes)}`,
+        ...m.clauses.map((c) => `Khía cạnh đã ký: ${c.title} — ${CLAUSE_STATUS[c.clauseStatus] ?? c.clauseStatus} (${c.progress}%)`),
         ...m.progressLogs.map((p) => `Tiến độ ${vnDate(p.date)}: ${clean(p.content)}`),
+        m.evaluation && `Lãnh đạo đánh giá: ${VERDICT[m.evaluation] ?? m.evaluation}${m.evaluationNote ? ` — ${clean(m.evaluationNote)}` : ''}`,
+        !m.evaluation && (m.assessment as { verdict?: string; rationale?: string } | null)?.verdict && `AI gợi ý đánh giá: ${VERDICT[(m.assessment as { verdict: string }).verdict] ?? ''} — ${(m.assessment as { rationale?: string }).rationale ?? ''}`,
         m.documents.length > 0 && `Văn bản: ${m.documents.map((d) => d.title).join('; ')}`,
       ].filter(Boolean).join('\n'),
       department: m.department?.name ?? null,

@@ -14,6 +14,7 @@ import { PortfolioKpis } from '@/components/mous/portfolio/PortfolioKpis';
 import { DecisionBoard } from '@/components/mous/portfolio/DecisionBoard';
 import { DepartmentBoard } from '@/components/mous/portfolio/DepartmentBoard';
 import { PortfolioMix } from '@/components/mous/portfolio/PortfolioMix';
+import { EffectivenessBoard } from '@/components/mous/portfolio/EffectivenessBoard';
 import { ManagementGuide } from '@/components/mous/portfolio/ManagementGuide';
 import { MouDetailHost, type HostMode } from '@/components/mous/portfolio/MouDetailHost';
 
@@ -98,6 +99,7 @@ function MouDashboard() {
       ) : (
         <>
           <PortfolioKpis data={data} listHref={(view) => listHref({ view })} />
+          <EffectivenessBoard data={data} listHref={(extra) => listHref({ view: 'all', ...extra })} />
           <DecisionBoard lists={data.lists} onOpen={(id) => setMode({ kind: 'view', id })} listHref={(view) => listHref({ view })} />
           {!departmentId && <DepartmentBoard rows={data.departments} deptHref={(id, view = 'live') => listHref({ view, phong: id ?? 'none' })} />}
           <PortfolioMix data={data} listHref={listHref} />
