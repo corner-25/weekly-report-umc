@@ -11,6 +11,7 @@ import {
 import { MOUActivities } from './MOUActivities';
 import { MOUDocuments } from './MOUDocuments';
 import { MouReview, type ReviewMou } from './MouReview';
+import { MouCrmLink, type CrmLinkMou } from './MouCrmLink';
 import { AlertTriangle, X as XIcon, Pencil, Calendar, CheckCircle2, Clock as ClockIcon } from 'lucide-react';
 import { DateInput } from '@/components/ui/DateInput';
 
@@ -206,6 +207,8 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 {mou.partnerCountry && <p className="text-sm text-blue-700">{mou.partnerCountry}</p>}
                 {mou.partnerContact && <p className="text-sm text-blue-600 mt-1 whitespace-pre-line">{mou.partnerContact}</p>}
               </div>
+
+              <MouCrmLink mou={mou as unknown as CrmLinkMou} onChanged={onRefresh} />
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <InfoField label="Ngày ký kết" value={formatDate(mou.signedDate)} />

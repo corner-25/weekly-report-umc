@@ -111,13 +111,14 @@ export async function assessMou(db: PrismaClient, mouId: string, now = new Date(
     select: {
       title: true, partnerName: true, signedDate: true, expiryDate: true, externalStatus: true, progressPercent: true, purpose: true,
       department: { select: { name: true } },
+      crmOrganization: { select: { name: true, aliases: true } },
       clauses: { orderBy: { orderNumber: 'asc' }, select: { id: true, clauseType: true, title: true, content: true, responsibleParty: true, notes: true, deadline: true, aiGenerated: true } },
       progressLogs: { orderBy: { date: 'asc' }, select: { date: true, content: true, updatedBy: true } },
       activities: { orderBy: { startDate: 'asc' }, select: { startDate: true, title: true, status: true, result: true } },
     },
   });
 
-  const knowledge = await knowledgeEvidence(db, mou.partnerName);
+  const knowledge = await knowledgeEvidence(db, mou.partnerName, 24, mou.crmOrganization ? [mou.crmOrganization.name, ...mou.crmOrganization.aliases] : []);
   const evidence: EvidenceSnippet[] = [
     ...mou.progressLogs.map((l) => ({ date: day(l.date), source: 'office', title: 'Nhật ký tiến độ', text: l.content, href: null })),
     ...knowledge,

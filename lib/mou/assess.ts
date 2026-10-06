@@ -86,8 +86,15 @@ export function partnerAliases(name: string): string[] {
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
 /** Đoạn tri thức nhắc tới đối tác (không tính chính MOU), mới nhất trước. */
-export async function knowledgeEvidence(db: PrismaClient, partnerName: string, limit = 24): Promise<Array<Omit<EvidenceSnippet, 'ref'>>> {
-  const patterns = partnerAliases(partnerName).map((a) => `%${escapeLike(toSearchKey(a))}%`);
+export async function knowledgeEvidence(
+  db: PrismaClient,
+  partnerName: string,
+  limit = 24,
+  /** Tên và tên khác của tổ chức CRM đã nối — báo cáo, sổ tiếp đoàn hay gọi theo tên này. */
+  extraNames: string[] = [],
+): Promise<Array<Omit<EvidenceSnippet, 'ref'>>> {
+  const names = [...new Set([...partnerAliases(partnerName), ...extraNames.flatMap((n) => partnerAliases(n))])];
+  const patterns = names.map((a) => `%${escapeLike(toSearchKey(a))}%`);
   const rows = await db.$queryRawUnsafe<Array<{ source: string; title: string; body: string; occurred_on: Date | null; href: string | null }>>(
     `SELECT source, title, body, occurred_on, href FROM knowledge_chunks
       WHERE source <> 'mou' AND search_key ILIKE ANY($1::text[])
@@ -99,7 +106,7 @@ export async function knowledgeEvidence(db: PrismaClient, partnerName: string, l
     date: r.occurred_on ? r.occurred_on.toISOString().slice(0, 10) : null,
     source: r.source,
     title: r.title,
-    text: focusOn(r.body, partnerAliases(partnerName)),
+    text: focusOn(r.body, names),
     href: r.href,
   }));
 }

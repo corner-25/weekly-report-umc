@@ -22,6 +22,7 @@ export async function GET(
       where: { id },
       include: {
         department: { select: { id: true, name: true } },
+        crmOrganization: { select: { id: true, name: true, category: true, _count: { select: { interactions: true, positions: true } } } },
         clauses: {
           orderBy: { orderNumber: 'asc' },
           include: {

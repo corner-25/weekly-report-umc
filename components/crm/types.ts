@@ -295,8 +295,25 @@ export interface OrganizationContact {
   email: string | null;
 }
 
+/** MOU đã ký với tổ chức (nối từ phân hệ Hợp tác). */
+export interface OrganizationMou {
+  id: string;
+  title: string;
+  status: string;
+  signedDate: string | null;
+  expiryDate: string | null;
+  externalStatus: string | null;
+  cooperationField: string | null;
+  evaluation: string | null;
+  aiVerdict: string | null;
+  department: string | null;
+  aspects: number;
+  aspectsActive: number;
+}
+
 export interface OrganizationDetail {
   id: string;
+  mous?: OrganizationMou[];
   name: string;
   type: OrganizationType;
   tier: Tier;

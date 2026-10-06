@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { ORGANIZATION_TYPE_LABELS } from '@/lib/crm/constants';
 import { changeCareTaskStatus, changeInteractionStatus, crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { FocalPointModal, FocalPointsCard } from '@/components/crm/FocalPoints';
+import { OrganizationMous } from '@/components/crm/OrganizationMous';
 import { CareTaskModal } from '@/components/crm/CareTaskModal';
 import { CareTasksPanel } from '@/components/crm/CareTasksPanel';
 import { ImportantDateModal } from '@/components/crm/ImportantDateModal';
@@ -150,6 +151,7 @@ export default function OrganizationProfilePage() {
               crmSend(`/api/crm/positions/${c.positionId}`, 'PATCH', { isFocalPoint }).then(() => load()).catch((e) => setError(errorMessage(e)));
             }}
           />
+          <OrganizationMous mous={org.mous ?? []} />
           <SectionCard title="Thông tin" icon={<Building2 className="h-4 w-4 text-cyan-600" aria-hidden="true" />}>
             <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm">
               <dt className="text-slate-500">Loại</dt>

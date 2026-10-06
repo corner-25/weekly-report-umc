@@ -169,6 +169,7 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
 - ai_verdict (text|null): AI gợi ý 'Thành công'|'Đang tiến triển'|'Có nguy cơ'|'Không hiệu quả'|'Mới ký, chưa đánh giá'; ai_implementation_level (int 0–100); ai_rationale (text); last_activity_date (date|null)
 - leader_evaluation (text|null): đánh giá lãnh đạo/Phòng HC đã chốt (cùng nhãn như ai_verdict trừ 'Mới ký'); leader_evaluation_note (text|null)
   Hỏi MOU thành công/thất bại/hiệu quả: dùng COALESCE(leader_evaluation, ai_verdict) và nói rõ cái nào là AI gợi ý.
+- crm_organization (text|null): tên tổ chức này trong CRM (cùng đơn vị, dùng để đối chiếu v_chatbot_delegations theo tên); crm_interaction_count (int|null): số lượt tiếp đón/làm việc đã ghi trong CRM
 
 ### 4. v_chatbot_licenses — Giấy phép / chứng chỉ
 - name, license_number, category, issued_by (text)

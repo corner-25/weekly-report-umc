@@ -960,6 +960,11 @@ model MOU {
   progressPercent  Int? // % tiến độ ghi trên office
   watchers         String? @db.Text // Người theo dõi
 
+  // Đối tác này trong CRM (cùng một tổ chức) — AI ghép theo tên, Phòng HC sửa được
+  crmOrganizationId String?
+  crmOrganization   CrmOrganization? @relation(fields: [crmOrganizationId], references: [id], onDelete: SetNull)
+  crmMatch          Json? // {by: AI|MANUAL, confidence, reason, at, suggestionId?}
+
   // AI đọc biên bản ký kết (OCR → trích xuất) và đối chiếu dữ liệu triển khai
   extraction  Json? // Kết quả trích xuất văn bản ký (lib/mou/extract.ts)
   extractedAt DateTime?
@@ -986,6 +991,7 @@ model MOU {
   @@index([departmentId])
   @@index([expiryDate])
   @@index([status, expiryDate])
+  @@index([crmOrganizationId])
   @@map("mous")
 }
 
@@ -1640,6 +1646,7 @@ model CrmOrganization {
   importantDates CrmImportantDate[]
   interactions   CrmInteraction[]
   careTasks      CrmCareTask[]
+  mous           MOU[]
 
   @@index([tier])
   @@map("crm_organizations")

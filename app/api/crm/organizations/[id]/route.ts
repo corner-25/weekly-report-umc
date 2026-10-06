@@ -33,11 +33,20 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       importantDates: { orderBy: [{ month: 'asc' }, { day: 'asc' }] },
       interactions: { include: interactionInclude, orderBy: { occurredAt: 'desc' }, take: 200 },
       careTasks: { include: careTaskInclude, orderBy: { occasionDate: 'desc' }, take: 100 },
+      mous: {
+        where: { deletedAt: null },
+        orderBy: { signedDate: 'desc' },
+        select: {
+          id: true, title: true, status: true, signedDate: true, expiryDate: true, externalStatus: true, cooperationField: true,
+          evaluation: true, assessment: true, department: { select: { name: true } },
+          clauses: { select: { clauseStatus: true } },
+        },
+      },
     },
   });
   if (!organization) throw new HttpError(404, 'Không tìm thấy tổ chức');
 
-  const { positions, importantDates, interactions, careTasks, ...rest } = organization;
+  const { positions, importantDates, interactions, careTasks, mous, ...rest } = organization;
   return NextResponse.json({
     ...rest,
     contacts: positions.map((p) => ({
@@ -49,6 +58,15 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     interactions: interactions.map(toInteractionDto),
     careTasks: careTasks.map(toCareTaskDto),
     upcoming: upcomingFor(importantDates.map(importantDateSource)),
+    mous: mous.map(({ clauses, assessment, department, signedDate, expiryDate, ...m }) => ({
+      ...m,
+      signedDate: signedDate?.toISOString() ?? null,
+      expiryDate: expiryDate?.toISOString() ?? null,
+      department: department?.name ?? null,
+      aiVerdict: (assessment as { verdict?: string } | null)?.verdict ?? null,
+      aspects: clauses.length,
+      aspectsActive: clauses.filter((c) => c.clauseStatus === 'IN_PROGRESS' || c.clauseStatus === 'COMPLETED').length,
+    })),
   });
 });
 
