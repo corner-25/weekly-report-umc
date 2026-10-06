@@ -8,8 +8,9 @@ const inter = Inter({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
   // Tên hiện trên tab trình duyệt; biểu tượng tab lấy từ app/favicon.ico, app/icon.png, app/apple-icon.png (logo UMC).
-  title: { default: "Hành chính UMC", template: "%s · Hành chính UMC" },
-  applicationName: "Hành chính UMC",
+  title: { default: "UMC Điều hành", template: "%s · UMC Điều hành" },
+  applicationName: "UMC Điều hành",
+  appleWebApp: { title: "UMC Điều hành" },
   description: "Hệ thống quản lý tập trung của Phòng Hành chính — Bệnh viện Đại học Y Dược TP.HCM",
 };
 
