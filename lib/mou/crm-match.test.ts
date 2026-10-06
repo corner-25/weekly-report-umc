@@ -7,6 +7,8 @@ describe('nameScore', () => {
   it('bỏ chữ chung chung, giữ từ phân biệt', () => {
     expect(distinctiveTokens('Công ty TNHH Bệnh viện Đa khoa Thiện Hạnh')).toEqual(['thien', 'hanh']);
     expect(nameScore('Công ty TNHH Bệnh viện Đa khoa Thiện Hạnh', 'BV Thiện Hạnh')).toBe(1);
+    expect(nameScore('Tập đoàn Thành Thành Công', 'Tập đoàn Thành Thành Công (TTC Group)')).toBe(1);
+    expect(nameScore('Công ty CP Dược liệu Trung Ương 2', 'Bệnh viện Đại học Y Dược TP. Hồ Chí Minh')).toBeLessThan(0.5);
   });
 
   it('lệch số hiệu là khác đơn vị', () => {

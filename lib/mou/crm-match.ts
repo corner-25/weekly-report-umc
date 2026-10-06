@@ -18,17 +18,22 @@ export interface OrgCandidate {
   scope: string | null;
 }
 
-/** Chữ chung chung không giúp phân biệt đơn vị (đã bỏ dấu, viết thường). */
-const GENERIC = new Set(
-  ('cong ty tnhh cp co phan mtv mot thanh vien trach nhiem huu han chi nhanh tap doan benh vien bv da khoa dk truong dai hoc dh hoc vien ' +
-    'vien trung tam quoc te thanh pho tp ho chi minh hcm tphcm viet nam va cua ve to chuc hoi quy dich vu dau tu tu van y te ky thuat ' +
-    'phong kham the and of the hospital university center centre company limited ltd inc llc group vpdd van phong dai dien tinh ' +
-    'bvdk han nhat ban loan hoa ky uc phap duoc')
-    .split(' '),
+/** Cụm chữ chung chung (đã bỏ dấu) — bỏ cả cụm, không bỏ từng từ ("thanh" trong "Thành Công" vẫn giữ). */
+const GENERIC_PHRASES = [
+  'trach nhiem huu han', 'mot thanh vien', 'van phong dai dien', 'thanh pho ho chi minh', 'tp ho chi minh', 'ho chi minh',
+  'cong ty', 'co phan', 'chi nhanh', 'tap doan', 'benh vien', 'da khoa', 'truong dai hoc', 'dai hoc', 'hoc vien', 'trung tam',
+  'quoc te', 'viet nam', 'to chuc', 'dich vu', 'dau tu', 'tu van', 'y te', 'ky thuat', 'phong kham', 'duoc pham',
+  'han quoc', 'nhat ban', 'dai loan', 'hoa ky',
+].sort((x, y) => y.length - x.length);
+/** Từ đơn chung chung. */
+const GENERIC_WORDS = new Set(
+  'tnhh cp mtv bv bvdk dk dh tp hcm tphcm vn va cua ve the and of hospital university center centre company limited ltd inc llc group vpdd tinh uc phap'.split(' '),
 );
 
 export function distinctiveTokens(name: string): string[] {
-  return [...new Set(toSearchKey(name).split(/[^a-z0-9]+/).filter((t) => t && !GENERIC.has(t)))];
+  let key = ` ${toSearchKey(name).replace(/[^a-z0-9]+/g, ' ')} `;
+  for (const p of GENERIC_PHRASES) key = key.split(` ${p} `).join(' ');
+  return [...new Set(key.split(' ').filter((t) => (t.length > 1 || /\d/.test(t)) && !GENERIC_WORDS.has(t)))];
 }
 
 /**
@@ -44,7 +49,8 @@ export function nameScore(a: string, b: string): number {
   if (numsA.length && numsB.length && !numsA.some((n) => numsB.includes(n))) return 0;
   const [short, long] = ta.length <= tb.length ? [ta, tb] : [tb, ta];
   const hit = short.filter((t) => long.includes(t)).length;
-  return hit / short.length;
+  // Tên ngắn một-hai từ nằm trong tên dài nhiều từ chưa đủ là một đơn vị ("Dược" trong "Dược liệu Trung ương 2").
+  return hit / Math.max(short.length, Math.ceil(long.length / 2));
 }
 
 export function rankCandidates(partnerName: string, orgs: OrgCandidate[], limit = 6): Array<OrgCandidate & { score: number }> {

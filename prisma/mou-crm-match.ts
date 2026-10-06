@@ -60,7 +60,8 @@ async function main() {
         data: { crmOrganizationId: linked ? cand!.id : null, crmMatch: match as Prisma.InputJsonValue },
       });
       // Cùng một đơn vị, chắc chắn: thêm tên trên MOU vào tên khác của tổ chức để tìm trong CRM cũng ra.
-      if (linked && r.relation === 'SAME' && r.confidence === 'high') {
+      // MOU nhiều bên ("Cục … và Công ty …") thì tên trên office không phải tên của riêng tổ chức nào.
+      if (linked && r.relation === 'SAME' && r.confidence === 'high' && !/\svà\s/i.test(x.mou.partnerName)) {
         const org = orgs.find((o) => o.id === cand!.id)!;
         const known = [org.name, ...org.aliases].map((n) => normalizeOrganizationName(n));
         if (!known.includes(normalizeOrganizationName(x.mou.partnerName))) {
