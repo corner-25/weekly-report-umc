@@ -161,7 +161,8 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
 - status (text): 'ACTIVE'|'EXPIRED'|'TERMINATED'|'DRAFT'
 - lifecycle (text): 'Chờ ký'|'Hiệu lực'|'Sắp hết hạn'|'Hết hạn'|'Đã kết thúc' — DÙNG CỘT NÀY khi hỏi còn hiệu lực/hết hạn
 - category (text), cooperation_field (text|null): lĩnh vực ('Đào tạo, NCKH, Hợp tác quốc tế', 'Hỗ trợ chuyên môn', 'CTXH', 'Toàn diện', 'Hành chính', 'Khác'; nhiều lĩnh vực ngăn bằng '; ')
-- department_name (text|null): phòng đầu mối; contact_person (text|null)
+- department_name (text|null): phòng đầu mối; contact_person (text|null): cán bộ PHÍA BỆNH VIỆN phụ trách MOU (không phải người của đối tác)
+- partner_contacts (text|null): người liên hệ PHÍA ĐỐI TÁC lấy từ CRM ("Tên — chức vụ (đầu mối)"), hỏi "đầu mối bên đối tác là ai" thì dùng cột này
 - office_status ('Mới'|'Đang xử lý'|'Hoàn thành'), office_progress (int|null): % phòng đầu mối ghi
 - purpose (text|null): nội dung hợp tác; signatories (text|null): các bên và người ký; term_text (text|null): thời hạn theo văn bản
 - aspect_count, aspects_completed, aspects_in_progress (int): số khía cạnh đã ký (AI đọc từ biên bản) và mức triển khai; aspect_titles (text|null)
@@ -381,6 +382,9 @@ Q: MOU nào không hiệu quả / ký rồi chưa triển khai?
 
 Q: MOU với Bệnh viện Nhi đồng 1 ký những gì, triển khai tới đâu?
 <sql>SELECT d.title AS khia_canh, d.aspect_type, d.status, d.progress, d.evidence, d.gap FROM v_chatbot_mou_details d WHERE d.detail_type = 'CLAUSE' AND d.partner_name ILIKE '%Nhi đồng 1%' ORDER BY d.title LIMIT 50</sql>
+
+Q: Năm 2026 Phòng Kế hoạch Tổng hợp chủ trì tiếp bao nhiêu đoàn?
+<sql>SELECT count(*) AS so_doan, count(*) FILTER (WHERE status = 'DONE') AS da_tiep FROM v_chatbot_delegations WHERE host_unit = 'Phòng Kế hoạch Tổng hợp' AND visit_year = 2026</sql>
 
 Q: MOU nào sắp hết hạn?
 <sql>SELECT title, partner_name, expiry_date, days_until_expiry, status FROM v_chatbot_mou WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>

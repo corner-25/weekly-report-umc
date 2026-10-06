@@ -79,8 +79,23 @@ interface Row {
   href: string | null;
 }
 
-export async function searchKnowledge(question: string, limit = 8): Promise<KnowledgeHit[]> {
+export interface SearchOptions {
+  /** Chỉ tìm trong các nguồn này (người dùng nói rõ "theo báo cáo tuần", "sổ tiếp đoàn"…). */
+  sources?: readonly string[] | null;
+  /** Chỉ tìm đoạn của các phòng ban này. */
+  departments?: readonly string[] | null;
+}
+
+export async function searchKnowledge(question: string, limit = 8, options: SearchOptions = {}): Promise<KnowledgeHit[]> {
   const db = getPrismaRo();
+  // Điều kiện lọc thêm vào sau các tham số mẫu tìm kiếm; $n đánh số tiếp.
+  const filters: string[] = [];
+  const filterArgs: unknown[] = [];
+  const addFilter = (column: string, values: readonly string[] | null | undefined, base: number) => {
+    if (!values?.length) return;
+    filterArgs.push([...values]);
+    filters.push(`${column} = ANY($${base + filterArgs.length}::text[])`);
+  };
   const phrases = properPhrases(question);
   const tokens = keywordTokens(question);
   const ranks = new Map<string, { row: Row; score: number }>();
@@ -96,14 +111,19 @@ export async function searchKnowledge(question: string, limit = 8): Promise<Know
     const tokenExpr = tokens.map((_, i) => `(search_key ~ $${phrases.length + i + 1})::int`).join(' + ') || '0';
     // Câu nhiều từ khoá: đòi khớp ít nhất một nửa để không kéo về đoạn chỉ trùng một từ phổ biến.
     const minHits = phrases.length ? 0 : Math.max(1, Math.ceil(tokens.length / 2));
+    filters.length = 0;
+    filterArgs.length = 0;
+    addFilter('source', options.sources, patterns.length);
+    addFilter('department', options.departments, patterns.length);
+    const extra = filters.length ? ` AND ${filters.join(' AND ')}` : '';
     const sql = `
       SELECT id, source, title, body, department, organization, occurred_on, href, (${phraseExpr}) AS phrase_hits, (${tokenExpr}) AS hits
       FROM knowledge_chunks
-      WHERE (${phraseExpr}) > 0 OR (${tokenExpr}) >= ${minHits}
+      WHERE ((${phraseExpr}) > 0 OR (${tokenExpr}) >= ${minHits})${extra}
       ORDER BY phrase_hits DESC, hits DESC, occurred_on DESC NULLS LAST
       LIMIT ${KEYWORD_LIMIT}`;
     tasks.push(
-      db.$queryRawUnsafe<Array<Row & { phrase_hits: number; hits: number }>>(sql, ...patterns).then((rows) => {
+      db.$queryRawUnsafe<Array<Row & { phrase_hits: number; hits: number }>>(sql, ...patterns, ...filterArgs).then((rows) => {
         rows.forEach((r, i) => add(r, 1 / (RRF_K + i) + (Number(r.phrase_hits) > 0 ? PHRASE_BONUS : 0)));
       }),
     );
@@ -113,11 +133,16 @@ export async function searchKnowledge(question: string, limit = 8): Promise<Know
     tasks.push(
       (async () => {
         const { vectors } = await embedTexts([question]);
+        const vf: string[] = [];
+        const vargs: unknown[] = [];
+        if (options.sources?.length) { vargs.push([...options.sources]); vf.push(`source = ANY($${1 + vargs.length}::text[])`); }
+        if (options.departments?.length) { vargs.push([...options.departments]); vf.push(`department = ANY($${1 + vargs.length}::text[])`); }
         const rows = await db.$queryRawUnsafe<Row[]>(
           `SELECT id, source, title, body, department, organization, occurred_on, href
-           FROM knowledge_chunks WHERE embedding IS NOT NULL
+           FROM knowledge_chunks WHERE embedding IS NOT NULL${vf.length ? ` AND ${vf.join(' AND ')}` : ''}
            ORDER BY embedding <=> $1::vector LIMIT ${VECTOR_LIMIT}`,
           `[${vectors[0].join(',')}]`,
+          ...vargs,
         );
         rows.forEach((r, i) => add(r, 1 / (RRF_K + i)));
       })().catch((err) => {
@@ -144,4 +169,73 @@ export async function searchKnowledge(question: string, limit = 8): Promise<Know
       href: row.href,
       score: Math.round(score * 1000) / 1000,
     }));
+}
+
+const PER_SOURCE_CAP = 4;
+let deptCache: { at: number; names: string[] } | null = null;
+const DEPT_CACHE_MS = 10 * 60_000;
+
+/** Tên phòng ban có trong kho tri thức (đọc qua quyền chỉ đọc của chatbot), lưu đệm 10 phút. */
+export async function knownDepartments(): Promise<string[]> {
+  if (deptCache && Date.now() - deptCache.at < DEPT_CACHE_MS) return deptCache.names;
+  const rows = await getPrismaRo().$queryRawUnsafe<Array<{ department: string }>>(
+    `SELECT DISTINCT department FROM knowledge_chunks WHERE department IS NOT NULL`,
+  );
+  deptCache = { at: Date.now(), names: rows.map((r) => r.department) };
+  return deptCache.names;
+}
+
+/**
+ * Tìm tri thức theo phạm vi câu hỏi: hồ sơ của phòng được nhắc (gom mọi phân hệ),
+ * đoạn của đúng phòng đó, rồi kết quả chung — trộn xen kẽ, mỗi nguồn tối đa vài đoạn
+ * để câu trả lời có đủ các phân hệ thay vì toàn một loại.
+ */
+export async function gatherKnowledge(
+  question: string,
+  scope: { departments: string[]; sources: readonly string[] | null },
+  limit = 10,
+): Promise<KnowledgeHit[]> {
+  const { departments, sources } = scope;
+  const [general, inDept, profiles] = await Promise.all([
+    searchKnowledge(question, limit, { sources }),
+    departments.length ? searchKnowledge(question, limit, { departments, sources }) : Promise.resolve([]),
+    departments.length && !sources ? profileHits(departments) : Promise.resolve([]),
+  ]);
+  const merged: KnowledgeHit[] = [];
+  const seen = new Set<string>();
+  const perSource = new Map<string, number>();
+  const push = (h: KnowledgeHit) => {
+    if (seen.has(h.id) || (perSource.get(h.source) ?? 0) >= PER_SOURCE_CAP) return;
+    seen.add(h.id);
+    perSource.set(h.source, (perSource.get(h.source) ?? 0) + 1);
+    merged.push(h);
+  };
+  profiles.forEach(push);
+  // Hỏi về một phòng: ưu tiên đoạn của phòng đó, xen với kết quả chung (đối tác, tên riêng).
+  const lanes = departments.length ? [inDept, general] : [general];
+  for (let i = 0; merged.length < limit && lanes.some((l) => i < l.length); i += 1) {
+    for (const lane of lanes) if (lane[i]) push(lane[i]);
+  }
+  return merged.slice(0, limit);
+}
+
+async function profileHits(departments: string[]): Promise<KnowledgeHit[]> {
+  const rows = await getPrismaRo().$queryRawUnsafe<Row[]>(
+    `SELECT id, source, title, body, department, organization, occurred_on, href
+     FROM knowledge_chunks WHERE source = 'department_profile' AND department = ANY($1::text[])`,
+    departments,
+  );
+  return rows.map((row) => ({
+    id: row.id,
+    source: row.source as KnowledgeSource,
+    sourceLabel: KNOWLEDGE_SOURCES[row.source as KnowledgeSource] ?? row.source,
+    title: row.title,
+    // Hồ sơ phòng là bản tóm tắt nhiều phân hệ — đưa trọn (đã giới hạn độ dài khi gom).
+    snippet: row.body.slice(0, 2400),
+    department: row.department,
+    organization: row.organization,
+    occurredOn: row.occurred_on ? row.occurred_on.toISOString().slice(0, 10) : null,
+    href: row.href,
+    score: 1,
+  }));
 }

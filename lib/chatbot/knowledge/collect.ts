@@ -7,6 +7,7 @@ import type { PrismaClient } from '@prisma/client';
 import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
 import { WORK_STATUS_LABELS } from '@/lib/work/constants';
 import { summaryContentSchema } from '@/lib/weekly-summary/types';
+import { departmentProfiles, organizationProfiles } from './profiles';
 
 export interface KnowledgeDoc {
   id: string;
@@ -30,6 +31,8 @@ export const KNOWLEDGE_SOURCES = {
   work_update: 'Cập nhật tiến độ công việc',
   event: 'Sự kiện bệnh viện',
   mou: 'Hợp tác, ký kết MOU',
+  crm_org: 'Hồ sơ đối tác (CRM)',
+  department_profile: 'Hồ sơ phòng ban',
 } as const;
 export type KnowledgeSource = keyof typeof KNOWLEDGE_SOURCES;
 
@@ -74,10 +77,10 @@ async function weeklyReports(db: PrismaClient): Promise<KnowledgeDoc[]> {
       id: `weekly_report:${e.id}`,
       source: 'weekly_report',
       refId: e.id,
-      title: `Báo cáo tuần ${e.week}/${e.year} — ${dept ?? 'Không rõ phòng'} — ${clean(e.rawName).slice(0, 160)}`,
+      title: `Báo cáo tuần ${e.week}/${e.year} — ${dept ?? 'Không rõ phòng'} — ${(clean(e.rawName) || clean(e.parentGroup) || 'Nhiệm vụ').slice(0, 160)}`,
       body: [
         e.parentGroup && `Nhóm: ${clean(e.parentGroup)}`,
-        `Nhiệm vụ: ${clean(e.rawName)}${e.progress !== null ? ` (${e.progress}%)` : ''}`,
+        `${dept ?? 'Phòng'} — nhiệm vụ: ${clean(e.rawName) || clean(e.parentGroup) || 'không ghi tên'}${e.progress !== null ? ` (${e.progress}%)` : ''}`,
         result && `Kết quả: ${result}`,
         plan && `Kế hoạch tuần sau: ${plan}`,
       ].filter(Boolean).join('\n'),
@@ -283,12 +286,13 @@ async function mous(db: PrismaClient): Promise<KnowledgeDoc[]> {
 }
 
 /** Nguồn gom: đoạn tri thức của nguồn nào thì id bắt đầu bằng tiền tố nguồn đó. */
-const COLLECTORS: Record<'weekly' | 'crm' | 'work' | 'event' | 'mou', (db: PrismaClient) => Promise<KnowledgeDoc[]>> = {
+const COLLECTORS: Record<'weekly' | 'crm' | 'work' | 'event' | 'mou' | 'profile', (db: PrismaClient) => Promise<KnowledgeDoc[]>> = {
   weekly: async (db) => [...(await weeklyReports(db)), ...(await weeklySummaries(db))],
   crm,
   work,
   event: events,
   mou: mous,
+  profile: async (db) => [...(await departmentProfiles(db)), ...(await organizationProfiles(db))],
 };
 export type KnowledgeGroup = keyof typeof COLLECTORS;
 /** Tiền tố id của từng nhóm — để chỉ xoá đoạn cũ của đúng nhóm khi đồng bộ một phần. */
@@ -298,6 +302,7 @@ export const GROUP_SOURCES: Record<KnowledgeGroup, KnowledgeSource[]> = {
   work: ['work_item', 'work_update'],
   event: ['event'],
   mou: ['mou'],
+  profile: ['department_profile', 'crm_org'],
 };
 
 export async function collectKnowledge(db: PrismaClient, groups?: KnowledgeGroup[]): Promise<KnowledgeDoc[]> {
