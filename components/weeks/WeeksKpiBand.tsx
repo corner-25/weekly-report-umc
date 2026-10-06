@@ -48,11 +48,10 @@ interface WeeksKpiBandProps {
   year: number;
   audit: YearAudit;
   attentionCount: number;
-  newReportHref: (dateKey: string) => string;
   weekHref: (id: string) => string;
 }
 
-export function WeeksKpiBand({ year, audit, attentionCount, newReportHref, weekHref }: WeeksKpiBandProps) {
+export function WeeksKpiBand({ year, audit, attentionCount, weekHref }: WeeksKpiBandProps) {
   const { closedWeekCount, reportedClosedCount, missingWeeks, currentWeek } = audit;
   const missingList = missingWeeks.map((m) => m.weekNumber);
 
@@ -77,10 +76,10 @@ export function WeeksKpiBand({ year, audit, attentionCount, newReportHref, weekH
               <br />
               {currentWeek.weekId && currentWeek.status
                 ? <>Đã tạo · <Link href={weekHref(currentWeek.weekId)} className="font-semibold text-brand-700 underline-offset-2 hover:underline">{STATUS_META[currentWeek.status].label}</Link></>
-                : <>Chưa tạo · <Link href={newReportHref(currentWeek.startKey)} className="font-semibold text-brand-700 underline-offset-2 hover:underline">Tạo ngay</Link></>}
+                : <>Chưa có dữ liệu · hệ thống tự quét hằng ngày</>}
             </>
           }
-          definition="Tuần báo cáo đang diễn ra (Thứ Bảy → Thứ Sáu). Chưa tạo báo cáo không tính là thiếu cho đến khi tuần kết thúc."
+          definition="Tuần báo cáo đang diễn ra (Thứ Bảy → Thứ Sáu). Báo cáo các phòng được quét tự động hằng ngày; chưa có dữ liệu không tính là thiếu cho đến khi tuần kết thúc."
         />
       ) : (
         <Kpi label="Tuần hiện tại" tone="neutral" value="—" hint={`Không thuộc năm ${year}`} definition="Tuần báo cáo đang diễn ra." />

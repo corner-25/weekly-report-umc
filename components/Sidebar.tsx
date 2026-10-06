@@ -83,20 +83,12 @@ const NAV: NavSection[] = [
         ],
       },
       {
-        href: '/dashboard/weeks', label: 'Báo cáo tuần', icon: FileText,
+        // Một phân hệ cho mọi thứ sinh ra từ báo cáo tuần các phòng (quét tự động hằng ngày).
+        href: '/dashboard/weeks', label: 'Báo cáo tuần Bệnh viện', icon: FileText,
         children: [
-          { href: '/dashboard/weeks', label: 'Danh sách báo cáo', exact: true },
-          { href: '/dashboard/weeks/new', label: 'Tạo báo cáo mới', exact: true },
-          { href: '/dashboard/import', label: 'Nhập từ Excel', exact: true },
-        ],
-      },
-      {
-        href: '/dashboard/tasks', label: 'Nhiệm vụ thường kỳ', icon: ClipboardCheck,
-        children: [
-          { href: '/dashboard/tasks', label: 'Danh sách nhiệm vụ', exact: true },
-          { href: '/dashboard/tasks/progress', label: 'Tiến độ nhiệm vụ', exact: true },
-          { href: '/dashboard/tasks/overview', label: 'Tổng hợp theo đầu mục', exact: true },
-          { href: '/dashboard/reports/timeline', label: 'Timeline', exact: true },
+          { href: '/dashboard/weeks', label: 'Báo cáo các tuần' },
+          { href: '/dashboard/tasks/progress', label: 'Nhiệm vụ các phòng' },
+          { href: '/dashboard/reports/metrics-data', label: 'Số liệu theo dõi', exact: true },
         ],
       },
     ],
@@ -129,8 +121,6 @@ const NAV: NavSection[] = [
   {
     title: 'Số liệu',
     items: [
-      { href: '/dashboard/reports/metrics', label: 'Phân tích nhiệm vụ', icon: LineChart, exact: true },
-      { href: '/dashboard/reports/metrics-data', label: 'Số liệu theo dõi', icon: Table2, exact: true },
       { href: '/dashboard/reports/dashboards', label: 'Dashboard', icon: Gauge },
     ],
   },

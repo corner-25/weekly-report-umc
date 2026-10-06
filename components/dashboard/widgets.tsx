@@ -56,10 +56,7 @@ export function RecentWeeksCard({ weeks }: { weeks: DashboardWeek[] }) {
     <WidgetCard icon={FileText} tone="bg-cyan-50 text-cyan-600" title="Báo cáo tuần gần đây" href="/dashboard/weeks" linkLabel="Xem tất cả">
       {weeks.length === 0 ? (
         <div className="py-6 text-center">
-          <p className="mb-3 text-slate-500">Chưa có báo cáo nào</p>
-          <Link href="/dashboard/weeks/new" className="inline-block rounded-lg bg-cyan-600 px-4 py-2 text-sm text-white hover:bg-cyan-700">
-            Tạo báo cáo đầu tiên
-          </Link>
+          <p className="mb-3 text-slate-500">Chưa có báo cáo nào — báo cáo các phòng được quét tự động hằng ngày.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-3">

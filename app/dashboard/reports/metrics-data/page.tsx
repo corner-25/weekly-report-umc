@@ -23,6 +23,7 @@ import { Sparkline } from '@/components/ui/Sparkline';
 import { crmFetch } from '@/components/crm/api';
 import { ErrorBanner, PANEL } from '@/components/crm/ui';
 import type { BoardDepartment, BoardMetric, MetricBoard } from '@/lib/metric-board';
+import { WeeklyModuleNav } from '@/components/weeks/WeeklyModuleNav';
 
 const NOTABLE = 15;
 const DEFAULT_DEPARTMENT = 'Phòng Hành chính';
@@ -174,6 +175,7 @@ function MetricsBoard() {
 
   return (
     <div className="space-y-5">
+      <WeeklyModuleNav />
       <PageHeader
         icon={Table2}
         title="Số liệu theo dõi"

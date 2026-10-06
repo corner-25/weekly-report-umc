@@ -7,7 +7,7 @@ export interface ChatbotSource {
 
 const VIEW_SOURCES: Record<string, Omit<ChatbotSource, 'id'>> = {
   v_chatbot_metrics: { title: 'Dữ liệu chỉ số báo cáo tuần', href: '/dashboard/reports/metrics-data' },
-  v_chatbot_tasks: { title: 'Nhiệm vụ và nội dung báo cáo tuần', href: '/dashboard/tasks/overview' },
+  v_chatbot_tasks: { title: 'Nhiệm vụ và nội dung báo cáo tuần', href: '/dashboard/tasks/progress' },
   v_chatbot_mou: { title: 'Danh sách MOU', href: '/dashboard/mous' },
   v_chatbot_licenses: { title: 'Giấy phép và chứng chỉ', href: '/dashboard/licenses' },
   v_chatbot_events: { title: 'Lịch sự kiện bệnh viện', href: '/dashboard/hospital-events-calendar' },

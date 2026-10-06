@@ -28,11 +28,10 @@ interface WeekStripProps {
   weeks: WeekListItem[];
   audit: YearAudit;
   weekHref: (id: string) => string;
-  newReportHref: (dateKey: string) => string;
 }
 
 /** Dải 52 ô — nhìn một lần biết tuần nào đã có, thiếu, nháp hay có vấn đề. */
-export function WeekStrip({ year, weeks, audit, weekHref, newReportHref }: WeekStripProps) {
+export function WeekStrip({ year, weeks, audit, weekHref }: WeekStripProps) {
   const byNumber = new Map(weeks.filter((w) => w.year === year).map((w) => [w.weekNumber, w]));
   const missing = new Set(audit.missingWeeks.map((m) => m.weekNumber));
   const currentNumber = audit.currentWeek?.weekNumber ?? null;
@@ -83,8 +82,6 @@ export function WeekStrip({ year, weeks, audit, weekHref, newReportHref }: WeekS
             <li key={c.n}>
               {c.week ? (
                 <Link href={weekHref(c.week.id)} title={c.title} aria-label={c.title} className={cls}>{content}</Link>
-              ) : c.state === 'MISSING' || c.state === 'CURRENT' ? (
-                <Link href={newReportHref(c.startKey)} title={`${c.title} · bấm để tạo`} aria-label={`${c.title}, tạo báo cáo`} className={cls}>{content}</Link>
               ) : (
                 <span title={c.title} className={cls}>{content}</span>
               )}

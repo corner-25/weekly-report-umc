@@ -1,254 +1,256 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+/**
+ * Phương tiện: bảng đoàn xe gọn, nhìn một lượt thấy xe nào sắp hết hạn kiểm định,
+ * bảo hiểm, niên hạn và xe nào chạy nhiều. Xe có việc cần làm xếp lên đầu.
+ */
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AlertTriangle, ChevronRight, Search, Truck } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { Truck, Search, Ambulance, Car, Bus, Package, HelpCircle, AlertTriangle, Calendar, Wrench } from 'lucide-react';
+import { PANEL } from '@/components/crm/ui';
+import {
+  CATEGORY_META,
+  LIFETIME_WARN_YEARS,
+  SOON_DAYS,
+  STATUS_META,
+  daysUntil,
+  lifetimeLeft,
+  urgencyOf,
+  vehicleUrgency,
+  type VehicleCategory,
+  type VehicleRow,
+} from '@/components/vehicles/fleet';
 
-interface VehicleRow {
-  id: string;
-  licensePlate: string;
-  brand: string | null;
-  model: string | null;
-  category: 'AMBULANCE' | 'ADMIN_CAR' | 'BUS' | 'TRUCK' | 'PICKUP' | 'OTHER';
-  color: string | null;
-  manufactureYear: number | null;
-  seatCount: string | null;
-  status: 'IN_USE' | 'RETIRED' | 'SOLD' | 'TRANSFERRED';
-  manager: string | null;
-  inspectionExpiry: string | null;
-  insuranceExpiry: string | null;
-  registrationNumber: string | null;
-}
+const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—');
 
-const CATEGORY_META: Record<string, { label: string; Icon: typeof Ambulance; color: string; bg: string; ring: string }> = {
-  AMBULANCE: { label: 'Cứu thương', Icon: Ambulance, color: 'text-rose-700', bg: 'bg-rose-50', ring: 'ring-rose-200' },
-  ADMIN_CAR: { label: 'Hành chính', Icon: Car, color: 'text-blue-700', bg: 'bg-blue-50', ring: 'ring-blue-200' },
-  BUS: { label: 'Xe khách', Icon: Bus, color: 'text-violet-700', bg: 'bg-violet-50', ring: 'ring-violet-200' },
-  TRUCK: { label: 'Xe tải', Icon: Truck, color: 'text-amber-700', bg: 'bg-amber-50', ring: 'ring-amber-200' },
-  PICKUP: { label: 'Pickup', Icon: Package, color: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-200' },
-  OTHER: { label: 'Khác', Icon: HelpCircle, color: 'text-slate-700', bg: 'bg-slate-100', ring: 'ring-slate-200' },
-};
-
-const STATUS_META: Record<string, { label: string; color: string }> = {
-  IN_USE: { label: 'Đang sử dụng', color: 'bg-emerald-100 text-emerald-700' },
-  RETIRED: { label: 'Ngừng hoạt động', color: 'bg-slate-100 text-slate-700' },
-  SOLD: { label: 'Đã thanh lý', color: 'bg-amber-100 text-amber-700' },
-  TRANSFERRED: { label: 'Đã chuyển giao', color: 'bg-violet-100 text-violet-700' },
-};
-
-function daysUntil(d: string | null): number | null {
-  if (!d) return null;
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const target = new Date(d); target.setHours(0, 0, 0, 0);
-  return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-export default function VehiclesPage() {
-  const [vehicles, setVehicles] = useState<VehicleRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
-
-  const fetchVehicles = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (search) params.set('search', search);
-      if (categoryFilter !== 'ALL') params.set('category', categoryFilter);
-      const res = await fetch(`/api/vehicles?${params}`);
-      const data = await res.json();
-      setVehicles(Array.isArray(data) ? data : []);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    fetchVehicles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, categoryFilter]);
-
-  const countByCategory = vehicles.reduce<Record<string, number>>((acc, v) => {
-    acc[v.category] = (acc[v.category] || 0) + 1;
-    return acc;
-  }, {});
-
-  const expiringSoon = vehicles.filter((v) => {
-    const insp = daysUntil(v.inspectionExpiry);
-    const ins = daysUntil(v.insuranceExpiry);
-    return (insp !== null && insp <= 60) || (ins !== null && ins <= 60);
-  }).length;
-
+/** Biển số in như biển thật: nền trắng, viền đậm, chữ đều — nhìn là nhận ra xe. */
+function Plate({ value }: { value: string }) {
   return (
-    <div className="space-y-6">
-      <PageHeader
-        icon={Truck}
-        title="Phương tiện vận chuyển"
-        description="Quản lý đoàn xe Bệnh viện: cứu thương, hành chính, xe khách và lịch sử bảo dưỡng"
-      />
+    <span className="inline-flex items-center rounded-md border-2 border-slate-800 bg-white px-2 py-0.5 font-mono text-[13px] font-bold tracking-wider text-slate-900 shadow-[inset_0_-2px_0_rgba(15,23,42,0.08)]">
+      {value}
+    </span>
+  );
+}
 
-      {/* Stats by category */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <StatCard label="Tổng xe" value={vehicles.length} icon={Truck} accent="from-slate-500 to-slate-700" active={categoryFilter === 'ALL'} onClick={() => setCategoryFilter('ALL')} />
-        {(['AMBULANCE', 'ADMIN_CAR', 'BUS', 'PICKUP', 'TRUCK', 'OTHER'] as const).map((c) => {
-          const meta = CATEGORY_META[c];
-          if ((countByCategory[c] ?? 0) === 0 && categoryFilter !== c) return null;
-          return (
-            <StatCard
-              key={c}
-              label={meta.label}
-              value={countByCategory[c] ?? 0}
-              icon={meta.Icon}
-              accent={meta.color.replace('text-', 'from-').replace('-700', '-500') + ' to-' + meta.color.replace('text-', '').replace('-700', '-700')}
-              active={categoryFilter === c}
-              onClick={() => setCategoryFilter(categoryFilter === c ? 'ALL' : c)}
-            />
-          );
-        })}
-      </div>
+function DocCell({ iso }: { iso: string | null }) {
+  const days = daysUntil(iso);
+  const u = urgencyOf(days);
+  if (u === 'none') return <span className="text-slate-300">Chưa ghi</span>;
+  return (
+    <span className="flex flex-col leading-tight">
+      <span className="tabular-nums text-slate-700">{fmtDate(iso)}</span>
+      <span
+        className={cn(
+          'mt-0.5 w-fit whitespace-nowrap rounded-full px-1.5 py-0.5 text-[11px] font-semibold',
+          u === 'expired' && 'bg-rose-100 text-rose-700',
+          u === 'soon' && 'bg-amber-100 text-amber-800',
+          u === 'ok' && 'text-slate-400',
+        )}
+      >
+        {u === 'expired' ? `quá hạn ${-days!} ngày` : `còn ${days} ngày`}
+      </span>
+    </span>
+  );
+}
 
-      {expiringSoon > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-2 text-sm text-amber-800">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span><strong>{expiringSoon}</strong> xe có giấy tờ (kiểm định/bảo hiểm) sắp hết hạn trong 60 ngày tới.</span>
-        </div>
-      )}
+function LifetimeCell({ v }: { v: VehicleRow }) {
+  const left = lifetimeLeft(v.expiryYear);
+  if (left === null) return <span className="text-slate-500">{v.expiryYear ?? '—'}</span>;
+  return (
+    <span className="flex flex-col leading-tight">
+      <span className="tabular-nums text-slate-700">{v.expiryYear}</span>
+      <span className={cn('text-[11px] font-semibold', left < 0 ? 'text-rose-600' : left <= LIFETIME_WARN_YEARS ? 'text-amber-700' : 'text-slate-400')}>
+        {left < 0 ? `quá niên hạn ${-left} năm` : `còn ${left} năm`}
+      </span>
+    </span>
+  );
+}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Tìm theo biển số, nhãn hiệu, số máy, số khung..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 bg-white"
-        />
-      </div>
-
-      {/* List */}
-      {loading ? (
-        <div className="text-center py-16">
-          <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 text-sm">Đang tải...</p>
-        </div>
-      ) : vehicles.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center">
-          <Truck className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-          <p className="text-slate-600 font-medium">Không có xe nào phù hợp</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {vehicles.map((v) => {
-            const meta = CATEGORY_META[v.category];
-            const stat = STATUS_META[v.status];
-            const Icon = meta.Icon;
-            const inspDays = daysUntil(v.inspectionExpiry);
-            const insDays = daysUntil(v.insuranceExpiry);
-            return (
-              <Link
-                key={v.id}
-                href={`/dashboard/vehicles/${v.id}`}
-                className="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all overflow-hidden p-4 flex flex-col gap-3"
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`shrink-0 w-12 h-12 rounded-xl ${meta.bg} ${meta.color} ring-1 ring-inset ${meta.ring} flex items-center justify-center`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-slate-900 leading-snug">{v.licensePlate}</h3>
-                    <p className="text-xs text-slate-600 truncate mt-0.5">
-                      {[v.brand, v.model].filter(Boolean).join(' ')}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${meta.bg} ${meta.color} ring-1 ring-inset ${meta.ring}`}>
-                        {meta.label}
-                      </span>
-                      <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${stat.color}`}>
-                        {stat.label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <div className="text-[10px] text-slate-500">Năm SX</div>
-                    <div className="font-semibold text-slate-800">{v.manufactureYear ?? '—'}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-slate-500">Số chỗ</div>
-                    <div className="font-semibold text-slate-800 truncate">{v.seatCount ?? '—'}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-slate-500">Màu</div>
-                    <div className="font-semibold text-slate-800 truncate">{v.color ?? '—'}</div>
-                  </div>
-                </div>
-
-                {(inspDays !== null || insDays !== null) && (
-                  <div className="border-t border-slate-100 pt-2 space-y-1">
-                    {inspDays !== null && (
-                      <ExpiryRow label="Kiểm định" days={inspDays} icon={Wrench} />
-                    )}
-                    {insDays !== null && (
-                      <ExpiryRow label="Bảo hiểm" days={insDays} icon={Calendar} />
-                    )}
-                  </div>
-                )}
-
-                {v.manager && (
-                  <div className="border-t border-slate-100 pt-2 text-xs text-slate-500">
-                    <span className="text-[10px] uppercase tracking-wide">Người quản lý:</span> <span className="text-slate-700">{v.manager}</span>
-                  </div>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      )}
+function Kpi({ label, value, tone, hint }: { label: string; value: number | string; tone: string; hint: string }) {
+  return (
+    <div className="bg-white px-4 py-3" title={hint}>
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className={cn('mt-1 text-2xl font-bold tabular-nums', tone)}>{value}</p>
+      <p className="mt-0.5 text-[11px] text-slate-400">{hint}</p>
     </div>
   );
 }
 
-function StatCard({
-  label, value, icon: Icon, accent, active, onClick,
-}: {
-  label: string; value: number; icon: typeof Truck; accent: string; active?: boolean; onClick?: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`text-left bg-white rounded-2xl border shadow-sm p-3 transition-all ${
-        active ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200/80 hover:border-slate-300 hover:shadow-md'
-      }`}
-    >
-      <div className="flex items-center gap-2 mb-1">
-        <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${accent} text-white flex items-center justify-center`}>
-          <Icon className="w-3.5 h-3.5" />
-        </div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-wide">{label}</div>
-      </div>
-      <div className="text-xl font-semibold text-slate-900 tabular-nums">{value}</div>
-    </button>
-  );
-}
+export default function VehiclesPage() {
+  const router = useRouter();
+  const [vehicles, setVehicles] = useState<VehicleRow[] | null>(null);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<VehicleCategory | 'ALL'>('ALL');
+  const [onlyAttention, setOnlyAttention] = useState(false);
 
-function ExpiryRow({ label, days, icon: Icon }: { label: string; days: number; icon: typeof Calendar }) {
-  let color = 'text-slate-600';
-  let badge = '';
-  if (days < 0) { color = 'text-red-700'; badge = `Đã hết hạn ${Math.abs(days)} ngày`; }
-  else if (days <= 30) { color = 'text-red-700'; badge = `Còn ${days} ngày`; }
-  else if (days <= 60) { color = 'text-amber-700'; badge = `Còn ${days} ngày`; }
-  else { color = 'text-slate-600'; badge = `Còn ${days} ngày`; }
+  useEffect(() => {
+    fetch('/api/vehicles')
+      .then((r) => r.json())
+      .then((d) => setVehicles(Array.isArray(d) ? d : []))
+      .catch(() => setVehicles([]));
+  }, []);
+
+  const all = vehicles ?? [];
+  const counts = useMemo(() => all.reduce<Record<string, number>>((acc, v) => ({ ...acc, [v.category]: (acc[v.category] ?? 0) + 1 }), {}), [all]);
+  const rows = useMemo(() => {
+    const q = search.trim().toLowerCase().replace(/[\s.-]/g, '');
+    return all
+      .filter((v) => category === 'ALL' || v.category === category)
+      .filter((v) => !onlyAttention || vehicleUrgency(v) > 0)
+      .filter((v) => !q || [v.licensePlate, v.brand, v.model, v.manager].join(' ').toLowerCase().replace(/[\s.-]/g, '').includes(q))
+      .sort((a, b) => vehicleUrgency(b) - vehicleUrgency(a) || a.licensePlate.localeCompare(b.licensePlate));
+  }, [all, search, category, onlyAttention]);
+
+  const docs = all.flatMap((v) => [urgencyOf(daysUntil(v.inspectionExpiry)), urgencyOf(daysUntil(v.insuranceExpiry))]);
+  const expired = docs.filter((u) => u === 'expired').length;
+  const soon = docs.filter((u) => u === 'soon').length;
+  const lifetimeWarn = all.filter((v) => {
+    const l = lifetimeLeft(v.expiryYear);
+    return l !== null && l <= LIFETIME_WARN_YEARS;
+  }).length;
+  const trips = all.reduce((s, v) => s + v.trips30, 0);
+  const attention = all.filter((v) => vehicleUrgency(v) > 0).length;
+
   return (
-    <div className="flex items-center justify-between text-xs">
-      <span className="inline-flex items-center gap-1 text-slate-500">
-        <Icon className="w-3 h-3" />
-        {label}
-      </span>
-      <span className={`font-medium ${color}`}>{badge}</span>
+    <div className="space-y-5">
+      <PageHeader icon={Truck} title="Phương tiện" description="Đoàn xe Bệnh viện: hạn giấy tờ, niên hạn, hoạt động 30 ngày qua — bấm vào xe để xem hồ sơ, bảo dưỡng, nhật ký chuyến" />
+
+      <section className={cn(PANEL, 'grid grid-cols-2 gap-px overflow-hidden bg-slate-100 sm:grid-cols-3 lg:grid-cols-5')} aria-label="Tổng quan đoàn xe">
+        <Kpi label="Đang sử dụng" value={all.filter((v) => v.status === 'IN_USE').length} tone="text-slate-900" hint={`trên ${all.length} xe`} />
+        <Kpi label="Giấy tờ quá hạn" value={expired} tone={expired ? 'text-rose-600' : 'text-slate-300'} hint="Kiểm định, bảo hiểm đã hết hạn" />
+        <Kpi label="Sắp hết hạn" value={soon} tone={soon ? 'text-amber-600' : 'text-slate-300'} hint={`Trong ${SOON_DAYS} ngày tới`} />
+        <Kpi label="Gần hết niên hạn" value={lifetimeWarn} tone={lifetimeWarn ? 'text-amber-600' : 'text-slate-300'} hint={`Còn ≤ ${LIFETIME_WARN_YEARS} năm`} />
+        <Kpi label="Chuyến 30 ngày" value={trips.toLocaleString('vi-VN')} tone="text-brand-700" hint="Theo nhật ký tài xế nhập" />
+      </section>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Loại xe" className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
+          {(['ALL', 'AMBULANCE', 'ADMIN_CAR', 'BUS', 'PICKUP', 'TRUCK', 'OTHER'] as const)
+            .filter((c) => c === 'ALL' || counts[c])
+            .map((c) => {
+              const on = category === c;
+              const meta = c === 'ALL' ? null : CATEGORY_META[c];
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setCategory(c)}
+                  className={cn('inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition', on ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800')}
+                >
+                  {meta && <meta.Icon className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {meta?.label ?? 'Tất cả'}
+                  <span className="tabular-nums text-slate-400">{c === 'ALL' ? all.length : counts[c]}</span>
+                </button>
+              );
+            })}
+        </div>
+        {attention > 0 && (
+          <button
+            type="button"
+            aria-pressed={onlyAttention}
+            onClick={() => setOnlyAttention((v) => !v)}
+            className={cn('inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-semibold ring-1 ring-inset transition', onlyAttention ? 'bg-amber-500 text-white ring-amber-500' : 'bg-amber-50 text-amber-800 ring-amber-200 hover:bg-amber-100')}
+          >
+            <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" /> {attention} xe cần xử lý
+          </button>
+        )}
+        <label className="relative ml-auto w-full sm:w-72">
+          <span className="sr-only">Tìm xe</span>
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Biển số, nhãn hiệu, người quản lý…" className="input pl-9" />
+        </label>
+      </div>
+
+      <section className={cn(PANEL, 'overflow-hidden')} aria-label="Danh sách xe">
+        {!vehicles ? (
+          <div className="space-y-px" aria-hidden="true">{Array.from({ length: 6 }, (_, i) => <div key={i} className="h-16 animate-pulse bg-slate-50" />)}</div>
+        ) : rows.length === 0 ? (
+          <p className="py-14 text-center text-sm text-slate-500">Không có xe nào khớp.</p>
+        ) : (
+          <>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[980px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/70 text-left text-xs text-slate-500">
+                    <th scope="col" className="px-4 py-2.5 font-semibold">Xe</th>
+                    <th scope="col" className="px-3 py-2.5 font-semibold">Loại · đời xe</th>
+                    <th scope="col" className="px-3 py-2.5 font-semibold">Kiểm định</th>
+                    <th scope="col" className="px-3 py-2.5 font-semibold">Bảo hiểm</th>
+                    <th scope="col" className="px-3 py-2.5 font-semibold">Niên hạn</th>
+                    <th scope="col" className="px-3 py-2.5 text-right font-semibold" title="Số chuyến 30 ngày qua">Chuyến 30 ngày</th>
+                    <th scope="col" className="px-3 py-2.5 font-semibold">Quản lý</th>
+                    <th scope="col" className="w-8 px-3" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {rows.map((v) => {
+                    const meta = CATEGORY_META[v.category];
+                    const urgent = vehicleUrgency(v);
+                    return (
+                      <tr key={v.id} onClick={() => router.push(`/dashboard/vehicles/${v.id}`)} className={cn('group cursor-pointer hover:bg-brand-50/40', urgent === 3 && 'bg-rose-50/40', urgent === 2 && 'bg-amber-50/30')}>
+                        <td className="px-4 py-3">
+                          <Link href={`/dashboard/vehicles/${v.id}`} onClick={(e) => e.stopPropagation()} className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <Plate value={v.licensePlate} />
+                          </Link>
+                          <span className="mt-1 block text-xs text-slate-500">{[v.brand, v.model].filter(Boolean).join(' ') || '—'}</span>
+                        </td>
+                        <td className="px-3 py-3">
+                          <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset', meta.tone)}>
+                            <meta.Icon className="h-3 w-3" aria-hidden="true" />{meta.label}
+                          </span>
+                          <span className="mt-1 block text-xs text-slate-500">
+                            {v.manufactureYear ? `${v.manufactureYear} · ${new Date().getFullYear() - v.manufactureYear} năm` : '—'}
+                            {v.seatCount && ` · ${v.seatCount}`}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3"><DocCell iso={v.inspectionExpiry} /></td>
+                        <td className="px-3 py-3"><DocCell iso={v.insuranceExpiry} /></td>
+                        <td className="px-3 py-3"><LifetimeCell v={v} /></td>
+                        <td className="px-3 py-3 text-right">
+                          <span className={cn('font-semibold tabular-nums', v.trips30 ? 'text-brand-700' : 'text-slate-300')}>{v.trips30}</span>
+                          {v.lastTripAt && <span className="block text-[11px] text-slate-400">gần nhất {fmtDate(v.lastTripAt)}</span>}
+                        </td>
+                        <td className="px-3 py-3 text-slate-600">
+                          {v.manager ?? '—'}
+                          {v.status !== 'IN_USE' && <span className={cn('mt-1 block w-fit rounded-full px-1.5 py-0.5 text-[10px] font-semibold', STATUS_META[v.status].tone)}>{STATUS_META[v.status].label}</span>}
+                        </td>
+                        <td className="px-3 py-3 text-slate-300 group-hover:text-brand-600"><ChevronRight className="h-4 w-4" aria-hidden="true" /></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <ul className="divide-y divide-slate-100 md:hidden">
+              {rows.map((v) => {
+                const meta = CATEGORY_META[v.category];
+                return (
+                  <li key={v.id}>
+                    <Link href={`/dashboard/vehicles/${v.id}`} className="block space-y-2 px-4 py-3 active:bg-slate-50">
+                      <div className="flex items-center justify-between gap-2">
+                        <Plate value={v.licensePlate} />
+                        <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset', meta.tone)}>
+                          <meta.Icon className="h-3 w-3" aria-hidden="true" />{meta.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">{[v.brand, v.model, v.manufactureYear].filter(Boolean).join(' · ')}{v.manager && ` · ${v.manager}`}</p>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div><p className="text-[10px] uppercase text-slate-400">Kiểm định</p><DocCell iso={v.inspectionExpiry} /></div>
+                        <div><p className="text-[10px] uppercase text-slate-400">Bảo hiểm</p><DocCell iso={v.insuranceExpiry} /></div>
+                        <div><p className="text-[10px] uppercase text-slate-400">Niên hạn</p><LifetimeCell v={v} /></div>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </section>
     </div>
   );
 }

@@ -18,9 +18,14 @@ export const GET = handle(async (request: Request) => {
       where: { year },
       select: { departmentId: true, summary: true, stats: true, department: { select: { name: true } } },
     }),
-    prisma.$queryRaw<Array<{ departmentId: string; total: bigint; projects: bigint; review: bigint; latest: number }>>`
+    prisma.$queryRaw<Array<{ departmentId: string; total: bigint; projects: bigint; review: bigint; latest: number; done: bigint; stalled: bigint; stopped: bigint; routine: bigint; avg_progress: number | null }>>`
       SELECT "departmentId", count(*) AS total,
              count(*) FILTER (WHERE coalesce("overrideKind", kind) = 'PROJECT' AND coalesce("overrideStatus", status) IN ('IN_PROGRESS', 'STALLED')) AS projects,
+             count(*) FILTER (WHERE coalesce("overrideStatus", status) = 'DONE') AS done,
+             count(*) FILTER (WHERE coalesce("overrideStatus", status) = 'STALLED') AS stalled,
+             count(*) FILTER (WHERE coalesce("overrideStatus", status) = 'STOPPED') AS stopped,
+             count(*) FILTER (WHERE coalesce("overrideKind", kind) = 'ROUTINE' AND coalesce("overrideStatus", status) = 'IN_PROGRESS') AS routine,
+             avg(coalesce("overrideProgress", progress)) FILTER (WHERE coalesce("overrideKind", kind) = 'PROJECT' AND coalesce("overrideStatus", status) IN ('IN_PROGRESS', 'STALLED')) AS avg_progress,
              count(*) FILTER (WHERE "needsReview" AND "overriddenAt" IS NULL) AS review,
              max("lastWeek") AS latest
       FROM task_threads WHERE year = ${year} GROUP BY 1`,
@@ -38,6 +43,11 @@ export const GET = handle(async (request: Request) => {
         activeProjects: Number(c?.projects ?? 0),
         needsReview: Number(c?.review ?? 0),
         latestWeek: c?.latest ?? 0,
+        done: Number(c?.done ?? 0),
+        stalled: Number(c?.stalled ?? 0),
+        stopped: Number(c?.stopped ?? 0),
+        routine: Number(c?.routine ?? 0),
+        avgProgress: c?.avg_progress == null ? null : Math.round(Number(c.avg_progress)),
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name, 'vi'));

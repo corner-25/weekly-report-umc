@@ -11,6 +11,7 @@ import { ErrorBanner, ICON_BTN, PANEL, PRIMARY_BTN, SECONDARY_BTN } from '@/comp
 import { SummaryDocument, summaryToText } from '@/components/weeks/summary/SummaryDocument';
 import { summaryContentSchema, type SummaryContent } from '@/lib/weekly-summary/types';
 import { weekClosesAt } from '@/lib/weekly-summary/schedule';
+import { WeeklyModuleNav } from '@/components/weeks/WeeklyModuleNav';
 
 interface SummaryDto {
   week: { id: string; weekNumber: number; year: number; startDate: string; endDate: string };
@@ -122,6 +123,7 @@ function WeeklySummary() {
 
   return (
     <div className="space-y-4">
+      <WeeklyModuleNav />
       <div className="flex flex-wrap items-center gap-2 print:hidden">
         <Link href={weekListHref(back)} className={cn(ICON_BTN, 'inline-flex items-center gap-1.5 px-2 text-sm font-medium')}>
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Danh sách báo cáo tuần

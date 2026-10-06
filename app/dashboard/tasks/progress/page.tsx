@@ -20,18 +20,21 @@ import { crmFetch } from '@/components/crm/api';
 import { ErrorBanner, PANEL } from '@/components/crm/ui';
 import { ThreadRow } from '@/components/tasks/ThreadBits';
 import { ThreadDetailModal } from '@/components/tasks/ThreadDetailModal';
+import { ThreadsOverview, type DepartmentStats } from '@/components/tasks/ThreadsOverview';
+import { ThreadsTimeline } from '@/components/tasks/ThreadsTimeline';
 import type { ThreadDto } from '@/lib/task-tracking/server';
+import { WeeklyModuleNav } from '@/components/weeks/WeeklyModuleNav';
 
-interface DepartmentInfo {
-  id: string;
-  name: string;
+interface DepartmentInfo extends DepartmentStats {
   summary: string;
-  style: string;
-  total: number;
-  activeProjects: number;
-  needsReview: number;
-  latestWeek: number;
 }
+
+const VIEWS = [
+  { key: 'tong-quan', label: 'Tổng quan toàn viện' },
+  { key: 'theo-phong', label: 'Theo từng phòng' },
+  { key: 'dong-thoi-gian', label: 'Dòng thời gian' },
+] as const;
+type View = (typeof VIEWS)[number]['key'];
 
 interface ProgressData {
   year: number;
@@ -84,6 +87,9 @@ function ProgressBoard() {
   const [query, setQuery] = useState('');
   const [recentOnly, setRecentOnly] = useState(true);
   const [open, setOpen] = useState<ThreadDto | null>(null);
+  const [withRoutine, setWithRoutine] = useState(false);
+  const rawView = params.get('xem');
+  const view: View = VIEWS.some((v) => v.key === rawView) ? (rawView as View) : params.get('phong') ? 'theo-phong' : 'tong-quan';
 
   const { data: list } = useSWR<ProgressData>('/api/task-threads', (url: string) => crmFetch<ProgressData>(url), { revalidateOnFocus: false });
   const departments = list?.departments ?? [];
@@ -91,7 +97,7 @@ function ProgressBoard() {
   const dept = departments.find((d) => d.name === chosenName) ?? departments[0];
 
   const { data, error, mutate } = useSWR<ProgressData>(
-    dept ? `/api/task-threads?departmentId=${dept.id}` : null,
+    dept && view !== 'tong-quan' ? `/api/task-threads?departmentId=${dept.id}` : null,
     (url: string) => crmFetch<ProgressData>(url),
     { revalidateOnFocus: false },
   );
@@ -102,9 +108,15 @@ function ProgressBoard() {
     return buildSections(threads, dept?.latestWeek ?? 0, recentOnly && !q);
   }, [data, query, recentOnly, dept]);
 
+  const setView = (v: View) => {
+    const next = new URLSearchParams(params.toString());
+    next.set('xem', v);
+    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+  };
   const choose = (name: string) => {
     const next = new URLSearchParams(params.toString());
     next.set('phong', name);
+    if (view === 'tong-quan') next.set('xem', 'theo-phong');
     router.replace(`${pathname}?${next.toString()}`, { scroll: false });
   };
 
@@ -115,8 +127,29 @@ function ProgressBoard() {
 
   return (
     <div className="space-y-5">
-      <PageHeader icon={BarChart3} title="Tiến độ nhiệm vụ" description="Tình trạng từng việc trong báo cáo tuần các phòng — AI đọc theo cách báo cáo riêng của mỗi phòng" />
+      <WeeklyModuleNav />
+      <PageHeader icon={BarChart3} title="Nhiệm vụ các phòng" description="Tình trạng từng việc trong báo cáo tuần các phòng — AI đọc theo cách báo cáo riêng của mỗi phòng" />
       <ErrorBanner message={error ? (error as Error).message : ''} />
+
+      <div role="tablist" aria-label="Cách xem" className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1">
+        {VIEWS.map((v) => (
+          <button
+            key={v.key}
+            type="button"
+            role="tab"
+            aria-selected={view === v.key}
+            onClick={() => setView(v.key)}
+            className={cn('rounded-lg px-3.5 py-1.5 text-sm font-semibold transition', view === v.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800')}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'tong-quan' && (
+        !list ? <div className="h-96 animate-pulse rounded-2xl bg-slate-200/70" aria-hidden="true" /> : <ThreadsOverview departments={departments} onOpen={choose} />
+      )}
+      {view !== 'tong-quan' && (<>
 
       <nav aria-label="Chọn phòng" className="flex flex-wrap gap-2">
         {!list
@@ -181,7 +214,17 @@ function ProgressBoard() {
         </div>
       </div>
 
-      {!data && dept ? (
+      {view === 'dong-thoi-gian' ? (
+        !data ? <div className="h-96 animate-pulse rounded-2xl bg-slate-200/70" aria-hidden="true" /> : (
+          <>
+            <label className="flex items-center gap-2 text-sm text-slate-600">
+              <input type="checkbox" checked={withRoutine} onChange={(e) => setWithRoutine(e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+              Gồm cả việc thường kỳ
+            </label>
+            <ThreadsTimeline threads={data.threads} latestWeek={dept?.latestWeek ?? 0} onOpen={setOpen} includeRoutine={withRoutine} />
+          </>
+        )
+      ) : !data && dept ? (
         <div className="space-y-3" aria-busy="true">{Array.from({ length: 3 }, (_, i) => <div key={i} className="h-40 animate-pulse rounded-2xl bg-slate-200/70" />)}</div>
       ) : sections.length === 0 ? (
         <p className={cn(PANEL, 'p-10 text-center text-sm text-slate-500')}>Không có việc nào khớp.</p>
@@ -199,6 +242,13 @@ function ProgressBoard() {
           </section>
         ))
       )}
+
+      </>)}
+
+      <p className="text-xs text-slate-400">
+        Nhiệm vụ do AI cấu trúc lại từ báo cáo tuần các phòng (quét tự động hằng ngày).{' '}
+        <a href="/dashboard/tasks" className="underline-offset-2 hover:text-brand-700 hover:underline">Danh mục nhiệm vụ gốc</a> chỉ dùng khi sửa tay một báo cáo tuần.
+      </p>
 
       {open && <ThreadDetailModal thread={open} onClose={() => setOpen(null)} onSaved={onSaved} />}
     </div>

@@ -24,6 +24,7 @@ import { WeeksAuditPanel } from '@/components/weeks/WeeksAuditPanel';
 import { WeekRow } from '@/components/weeks/WeekRow';
 import type { WeekListItem } from '@/components/weeks/types';
 import { WeeksSkeleton } from '@/components/weeks/WeeksSkeleton';
+import { WeeklyModuleNav } from '@/components/weeks/WeeklyModuleNav';
 
 const YEARS_BACK = 4;
 
@@ -97,7 +98,6 @@ function WeeksList() {
   // Bấm vào tuần là xem báo cáo tóm tắt; chi tiết nhiệm vụ là trang phụ.
   const weekHref = useCallback((id: string) => withBack(`/dashboard/weeks/${id}/summary`, listQuery), [listQuery]);
   const tasksHref = useCallback((id: string) => withBack(`/dashboard/weeks/${id}`, listQuery), [listQuery]);
-  const newReportHref = useCallback((dateKey: string) => `/dashboard/weeks/new?date=${dateKey}`, []);
 
   const baseYears = Array.from({ length: YEARS_BACK + 2 }, (_, i) => currentYear + 1 - i);
   const years = baseYears.includes(filters.year)
@@ -106,28 +106,21 @@ function WeeksList() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-5 animate-fade-in">
+      <WeeklyModuleNav />
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 shadow-sm shadow-brand-500/20">
             <FileText className="h-5 w-5 text-white" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Báo cáo tuần</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Báo cáo tuần Bệnh viện</h1>
             <p className="text-sm text-slate-500">
-              Tuần chạy Thứ Bảy → Thứ Sáu
+              Tuần chạy Thứ Bảy → Thứ Sáu · quét tự động hằng ngày
               {latest && (
                 <> · Cập nhật gần nhất: tuần {latest.weekNumber}, {formatDateKey(vnTodayKey(new Date(latest.updatedAt)), true)}</>
               )}
             </p>
           </div>
-        </div>
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-          <Link href="/dashboard/import" className={cn(SECONDARY_BTN, 'flex-1 sm:flex-none')}>
-            <FileSpreadsheet className="h-4 w-4" aria-hidden="true" /> Nhập từ Excel
-          </Link>
-          <Link href="/dashboard/weeks/new" className={cn(PRIMARY_BTN, 'flex-1 sm:flex-none')}>
-            <Plus className="h-4 w-4" aria-hidden="true" /> Tạo báo cáo
-          </Link>
         </div>
       </header>
 
@@ -148,13 +141,12 @@ function WeeksList() {
             year={filters.year}
             audit={audit}
             attentionCount={counts.issues}
-            newReportHref={newReportHref}
             weekHref={weekHref}
           />
 
-          <WeekStrip year={filters.year} weeks={weeks} audit={audit} weekHref={weekHref} newReportHref={newReportHref} />
+          <WeekStrip year={filters.year} weeks={weeks} audit={audit} weekHref={weekHref} />
 
-          <WeeksAuditPanel weeks={weeks} audit={audit} weekHref={tasksHref} newReportHref={newReportHref} />
+          <WeeksAuditPanel weeks={weeks} audit={audit} weekHref={tasksHref} />
 
           <section aria-labelledby="weeks-list-heading" className="space-y-3">
             <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm lg:flex-row lg:items-center">
@@ -225,7 +217,7 @@ function WeeksList() {
                   {weeks.length === 0 ? `Năm ${filters.year} chưa có báo cáo nào.` : 'Không có báo cáo khớp bộ lọc.'}
                 </p>
                 {weeks.length === 0 ? (
-                  <Link href="/dashboard/weeks/new" className={PRIMARY_BTN}><Plus className="h-4 w-4" aria-hidden="true" /> Tạo báo cáo đầu tiên</Link>
+                  <p className="text-xs text-slate-400">Báo cáo các phòng được quét tự động hằng ngày từ OneDrive.</p>
                 ) : (
                   <button type="button" onClick={() => { setDraftQ(''); setFilters({ status: 'all', q: '' }); }} className={SECONDARY_BTN}>
                     Xoá bộ lọc

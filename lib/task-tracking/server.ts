@@ -32,6 +32,8 @@ export function toThreadDto(t: ThreadRow) {
     needsReview: t.needsReview && !t.overriddenAt,
     override: t.overriddenAt ? { by: t.overriddenBy, at: t.overriddenAt.toISOString(), note: t.overrideNote } : null,
     progressHistory: t.entries.map((e) => e.progress),
+    /** Các tuần có báo cáo việc này — vẽ dòng thời gian. */
+    weeks: t.entries.map((e) => e.week),
     lastText: last ? last.resultText.replace(/\s+/g, ' ').slice(0, 240) : '',
   };
 }

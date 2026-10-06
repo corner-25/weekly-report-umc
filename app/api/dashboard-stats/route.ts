@@ -4,7 +4,6 @@ import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { CACHE_TAGS } from '@/lib/cache';
-import { getMasterTaskStatusCounts } from '@/lib/master-task-status';
 import { birthdayInYear, NON_SECRETARY_TYPE, sameUtcDate, todayInAppTimeZone } from '@/lib/birthday';
 
 // Server-side cache: revalidate every 2 minutes
@@ -35,7 +34,16 @@ const getCachedDashboardStats = unstable_cache(
       recentTransfers,
       expiringMOUs,
     ] = await Promise.all([
-      getMasterTaskStatusCounts(),
+      // Nhiệm vụ trong báo cáo tuần các phòng năm nay — theo đánh giá AI (Phòng HC sửa tay thắng).
+      prisma.$queryRaw<Array<{ total: bigint; in_progress: bigint; completed: bigint }>>`
+        SELECT count(*) AS total,
+               count(*) FILTER (WHERE coalesce("overrideKind", kind) <> 'ROUTINE' AND coalesce("overrideStatus", status) IN ('IN_PROGRESS', 'STALLED')) AS in_progress,
+               count(*) FILTER (WHERE coalesce("overrideStatus", status) = 'DONE') AS completed
+        FROM task_threads WHERE year = ${now.getFullYear()}`.then(([r]) => ({
+        total: Number(r?.total ?? 0),
+        inProgress: Number(r?.in_progress ?? 0),
+        completed: Number(r?.completed ?? 0),
+      })),
 
       prisma.week.count(),
 

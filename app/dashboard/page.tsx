@@ -60,11 +60,11 @@ export default function Dashboard() {
         description={format(today, "EEEE, 'ngày' d 'tháng' M 'năm' yyyy", { locale: vi })}
         actions={
           <Link
-            href="/dashboard/weeks/new"
+            href="/dashboard/weeks"
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-xl hover:bg-cyan-700 transition-all shadow-sm shadow-cyan-500/20"
           >
-            <Plus className="w-4 h-4" />
-            Tạo báo cáo tuần
+            <FileText className="w-4 h-4" />
+            Báo cáo tuần Bệnh viện
           </Link>
         }
       />
@@ -72,9 +72,9 @@ export default function Dashboard() {
       <QuickActions items={QUICK_ACTIONS} />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard label="NV thường kỳ" value={data.totalMasterTasks} icon={ClipboardCheck} color="purple" href="/dashboard/tasks" />
-        <StatCard label="NV thường kỳ đang làm" value={data.tasksInProgress} icon={Clock} color="orange" href="/dashboard/tasks/overview" />
-        <StatCard label="NV thường kỳ đã xong" value={data.tasksCompleted} icon={CheckCircle2} color="green" href="/dashboard/tasks/overview" />
+        <StatCard label="Nhiệm vụ trong báo cáo" value={data.totalMasterTasks} icon={ClipboardCheck} color="purple" href="/dashboard/tasks/progress?xem=tong-quan" />
+        <StatCard label="Nhiệm vụ đang có tiến độ" value={data.tasksInProgress} icon={Clock} color="orange" href="/dashboard/tasks/progress?xem=tong-quan" />
+        <StatCard label="Nhiệm vụ đã hoàn thành" value={data.tasksCompleted} icon={CheckCircle2} color="green" href="/dashboard/tasks/progress?xem=tong-quan" />
         <StatCard label="Tuần báo cáo" value={data.totalWeeks} icon={FileText} color="cyan" href="/dashboard/weeks" />
         <StatCard label="Sự kiện sắp tới" value={data.upcomingEvents.length} icon={CalendarDays} color="pink" href="/dashboard/hospital-events" />
         <StatCard label="Thư ký" value={data.activeSecretaries} subValue={`/${data.totalSecretaries}`} icon={Users} color="blue" href="/dashboard/secretaries" />
