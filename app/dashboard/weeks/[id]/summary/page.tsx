@@ -10,6 +10,7 @@ import { crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { ErrorBanner, ICON_BTN, PANEL, PRIMARY_BTN, SECONDARY_BTN } from '@/components/crm/ui';
 import { SummaryDocument, summaryToText } from '@/components/weeks/summary/SummaryDocument';
 import { summaryContentSchema, type SummaryContent } from '@/lib/weekly-summary/types';
+import { weekClosesAt } from '@/lib/weekly-summary/schedule';
 
 interface SummaryDto {
   week: { id: string; weekNumber: number; year: number; startDate: string; endDate: string };
@@ -70,7 +71,8 @@ function WeeklySummary() {
   // Tuần chưa có tóm tắt: cho AI viết luôn — bấm vào tuần là thấy báo cáo, không phải bấm thêm.
   const [autoStarted, setAutoStarted] = useState(false);
   useEffect(() => {
-    if (data && !data.summary && !autoStarted && busy === '') {
+    // Tuần còn đang diễn ra thì không tự viết (dữ liệu chưa đủ, viết rồi lại phải viết lại).
+    if (data && !data.summary && !autoStarted && busy === '' && new Date() >= weekClosesAt(new Date(data.week.endDate))) {
       setAutoStarted(true);
       generate();
     }
@@ -214,6 +216,11 @@ function WeeklySummary() {
         <div className={cn(PANEL, 'space-y-3 p-8 text-center')}>
           <Sparkles className="mx-auto h-10 w-10 text-brand-300" aria-hidden="true" />
           <p className="font-semibold text-slate-900">Chưa có báo cáo tóm tắt tuần này</p>
+          {new Date() < weekClosesAt(new Date(data.week.endDate)) && (
+            <p className="mx-auto max-w-lg text-sm font-medium text-amber-700">
+              Tuần đang diễn ra — hệ thống tự viết vào {weekClosesAt(new Date(data.week.endDate)).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' })} khi các phòng đã nộp đủ. Cần xem sớm thì bấm Viết bằng AI.
+            </p>
+          )}
           <p className="mx-auto max-w-lg text-sm text-slate-500">
             AI đọc báo cáo tuần của các phòng và số liệu đã trích, viết bản tóm tắt theo mẫu gửi Ban Giám đốc. Phòng HC sửa lại rồi bấm Chốt — các bản đã chốt giúp AI viết đúng văn phong hơn ở những tuần sau.
           </p>

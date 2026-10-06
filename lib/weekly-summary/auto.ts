@@ -1,11 +1,18 @@
 /**
- * Viết sẵn báo cáo tóm tắt cho các tuần — người dùng bấm vào tuần là có ngay.
- *  - Tuần có dữ liệu báo cáo mà chưa có bản tóm tắt → viết.
- *  - Bản nháp AI chưa ai sửa, mà dữ liệu tuần đó vừa được nạp thêm → viết lại.
+ * Viết sẵn báo cáo tóm tắt — mỗi tuần MỘT lần, sau khi tuần đã kết thúc.
+ *
+ * Báo cáo tuần được quét hằng ngày; viết lại mỗi lần quét thì tốn token vô ích.
+ * Nên chỉ viết khi tuần đã xong: hết Chủ nhật cuối tuần (tuần báo cáo Thứ Bảy →
+ * Thứ Sáu, cộng hai ngày cuối tuần để các phòng kịp nộp), tức từ Thứ Hai hôm sau.
+ *  - Tuần đã xong, có dữ liệu, chưa có bản tóm tắt → viết.
+ *  - Bản nháp AI viết khi tuần còn đang diễn ra (bấm xem sớm) và chưa ai sửa → viết lại một lần.
  *  - Bản Phòng HC đã sửa hoặc đã chốt → không đụng tới.
  */
 import type { PrismaClient } from '@prisma/client';
 import { generateWeeklySummary } from './generate';
+import { weekClosesAt } from './schedule';
+
+export { weekClosesAt };
 
 export interface AutoSummaryResult {
   written: Array<{ year: number; week: number; reason: 'new' | 'refresh'; tokens: number }>;
@@ -16,25 +23,21 @@ export interface AutoSummaryResult {
 /** Tuần cần viết (mới nhất trước). */
 type WeekTodo = { id: string; year: number; weekNumber: number; reason: 'new' | 'refresh' };
 
-export async function weeksNeedingSummary(db: PrismaClient): Promise<WeekTodo[]> {
+export async function weeksNeedingSummary(db: PrismaClient, now = new Date()): Promise<WeekTodo[]> {
   const weeks = await db.week.findMany({
     orderBy: [{ year: 'desc' }, { weekNumber: 'desc' }],
-    select: { id: true, year: true, weekNumber: true, summary: { select: { status: true, generatedAt: true, editedAt: true } } },
+    select: { id: true, year: true, weekNumber: true, endDate: true, summary: { select: { status: true, generatedAt: true, editedAt: true } } },
   });
-  const latestEntry = await db.taskThreadEntry.groupBy({ by: ['year', 'week'], _max: { createdAt: true }, _count: { _all: true } });
-  const entryOf = new Map(latestEntry.map((e) => [`${e.year}-${e.week}`, e]));
-  const progressCount = new Map(
-    (await db.weekTaskProgress.groupBy({ by: ['weekId'], _count: { _all: true } })).map((p) => [p.weekId, p._count._all]),
-  );
+  const entryWeeks = new Set((await db.taskThreadEntry.groupBy({ by: ['year', 'week'] })).map((e) => `${e.year}-${e.week}`));
+  const progressWeeks = new Set((await db.weekTaskProgress.groupBy({ by: ['weekId'] })).map((p) => p.weekId));
 
   return weeks.flatMap((w): WeekTodo[] => {
-    const entries = entryOf.get(`${w.year}-${w.weekNumber}`);
-    const hasData = (entries?._count._all ?? 0) > 0 || (progressCount.get(w.id) ?? 0) > 0;
-    if (!hasData) return [];
+    const closesAt = weekClosesAt(w.endDate);
+    if (now < closesAt) return [];
+    if (!entryWeeks.has(`${w.year}-${w.weekNumber}`) && !progressWeeks.has(w.id)) return [];
     if (!w.summary) return [{ id: w.id, year: w.year, weekNumber: w.weekNumber, reason: 'new' }];
-    const untouchedDraft = w.summary.status === 'DRAFT' && !w.summary.editedAt;
-    const newerData = entries?._max.createdAt && w.summary.generatedAt && entries._max.createdAt > w.summary.generatedAt;
-    return untouchedDraft && newerData ? [{ id: w.id, year: w.year, weekNumber: w.weekNumber, reason: 'refresh' }] : [];
+    const writtenEarly = w.summary.status === 'DRAFT' && !w.summary.editedAt && (!w.summary.generatedAt || w.summary.generatedAt < closesAt);
+    return writtenEarly ? [{ id: w.id, year: w.year, weekNumber: w.weekNumber, reason: 'refresh' }] : [];
   });
 }
 
