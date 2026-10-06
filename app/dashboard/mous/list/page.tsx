@@ -100,13 +100,13 @@ function MouList() {
             const term = VIEW_TERM[v.key];
             const active = state.view === v.key;
             return (
-              <span key={v.key} className={cn('inline-flex items-center rounded-xl ring-1 ring-inset transition', active ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-700 ring-slate-200 hover:bg-slate-50')}>
-                <button type="button" role="tab" aria-selected={active} onClick={() => update({ view: v.key })} className="inline-flex items-center gap-1.5 py-1.5 pl-3 pr-1 text-[13px] font-medium">
+              <span key={v.key} className={cn('inline-flex h-9 items-center rounded-xl ring-1 ring-inset transition', active ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-700 ring-slate-200 hover:bg-slate-50')}>
+                <button type="button" role="tab" aria-selected={active} onClick={() => update({ view: v.key })} className="inline-flex h-full items-center gap-1.5 pl-3 pr-1 text-[13px] font-medium leading-none">
                   {VIEW_DOT[v.key] && <span className={cn('h-1.5 w-1.5 rounded-full', VIEW_DOT[v.key])} aria-hidden="true" />}
                   {v.label}
                   <span className={cn('tabular-nums', active ? 'text-white/70' : 'text-slate-400')}>{count}</span>
                 </button>
-                <span className={cn('pr-2', active ? '[&_button]:text-white/70' : '')}>{term ? <HintTip label={MOU_TERMS[term].label} def={MOU_TERMS[term].def} /> : <span className="pl-1" />}</span>
+                <span className={cn('flex h-full items-center pr-2 [&>span]:flex', active ? '[&_button]:text-white/70' : '')}>{term ? <HintTip label={MOU_TERMS[term].label} def={MOU_TERMS[term].def} /> : <span className="pl-1" />}</span>
               </span>
             );
           })}
@@ -116,7 +116,7 @@ function MouList() {
           <label className="relative">
             <span className="sr-only">Tìm MOU</span>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-            <input value={state.q} onChange={(e) => update({ q: e.target.value })} placeholder="Tìm đối tác, nội dung, người phụ trách…" className={cn(SELECT, 'w-full pl-9')} />
+            <input value={state.q} onChange={(e) => update({ q: e.target.value })} placeholder="Tìm đối tác, nội dung, người phụ trách…" className={cn(SELECT, 'h-[42px] w-full pl-9')} />
           </label>
           <Select value={state.phong} onChange={(e) => update({ phong: e.target.value })} aria-label="Phòng đầu mối" className={SELECT}>
             <option value="">Mọi phòng đầu mối</option>
@@ -146,12 +146,12 @@ function MouList() {
           <span className="mx-1 h-3 w-px bg-slate-200" aria-hidden="true" />
           <span>Triển khai:</span>
           {(['', 'NONE', 'STARTED', 'DONE'] as Array<'' | Stage>).map((s) => (
-            <button key={s || 'all'} type="button" onClick={() => update({ giaidoan: s })} className={cn('rounded-lg px-2 py-1 font-medium ring-1 ring-inset', state.giaidoan === s ? 'bg-brand-50 text-brand-700 ring-brand-200' : 'text-slate-600 ring-slate-200 hover:bg-slate-50')}>
+            <button key={s || 'all'} type="button" onClick={() => update({ giaidoan: s })} className={cn('inline-flex h-8 items-center rounded-lg px-2.5 font-medium ring-1 ring-inset', state.giaidoan === s ? 'bg-brand-50 text-brand-700 ring-brand-200' : 'text-slate-600 ring-slate-200 hover:bg-slate-50')}>
               {s ? STAGE_LABELS[s] : 'Tất cả'}
             </button>
           ))}
           <div className="w-44">
-          <Select value={state.danhgia} onChange={(e) => update({ danhgia: e.target.value })} aria-label="Đánh giá hiệu quả" className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs">
+          <Select value={state.danhgia} onChange={(e) => update({ danhgia: e.target.value })} aria-label="Đánh giá hiệu quả" className="h-8 min-h-0 w-full rounded-lg px-2.5 text-xs shadow-none">
             <option value="">Mọi đánh giá</option>
             {VERDICTS.map((v) => <option key={v} value={v}>{VERDICT_LABELS[v]}</option>)}
             <option value="none">Chưa đánh giá</option>
@@ -159,12 +159,12 @@ function MouList() {
           </div>
           <span className="ml-auto flex items-center gap-2">
             {hasFilters && (
-              <button type="button" onClick={() => update({ q: '', phong: '', linhvuc: '', doitac: '', phamvi: '', giaidoan: '', danhgia: '' })} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600">
+              <button type="button" onClick={() => update({ q: '', phong: '', linhvuc: '', doitac: '', phamvi: '', giaidoan: '', danhgia: '' })} className="inline-flex h-8 items-center gap-1 rounded-lg px-2.5 font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600">
                 <X className="h-3.5 w-3.5" aria-hidden="true" /> Xoá bộ lọc
               </button>
             )}
             <span className="w-44">
-              <Select value={state.sapxep} onChange={(e) => update({ sapxep: e.target.value as MouSortKey })} aria-label="Sắp xếp" className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs">
+              <Select value={state.sapxep} onChange={(e) => update({ sapxep: e.target.value as MouSortKey })} aria-label="Sắp xếp" className="h-8 min-h-0 w-full rounded-lg px-2.5 text-xs shadow-none">
                 {MOU_SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
               </Select>
             </span>
