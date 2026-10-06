@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { refreshMouKnowledge } from '@/lib/mou/knowledge-refresh';
 
 // POST - Add clause to MOU
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
@@ -58,6 +60,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     await params; // consume params
     const session = await getServerSession(authOptions);
@@ -103,6 +106,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     await params;
     const session = await getServerSession(authOptions);

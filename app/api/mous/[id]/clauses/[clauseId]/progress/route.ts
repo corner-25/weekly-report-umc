@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { refreshMouKnowledge } from '@/lib/mou/knowledge-refresh';
 
 // GET - List progress logs for a clause
 export async function GET(
@@ -32,6 +33,7 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string; clauseId: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     const { clauseId } = await params;
     const session = await getServerSession(authOptions);

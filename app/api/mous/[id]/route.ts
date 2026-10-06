@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { CACHE_TAGS } from '@/lib/cache';
+import { refreshMouKnowledge } from '@/lib/mou/knowledge-refresh';
 
 // GET - Get MOU detail
 export async function GET(
@@ -51,6 +52,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
@@ -117,6 +119,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  refreshMouKnowledge();
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);

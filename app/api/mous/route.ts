@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { CACHE_TAGS } from '@/lib/cache';
 import type { Prisma } from '@prisma/client';
+import { refreshMouKnowledge } from '@/lib/mou/knowledge-refresh';
 
 type SortKey = 'updatedAt' | 'expiryDate' | 'signedDate' | 'title';
 
@@ -111,6 +112,7 @@ export async function GET(request: Request) {
 
 // POST - Create new MOU
 export async function POST(request: Request) {
+  refreshMouKnowledge();
   try {
     const session = await getServerSession(authOptions);
     if (!session) {

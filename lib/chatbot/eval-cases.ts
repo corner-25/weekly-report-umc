@@ -11,6 +11,8 @@ export const CHATBOT_EVAL_CASES: ChatbotEvalCase[] = [
   { id: 'hc-metric', question: 'Số liệu hành chính tuần gần nhất là gì?', expectedView: 'v_chatbot_hc_metrics', category: 'metrics' },
   { id: 'mou-expiry', question: 'MOU nào hết hạn trong 90 ngày?', expectedView: 'v_chatbot_mou', category: 'mou' },
   { id: 'mou-clause', question: 'Điều khoản MOU nào đang bị trễ?', expectedView: 'v_chatbot_mou_details', category: 'mou' },
+  { id: 'mou-effectiveness', question: 'MOU nào ký rồi nhưng không hiệu quả?', expectedView: 'v_chatbot_mou', category: 'mou' },
+  { id: 'mou-aspects', question: 'MOU với Bệnh viện Nhi đồng 1 ký những khía cạnh nào, đã triển khai tới đâu?', expectedView: 'v_chatbot_mou_details', category: 'mou' },
   { id: 'mou-activity', question: 'Hoạt động hợp tác nào đang thực hiện?', expectedView: 'v_chatbot_mou_details', category: 'mou' },
   { id: 'license-expiry', question: 'Giấy phép nào sắp hết hạn?', expectedView: 'v_chatbot_licenses', category: 'licenses' },
   { id: 'license-renewal', question: 'Giấy phép nào vừa được gia hạn?', expectedView: 'v_chatbot_license_renewals', category: 'licenses' },

@@ -154,14 +154,21 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
 - distance_km, fuel_liters, revenue_vnd, duration_hours (numeric)
 - work_category, area_type (text), odometer_status (text)
 
-### 3. v_chatbot_mou — Biên bản ghi nhớ hợp tác
-- title (text), mou_number (text|null)
-- partner_name (text): tên đối tác
-- signed_date, expiry_date (date|null)
-- status (text): 'ACTIVE'|'EXPIRED'|'TERMINATED'|...
-- category (text)
-- department_name (text|null)
-- days_until_expiry (int|null): âm = đã hết, dương = còn lại
+### 3. v_chatbot_mou — Biên bản ghi nhớ hợp tác (mỗi dòng một MOU)
+- record_id, title (text), mou_number (text|null)
+- partner_name (text): tên đối tác; partner_country (text|null)
+- signed_date, expiry_date (date|null); days_until_expiry (int|null): âm = đã hết, dương = còn lại
+- status (text): 'ACTIVE'|'EXPIRED'|'TERMINATED'|'DRAFT'
+- lifecycle (text): 'Chờ ký'|'Hiệu lực'|'Sắp hết hạn'|'Hết hạn'|'Đã kết thúc' — DÙNG CỘT NÀY khi hỏi còn hiệu lực/hết hạn
+- category (text), cooperation_field (text|null): lĩnh vực ('Đào tạo, NCKH, Hợp tác quốc tế', 'Hỗ trợ chuyên môn', 'CTXH', 'Toàn diện', 'Hành chính', 'Khác'; nhiều lĩnh vực ngăn bằng '; ')
+- department_name (text|null): phòng đầu mối; contact_person (text|null)
+- office_status ('Mới'|'Đang xử lý'|'Hoàn thành'), office_progress (int|null): % phòng đầu mối ghi
+- purpose (text|null): nội dung hợp tác; signatories (text|null): các bên và người ký; term_text (text|null): thời hạn theo văn bản
+- aspect_count, aspects_completed, aspects_in_progress (int): số khía cạnh đã ký (AI đọc từ biên bản) và mức triển khai; aspect_titles (text|null)
+- document_count (int): số văn bản đính kèm
+- ai_verdict (text|null): AI gợi ý 'Thành công'|'Đang tiến triển'|'Có nguy cơ'|'Không hiệu quả'|'Mới ký, chưa đánh giá'; ai_implementation_level (int 0–100); ai_rationale (text); last_activity_date (date|null)
+- leader_evaluation (text|null): đánh giá lãnh đạo/Phòng HC đã chốt (cùng nhãn như ai_verdict trừ 'Mới ký'); leader_evaluation_note (text|null)
+  Hỏi MOU thành công/thất bại/hiệu quả: dùng COALESCE(leader_evaluation, ai_verdict) và nói rõ cái nào là AI gợi ý.
 
 ### 4. v_chatbot_licenses — Giấy phép / chứng chỉ
 - name, license_number, category, issued_by (text)
@@ -188,7 +195,9 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
 - v_chatbot_event_checklists: record_id, event_id, event_name, event_date, title, description, is_completed, completed_at, order_number
   Đã có sẵn event_name, event_date — KHÔNG join sang v_chatbot_events (view đó không có id để join).
 - v_chatbot_vip_summary: record_id, visit_date, organization_name, destination, visit_count — lượt dẫn khách VIP khám và dẫn đoàn ghi trong CRM (không có tên khách/nhân viên/liên hệ)
-- v_chatbot_mou_details: record_id, mou_id, mou_title, detail_type, title, content, status, progress, deadline, result, notes
+- v_chatbot_mou_details: record_id, mou_id, mou_title, partner_name, detail_type ('CLAUSE' = khía cạnh đã ký | 'ACTIVITY' = hoạt động), title, content, status ('NOT_STARTED'|'IN_PROGRESS'|'COMPLETED'|...), progress, deadline, result, notes,
+  aspect_type ('TRAINING'|'RESEARCH'|'CLINICAL'|'TECHNOLOGY_TRANSFER'|'EXPERT_EXCHANGE'|'FACILITY'|'EQUIPMENT'|'FINANCE'|'HR'|'EVENT'|'PUBLICATION'|'OTHER'), responsible_party ('UMC'|'PARTNER'|'BOTH'),
+  evidence (text|null): bằng chứng triển khai kèm ngày và nguồn, gap (text|null): còn thiếu gì so với cam kết
 - v_chatbot_license_renewals: record_id, license_id, license_name, license_number, renewed_date, previous_expiry, new_expiry, decision_number, notes
 - v_chatbot_sync_health: record_id, source_name, source_kind, status, trigger, started_at, finished_at, rows_read, rows_upserted, rows_skipped, error_message
 - v_chatbot_import_health: record_id, source_id, year, week, status, item_count, first_created_at, last_reviewed_at
@@ -365,6 +374,12 @@ Q: Phòng KHTH tuần 14 có nhiệm vụ gì đã hoàn thành?
 
 Q: Phòng KHTH làm gì tuần qua / tuần mới nhất?
 <sql>SELECT task_name, result_text, progress_percent FROM v_chatbot_tasks WHERE department_name ILIKE '%kế hoạch tổng hợp%' AND (week_number, year) = (SELECT week_number, year FROM v_chatbot_tasks ORDER BY year DESC, week_number DESC LIMIT 1) LIMIT 50</sql>
+
+Q: MOU nào không hiệu quả / ký rồi chưa triển khai?
+<sql>SELECT partner_name, department_name, signed_date, lifecycle, COALESCE(leader_evaluation, ai_verdict) AS danh_gia, (leader_evaluation IS NOT NULL) AS da_chot, ai_implementation_level, ai_rationale FROM v_chatbot_mou WHERE lifecycle IN ('Hiệu lực','Sắp hết hạn') AND COALESCE(leader_evaluation, ai_verdict) IN ('Không hiệu quả','Có nguy cơ') ORDER BY signed_date ASC LIMIT 50</sql>
+
+Q: MOU với Bệnh viện Nhi đồng 1 ký những gì, triển khai tới đâu?
+<sql>SELECT d.title AS khia_canh, d.aspect_type, d.status, d.progress, d.evidence, d.gap FROM v_chatbot_mou_details d WHERE d.detail_type = 'CLAUSE' AND d.partner_name ILIKE '%Nhi đồng 1%' ORDER BY d.title LIMIT 50</sql>
 
 Q: MOU nào sắp hết hạn?
 <sql>SELECT title, partner_name, expiry_date, days_until_expiry, status FROM v_chatbot_mou WHERE expiry_date IS NOT NULL AND days_until_expiry <= 90 ORDER BY days_until_expiry ASC LIMIT 50</sql>

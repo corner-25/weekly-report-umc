@@ -7,7 +7,7 @@ import { createHash } from 'crypto';
 import type { PrismaClient } from '@prisma/client';
 import { toSearchKey } from '@/lib/crm/constants';
 import { embeddingsAvailable, embedTexts } from '../embeddings';
-import { collectKnowledge, type KnowledgeDoc } from './collect';
+import { GROUP_SOURCES, collectKnowledge, type KnowledgeDoc, type KnowledgeGroup } from './collect';
 
 /** Số đoạn nhúng mỗi lượt (embedTexts tự chia lô nhỏ theo nhà cung cấp). */
 const EMBED_BATCH = 100;
@@ -27,12 +27,21 @@ export interface IndexStats {
 const hashOf = (d: KnowledgeDoc) =>
   createHash('sha1').update([d.title, d.body, d.department ?? '', d.organization ?? '', d.href ?? '', d.occurredOn?.toISOString() ?? ''].join('\u0001')).digest('hex');
 
-export async function syncKnowledge(db: PrismaClient, options: { log?: (msg: string) => void; embed?: boolean } = {}): Promise<IndexStats> {
+export async function syncKnowledge(
+  db: PrismaClient,
+  options: { log?: (msg: string) => void; embed?: boolean; groups?: KnowledgeGroup[] } = {},
+): Promise<IndexStats> {
   const log = options.log ?? (() => {});
-  const docs = await collectKnowledge(db);
+  const docs = await collectKnowledge(db, options.groups);
+  // Đồng bộ một phần (vd chỉ MOU sau khi sửa): chỉ so và xoá đoạn của đúng các nguồn đó.
+  const sources = options.groups ? options.groups.flatMap((g) => GROUP_SOURCES[g]) : null;
   const existing = new Map(
-    (await db.$queryRaw<Array<{ id: string; content_hash: string; has_vec: boolean }>>`
-      SELECT id, content_hash, embedding IS NOT NULL AS has_vec FROM knowledge_chunks`).map((r) => [r.id, r]),
+    (sources
+      ? await db.$queryRaw<Array<{ id: string; content_hash: string; has_vec: boolean }>>`
+          SELECT id, content_hash, embedding IS NOT NULL AS has_vec FROM knowledge_chunks WHERE source = ANY(${sources}::text[])`
+      : await db.$queryRaw<Array<{ id: string; content_hash: string; has_vec: boolean }>>`
+          SELECT id, content_hash, embedding IS NOT NULL AS has_vec FROM knowledge_chunks`
+    ).map((r) => [r.id, r]),
   );
 
   const ids = new Set(docs.map((d) => d.id));

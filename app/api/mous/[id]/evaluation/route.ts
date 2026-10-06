@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { handle, HttpError, requireSession } from '@/lib/crm/server';
 import { EVALUATIONS } from '@/lib/mou/assess';
+import { refreshMouKnowledge } from '@/lib/mou/knowledge-refresh';
 
 const bodySchema = z.object({
   evaluation: z.enum(EVALUATIONS).nullable(),
@@ -13,6 +14,7 @@ type Ctx = { params: Promise<{ id: string }> };
 
 /** Lãnh đạo / Phòng HC chốt đánh giá hiệu quả MOU (AI chỉ gợi ý). null để xoá đánh giá. */
 export const PATCH = handle(async (request: Request, { params }: Ctx) => {
+  refreshMouKnowledge();
   const session = await requireSession();
   const { id } = await params;
   const body = bodySchema.parse(await request.json());

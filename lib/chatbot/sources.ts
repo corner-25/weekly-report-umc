@@ -66,11 +66,12 @@ export function addRecordSources(sources: ChatbotSource[], rows: unknown[]): Cha
     const row = raw as Record<string, unknown>;
     const recordId = row.record_id;
     if (typeof recordId !== 'string') return [];
-    const label = String(row.event_name || row.mou_title || row.license_name || row.work_title || row.name || row.title || row.task_name || `Bản ghi ${index + 1}`);
+    const label = String(row.event_name || row.mou_title || row.partner_name || row.license_name || row.work_title || row.name || row.title || row.task_name || `Bản ghi ${index + 1}`);
     let href = source.href;
     if (source.viewName === 'v_chatbot_event_checklists' && typeof row.event_id === 'string') href = `/dashboard/hospital-events/${row.event_id}`;
     else if (source.viewName === 'v_chatbot_vehicles') href = `/dashboard/vehicles/${recordId}`;
-    else if (source.viewName === 'v_chatbot_mou_details' && typeof row.mou_id === 'string') href = `/dashboard/mous?selected=${row.mou_id}`;
+    else if (source.viewName === 'v_chatbot_mou_details' && typeof row.mou_id === 'string') href = `/dashboard/mous/list?id=${row.mou_id}`;
+    else if (source.viewName === 'v_chatbot_mou') href = `/dashboard/mous/list?id=${recordId}`;
     else if (source.viewName === 'v_chatbot_license_renewals' && typeof row.license_id === 'string') href = `/dashboard/licenses?selected=${row.license_id}`;
     else if (source.viewName === 'v_chatbot_work_items') href = `/dashboard/work/items/${encodeURIComponent(recordId)}`;
     else if (source.viewName === 'v_chatbot_work_updates' && typeof row.work_item_id === 'string') href = `/dashboard/work/items/${encodeURIComponent(row.work_item_id)}`;

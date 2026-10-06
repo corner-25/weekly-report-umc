@@ -282,7 +282,25 @@ async function mous(db: PrismaClient): Promise<KnowledgeDoc[]> {
   );
 }
 
-export async function collectKnowledge(db: PrismaClient): Promise<KnowledgeDoc[]> {
-  const groups = await Promise.all([weeklyReports(db), weeklySummaries(db), crm(db), work(db), events(db), mous(db)]);
-  return groups.flat();
+/** Nguồn gom: đoạn tri thức của nguồn nào thì id bắt đầu bằng tiền tố nguồn đó. */
+const COLLECTORS: Record<'weekly' | 'crm' | 'work' | 'event' | 'mou', (db: PrismaClient) => Promise<KnowledgeDoc[]>> = {
+  weekly: async (db) => [...(await weeklyReports(db)), ...(await weeklySummaries(db))],
+  crm,
+  work,
+  event: events,
+  mou: mous,
+};
+export type KnowledgeGroup = keyof typeof COLLECTORS;
+/** Tiền tố id của từng nhóm — để chỉ xoá đoạn cũ của đúng nhóm khi đồng bộ một phần. */
+export const GROUP_SOURCES: Record<KnowledgeGroup, KnowledgeSource[]> = {
+  weekly: ['weekly_report', 'weekly_summary'],
+  crm: ['crm'],
+  work: ['work_item', 'work_update'],
+  event: ['event'],
+  mou: ['mou'],
+};
+
+export async function collectKnowledge(db: PrismaClient, groups?: KnowledgeGroup[]): Promise<KnowledgeDoc[]> {
+  const keys = groups ?? (Object.keys(COLLECTORS) as KnowledgeGroup[]);
+  return (await Promise.all(keys.map((k) => COLLECTORS[k](db)))).flat();
 }
