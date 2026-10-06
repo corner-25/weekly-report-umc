@@ -78,6 +78,12 @@ interface MOUDetailData {
   contactPerson: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
+  externalCode?: string | null;
+  externalUrl?: string | null;
+  externalStatus?: string | null;
+  cooperationField?: string | null;
+  progressPercent?: number | null;
+  watchers?: string | null;
   clauses: Clause[];
   progressLogs: ProgressLog[];
   activities?: any[];
@@ -211,7 +217,39 @@ export function MOUDetail({ mou, onClose, onEdit, onRefresh }: Props) {
                 <InfoField label="Điện thoại" value={mou.contactPhone || '-'} />
               </div>
 
-              {mou.purpose && <TextSection label="Mục đích hợp tác" text={mou.purpose} />}
+              {mou.externalCode && (
+                <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Theo dõi trên office.umc.edu.vn</p>
+                    {mou.externalUrl && (
+                      <a href={mou.externalUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-cyan-700 hover:underline">
+                        Mở dự án trên office ↗
+                      </a>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <InfoField label="Lĩnh vực" value={mou.cooperationField || '-'} />
+                    <InfoField label="Trạng thái office" value={mou.externalStatus || '-'} />
+                    <InfoField label="Mã công việc" value={`#${mou.externalCode}`} />
+                    <div>
+                      <p className="text-xs font-medium text-gray-500">Tiến độ office</p>
+                      {mou.progressPercent == null ? (
+                        <p className="text-sm text-gray-900">-</p>
+                      ) : (
+                        <div className="mt-1 flex items-center gap-2">
+                          <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
+                            <div className={`h-full rounded-full ${mou.progressPercent >= 100 ? 'bg-emerald-500' : 'bg-cyan-500'}`} style={{ width: `${Math.min(100, mou.progressPercent)}%` }} />
+                          </div>
+                          <span className="text-sm font-semibold tabular-nums text-slate-700">{mou.progressPercent}%</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {mou.watchers && <p className="mt-3 text-xs text-slate-500"><span className="font-medium text-slate-600">Người theo dõi:</span> {mou.watchers}</p>}
+                </div>
+              )}
+
+              {mou.purpose && <TextSection label="Nội dung hợp tác" text={mou.purpose} />}
               {mou.notes && <TextSection label="Ghi chú" text={mou.notes} />}
 
               {/* Tóm tắt lĩnh vực hợp tác */}

@@ -23,7 +23,7 @@ export const STATUS_LABELS: Record<string, string> = {
   ACTIVE: 'Hiệu lực',
   EXPIRING: 'Sắp hết hạn',
   EXPIRED: 'Hết hạn',
-  TERMINATED: 'Đã chấm dứt',
+  TERMINATED: 'Đã kết thúc',
 };
 
 export const STATUS_COLORS: Record<string, string> = {

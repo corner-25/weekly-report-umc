@@ -22,7 +22,7 @@ export interface WorkImportSummary {
 const TRANSACTION = { maxWait: 10_000, timeout: 60_000 };
 
 /** Ứng dụng nội bộ ghi đơn vị viết tắt ("Phòng TCCB") — đổi sang tên phòng ban trong hệ thống. */
-const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
+export const UNIT_ABBREVIATIONS: Readonly<Record<string, string>> = {
   'Phòng TCCB': 'Phòng Tổ chức Cán bộ',
   'Phòng KHTH': 'Phòng Kế hoạch Tổng hợp',
   'Phòng HC': 'Phòng Hành chính',

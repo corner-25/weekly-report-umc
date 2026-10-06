@@ -30,7 +30,7 @@ export async function GET(
         },
         progressLogs: { orderBy: { date: 'desc' } },
         activities: { orderBy: [{ startDate: 'desc' }, { createdAt: 'desc' }] },
-        documents: { orderBy: { createdAt: 'desc' } },
+        documents: { orderBy: { createdAt: 'desc' }, omit: { data: true } },
         _count: { select: { activities: true, documents: true, clauses: true } },
       },
     });

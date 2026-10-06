@@ -35,6 +35,8 @@ export async function GET(request: Request) {
           { partnerName: { contains: search, mode: 'insensitive' } },
           { mouNumber: { contains: search, mode: 'insensitive' } },
           { contactPerson: { contains: search, mode: 'insensitive' } },
+          { purpose: { contains: search, mode: 'insensitive' } },
+          { cooperationField: { contains: search, mode: 'insensitive' } },
         ],
       });
     }
@@ -85,7 +87,7 @@ export async function GET(request: Request) {
         include: {
           department: { select: { id: true, name: true } },
           clauses: { select: { progress: true } },
-          _count: { select: { clauses: true, progressLogs: true } },
+          _count: { select: { clauses: true, progressLogs: true, documents: true } },
         },
         orderBy,
         skip: (page - 1) * pageSize,

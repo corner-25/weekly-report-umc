@@ -27,31 +27,6 @@ export function useDashboardStats() {
   });
 }
 
-// --- MOU Stats ---
-export function useMOUStats() {
-  return useSWR('/api/mous/stats', fetcher, {
-    ...swrConfig,
-    revalidateIfStale: true,
-    refreshInterval: 5 * 60 * 1000,
-  });
-}
-
-// --- MOU List ---
-export function useMOUList(params: Record<string, string>) {
-  const searchParams = new URLSearchParams(params);
-  // Remove empty values
-  for (const [key, value] of searchParams.entries()) {
-    if (!value) searchParams.delete(key);
-  }
-  const query = searchParams.toString();
-  const url = query ? `/api/mous?${query}` : '/api/mous';
-
-  return useSWR(url, fetcher, {
-    ...swrConfig,
-    revalidateIfStale: true,
-  });
-}
-
 // --- MOU Detail ---
 export function useMOUDetail(id: string | null) {
   return useSWR(id ? `/api/mous/${id}` : null, fetcher, {

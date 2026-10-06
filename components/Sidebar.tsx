@@ -34,7 +34,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-type BadgeKey = 'work' | 'crm' | 'vehicles';
+type BadgeKey = 'work' | 'crm' | 'vehicles' | 'mou';
 
 interface NavLink {
   href: string;
@@ -83,6 +83,13 @@ const NAV: NavSection[] = [
         ],
       },
       {
+        href: '/dashboard/mous', label: 'Hợp tác (MOU)', icon: Handshake, badge: 'mou',
+        children: [
+          { href: '/dashboard/mous', label: 'Bảng điều hành', exact: true },
+          { href: '/dashboard/mous/list', label: 'Danh sách MOU' },
+        ],
+      },
+      {
         // Một phân hệ cho mọi thứ sinh ra từ báo cáo tuần các phòng (quét tự động hằng ngày).
         href: '/dashboard/weeks', label: 'Báo cáo tuần Bệnh viện', icon: FileText,
         children: [
@@ -114,7 +121,6 @@ const NAV: NavSection[] = [
         ],
       },
       { href: '/dashboard/vehicles', label: 'Phương tiện', icon: Truck, badge: 'vehicles' },
-      { href: '/dashboard/mous', label: 'MOU', icon: Handshake },
       { href: '/dashboard/licenses', label: 'Giấy phép', icon: ShieldCheck },
     ],
   },

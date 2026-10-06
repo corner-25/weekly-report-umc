@@ -29,6 +29,7 @@ export const KNOWLEDGE_SOURCES = {
   work_item: 'Công việc chỉ đạo của BGĐ',
   work_update: 'Cập nhật tiến độ công việc',
   event: 'Sự kiện bệnh viện',
+  mou: 'Hợp tác, ký kết MOU',
 } as const;
 export type KnowledgeSource = keyof typeof KNOWLEDGE_SOURCES;
 
@@ -240,7 +241,42 @@ async function events(db: PrismaClient): Promise<KnowledgeDoc[]> {
   );
 }
 
+async function mous(db: PrismaClient): Promise<KnowledgeDoc[]> {
+  const rows = await db.mOU.findMany({
+    where: { deletedAt: null },
+    include: {
+      department: { select: { name: true } },
+      progressLogs: { orderBy: { date: 'asc' } },
+      documents: { select: { title: true, documentType: true } },
+    },
+  });
+  return rows.flatMap((m) =>
+    withParts({
+      id: `mou:${m.id}`,
+      source: 'mou',
+      refId: m.id,
+      title: `Hợp tác: ${clean(m.title).slice(0, 200)}`,
+      body: [
+        `Thỏa thuận hợp tác (MOU) với ${clean(m.partnerName)}${m.partnerCountry ? ` (${m.partnerCountry})` : ''}${m.externalStatus ? ` · ${m.externalStatus}` : ''}${m.progressPercent !== null ? ` · ${m.progressPercent}%` : ''}`,
+        m.cooperationField && `Lĩnh vực: ${m.cooperationField}`,
+        m.signedDate && `Ngày ký: ${vnDate(m.signedDate)}`,
+        m.expiryDate && `Hết hạn: ${vnDate(m.expiryDate)}`,
+        m.department && `Phòng đầu mối: ${m.department.name}`,
+        m.contactPerson && `Người phụ trách: ${m.contactPerson}`,
+        m.purpose && `Nội dung hợp tác: ${clean(m.purpose)}`,
+        m.notes && `Ghi chú: ${clean(m.notes)}`,
+        ...m.progressLogs.map((p) => `Tiến độ ${vnDate(p.date)}: ${clean(p.content)}`),
+        m.documents.length > 0 && `Văn bản: ${m.documents.map((d) => d.title).join('; ')}`,
+      ].filter(Boolean).join('\n'),
+      department: m.department?.name ?? null,
+      organization: m.partnerName,
+      occurredOn: m.signedDate,
+      href: `/dashboard/mous?id=${m.id}`,
+    }),
+  );
+}
+
 export async function collectKnowledge(db: PrismaClient): Promise<KnowledgeDoc[]> {
-  const groups = await Promise.all([weeklyReports(db), weeklySummaries(db), crm(db), work(db), events(db)]);
+  const groups = await Promise.all([weeklyReports(db), weeklySummaries(db), crm(db), work(db), events(db), mous(db)]);
   return groups.flat();
 }

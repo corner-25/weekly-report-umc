@@ -58,8 +58,13 @@ const EDGE = 8;
  * mép dưới thì lật lên trên, gần mép trái/phải thì dịch vào trong.
  */
 export function InfoTip({ term, className }: { term: TermKey; className?: string; align?: 'center' | 'left' | 'right' }) {
+  return <HintTip label={TERMS[term].label} def={TERMS[term].def} className={className} />;
+}
+
+/** Nút ⓘ với nhãn và định nghĩa tuỳ ý — dùng cho thuật ngữ của phân hệ khác. */
+export function HintTip({ label, def, className }: { label: string; def: string; className?: string }) {
   const id = useId();
-  const t = TERMS[term];
+  const t = { label, def };
   const buttonRef = useRef<HTMLButtonElement>(null);
   const tipRef = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);

@@ -952,6 +952,14 @@ model MOU {
   contactEmail  String?
   contactPhone  String?
 
+  // Nguồn office.umc.edu.vn (dự án "Theo dõi ký kết hợp tác toàn viện") — cào lại ghi đè các trường này
+  externalCode     String? @unique // Mã công việc trên office (taskID)
+  externalUrl      String?
+  externalStatus   String? // Trạng thái gốc: Mới / Đang xử lý / Hoàn thành
+  cooperationField String? // Lĩnh vực hợp tác gốc (FN264)
+  progressPercent  Int? // % tiến độ ghi trên office
+  watchers         String? @db.Text // Người theo dõi
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -1087,6 +1095,7 @@ model MOUProgress {
   issues      String?  @db.Text // Vấn đề phát sinh
   nextSteps   String?  @db.Text // Kế hoạch tiếp theo
   updatedBy   String? // Người cập nhật
+  externalKey String?  @unique // Dòng "Theo dõi tiến độ" trên office — chống nạp trùng
 
   createdAt DateTime @default(now())
 
@@ -1146,6 +1155,11 @@ model MOUDocument {
   fileName     String? // Tên file gốc
   fileSize     Int? // Kích thước file (bytes)
   uploadedBy   String? // Người upload
+  mimeType     String?
+  originalSize Int? // Kích thước trước khi nén PDF
+  sha256       String?
+  data         Bytes? // Nội dung file lưu trong DB (null: chỉ có liên kết fileUrl)
+  externalCode String? @unique // Mã file đính kèm trên office (attchFileID)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -53,6 +53,38 @@ def cmd_login() -> None:
     print(f"Đã lưu phiên vào {PROFILE}")
 
 
+def cmd_login_wait(url: str, timeout_s: int = 600) -> None:
+    """
+    Mở Chrome cho người dùng đăng nhập, tự đóng khi đã vào được (không cần bấm Enter
+    ở cửa sổ dòng lệnh): đợi tới khi trang gọi API công việc thành công.
+    """
+    ok = {"done": False}
+    with sync_playwright() as p:
+        ctx = open_context(p, headless=False)
+        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+
+        def on_response(resp):
+            if "officeapi" in resp.url and ("m02Overview" in resp.url or "getTasks" in resp.url) and resp.status == 200:
+                try:
+                    if resp.json().get("succeeded"):
+                        ok["done"] = True
+                except Exception:
+                    pass
+
+        page.on("response", on_response)
+        page.goto(url)
+        print("Đăng nhập office.umc.edu.vn trong cửa sổ Chrome vừa mở — cửa sổ tự đóng khi xong.")
+        deadline = time.time() + timeout_s
+        while not ok["done"] and time.time() < deadline:
+            page.wait_for_timeout(1000)
+            if "sign-in" not in page.url and not ok["done"] and int(time.time()) % 15 == 0:
+                page.goto(url)
+        ctx.close()
+    if not ok["done"]:
+        sys.exit("Hết thời gian chờ đăng nhập")
+    print(f"Đã lưu phiên đăng nhập vào {PROFILE}")
+
+
 def is_json(resp) -> bool:
     ctype = resp.headers.get("content-type", "")
     return "json" in ctype and resp.request.resource_type in ("xhr", "fetch")
@@ -348,11 +380,13 @@ def cmd_run(url: str, push: bool) -> None:
 
 
 def main() -> None:
-    if len(sys.argv) < 2 or sys.argv[1] not in ("login", "survey", "run"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("login", "login-wait", "survey", "run"):
         print(__doc__)
         sys.exit(1)
     if sys.argv[1] == "login":
         cmd_login()
+    elif sys.argv[1] == "login-wait":
+        cmd_login_wait(sys.argv[2] if len(sys.argv) > 2 else DEFAULT_URL)
     elif sys.argv[1] == "survey":
         if len(sys.argv) < 3:
             sys.exit("Cần link trang danh sách")
