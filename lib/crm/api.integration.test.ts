@@ -490,4 +490,68 @@ run('API CRM (tích hợp)', { timeout: 30_000 }, () => {
       expect(overview.json.careOverdue.map((t: { id: string }) => t.id)).not.toContain(taskId);
     });
   });
+  it('phân trang danh bạ 20 người, thống kê lượt đã khám và ngày gần nhất', async () => {
+    for (let i = 0; i < 23; i++) await prisma.crmContact.create({ data: { fullName: `Pagination Person ${String(i).padStart(2, '0')}`, searchKey: `pagination person ${i}` } });
+    const first = await call(api.contacts.GET, '/api/crm/contacts?page=1&search=pagination');
+    const second = await call(api.contacts.GET, '/api/crm/contacts?page=2&search=pagination');
+    expect(first.json.items).toHaveLength(20);
+    expect(second.json.items).toHaveLength(3);
+    expect(first.json.total).toBe(23);
+    expect(first.json.items.some((a: { id: string }) => second.json.items.some((b: { id: string }) => a.id === b.id))).toBe(false);
+    const last = await call(api.contacts.GET, '/api/crm/contacts?page=999&search=pagination');
+    expect(last.json.page).toBe(2);
+  });
+
+  it('người giới thiệu, bác sĩ và quan hệ VIP lưu riêng; sửa API cũ không xoá liên kết', async () => {
+    const vip = await call(api.contacts.POST, '/api/crm/contacts', { fullName: 'VIP liên quan test' });
+    const patient = await call(api.contacts.POST, '/api/crm/contacts', { fullName: 'Khách trực tiếp test', newReferrerName: 'Người giới thiệu test', relatedVipContactId: vip.json.id, vipRelationship: 'Con' });
+    expect(patient.status).toBe(201);
+    const detail = await call(api.contact.GET, '/api/crm/contacts/x', undefined, patient.json.id);
+    expect(detail.json.referrerContact.fullName).toBe('Người giới thiệu test');
+    expect(detail.json.relatedVipContact.id).toBe(vip.json.id);
+    const input = { type: 'VIP_ESCORT', contactId: patient.json.id, occurredAt: '2026-08-15T01:00:00Z', content: 'Khám thử nghiệm liên kết', staffName: 'Nhân viên thử', referrerContactId: detail.json.referrerContact.id, relatedVipContactId: vip.json.id, vipRelationship: 'Con', doctors: [{ newName: 'Bác sĩ thử nghiệm' }] };
+    const visit = await call(api.interactions.POST, '/api/crm/interactions', input);
+    expect(visit.status).toBe(201);
+    expect(visit.json.doctors[0].fullName).toBe('Bác sĩ thử nghiệm');
+    const { doctors, referrerContactId, relatedVipContactId, vipRelationship, ...oldInput } = input;
+    const edited = await call(api.interaction.PATCH, '/api/crm/interactions/x', oldInput, visit.json.id);
+    expect(edited.status).toBe(200);
+    expect(edited.json.doctors).toHaveLength(1);
+    expect(edited.json.referrerContact.id).toBe(referrerContactId);
+    const cleared = await call(api.interaction.PATCH, '/api/crm/interactions/x', { ...oldInput, doctors: [], referrerContactId: null, relatedVipContactId: null }, visit.json.id);
+    expect(cleared.json.doctors).toHaveLength(0);
+    expect(cleared.json.referrerContact).toBeNull();
+    expect(cleared.json.relatedVipContact).toBeNull();
+  });
+
+  it('thống kê toàn bộ kết quả, không phụ thuộc trang 20 lượt', async () => {
+    const c = await prisma.crmContact.create({ data: { fullName: 'Khách phân trang lượt khám', searchKey: 'khach phan trang luot kham' } });
+    await prisma.crmInteraction.createMany({ data: Array.from({ length: 23 }, (_, i) => ({ type: 'VIP_ESCORT' as const, status: i === 22 ? 'PLANNED' as const : 'DONE' as const, occurredAt: new Date('2026-09-10T01:00:00Z'), contactId: c.id, content: 'pagination-stats-test', staffName: 'Test' })) });
+    const list = await call(api.interactions.GET, '/api/crm/interactions?page=1&search=pagination-stats-test');
+    expect(list.json.items).toHaveLength(20);
+    expect(list.json.total).toBe(23);
+    expect(list.json.stats.done).toBe(22);
+    expect(list.json.stats.planned).toBe(1);
+    const directory = await call(api.contacts.GET, '/api/crm/contacts?page=1&search=Khách phân trang lượt khám');
+    expect(directory.json.items[0].escortCount).toBe(22);
+    expect(directory.json.items[0].lastEscortAt).toBe('2026-09-10T01:00:00.000Z');
+  });
+
+  it('chuẩn hoá dữ liệu cũ chạy lại không tạo trùng và không tự gộp tên gần giống', async () => {
+    const { normalizeVisitPeople } = await import('./normalize-visit-people');
+    const patient = await prisma.crmContact.create({ data: { fullName: 'Khách kiểm thử nhập cũ', tags: ['Khách khám bệnh'] } });
+    const visit = await prisma.crmInteraction.create({ data: { type: 'VIP_ESCORT', occurredAt: new Date(), contactId: patient.id, content: 'Dữ liệu cũ', staffName: 'Test', referrer: 'PGS.TS. Người Giới Thiệu Riêng', visitItems: [{ doctor: 'Bác Sĩ Riêng', diagnosis: 'Thông tin gốc phải giữ' }, { doctor: '.' }] } });
+    const before = await prisma.crmContact.count();
+    await normalizeVisitPeople(prisma, true);
+    expect(await prisma.crmContact.count()).toBe(before);
+    await normalizeVisitPeople(prisma, false);
+    const first = await prisma.crmContact.count();
+    await normalizeVisitPeople(prisma, false);
+    expect(await prisma.crmContact.count()).toBe(first);
+    const saved = await prisma.crmInteraction.findUniqueOrThrow({ where: { id: visit.id }, include: { doctors: true } });
+    expect(saved.referrerContactId).toBeTruthy();
+    expect(saved.doctors).toHaveLength(1);
+    expect(saved.visitItems).toEqual([{ doctor: 'Bác Sĩ Riêng', diagnosis: 'Thông tin gốc phải giữ' }, { doctor: '.' }]);
+  });
+
 });

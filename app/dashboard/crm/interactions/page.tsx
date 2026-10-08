@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { EntityCombobox, type ComboValue } from '@/components/crm/EntityCombobox';
+import { Pagination } from '@/components/crm/Pagination';
+import { useCallback, useEffect, useState } from 'react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Crown, Search } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -35,6 +37,11 @@ const isOtherType = (item: InteractionDTO) => item.type !== 'VIP_ESCORT' && item
 type Dialog = { mode: InteractionMode; initial?: InteractionDTO };
 
 export default function CrmInteractionsPage() {
+  const [referrerFilter, setReferrerFilter] = useState<ComboValue | null>(null);
+  const [doctorFilter, setDoctorFilter] = useState<ComboValue | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [visitStats, setVisitStats] = useState<{ done: number; planned: number; patients: number; referrers: number; doctors: number; byReferrer: Array<{ id: string; name: string; count: number }>; byDoctor: Array<{ id: string; name: string; count: number }> } | null>(null);
   const [tab, setTab] = useState<TypeTab>('ALL');
   const [staffName, setStaffName] = useState('');
   const [from, setFrom] = useState('');
@@ -49,7 +56,7 @@ export default function CrmInteractionsPage() {
   const { data: departments } = useSWR<Array<{ id: string; name: string }>>('/api/departments', (url: string) => fetch(url).then((r) => (r.ok ? r.json() : [])), { revalidateOnFocus: false });
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [items, setItems] = useState<InteractionDTO[]>([]);
-  const [monthItems, setMonthItems] = useState<InteractionDTO[] | null>(null);
+  const [monthStats, setMonthStats] = useState<{ escorts: number; delegations: number; guests: number; others: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -62,9 +69,16 @@ export default function CrmInteractionsPage() {
     return () => window.clearTimeout(timer);
   }, [search]);
 
+  useEffect(() => setPage(1), [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, referrerFilter, doctorFilter]);
+
   useEffect(() => {
     const controller = new AbortController();
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ page: String(page) });
+    if (tab === 'VIP_ESCORT') {
+      if (referrerFilter && 'id' in referrerFilter) params.set('referrerId', referrerFilter.id);
+      if (doctorFilter && 'id' in doctorFilter) params.set('doctorId', doctorFilter.id);
+    }
+    if (tab === 'OTHER') params.set('type', 'OTHER_GROUP');
     // Tab "Khác" gồm nhiều loại — lấy hết rồi lọc ở giao diện.
     if (tab === 'VIP_ESCORT' || tab === 'DELEGATION') params.set('type', tab);
     if (tab === 'PLANNED') params.set('status', 'PLANNED');
@@ -81,9 +95,9 @@ export default function CrmInteractionsPage() {
     }
     setLoading(true);
     setError('');
-    crmFetch<InteractionDTO[]>(`/api/crm/interactions?${params}`, { signal: controller.signal })
+    crmFetch<{ items: InteractionDTO[]; total: number; page: number; stats: NonNullable<typeof visitStats> }>(`/api/crm/interactions?${params}`, { signal: controller.signal })
       .then((data) => {
-        setItems(tab === 'OTHER' ? data.filter(isOtherType) : data);
+        setItems(data.items); setTotal(data.total); setPage(data.page); setVisitStats(data.stats);
         setLoading(false);
       })
       .catch((loadError) => {
@@ -92,30 +106,21 @@ export default function CrmInteractionsPage() {
         setLoading(false);
       });
     return () => controller.abort();
-  }, [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, reloadKey]);
+  }, [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, reloadKey, page, referrerFilter, doctorFilter]);
 
   useEffect(() => {
     const now = new Date();
-    const params = new URLSearchParams({ from: format(startOfMonth(now), 'yyyy-MM-dd'), to: format(endOfMonth(now), 'yyyy-MM-dd') });
-    crmFetch<InteractionDTO[]>(`/api/crm/interactions?${params}`)
-      .then(setMonthItems)
-      .catch(() => setMonthItems(null));
+    const params = new URLSearchParams({ stats: '1', from: format(startOfMonth(now), 'yyyy-MM-dd'), to: format(endOfMonth(now), 'yyyy-MM-dd') });
+    crmFetch<NonNullable<typeof monthStats>>(`/api/crm/interactions?${params}`)
+      .then(setMonthStats)
+      .catch(() => setMonthStats(null));
   }, [reloadKey]);
-
-  const monthStats = useMemo(() => {
-    if (!monthItems) return null;
-    // Chỉ đếm lượt đã thực hiện — lịch hẹn và lượt huỷ chưa phải việc đã làm.
-    const done = monthItems.filter((i) => i.status === 'DONE');
-    const escorts = done.filter((i) => i.type === 'VIP_ESCORT');
-    const delegations = done.filter((i) => i.type === 'DELEGATION');
-    const guests = delegations.reduce((sum, d) => sum + (d.guestCount ?? 0), 0);
-    return { escorts: escorts.length, delegations: delegations.length, guests, others: done.filter(isOtherType).length };
-  }, [monthItems]);
 
   const delegationFilter = tab === 'DELEGATION' && Boolean(year || purpose || topic || hostDepartmentId || needsReview);
   const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL' || delegationFilter);
   const resetFilters = () => {
     setTab('ALL');
+    setReferrerFilter(null); setDoctorFilter(null);
     setYear('');
     setPurpose('');
     setTopic('');
@@ -151,16 +156,6 @@ export default function CrmInteractionsPage() {
 
       <ErrorBanner message={error} />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <Stat label="Dẫn khám VIP tháng này" value={monthStats?.escorts ?? '—'} />
-        <Stat label="Đoàn tiếp tháng này" value={monthStats?.delegations ?? '—'} hint={monthStats ? `${monthStats.guests} khách` : undefined} tone="accent" />
-        <Stat label="Tương tác khác tháng này" value={monthStats?.others ?? '—'} />
-      </div>
-
-      {tab === 'DELEGATION' && <DelegationStatsCard year={year} topic={topic} onYear={setYear} onTopic={setTopic} />}
-
-      <div className={PANEL}>
-        <div className="space-y-3 border-b border-slate-100 p-4">
           <div role="tablist" aria-label="Loại tương tác" className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 sm:w-fit">
             {TABS.map((t) => (
               <button
@@ -175,6 +170,33 @@ export default function CrmInteractionsPage() {
               </button>
             ))}
           </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+        <Stat label="Dẫn khám VIP tháng này" value={monthStats?.escorts ?? '—'} />
+        <Stat label="Đoàn tiếp tháng này" value={monthStats?.delegations ?? '—'} hint={monthStats ? `${monthStats.guests} khách` : undefined} tone="accent" />
+        <Stat label="Tương tác khác tháng này" value={monthStats?.others ?? '—'} />
+      </div>
+
+      {tab === 'VIP_ESCORT' && <div className={cn(PANEL, 'p-4')}>
+        <h2 className="mb-3 font-semibold">Thống kê dẫn khám theo bộ lọc</h2>
+        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <Stat label="Lượt đã khám" value={visitStats?.done ?? '—'} />
+          <Stat label="Khách đã khám" value={visitStats?.patients ?? '—'} />
+          <Stat label="Lịch hẹn" value={visitStats?.planned ?? '—'} />
+          <Stat label="Người giới thiệu" value={visitStats?.referrers ?? '—'} />
+          <Stat label="Bác sĩ khám" value={visitStats?.doctors ?? '—'} />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {([['Theo người giới thiệu', visitStats?.byReferrer], ['Theo bác sĩ khám', visitStats?.byDoctor]] as const).map(([title, rows]) => <div key={title}>
+            <h3 className="mb-2 text-sm font-semibold">{title} · tối đa 20 người</h3>
+            <table className="w-full text-sm"><thead><tr className="border-b text-left text-slate-500"><th className="py-2">Họ tên</th><th className="text-right">Lượt đã khám</th></tr></thead><tbody>{rows?.map(r => <tr key={r.id} className="border-b border-slate-100"><td className="py-2"><a className="text-cyan-700 hover:underline" href={`/dashboard/crm/contacts/${r.id}`}>{r.name}</a></td><td className="text-right">{r.count}</td></tr>)}</tbody></table>
+          </div>)}
+        </div>
+      </div>}
+      {tab === 'DELEGATION' && <DelegationStatsCard year={year} topic={topic} onYear={setYear} onTopic={setTopic} />}
+
+      <div className={PANEL}>
+        <div className="space-y-3 border-b border-slate-100 p-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_220px_160px_160px]">
             <label className="relative block">
               <span className="sr-only">Tìm kiếm</span>
@@ -197,6 +219,10 @@ export default function CrmInteractionsPage() {
               <DateInput type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="input" />
             </label>
           </div>
+          {tab === 'VIP_ESCORT' && <div className="grid gap-3 sm:grid-cols-2">
+            <label className="space-y-1 text-sm"><span>Người giới thiệu</span><EntityCombobox kind="contact" value={referrerFilter} onChange={setReferrerFilter} allowNew={false} placeholder="Lọc người giới thiệu" /></label>
+            <label className="space-y-1 text-sm"><span>Bác sĩ khám</span><EntityCombobox kind="contact" value={doctorFilter} onChange={setDoctorFilter} allowNew={false} placeholder="Lọc bác sĩ" /></label>
+          </div>}
           {tab === 'DELEGATION' && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
               <Select aria-label="Năm" value={year} onChange={(e) => setYear(e.target.value)} className="px-3.5 py-2.5">
@@ -237,7 +263,7 @@ export default function CrmInteractionsPage() {
             />
           ) : (
             <div className={cn(loading && 'opacity-60 transition-opacity')}>
-              <p className="mb-4 text-xs text-slate-500">{items.length} lượt{items.length >= 500 && ' (đang hiện 500 lượt mới nhất — thu hẹp khoảng ngày để xem thêm)'}</p>
+              <p className="mb-4 text-xs text-slate-500">{total} lượt · 20 lượt/trang</p>
               <InteractionTimeline
                 items={items}
                 onEdit={(item) => setDialog({ mode: interactionModeOf(item.type), initial: item })}
@@ -255,6 +281,8 @@ export default function CrmInteractionsPage() {
           )}
         </div>
       </div>
+
+      <Pagination page={page} total={total} onChange={setPage} disabled={loading} />
 
       {deleteDialog}
 

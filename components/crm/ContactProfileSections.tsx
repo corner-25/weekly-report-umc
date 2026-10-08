@@ -28,7 +28,9 @@ export function ContactInfoCard({ contact }: { contact: ContactDetail }) {
     <SectionCard title="Liên hệ" icon={<Phone className="h-4 w-4 text-cyan-600" aria-hidden="true" />}>
       <KeyValue
         rows={[
-          ['Điện thoại', contact.phone && <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} className="text-cyan-700 hover:underline">{contact.phone}</a>],
+          ['Người giới thiệu', contact.referrerContact && <Link className="text-cyan-700 hover:underline" href={`/dashboard/crm/contacts/${contact.referrerContact.id}`}>{contact.referrerContact.fullName}</Link>],
+        ['Quan hệ với VIP', contact.relatedVipContact && <span>{contact.vipRelationship} của <Link className="text-cyan-700 hover:underline" href={`/dashboard/crm/contacts/${contact.relatedVipContact.id}`}>{contact.relatedVipContact.fullName}</Link></span>],
+        ['Điện thoại', contact.phone && <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} className="text-cyan-700 hover:underline">{contact.phone}</a>],
           ['Email', contact.email && <a href={`mailto:${contact.email}`} className="text-cyan-700 hover:underline">{contact.email}</a>],
           ['Địa chỉ', contact.address],
           ['Mã hồ sơ bệnh án', contact.patientCode && <span className="tabular-nums">{contact.patientCode}</span>],

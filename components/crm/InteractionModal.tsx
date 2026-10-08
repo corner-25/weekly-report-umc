@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
+import { useMemo, useState, useRef, type FormEvent } from 'react';
 import { X } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF, INTERACTION_STATUS_LABELS } from '@/lib/crm/constants';
 import type { InteractionInput } from '@/lib/crm/schemas';
-import { CrmApiError, crmSend, errorMessage, syncCrmPhotos } from './api';
+import { CrmApiError, crmFetch, crmSend, errorMessage, syncCrmPhotos } from './api';
 import { PhotoField } from './CrmPhotos';
 import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
@@ -76,6 +76,12 @@ interface FormState {
   content: string;
   destination: string;
   patientName: string;
+  referrer: ComboValue | null;
+  referrerChanged: boolean;
+  legacyReferrer: string;
+  vip: ComboValue | null;
+  vipRelationship: string;
+  doctors: ComboValue[];
   services: string[];
   guestCount: string;
   purpose: string;
@@ -101,6 +107,11 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
       content: initial.content,
       destination: initial.destination ?? '',
       patientName: initial.patientName ?? '',
+      referrer: initial.referrerContact ? { id: initial.referrerContact.id, label: displayName(initial.referrerContact) } : null,
+      referrerChanged: false, legacyReferrer: initial.referrerContact ? '' : initial.referrer ?? '',
+      vip: initial.relatedVipContact ? { id: initial.relatedVipContact.id, label: displayName(initial.relatedVipContact) } : null,
+      vipRelationship: initial.vipRelationship ?? '',
+      doctors: (initial.doctors ?? []).map(d => ({ id: d.id, label: displayName(d) })),
       services: initial.services,
       guestCount: initial.guestCount ? String(initial.guestCount) : '',
       purpose,
@@ -123,6 +134,7 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     content: '',
     destination: '',
     patientName: '',
+    referrer: null, referrerChanged: false, legacyReferrer: '', vip: null, vipRelationship: '', doctors: [],
     services: [],
     guestCount: '',
     purpose: '',
@@ -153,6 +165,14 @@ function buildBody(form: FormState): InteractionInput {
     destination: cleanText(form.destination),
     patientName: isEscort ? cleanText(form.patientName) : undefined,
     services: isEscort ? form.services : [],
+    newReferrerName: undefined, vipRelationship: undefined,
+    ...(isEscort && {
+      referrerContactId: form.referrer && 'id' in form.referrer ? form.referrer.id : form.referrerChanged || form.referrer ? null : undefined,
+      newReferrerName: form.referrer && 'newName' in form.referrer ? form.referrer.newName : undefined,
+      relatedVipContactId: form.vip && 'id' in form.vip ? form.vip.id : null,
+      vipRelationship: cleanText(form.vipRelationship),
+      doctors: form.doctors.map(d => 'id' in d ? { id: d.id } : { newName: d.newName }),
+    }),
     guestCount: isDelegation ? toInt(form.guestCount) : undefined,
     purpose: isDelegation ? cleanText(form.purpose) : undefined,
     participantIds: isDelegation ? form.participants.map((p) => p.id) : [],
@@ -358,12 +378,26 @@ interface SectionProps {
 }
 
 function EscortFields({ form, set, errors }: SectionProps) {
+  const selectionVersion = useRef(0);
+  const chooseGuest = async (value: ComboValue | null) => {
+    const version = ++selectionVersion.current;
+    set('contact', value);
+    set('referrer', null); set('referrerChanged', true); set('legacyReferrer', ''); set('vip', null); set('vipRelationship', '');
+    if (!value || !('id' in value)) return;
+    try {
+      const c = await crmFetch<import('./types').ContactDetail>(`/api/crm/contacts/${value.id}`);
+      if (selectionVersion.current !== version) return;
+      set('referrer', c.referrerContact ? { id: c.referrerContact.id, label: c.referrerContact.fullName } : null);
+      set('vip', c.relatedVipContact ? { id: c.relatedVipContact.id, label: c.relatedVipContact.fullName } : null);
+      set('vipRelationship', c.vipRelationship ?? '');
+    } catch { /* The user can still enter these optional fields manually. */ }
+  };
   const isNewGuest = form.contact !== null && 'newName' in form.contact;
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Khách" required htmlFor="ix-contact" error={errors.contactId} hint="Tìm trong danh bạ; chưa có thì gõ tên để tạo hồ sơ mới.">
-          <EntityCombobox kind="contact" inputId="ix-contact" value={form.contact} onChange={(v) => set('contact', v)} invalid={Boolean(errors.contactId)} placeholder="Họ tên khách" />
+        <Field label="Khách được dẫn khám" required htmlFor="ix-contact" error={errors.contactId} hint="Tìm trong danh bạ; chưa có thì gõ tên để tạo hồ sơ mới.">
+          <EntityCombobox kind="contact" inputId="ix-contact" value={form.contact} onChange={chooseGuest} invalid={Boolean(errors.contactId)} placeholder="Họ tên khách" />
         </Field>
         <Field label="Đơn vị của khách" htmlFor="ix-org" error={errors.organizationId}>
           <EntityCombobox kind="organization" inputId="ix-org" value={form.organization} onChange={(v) => set('organization', v)} invalid={Boolean(errors.organizationId)} placeholder="Chọn hoặc gõ tên đơn vị" />
@@ -375,13 +409,30 @@ function EscortFields({ form, set, errors }: SectionProps) {
         </Field>
       )}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Người được khám" error={errors.patientName} hint="Để trống nếu chính khách là người khám.">
-          <input value={form.patientName} onChange={(event) => set('patientName', event.target.value)} className={inputClass(errors.patientName)} placeholder="Ví dụ: mẹ của khách" />
+        <Field label="Người giới thiệu" hint="Chọn người trong danh bạ hoặc nhập tên mới.">
+          <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
+          {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
         </Field>
         <Field label="Khoa/phòng đến" error={errors.destination}>
           <input value={form.destination} onChange={(event) => set('destination', event.target.value)} className={inputClass(errors.destination)} placeholder="Ví dụ: Khoa Nội tim mạch" />
         </Field>
       </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Khách có quan hệ với VIP nào?" hint="Khách ở trên là người được khám. Chọn VIP liên quan nếu có.">
+          <EntityCombobox kind="contact" value={form.vip} onChange={v => set('vip', v)} allowNew={false} excludeIds={form.contact && 'id' in form.contact ? [form.contact.id] : []} />
+        </Field>
+        <Field label="Khách là gì của VIP?">
+          <Select value={form.vipRelationship} onChange={e => set('vipRelationship', e.target.value)}>
+            <option value="">Chọn quan hệ</option>
+            {['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r}>{r}</option>)}
+          </Select>
+        </Field>
+      </div>
+      <Field label="Bác sĩ khám" hint="Có thể chọn nhiều bác sĩ; chưa có thì nhập tên mới.">
+        <EntityCombobox kind="contact" value={null} clearOnSelect onChange={v => { if (v) set('doctors', [...form.doctors, v]); }} excludeIds={form.doctors.flatMap(d => 'id' in d ? [d.id] : [])} />
+        <div className="mt-2 flex flex-wrap gap-2">{form.doctors.map((d, index) => <button type="button" key={index} className="rounded-full bg-cyan-50 px-3 py-1 text-sm" onClick={() => set('doctors', form.doctors.filter((_, i) => i !== index))}>{'id' in d ? d.label : d.newName} ×</button>)}</div>
+      </Field>
+      {form.patientName && <p className="text-xs text-slate-500">Người được khám ghi trong dữ liệu cũ: {form.patientName}</p>}
       <ChipGroup legend="Dịch vụ hỗ trợ" options={ESCORT_SERVICES} value={form.services} onChange={(next) => set('services', next)} error={errors.services} />
       <Field label="Nội dung hỗ trợ" required error={errors.content}>
         <textarea rows={3} value={form.content} onChange={(event) => set('content', event.target.value)} className={inputClass(errors.content, 'resize-none')} placeholder="Ví dụ: Đón tại sảnh A, đưa đi chụp MRI, hỗ trợ lấy kết quả" />

@@ -113,7 +113,7 @@ export function EntityCombobox({
   // Chưa hiện "Thêm mới" khi đang tìm: dòng này hiện ngay còn gợi ý tới sau
   // ~200ms debounce + thời gian gọi API, nên Enter lúc đó tạo hồ sơ trùng với
   // hồ sơ có sẵn (đã gặp khi chạy thử: gõ "Công" ra đơn vị mới thay vì "Công ty Y").
-  const canCreate = allowNew && !loading && text.trim().length > 0 && !findSame(text);
+  const canCreate = allowNew && !loading && !failed && text.trim().length > 0 && !findSame(text);
   const optionCount = visible.length + (canCreate ? 1 : 0);
   const showList = open && text.trim().length > 0;
 

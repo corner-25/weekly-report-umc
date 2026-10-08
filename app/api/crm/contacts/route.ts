@@ -1,3 +1,5 @@
+import { contactLinks } from '@/lib/crm/contact-links';
+import { crmPage, CRM_PAGE_SIZE } from '@/lib/crm/pagination';
 import { NextResponse } from 'next/server';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -9,6 +11,7 @@ import { toSearchKey } from '@/lib/crm/constants';
 export const GET = handle(async (request: Request) => {
   await requireSession();
   const params = new URL(request.url).searchParams;
+  const paginated = params.has('page');
   const search = params.get('search')?.trim();
   const tier = parseTier(params.get('tier'));
   const tag = params.get('tag')?.trim();
@@ -35,12 +38,16 @@ export const GET = handle(async (request: Request) => {
     }),
   };
 
+  const filteredTotal = await prisma.crmContact.count({ where });
+  const page = Math.min(crmPage(params), Math.max(1, Math.ceil(filteredTotal / CRM_PAGE_SIZE)));
   const contacts = await prisma.crmContact.findMany({
     where,
-    orderBy: [{ tier: 'asc' }, { fullName: 'asc' }],
-    take: 500,
+    orderBy: [{ tier: 'asc' }, { fullName: 'asc' }, { id: 'asc' }],
+    take: paginated ? CRM_PAGE_SIZE : 500,
+    skip: paginated ? (page - 1) * CRM_PAGE_SIZE : 0,
     select: {
       id: true, fullName: true, academicTitle: true, salutation: true, tier: true, tags: true,
+      referrerContact: { select: { fullName: true } },
       ownerName: true, phone: true, email: true, status: true,
       positions: {
         where: { isCurrent: true },
@@ -56,30 +63,36 @@ export const GET = handle(async (request: Request) => {
     },
   });
 
-  return NextResponse.json(
-    contacts.map(({ positions, interactions, participations, ...c }) => {
+  const visits = await prisma.crmInteraction.groupBy({ by: ['contactId'], where: { contactId: { in: contacts.map(c => c.id) }, type: 'VIP_ESCORT', status: 'DONE' }, _count: true, _max: { occurredAt: true } });
+  const latest = await prisma.crmInteraction.findMany({ where: { contactId: { in: contacts.map(c => c.id) }, type: 'VIP_ESCORT', status: 'DONE' }, orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }], distinct: ['contactId'], select: { contactId: true, referrer: true, referrerContact: { select: { fullName: true } } } });
+  const items = contacts.map(({ positions, interactions, participations, ...c }) => {
       const dates = [interactions[0]?.occurredAt, participations[0]?.interaction.occurredAt].filter(Boolean) as Date[];
       const last = dates.sort((a, b) => b.getTime() - a.getTime())[0];
       return {
         ...c,
+        escortCount: visits.find(v => v.contactId === c.id)?._count ?? 0,
+        lastEscortAt: visits.find(v => v.contactId === c.id)?._max.occurredAt?.toISOString() ?? null,
+        latestReferrer: latest.find(v => v.contactId === c.id)?.referrerContact?.fullName ?? latest.find(v => v.contactId === c.id)?.referrer ?? c.referrerContact?.fullName ?? null,
         currentPosition: positions[0] ?? null,
         focalCount: positions.filter((p) => p.isFocalPoint).length,
         lastInteractionAt: last?.toISOString() ?? null,
       };
-    }),
-  );
+    });
+  const tagRows = paginated ? await prisma.$queryRaw<Array<{ tag: string }>>`SELECT DISTINCT unnest(tags) AS tag FROM crm_contacts ORDER BY tag` : [];
+  return NextResponse.json(paginated ? { items, total: filteredTotal, page, tags: tagRows.map(r => r.tag) } : items);
 });
 
 /** Thêm cá nhân; có chức vụ + tổ chức hiện tại thì tạo luôn (tổ chức chưa có thì tạo mới). */
 export const POST = handle(async (request: Request) => {
   await requireSession();
-  const { currentTitle, currentOrganizationName, preferences, ...data } = contactInputSchema.parse(await request.json());
+  const { currentTitle, currentOrganizationName, preferences, newReferrerName, referrerContactId, relatedVipContactId, vipRelationship, ...data } = contactInputSchema.parse(await request.json());
 
   const contact = await prisma.$transaction(async (tx) => {
     const organizationId = await resolveOrganization(tx, { organizationName: currentOrganizationName });
+    const links = await contactLinks(tx, { newReferrerName, referrerContactId, relatedVipContactId, vipRelationship });
     return tx.crmContact.create({
       data: {
-        ...data,
+        ...data, ...links,
         searchKey: toSearchKey(data.fullName, data.phone),
         preferences: preferences ?? undefined,
         ...((currentTitle || organizationId) && {

@@ -10,12 +10,26 @@ import { HttpError, interactionInclude, resolveContact, resolveOrganization, toI
 
 export async function saveInteraction(data: InteractionInput, options: { id?: string; createdById?: string }) {
   const {
-    contactId, newContactName, newContactPhone, organizationId, organizationName, participantIds, occurredAt, ...fields
+    contactId, newContactName, newContactPhone, organizationId, organizationName, participantIds, occurredAt, referrerContactId, newReferrerName, relatedVipContactId, vipRelationship, doctors, ...fields
   } = data;
 
   const saved = await prisma.$transaction(async (tx) => {
     const orgId = await resolveOrganization(tx, { organizationId, organizationName });
     const mainContactId = await resolveContact(tx, { contactId, newContactName, newContactPhone }, orgId);
+
+    const referralId = referrerContactId === undefined && !newReferrerName ? undefined
+      : await resolveContact(tx, { contactId: referrerContactId ?? undefined, newContactName: newReferrerName }, null);
+    const vipId = relatedVipContactId === undefined ? undefined
+      : await resolveContact(tx, { contactId: relatedVipContactId ?? undefined }, null);
+    if (referralId && referralId === mainContactId) throw new HttpError(400, 'Khách không thể tự giới thiệu chính mình');
+    if (vipId && vipId === mainContactId) throw new HttpError(400, 'Khách và VIP liên quan phải là hai người khác nhau');
+    if (vipId && !vipRelationship) throw new HttpError(400, 'Chọn quan hệ với VIP');
+    const doctorIds: string[] = [];
+    for (const doctor of doctors ?? []) {
+      const id = await resolveContact(tx, { contactId: doctor.id, newContactName: doctor.newName }, null);
+      if (id && !doctorIds.includes(id)) doctorIds.push(id);
+    }
+    if (options.id && doctors !== undefined) await tx.crmVisitDoctor.deleteMany({ where: { interactionId: options.id } });
 
     // Thành viên đoàn: bỏ trùng và bỏ chính trưởng đoàn.
     const members = [...new Set(participantIds)].filter((pid) => pid !== mainContactId);
@@ -32,6 +46,9 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
 
     const values = {
       ...fields,
+      ...(referralId !== undefined && { referrerContactId: referralId, referrer: referralId ? (await tx.crmContact.findUniqueOrThrow({ where: { id: referralId }, select: { fullName: true } })).fullName : null }),
+      ...(vipId !== undefined && { relatedVipContactId: vipId, vipRelationship: vipId ? vipRelationship : null }),
+      ...(doctors !== undefined && { doctors: { create: doctorIds.map(contactId => ({ contactId })) } }),
       title: fields.title ?? null,
       destination: fields.destination ?? null,
       patientName: fields.patientName ?? null,

@@ -1653,6 +1653,15 @@ model CrmOrganization {
 }
 
 model CrmContact {
+  referrerContactId String?
+  referrerContact CrmContact? @relation("ContactReferrer", fields: [referrerContactId], references: [id], onDelete: SetNull)
+  referredContacts CrmContact[] @relation("ContactReferrer")
+  relatedVipContactId String?
+  vipRelationship String?
+  relatedVipContact CrmContact? @relation("ContactVip", fields: [relatedVipContactId], references: [id], onDelete: SetNull)
+  vipRelatedContacts CrmContact[] @relation("ContactVip")
+  @@index([referrerContactId])
+  @@index([relatedVipContactId])
   id            String           @id @default(cuid())
   fullName      String
   /// Họ tên + SĐT viết thường, bỏ dấu — tìm "nguyen van a" ra "Nguyễn Văn A".
@@ -1688,13 +1697,16 @@ model CrmContact {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 
-  positions      CrmPosition[]
-  relationsFrom  CrmRelation[]               @relation("RelationFrom")
-  relationsTo    CrmRelation[]               @relation("RelationTo")
-  importantDates CrmImportantDate[]
-  interactions   CrmInteraction[]
-  participations CrmInteractionParticipant[]
-  careTasks      CrmCareTask[]
+  positions        CrmPosition[]
+  relationsFrom    CrmRelation[]               @relation("RelationFrom")
+  relationsTo      CrmRelation[]               @relation("RelationTo")
+  importantDates   CrmImportantDate[]
+  interactions     CrmInteraction[]
+  referredVisits   CrmInteraction[]            @relation("VisitReferrer")
+  relatedVipVisits CrmInteraction[]            @relation("VisitVip")
+  doctorVisits     CrmVisitDoctor[]
+  participations   CrmInteractionParticipant[]
+  careTasks        CrmCareTask[]
 
   @@index([fullName])
   @@index([searchKey])
@@ -1777,79 +1789,85 @@ model CrmImportantDate {
 
 /// Dòng thời gian quan hệ: mỗi lần tiếp đón, dẫn khám, dẫn đoàn, gặp mặt… một dòng.
 model CrmInteraction {
-  id                String               @id @default(cuid())
-  type              CrmInteractionType
-  status            CrmInteractionStatus @default(DONE)
-  occurredAt        DateTime
+  id                  String               @id @default(cuid())
+  type                CrmInteractionType
+  status              CrmInteractionStatus @default(DONE)
+  occurredAt          DateTime
   /// Khách chính (dẫn khám: khách VIP; dẫn đoàn: trưởng đoàn).
-  contactId         String?
-  organizationId    String?
-  title             String?
+  contactId           String?
+  organizationId      String?
+  title               String?
   /// Nội dung hỗ trợ / làm việc.
-  content           String               @db.Text
+  content             String               @db.Text
   /// Khoa/phòng hoặc nơi đến.
-  destination       String?              @db.Text
+  destination         String?              @db.Text
   // ── Dẫn khách VIP khám bệnh ──
   /// Người được khám khi không phải chính khách (người nhà khách VIP).
-  patientName       String?
+  patientName         String?
   /// Dịch vụ đã hỗ trợ: Khám, Xét nghiệm, Chẩn đoán hình ảnh, Nội trú…
-  services          String[]             @default([])
+  services            String[]             @default([])
   /// Người giới thiệu khách (vd "PGS Nguyễn Hoàng Bắc").
-  referrer          String?
+  referrer            String?
+  referrerContactId   String?
+  relatedVipContactId String?
+  vipRelationship     String?
+  referrerContact     CrmContact?          @relation("VisitReferrer", fields: [referrerContactId], references: [id], onDelete: SetNull)
+  relatedVipContact   CrmContact?          @relation("VisitVip", fields: [relatedVipContactId], references: [id], onDelete: SetNull)
+  doctors             CrmVisitDoctor[]
   /// "Khám mới" | "Tái khám".
-  visitKind         String?
+  visitKind           String?
   /// Hẹn tái khám tóm tắt ("Tim mạch 30/03/2026; Nội tiết: Toa không thuốc") và ngày hẹn gần nhất.
-  followUp          String?              @db.Text
-  followUpDate      DateTime?
+  followUp            String?              @db.Text
+  followUpDate        DateTime?
   /// Từng chuyên khoa trong buổi: [{specialty, doctor, services, followUp, diagnosis}]. Chẩn đoán là thông tin
   /// sức khoẻ — API chỉ trả cho quản trị viên (lib/crm/server.ts toInteractionDto).
-  visitItems        Json?
+  visitItems          Json?
   // ── Dẫn đoàn ──
-  guestCount        Int?
+  guestCount          Int?
   /// Mục đích đoàn: Làm việc, Tham quan, Học tập, Ký kết…
-  purpose           String?
+  purpose             String?
   /// Nhân viên dẫn chính và người đi cùng.
-  staffName         String
-  companions        String[]             @default([])
-  hospitalEventId   String?
-  note              String?              @db.Text
+  staffName           String
+  companions          String[]             @default([])
+  hospitalEventId     String?
+  note                String?              @db.Text
   // ── Sổ tiếp đoàn ──
   /// Mã đoàn trong sổ tiếp đoàn (vd TD-2025-014) — khoá nạp lại không tạo trùng.
-  externalCode      String?              @unique
+  externalCode        String?              @unique
   /// Ngày kết thúc với đoàn làm việc nhiều ngày.
-  endAt             DateTime?
+  endAt               DateTime?
   /// Giờ tiếp như ghi nhận ("09g00-09g30") khi không quy được về một giờ.
-  timeText          String?
+  timeText            String?
   /// Nguồn không ghi ngày — occurredAt chỉ là ngày đầu năm để xếp chỗ.
-  dateUnknown       Boolean              @default(false)
+  dateUnknown         Boolean              @default(false)
   /// Số văn bản đến (công văn xin làm việc).
-  incomingDocNo     String?
+  incomingDocNo       String?
   /// Khoa/phòng chủ trì tiếp đoàn.
-  hostUnit          String?
-  hostDepartmentId  String?
+  hostUnit            String?
+  hostDepartmentId    String?
   /// Thành phần tiếp phía Bệnh viện và thành phần đoàn khách (danh sách người, ngăn bởi dấu ;).
-  hospitalAttendees String?              @db.Text
-  guestMembers      String?              @db.Text
+  hospitalAttendees   String?              @db.Text
+  guestMembers        String?              @db.Text
   /// Chủ đề làm việc (CNTT - Chuyển đổi số, Quản lý chất lượng…).
-  topics            String[]             @default([])
+  topics              String[]             @default([])
   /// Các đơn vị đi cùng đoàn.
-  coOrganizations   String[]             @default([])
+  coOrganizations     String[]             @default([])
   /// Hình thức tiếp không có trong nguồn, suy ra từ nội dung.
-  purposeInferred   Boolean              @default(false)
-  giftsGiven        String?              @db.Text
-  giftsReceived     String?              @db.Text
+  purposeInferred     Boolean              @default(false)
+  giftsGiven          String?              @db.Text
+  giftsReceived       String?              @db.Text
   /// Tiền mặt khách tặng, dự trù và thực chi quà (đồng).
-  cashReceived      Int?
-  giftBudget        Int?
-  giftActualCost    Int?
+  cashReceived        Int?
+  giftBudget          Int?
+  giftActualCost      Int?
   /// Dữ liệu gốc có điểm cần người phụ trách xác minh.
-  needsReview       Boolean              @default(false)
-  reviewNote        String?              @db.Text
+  needsReview         Boolean              @default(false)
+  reviewNote          String?              @db.Text
   /// Nơi lấy dữ liệu (file | sheet | dòng).
-  sourceRef         String?
-  createdById       String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  sourceRef           String?
+  createdById         String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   contact        CrmContact?                 @relation(fields: [contactId], references: [id], onDelete: SetNull)
   organization   CrmOrganization?            @relation(fields: [organizationId], references: [id], onDelete: SetNull)
@@ -1864,6 +1882,8 @@ model CrmInteraction {
   @@index([contactId])
   @@index([organizationId])
   @@index([hostDepartmentId])
+  @@index([referrerContactId])
+  @@index([relatedVipContactId])
   @@index([followUpDate])
   @@map("crm_interactions")
 }
@@ -2284,4 +2304,16 @@ model KnowledgeChunk {
   @@index([source])
   @@index([occurredOn])
   @@map("knowledge_chunks")
+}
+
+/// Bác sĩ tham gia buổi khám; giữ nguyên chi tiết chuyên khoa gốc trong visitItems.
+model CrmVisitDoctor {
+  interactionId String
+  contactId     String
+  interaction   CrmInteraction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  contact       CrmContact     @relation(fields: [contactId], references: [id], onDelete: Restrict)
+
+  @@id([interactionId, contactId])
+  @@index([contactId])
+  @@map("crm_visit_doctors")
 }

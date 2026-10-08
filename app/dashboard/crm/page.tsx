@@ -1,5 +1,6 @@
 'use client';
 
+import { Pagination } from '@/components/crm/Pagination';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -38,6 +39,7 @@ function profileHref(target: { type: 'contact' | 'organization'; id: string }) {
 }
 
 export default function CrmOverviewPage() {
+  const [upcomingPage, setUpcomingPage] = useState(1);
   const router = useRouter();
   const [windowDays, setWindowDays] = useState<WindowDays>(30);
   const [data, setData] = useState<OverviewDTO | null>(null);
@@ -50,6 +52,7 @@ export default function CrmOverviewPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setUpcomingPage(1);
     setError('');
     try {
       setData(await crmFetch<OverviewDTO>(`/api/crm/overview?window=${windowDays}`));
@@ -195,9 +198,10 @@ export default function CrmOverviewPage() {
             <EmptyState icon={<Clock className="h-10 w-10" />} title={`Không có dịp nào trong ${windowDays} ngày tới`} hint="Thêm sinh nhật, ngày nhận chức, kỷ niệm thành lập trong hồ sơ đối tác." />
           ) : (
             <ul className={cn('divide-y divide-slate-100', loading && 'opacity-60')}>
-              {data.upcoming.map((item) => <UpcomingRow key={item.key} item={item} />)}
+              {data.upcoming.slice((upcomingPage - 1) * 20, upcomingPage * 20).map((item) => <UpcomingRow key={item.key} item={item} />)}
             </ul>
           )}
+          <Pagination page={upcomingPage} total={data?.upcoming.length ?? 0} onChange={setUpcomingPage} disabled={loading} />
         </section>
 
         <SectionCard title="Lâu chưa tương tác" icon={<History className="h-4 w-4 text-slate-400" aria-hidden="true" />} action={<span className="text-xs text-slate-500">trên 90 ngày</span>}>

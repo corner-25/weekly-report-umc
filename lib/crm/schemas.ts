@@ -49,6 +49,10 @@ export const organizationPatchSchema = z.object(organizationShape).partial();
 export type OrganizationInput = z.infer<typeof organizationInputSchema>;
 
 const contactShape = {
+  referrerContactId: z.string().nullable().optional(),
+  newReferrerName: optionalText(200).optional(),
+  relatedVipContactId: z.string().nullable().optional(),
+  vipRelationship: optionalText(100).optional(),
   fullName: z.string().trim().min(1, 'Họ tên là bắt buộc').max(200),
   academicTitle: optionalText(50),
   salutation: optionalText(50),
@@ -181,6 +185,11 @@ export const interactionInputSchema = z
     content: z.string().trim().min(1, 'Nội dung là bắt buộc').max(4000),
     destination: optionalText(500),
     patientName: optionalText(200),
+    referrerContactId: z.string().nullable().optional(),
+    newReferrerName: optionalText(200).optional(),
+    relatedVipContactId: z.string().nullable().optional(),
+    vipRelationship: optionalText(100).optional(),
+    doctors: z.array(z.object({ id: z.string().optional(), newName: optionalText(200).optional() }).refine(v => Boolean(v.id || v.newName), 'Chọn hoặc nhập tên bác sĩ')).max(30).optional(),
     services: z.array(z.string().trim().min(1).max(100)).max(20).default([]),
     guestCount: z.number().int().min(1).max(1000).optional(),
     purpose: optionalText(200),

@@ -9,6 +9,7 @@
  * khớp theo mã "KCB:<mã hồ sơ>:<ngày>". Hạng, người phụ trách, ghi chú Phòng HC tự
  * sửa trên CRM không bị ghi đè; chỉ bổ sung thông tin còn trống.
  */
+import { normalizeVisitPeople } from '@/lib/crm/normalize-visit-people';
 import { readFileSync } from 'fs';
 import type { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
@@ -148,6 +149,7 @@ async function main() {
       visitsCreated += 1;
     }
   }
+  console.log(await normalizeVisitPeople(prisma, false));
   console.log(`Khách: ${created} mới, ${updated} đã có. Buổi dẫn khám: ${visitsCreated} mới, ${visitsUpdated} cập nhật.`);
 }
 

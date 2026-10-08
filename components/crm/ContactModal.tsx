@@ -1,5 +1,6 @@
 'use client';
 
+import { EntityCombobox, type ComboValue } from './EntityCombobox';
 import { useState, type FormEvent } from 'react';
 import { Lock } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
@@ -84,6 +85,9 @@ function validate(form: FormState): Record<string, string> {
 }
 
 export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
+  const [referrer, setReferrer] = useState<ComboValue | null>(initial?.referrerContact ? { id: initial.referrerContact.id, label: initial.referrerContact.fullName } : null);
+  const [vip, setVip] = useState<ComboValue | null>(initial?.relatedVipContact ? { id: initial.relatedVipContact.id, label: initial.relatedVipContact.fullName } : null);
+  const [relationship, setRelationship] = useState(initial?.vipRelationship ?? '');
   const isEdit = Boolean(initial);
   // Khi thêm mới, người tạo luôn được nhập lưu ý nhạy cảm; khi sửa thì theo quyền API trả về.
   const canEditSensitive = !initial || initial.canSeeSensitive;
@@ -104,6 +108,10 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
     const hasPreferences = Object.values(preferences).some(Boolean);
     const clearIfEdit = isEdit ? null : undefined;
     return {
+      referrerContactId: referrer && 'id' in referrer ? referrer.id : null,
+      newReferrerName: referrer && 'newName' in referrer ? referrer.newName : undefined,
+      relatedVipContactId: vip && 'id' in vip ? vip.id : null,
+      vipRelationship: relationship || undefined,
       fullName: form.fullName.trim(),
       academicTitle: textOrClear(form.academicTitle, isEdit),
       salutation: textOrClear(form.salutation, isEdit),
@@ -262,6 +270,11 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
           )}
         </FormSection>
 
+        <FormSection title="Người giới thiệu & quan hệ với VIP">
+          <Field label="Người giới thiệu" hint="Chọn trong danh bạ hoặc nhập tên mới."><EntityCombobox kind="contact" value={referrer} onChange={setReferrer} excludeIds={initial ? [initial.id] : []} /></Field>
+          <Field label="VIP liên quan"><EntityCombobox kind="contact" value={vip} onChange={setVip} allowNew={false} excludeIds={initial ? [initial.id] : []} /></Field>
+          <Field label="Khách là gì của VIP?"><Select value={relationship} onChange={e => setRelationship(e.target.value)}><option value="">Chọn quan hệ</option>{['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r}>{r}</option>)}</Select></Field>
+        </FormSection>
         <FormSection title="Sở thích & lưu ý">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Hoa yêu thích" error={errors['preferences.flowers']}>

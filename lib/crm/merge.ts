@@ -30,6 +30,18 @@ export async function mergeContacts(tx: Tx, targetId: string, sourceId: string):
   if (!target || !source) throw new HttpError(404, 'Không tìm thấy một trong hai hồ sơ');
 
   await tx.crmInteraction.updateMany({ where: { contactId: sourceId }, data: { contactId: targetId } });
+  await tx.crmInteraction.updateMany({ where: { referrerContactId: sourceId }, data: { referrerContactId: targetId } });
+  await tx.crmInteraction.updateMany({ where: { relatedVipContactId: sourceId }, data: { relatedVipContactId: targetId } });
+  const doctors = await tx.crmVisitDoctor.findMany({ where: { contactId: sourceId } });
+  await tx.crmVisitDoctor.createMany({ data: doctors.map(d => ({ interactionId: d.interactionId, contactId: targetId })), skipDuplicates: true });
+  await tx.crmVisitDoctor.deleteMany({ where: { contactId: sourceId } });
+  await tx.crmContact.updateMany({ where: { referrerContactId: sourceId }, data: { referrerContactId: targetId } });
+  await tx.crmContact.updateMany({ where: { relatedVipContactId: sourceId }, data: { relatedVipContactId: targetId } });
+  await tx.crmContact.update({ where: { id: targetId }, data: {
+    referrerContactId: [sourceId, targetId].includes(target.referrerContactId ?? source.referrerContactId ?? '') ? null : target.referrerContactId ?? source.referrerContactId,
+    relatedVipContactId: [sourceId, targetId].includes(target.relatedVipContactId ?? source.relatedVipContactId ?? '') ? null : target.relatedVipContactId ?? source.relatedVipContactId,
+    vipRelationship: target.vipRelationship ?? source.vipRelationship,
+  } });
   // Lượt đi đoàn: chuyển sang người giữ lại, bỏ dòng trùng và dòng mà người đó đã là trưởng đoàn.
   await tx.$executeRaw`
     INSERT INTO crm_interaction_participants ("interactionId", "contactId")

@@ -38,6 +38,10 @@ export interface InteractionDTO {
   services: string[];
   /** Dẫn khách khám: người giới thiệu, khám mới/tái khám, hẹn tái khám, từng chuyên khoa. */
   referrer?: string | null;
+  referrerContact?: { id: string; fullName: string; academicTitle: string | null } | null;
+  relatedVipContact?: { id: string; fullName: string; academicTitle: string | null } | null;
+  vipRelationship?: string | null;
+  doctors?: Array<{ id: string; fullName: string; academicTitle: string | null }>;
   visitKind?: string | null;
   followUp?: string | null;
   followUpDate?: string | null;
@@ -195,6 +199,9 @@ export interface SearchDTO {
 }
 
 export interface ContactListItem {
+  escortCount: number;
+  lastEscortAt: string | null;
+  latestReferrer: string | null;
   id: string;
   fullName: string;
   academicTitle: string | null;
@@ -256,6 +263,10 @@ export interface RelationDTO {
 }
 
 export interface ContactDetail {
+  linkedVisits?: InteractionDTO[];
+  referrerContact?: { id: string; fullName: string } | null;
+  relatedVipContact?: { id: string; fullName: string } | null;
+  vipRelationship?: string | null;
   id: string;
   fullName: string;
   academicTitle: string | null;

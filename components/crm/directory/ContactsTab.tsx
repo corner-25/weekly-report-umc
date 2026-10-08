@@ -1,5 +1,6 @@
 'use client';
 
+import { Pagination } from '../Pagination';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UserRound } from 'lucide-react';
@@ -38,6 +39,8 @@ function OrgCell({ c }: { c: ContactListItem }) {
 
 /** Danh bạ cá nhân: VIP và Đối tác (đầu mối, người liên hệ của tổ chức). */
 export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onChanged: () => void }) {
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<Kind>('');
   const [tag, setTag] = useState('');
@@ -49,9 +52,11 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
   const [editing, setEditing] = useState<ContactDetail | null>(null);
   const debouncedSearch = useDebounced(search);
 
+  useEffect(() => setPage(1), [debouncedSearch, kind, tag, owner]);
+
   useEffect(() => {
     const controller = new AbortController();
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ page: String(page) });
     if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
     if (kind === 'vip' || kind === 'partner') params.set('kind', kind);
     if (kind === 'focal') params.set('focal', '1');
@@ -59,10 +64,10 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
     if (owner) params.set('owner', owner);
     setLoading(true);
     setError('');
-    crmFetch<ContactListItem[]>(`/api/crm/contacts?${params}`, { signal: controller.signal })
+    crmFetch<{ items: ContactListItem[]; total: number; page: number; tags: string[] }>(`/api/crm/contacts?${params}`, { signal: controller.signal })
       .then((data) => {
-        setItems(data);
-        setKnownTags((prev) => Array.from(new Set([...prev, ...data.flatMap((c) => c.tags)])).sort((a, b) => a.localeCompare(b, 'vi')));
+        setItems(data.items); setTotal(data.total); setPage(data.page);
+        setKnownTags(data.tags);
         setLoading(false);
       })
       .catch((loadError) => {
@@ -71,7 +76,7 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
         setLoading(false);
       });
     return () => controller.abort();
-  }, [debouncedSearch, kind, tag, owner, reloadKey]);
+  }, [debouncedSearch, kind, tag, owner, reloadKey, page]);
 
   const openEdit = (id: string) => {
     crmFetch<ContactDetail>(`/api/crm/contacts/${id}`).then(setEditing).catch((e) => setError(errorMessage(e, 'Không mở được hồ sơ để sửa.')));
@@ -106,7 +111,7 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
         />
       ) : (
         <div className={cn(loading && 'opacity-60 transition-opacity')}>
-          <p className="px-5 pt-3 text-xs text-slate-500">{items.length} người</p>
+          <p className="px-5 pt-3 text-xs text-slate-500">{total} người · 20 người/trang</p>
           <div className="hidden overflow-x-auto md:block">
             <table className="min-w-full divide-y divide-slate-100">
               <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -115,7 +120,8 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
                   <th scope="col" className="px-5 py-3">Đơn vị · chức vụ</th>
                   <th scope="col" className="px-5 py-3">Liên hệ</th>
                   <th scope="col" className="px-5 py-3">Phụ trách</th>
-                  <th scope="col" className="px-5 py-3">Gần nhất</th>
+                  <th scope="col" className="px-5 py-3">Dẫn khám · gần nhất</th>
+                  <th scope="col" className="px-5 py-3">Người giới thiệu gần nhất</th>
                   <th scope="col" className="px-5 py-3 text-right"><span className="sr-only">Thao tác</span></th>
                 </tr>
               </thead>
@@ -133,7 +139,8 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
                     <td className="max-w-[320px] px-5 py-3.5"><OrgCell c={c} /></td>
                     <td className="px-5 py-3.5"><ContactLine phone={c.phone} email={c.email} /></td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-slate-600">{c.ownerName ?? '—'}</td>
-                    <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-slate-600">{formatDate(c.lastInteractionAt) || '—'}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-slate-600"><b>{c.escortCount} lượt</b><br />{formatDate(c.lastEscortAt) || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-600">{c.latestReferrer || '—'}</td>
                     <td className="px-5 py-3"><RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} /></td>
                   </tr>
                 ))}
@@ -149,6 +156,7 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
                 </div>
                 <div className="text-sm"><OrgCell c={c} /></div>
                 <ContactLine phone={c.phone} email={c.email} />
+                <p className="text-xs text-slate-500">{c.escortCount} lượt dẫn khám · {formatDate(c.lastEscortAt) || 'Chưa có lượt khám'} · Giới thiệu: {c.latestReferrer || '—'}</p>
                 <RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} />
               </li>
             ))}
@@ -156,6 +164,7 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
         </div>
       )}
 
+      <Pagination page={page} total={total} onChange={setPage} disabled={loading} />
       {editing && (
         <ContactModal
           initial={editing}

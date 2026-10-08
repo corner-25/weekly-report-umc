@@ -22,7 +22,7 @@ export const GET = handle(async (request: Request) => {
       orderBy: [{ tier: 'asc' }, { fullName: 'asc' }],
       take: LIMIT,
       select: {
-        id: true, fullName: true, academicTitle: true,
+        id: true, fullName: true, academicTitle: true, tags: true,
         positions: {
           where: { isCurrent: true }, take: 1, orderBy: { createdAt: 'desc' },
           select: { title: true, organization: { select: { name: true } } },
@@ -41,7 +41,7 @@ export const GET = handle(async (request: Request) => {
     contacts: contacts.map(({ positions, ...c }) => {
       const p = positions[0];
       const subtitle = p ? [p.title, p.organization?.name].filter(Boolean).join(', ') : null;
-      return { ...c, subtitle: subtitle || null };
+      return { ...c, subtitle: subtitle || c.tags.join(', ') || null };
     }),
     organizations,
   });

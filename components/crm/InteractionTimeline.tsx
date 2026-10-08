@@ -212,6 +212,8 @@ function InteractionMeta({ item }: { item: InteractionDTO }) {
         )}
         {item.hostUnit && <span>Chủ trì: <b className="font-semibold text-slate-700">{item.hostUnit}</b></span>}
         {item.visitKind && <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">{item.visitKind}</span>}
+        {item.relatedVipContact && <span>Quan hệ: <b>{item.vipRelationship}</b> của <Link href={`/dashboard/crm/contacts/${item.relatedVipContact.id}`} className="text-cyan-700 hover:underline">{item.relatedVipContact.fullName}</Link></span>}
+        {Boolean(item.doctors?.length) && <span>Bác sĩ: {item.doctors!.map(d => d.fullName).join(', ')}</span>}
         {item.referrer && <span>Giới thiệu: <b className="font-semibold text-slate-700">{item.referrer}</b></span>}
         {item.incomingDocNo && <span>Văn bản đến: {item.incomingDocNo}</span>}
       </div>

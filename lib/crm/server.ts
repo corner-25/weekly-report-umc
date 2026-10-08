@@ -166,6 +166,9 @@ export function toPhotoDto(p: Prisma.CrmPhotoGetPayload<{ select: typeof photoSe
 }
 
 export const interactionInclude = {
+  referrerContact: { select: { id: true, fullName: true, academicTitle: true } },
+  relatedVipContact: { select: { id: true, fullName: true, academicTitle: true } },
+  doctors: { select: { contact: { select: { id: true, fullName: true, academicTitle: true } } } },
   contact: { select: { id: true, fullName: true, academicTitle: true } },
   organization: { select: { id: true, name: true } },
   hostDepartment: { select: { id: true, name: true } },
@@ -208,7 +211,11 @@ export function toInteractionDto(i: InteractionWithRelations, health = false) {
     destination: i.destination,
     patientName: i.patientName,
     services: i.services,
-    referrer: i.referrer,
+    referrer: i.referrerContact?.fullName ?? i.referrer,
+    referrerContact: i.referrerContact,
+    relatedVipContact: i.relatedVipContact,
+    vipRelationship: i.vipRelationship,
+    doctors: i.doctors.map(d => d.contact),
     visitKind: i.visitKind,
     followUp: i.followUp,
     followUpDate: i.followUpDate?.toISOString() ?? null,

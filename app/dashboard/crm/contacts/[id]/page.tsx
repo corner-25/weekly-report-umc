@@ -140,6 +140,10 @@ export default function ContactProfilePage() {
         </div>
       </header>
 
+      {Boolean(contact.linkedVisits?.length) && <SectionCard title="Lượt khám liên quan" action={<span className="text-xs text-slate-500">20 lượt gần nhất · giới thiệu, quan hệ VIP hoặc bác sĩ khám</span>}>
+        <InteractionTimeline items={contact.linkedVisits ?? []} compact />
+      </SectionCard>}
+
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <div className="grid gap-4">
           <ContactInfoCard contact={contact} />

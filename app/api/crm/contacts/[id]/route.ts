@@ -1,3 +1,4 @@
+import { contactLinks, contactLinkInclude } from '@/lib/crm/contact-links';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -39,6 +40,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   const contact = await prisma.crmContact.findUnique({
     where: { id },
     include: {
+      ...contactLinkInclude,
       positions: {
         orderBy: [{ isCurrent: 'desc' }, { fromDate: 'desc' }, { createdAt: 'desc' }],
         include: { organization: { select: { id: true, name: true } } },
@@ -52,7 +54,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   // Dòng thời gian gồm cả lượt người này là khách chính lẫn là thành viên đoàn.
   // Hoạt động gần đây của các đơn vị người này đang làm (đoàn, tương tác với đơn vị) — để thấy qua lại hai bên.
   const currentOrgIds = contact.positions.filter((p) => p.isCurrent && p.organizationId).map((p) => p.organizationId as string);
-  const [interactions, careTasks, orgActivity] = await Promise.all([
+  const [interactions, careTasks, orgActivity, linkedVisits] = await Promise.all([
     prisma.crmInteraction.findMany({
       where: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] },
       include: interactionInclude,
@@ -71,6 +73,10 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
           take: ORG_ACTIVITY_LIMIT,
         })
       : Promise.resolve([]),
+    prisma.crmInteraction.findMany({
+      where: { type: 'VIP_ESCORT', OR: [{ referrerContactId: id }, { relatedVipContactId: id }, { doctors: { some: { contactId: id } } }] },
+      include: interactionInclude, orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }], take: 20,
+    }),
   ]);
 
   const { relationsFrom, sensitiveNote, ...rest } = contact;
@@ -92,6 +98,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       id: r.id, kind: r.kind, name: r.name, phone: r.phone, note: r.note, toContact: r.toContact,
     })),
     importantDates: contact.importantDates.map(toImportantDateDto),
+    linkedVisits: linkedVisits.map(i => toInteractionDto(i, health)),
     interactions: interactions.map((i) => toInteractionDto(i, health)),
     careTasks: careTasks.map(toCareTaskDto),
     orgActivity: orgActivity.map((i) => toInteractionDto(i, health)),
@@ -112,7 +119,7 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
   const parsed = contactPatchSchema.parse(
     Object.fromEntries(Object.entries(body).filter(([key]) => !cleared.includes(key as Clearable))),
   );
-  const { currentTitle, currentOrganizationName, preferences, sensitiveNote, ...data } = parsed;
+  const { currentTitle, currentOrganizationName, preferences, sensitiveNote, newReferrerName, referrerContactId, relatedVipContactId, vipRelationship, ...data } = parsed;
   const touchesSensitive = sensitiveNote !== undefined || cleared.includes('sensitiveNote');
   if (touchesSensitive && !canSeeSensitive(session, existing.ownerName)) {
     throw new HttpError(403, 'Bạn không có quyền sửa lưu ý nhạy cảm của hồ sơ này');
@@ -126,10 +133,11 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
         data: { contactId: id, title: currentTitle ?? 'Liên hệ', organizationId, isCurrent: true },
       });
     }
+    const links = await contactLinks(tx, { newReferrerName, referrerContactId, relatedVipContactId, vipRelationship }, id);
     return tx.crmContact.update({
       where: { id },
       data: {
-        ...data,
+        ...data, ...links,
         // Khoá tìm kiếm theo họ tên + SĐT sau khi sửa.
         searchKey: toSearchKey(
           data.fullName ?? existing.fullName,
@@ -155,14 +163,18 @@ export const DELETE = handle(async (request: Request, { params }: Ctx) => {
   const session = await requireSession();
   const { id } = await params;
   const force = new URL(request.url).searchParams.get('force') === '1' && session.user.role === 'ADMIN';
-  const [own, joined] = await Promise.all([
+  const [own, joined, referred, vipRelated, examined] = await Promise.all([
     prisma.crmInteraction.count({ where: { contactId: id } }),
     prisma.crmInteractionParticipant.count({ where: { contactId: id } }),
+    prisma.crmInteraction.count({ where: { referrerContactId: id } }),
+    prisma.crmInteraction.count({ where: { relatedVipContactId: id } }),
+    prisma.crmVisitDoctor.count({ where: { contactId: id } }),
   ]);
-  if (own + joined > 0 && !force) {
+  if (examined > 0) throw new HttpError(409, 'Bác sĩ đã gắn với lượt khám. Hãy chuyển sang ngừng hoạt động hoặc gộp hồ sơ.');
+  if (own + joined + referred + vipRelated > 0 && !force) {
     throw new HttpError(
       409,
-      `Hồ sơ đã có ${own + joined} lượt tương tác — xoá sẽ mất tên khách trong lịch sử. ` +
+      `Hồ sơ đã có ${own + joined + referred + vipRelated} lượt tương tác — xoá sẽ mất tên khách trong lịch sử. ` +
         'Hãy đổi trạng thái sang "Ngừng quan hệ" thay vì xoá.',
     );
   }
