@@ -8,6 +8,7 @@ import { CONTACT_STATUS_LABELS, VIP_STAFF } from '@/lib/crm/constants';
 import type { ContactInput } from '@/lib/crm/schemas';
 import { CrmApiError, crmSend, errorMessage } from './api';
 import { cleanText, textOrClear, toInt, withCurrent, type Clearable } from './format';
+import { cn } from '@/lib/utils';
 import type { ContactDetail, ContactStatus, Tier } from './types';
 import { ErrorBanner, Field, ModalFooter, ModalShell, TagInput, Toggle, inputClass } from './ui';
 
@@ -252,7 +253,32 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
             <input value={form.giftAddress} onChange={(e) => set('giftAddress', e.target.value)} className={inputClass(errors.giftAddress)} placeholder="Ví dụ: Văn phòng Ban Giám đốc (qua thư ký)" />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TagInput label="Nhãn" value={form.tags} onChange={(v) => set('tags', v)} error={errors.tags} />
+            <div>
+              <TagInput label="Nhãn vai trò & phân loại" value={form.tags} onChange={(v) => set('tags', v)} error={errors.tags} />
+              <div className="mt-1.5 flex flex-wrap gap-1">
+                {['Bác sĩ', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện', 'Người giới thiệu', 'Khách khám bệnh'].map((preset) => {
+                  const has = form.tags.includes(preset);
+                  return (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => {
+                        const next = has ? form.tags.filter((t) => t !== preset) : [...form.tags, preset];
+                        set('tags', next);
+                      }}
+                      className={cn(
+                        'rounded-full px-2 py-0.5 text-[11px] font-medium transition cursor-pointer',
+                        has
+                          ? 'bg-cyan-600 text-white shadow-2xs font-semibold'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
+                      )}
+                    >
+                      {has ? `✓ ${preset}` : `+ ${preset}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <Field label="Người phụ trách" htmlFor="ct-owner" error={errors.ownerName}>
               <Select id="ct-owner" value={form.ownerName} onChange={(e) => set('ownerName', e.target.value)} className="px-3.5 py-2.5">
                 <option value="">Chưa giao</option>

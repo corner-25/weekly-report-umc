@@ -25,11 +25,21 @@ export async function normalizeVisitPeople(db: PrismaClient, dryRun = true) {
       if (created && !created.tags.includes(role)) created.tags.push(role);
       return cached;
     }
-    // Không nhận hồ sơ người bệnh chỉ vì trùng tên; nhiều ứng viên thì cần đối chiếu.
-    const matches = contacts.filter(c => normalizeCrmPerson(c.fullName)?.key === key && !c.patientCode && !c.tags.includes('Khách khám bệnh'));
+    // Ưu tiên hồ sơ nhân sự, lãnh đạo, bác sĩ hoặc người giới thiệu đã có trong danh bạ
+    const staffMatches = contacts.filter(c =>
+      normalizeCrmPerson(c.fullName)?.key === key &&
+      c.tags.some(t => ['Ban Giám đốc', 'Lãnh đạo Bệnh viện', 'Bác sĩ', 'Người giới thiệu'].includes(t))
+    );
+    const matches = staffMatches.length > 0
+      ? staffMatches
+      : contacts.filter(c => normalizeCrmPerson(c.fullName)?.key === key && !c.patientCode && !c.tags.includes('Khách khám bệnh'));
     if (matches.length > 1) { stats.unresolved.push(`${role}: ${raw} (nhiều hồ sơ cùng tên)`); return null; }
     const id = matches[0]?.id ?? randomUUID();
-    if (!matches.length) creates.push({ id, fullName: name, searchKey: toSearchKey(name), tags: [role], source: 'Chuẩn hoá danh sách khách KCB' });
+    if (!matches.length) {
+      creates.push({ id, fullName: name, searchKey: toSearchKey(name), tags: [role], source: 'Chuẩn hoá danh sách khách KCB' });
+    } else if (!matches[0].tags.includes(role)) {
+      matches[0].tags.push(role);
+    }
     resolved.set(key, id);
     return id;
   }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Building2, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
@@ -41,6 +41,7 @@ export default function ContactProfilePage() {
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [visitRoleTab, setVisitRoleTab] = useState<'referred' | 'doctor' | 'vip' | 'all'>('referred');
   const { askDelete, deleteDialog } = useConfirmDelete(setError);
 
   const load = useCallback(async () => {
@@ -61,6 +62,22 @@ export default function ContactProfilePage() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!contact) return;
+    if (contact.referredVisits && contact.referredVisits.length > 0) setVisitRoleTab('referred');
+    else if (contact.doctorVisits && contact.doctorVisits.length > 0) setVisitRoleTab('doctor');
+    else if (contact.relatedVipVisits && contact.relatedVipVisits.length > 0) setVisitRoleTab('vip');
+    else setVisitRoleTab('all');
+  }, [contact?.id]);
+
+  const activeVisitItems = useMemo(() => {
+    if (!contact) return [];
+    if (visitRoleTab === 'referred' && contact.referredVisits?.length) return contact.referredVisits;
+    if (visitRoleTab === 'doctor' && contact.doctorVisits?.length) return contact.doctorVisits;
+    if (visitRoleTab === 'vip' && contact.relatedVipVisits?.length) return contact.relatedVipVisits;
+    return contact.linkedVisits ?? [];
+  }, [contact, visitRoleTab]);
+
   const closeAndReload = () => {
     setDialog(null);
     load();
@@ -80,6 +97,14 @@ export default function ContactProfilePage() {
   const name = displayName(contact);
   const current = contact.positions.filter((p) => p.isCurrent);
   const primaryOrganization = current.find((p) => p.organization)?.organization ?? null;
+
+  const roleVisitCount = [
+    Boolean(contact.referredVisits?.length),
+    Boolean(contact.doctorVisits?.length),
+    Boolean(contact.relatedVipVisits?.length),
+  ].filter(Boolean).length;
+  const multiRoleVisits = roleVisitCount > 1;
+  const hasLinked = Boolean(contact.linkedVisits?.length || activeVisitItems.length);
 
   return (
     <div className="space-y-5">
@@ -110,6 +135,29 @@ export default function ContactProfilePage() {
                 </span>
               ))}
             </p>
+            {/* Vai trò tập trung: Lãnh đạo, Bác sĩ, Người giới thiệu, Khách VIP */}
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {contact.tags.some((t) => ['Ban Giám đốc', 'Lãnh đạo Bệnh viện'].includes(t)) && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-bold text-purple-800 ring-1 ring-inset ring-purple-600/20">
+                  🏛️ Lãnh đạo Bệnh viện
+                </span>
+              )}
+              {Boolean(contact.totalDoctorVisits || contact.tags.includes('Bác sĩ')) && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-bold text-teal-800 ring-1 ring-inset ring-teal-600/20">
+                  🩺 Bác sĩ khám bệnh {Boolean(contact.totalDoctorVisits) && `(${contact.totalDoctorVisits} ca)`}
+                </span>
+              )}
+              {Boolean(contact.totalReferredVisits || contact.tags.includes('Người giới thiệu')) && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-800 ring-1 ring-inset ring-indigo-600/20">
+                  🤝 Người giới thiệu {Boolean(contact.totalReferredVisits) && `(${contact.totalReferredVisits} ca khách)`}
+                </span>
+              )}
+              {contact.tier === 'VIP' && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                  ⭐ Khách VIP
+                </span>
+              )}
+            </div>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
               {contact.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}
               <span>Phụ trách: <b className="font-semibold text-slate-700">{contact.ownerName ?? 'chưa giao'}</b></span>
@@ -140,18 +188,82 @@ export default function ContactProfilePage() {
         </div>
       </header>
 
-      {Boolean(contact.linkedVisits?.length) && (
+      {hasLinked && (
         <SectionCard
           title={
-            contact.tags.includes('Người giới thiệu')
-              ? `Khách do ${name} giới thiệu khám (${contact.linkedVisits?.length ?? 0} lượt gần nhất)`
-              : contact.tags.includes('Bác sĩ')
-              ? `Lượt khám BS ${name} phụ trách chuyên môn (${contact.linkedVisits?.length ?? 0} lượt gần nhất)`
-              : `Lượt khám liên quan (${contact.linkedVisits?.length ?? 0} lượt gần nhất)`
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-slate-900">
+                {!multiRoleVisits && visitRoleTab === 'referred'
+                  ? `Khách do ${name} giới thiệu (${contact.totalReferredVisits ?? contact.referredVisits?.length ?? 0} lượt)`
+                  : !multiRoleVisits && visitRoleTab === 'doctor'
+                  ? `Lượt khám BS ${name} phụ trách chuyên môn (${contact.totalDoctorVisits ?? contact.doctorVisits?.length ?? 0} lượt)`
+                  : !multiRoleVisits && visitRoleTab === 'vip'
+                  ? `Người thân / quan hệ VIP (${contact.totalRelatedVipVisits ?? contact.relatedVipVisits?.length ?? 0} lượt)`
+                  : 'Lượt khám & tiếp đón liên quan'}
+              </span>
+              {multiRoleVisits && (
+                <div role="tablist" aria-label="Lọc theo vai trò" className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold">
+                  {contact.referredVisits && contact.referredVisits.length > 0 && (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={visitRoleTab === 'referred'}
+                      onClick={() => setVisitRoleTab('referred')}
+                      className={cn(
+                        'rounded-md px-2.5 py-1 transition',
+                        visitRoleTab === 'referred' ? 'bg-white text-indigo-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900',
+                      )}
+                    >
+                      Khách giới thiệu ({contact.totalReferredVisits ?? contact.referredVisits.length})
+                    </button>
+                  )}
+                  {contact.doctorVisits && contact.doctorVisits.length > 0 && (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={visitRoleTab === 'doctor'}
+                      onClick={() => setVisitRoleTab('doctor')}
+                      className={cn(
+                        'rounded-md px-2.5 py-1 transition',
+                        visitRoleTab === 'doctor' ? 'bg-white text-teal-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900',
+                      )}
+                    >
+                      BS phụ trách ({contact.totalDoctorVisits ?? contact.doctorVisits.length})
+                    </button>
+                  )}
+                  {contact.relatedVipVisits && contact.relatedVipVisits.length > 0 && (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={visitRoleTab === 'vip'}
+                      onClick={() => setVisitRoleTab('vip')}
+                      className={cn(
+                        'rounded-md px-2.5 py-1 transition',
+                        visitRoleTab === 'vip' ? 'bg-white text-amber-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900',
+                      )}
+                    >
+                      Người thân VIP ({contact.totalRelatedVipVisits ?? contact.relatedVipVisits.length})
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={visitRoleTab === 'all'}
+                    onClick={() => setVisitRoleTab('all')}
+                    className={cn(
+                      'rounded-md px-2.5 py-1 transition',
+                      visitRoleTab === 'all' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900',
+                    )}
+                  >
+                    Tất cả ({contact.linkedVisits?.length ?? 0})
+                  </button>
+                </div>
+              )}
+            </div>
           }
           action={<span className="text-xs font-medium text-slate-500">Phòng Hành chính hỗ trợ tiếp đón & dẫn khám</span>}
         >
-          <InteractionTimeline items={contact.linkedVisits ?? []} linkedRole={{ targetId: contact.id, targetName: name }} compact />
+          <InteractionTimeline items={activeVisitItems} linkedRole={{ targetId: contact.id, targetName: name }} compact />
         </SectionCard>
       )}
 

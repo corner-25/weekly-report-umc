@@ -21,10 +21,23 @@ export const GET = handle(async (request: Request) => {
   const focalOnly = params.get('focal') === '1';
 
   const where: Prisma.CrmContactWhereInput = {
-    ...(tier && { tier }),
+    ...(kind === 'doctor' && {
+      OR: [
+        { tags: { has: 'Bác sĩ' } },
+        { doctorVisits: { some: {} } },
+      ],
+    }),
     ...(kind === 'leader' && { tags: { hasSome: ['Người giới thiệu', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện'] } }),
     ...(kind === 'vip' && { tier: 'VIP' as const }),
-    ...(kind === 'partner' && { tier: { not: 'VIP' as const }, NOT: { tags: { hasSome: ['Người giới thiệu', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện'] } } }),
+    ...(kind === 'partner' && {
+      tier: { not: 'VIP' as const },
+      NOT: {
+        OR: [
+          { tags: { hasSome: ['Người giới thiệu', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện', 'Bác sĩ'] } },
+          { doctorVisits: { some: {} } },
+        ],
+      },
+    }),
     ...(focalOnly && { positions: { some: { isFocalPoint: true, isCurrent: true } } }),
     ...(tag && { tags: { has: tag } }),
     ...(owner && { ownerName: owner }),
@@ -64,21 +77,49 @@ export const GET = handle(async (request: Request) => {
     },
   });
 
-  const visits = await prisma.crmInteraction.groupBy({ by: ['contactId'], where: { contactId: { in: contacts.map(c => c.id) }, type: 'VIP_ESCORT', status: 'DONE' }, _count: true, _max: { occurredAt: true } });
-  const latest = await prisma.crmInteraction.findMany({ where: { contactId: { in: contacts.map(c => c.id) }, type: 'VIP_ESCORT', status: 'DONE' }, orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }], distinct: ['contactId'], select: { contactId: true, referrer: true, referrerContact: { select: { fullName: true } } } });
+  const contactIds = contacts.map(c => c.id);
+  const [visits, doctorVisits, referredVisits, latest] = await Promise.all([
+    prisma.crmInteraction.groupBy({
+      by: ['contactId'],
+      where: { contactId: { in: contactIds }, type: 'VIP_ESCORT', status: 'DONE' },
+      _count: true,
+      _max: { occurredAt: true },
+    }),
+    prisma.crmVisitDoctor.groupBy({
+      by: ['contactId'],
+      where: { contactId: { in: contactIds } },
+      _count: true,
+    }),
+    prisma.crmInteraction.groupBy({
+      by: ['referrerContactId'],
+      where: { referrerContactId: { in: contactIds }, type: 'VIP_ESCORT' },
+      _count: true,
+    }),
+    prisma.crmInteraction.findMany({
+      where: { contactId: { in: contactIds }, type: 'VIP_ESCORT', status: 'DONE' },
+      orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }],
+      distinct: ['contactId'],
+      select: { contactId: true, referrer: true, referrerContact: { select: { fullName: true } } },
+    }),
+  ]);
+
   const items = contacts.map(({ positions, interactions, participations, ...c }) => {
-      const dates = [interactions[0]?.occurredAt, participations[0]?.interaction.occurredAt].filter(Boolean) as Date[];
-      const last = dates.sort((a, b) => b.getTime() - a.getTime())[0];
-      return {
-        ...c,
-        escortCount: visits.find(v => v.contactId === c.id)?._count ?? 0,
-        lastEscortAt: visits.find(v => v.contactId === c.id)?._max.occurredAt?.toISOString() ?? null,
-        latestReferrer: latest.find(v => v.contactId === c.id)?.referrerContact?.fullName ?? latest.find(v => v.contactId === c.id)?.referrer ?? c.referrerContact?.fullName ?? null,
-        currentPosition: positions[0] ?? null,
-        focalCount: positions.filter((p) => p.isFocalPoint).length,
-        lastInteractionAt: last?.toISOString() ?? null,
-      };
-    });
+    const dates = [interactions[0]?.occurredAt, participations[0]?.interaction.occurredAt].filter(Boolean) as Date[];
+    const last = dates.sort((a, b) => b.getTime() - a.getTime())[0];
+    const docCount = doctorVisits.find(d => d.contactId === c.id)?._count ?? 0;
+    const refCount = referredVisits.find(r => r.referrerContactId === c.id)?._count ?? 0;
+    return {
+      ...c,
+      escortCount: visits.find(v => v.contactId === c.id)?._count ?? 0,
+      doctorVisitCount: docCount,
+      referredVisitCount: refCount,
+      lastEscortAt: visits.find(v => v.contactId === c.id)?._max.occurredAt?.toISOString() ?? null,
+      latestReferrer: latest.find(v => v.contactId === c.id)?.referrerContact?.fullName ?? latest.find(v => v.contactId === c.id)?.referrer ?? c.referrerContact?.fullName ?? null,
+      currentPosition: positions[0] ?? null,
+      focalCount: positions.filter((p) => p.isFocalPoint).length,
+      lastInteractionAt: last?.toISOString() ?? null,
+    };
+  });
   const tagRows = paginated ? await prisma.$queryRaw<Array<{ tag: string }>>`SELECT DISTINCT unnest(tags) AS tag FROM crm_contacts ORDER BY tag` : [];
   return NextResponse.json(paginated ? { items, total: filteredTotal, page, tags: tagRows.map(r => r.tag) } : items);
 });

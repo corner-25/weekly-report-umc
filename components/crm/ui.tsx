@@ -417,7 +417,7 @@ export function ModalFooter({ onCancel, saving, submitLabel }: { onCancel: () =>
   );
 }
 
-export function SectionCard({ title, action, children, className, icon, info }: { title: string; action?: ReactNode; children: ReactNode; className?: string; icon?: ReactNode; info?: ReactNode }) {
+export function SectionCard({ title, action, children, className, icon, info }: { title: ReactNode; action?: ReactNode; children: ReactNode; className?: string; icon?: ReactNode; info?: ReactNode }) {
   return (
     <section className={cn(PANEL, 'p-4 sm:p-5', className)}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

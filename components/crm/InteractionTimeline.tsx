@@ -133,15 +133,20 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
               <time dateTime={item.occurredAt} className="font-semibold tabular-nums text-slate-700">{whenLabel(item)}</time>
               <span className="mx-1.5 text-slate-300">|</span>
               {linkedRole ? (
-                isReferrerOfThis ? (
-                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 font-bold text-indigo-800">Do sếp giới thiệu</span>
-                ) : isDoctorOfThis ? (
-                  <span className="rounded-full bg-teal-100 px-2 py-0.5 font-bold text-teal-800">BS phụ trách khám</span>
-                ) : isVipOfThis ? (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 font-bold text-amber-800">{item.vipRelationship || 'Người thân'} của VIP</span>
-                ) : (
-                  <span>Lượt khám liên quan</span>
-                )
+                <span className="inline-flex flex-wrap items-center gap-1.5">
+                  {isReferrerOfThis && (
+                    <span className="rounded-full bg-indigo-100 px-2 py-0.5 font-bold text-indigo-800">Do sếp giới thiệu</span>
+                  )}
+                  {isDoctorOfThis && (
+                    <span className="rounded-full bg-teal-100 px-2 py-0.5 font-bold text-teal-800">BS phụ trách khám</span>
+                  )}
+                  {isVipOfThis && (
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 font-bold text-amber-800">{item.vipRelationship || 'Người thân'} của VIP</span>
+                  )}
+                  {!isReferrerOfThis && !isDoctorOfThis && !isVipOfThis && (
+                    <span>Lượt khám liên quan</span>
+                  )}
+                </span>
               ) : (
                 <span>{INTERACTION_TYPE_LABELS[item.type]}</span>
               )}

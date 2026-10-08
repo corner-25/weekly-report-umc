@@ -54,7 +54,17 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   // Dòng thời gian gồm cả lượt người này là khách chính lẫn là thành viên đoàn.
   // Hoạt động gần đây của các đơn vị người này đang làm (đoàn, tương tác với đơn vị) — để thấy qua lại hai bên.
   const currentOrgIds = contact.positions.filter((p) => p.isCurrent && p.organizationId).map((p) => p.organizationId as string);
-  const [interactions, careTasks, orgActivity, linkedVisits] = await Promise.all([
+  const [
+    interactions,
+    careTasks,
+    orgActivity,
+    referredVisits,
+    doctorVisits,
+    relatedVipVisits,
+    totalReferredVisits,
+    totalDoctorVisits,
+    totalRelatedVipVisits,
+  ] = await Promise.all([
     prisma.crmInteraction.findMany({
       where: { OR: [{ contactId: id }, { participants: { some: { contactId: id } } }] },
       include: interactionInclude,
@@ -74,9 +84,26 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
         })
       : Promise.resolve([]),
     prisma.crmInteraction.findMany({
-      where: { type: 'VIP_ESCORT', OR: [{ referrerContactId: id }, { relatedVipContactId: id }, { doctors: { some: { contactId: id } } }] },
-      include: interactionInclude, orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }], take: 20,
+      where: { type: 'VIP_ESCORT', referrerContactId: id },
+      include: interactionInclude,
+      orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }],
+      take: 50,
     }),
+    prisma.crmInteraction.findMany({
+      where: { type: 'VIP_ESCORT', doctors: { some: { contactId: id } } },
+      include: interactionInclude,
+      orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }],
+      take: 50,
+    }),
+    prisma.crmInteraction.findMany({
+      where: { type: 'VIP_ESCORT', relatedVipContactId: id },
+      include: interactionInclude,
+      orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }],
+      take: 50,
+    }),
+    prisma.crmInteraction.count({ where: { type: 'VIP_ESCORT', referrerContactId: id } }),
+    prisma.crmInteraction.count({ where: { type: 'VIP_ESCORT', doctors: { some: { contactId: id } } } }),
+    prisma.crmInteraction.count({ where: { type: 'VIP_ESCORT', relatedVipContactId: id } }),
   ]);
 
   const { relationsFrom, sensitiveNote, ...rest } = contact;
@@ -84,6 +111,17 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
   const sources = [birthdaySource(contact), ...contact.importantDates.map(importantDateSource)].filter(
     (s): s is NonNullable<typeof s> => s !== null,
   );
+
+  const referredDto = referredVisits.map((i) => toInteractionDto(i, health));
+  const doctorDto = doctorVisits.map((i) => toInteractionDto(i, health));
+  const relatedVipDto = relatedVipVisits.map((i) => toInteractionDto(i, health));
+
+  // Gộp liên kết (không trùng id) phục vụ tương thích ngược
+  const visitMap = new Map<string, typeof referredDto[number]>();
+  for (const v of [...referredDto, ...doctorDto, ...relatedVipDto]) {
+    if (!visitMap.has(v.id)) visitMap.set(v.id, v);
+  }
+  const linkedVisits = [...visitMap.values()].sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
 
   return NextResponse.json({
     ...rest,
@@ -98,7 +136,13 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       id: r.id, kind: r.kind, name: r.name, phone: r.phone, note: r.note, toContact: r.toContact,
     })),
     importantDates: contact.importantDates.map(toImportantDateDto),
-    linkedVisits: linkedVisits.map(i => toInteractionDto(i, health)),
+    linkedVisits,
+    referredVisits: referredDto,
+    doctorVisits: doctorDto,
+    relatedVipVisits: relatedVipDto,
+    totalReferredVisits,
+    totalDoctorVisits,
+    totalRelatedVipVisits,
     interactions: interactions.map((i) => toInteractionDto(i, health)),
     careTasks: careTasks.map(toCareTaskDto),
     orgActivity: orgActivity.map((i) => toInteractionDto(i, health)),

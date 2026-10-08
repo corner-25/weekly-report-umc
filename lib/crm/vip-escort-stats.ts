@@ -78,15 +78,16 @@ export function computeVipEscortStats(items: RawVipVisitStat[]) {
     });
   }
 
-  // Top Bác sĩ (từ danh sách doctors liên kết hoặc trích từ visitItems)
+  // Top Bác sĩ (từ danh sách doctors liên kết hoặc trích từ visitItems nếu chưa liên kết)
   const docMap = new Map<string, { id?: string; name: string; count: number }>();
   for (const i of done) {
-    for (const d of i.doctors ?? []) {
-      const row = docMap.get(d.contact.id) ?? { id: d.contact.id, name: d.contact.fullName, count: 0 };
-      row.count += 1;
-      docMap.set(d.contact.id, row);
-    }
-    if (Array.isArray(i.visitItems)) {
+    if (i.doctors && i.doctors.length > 0) {
+      for (const d of i.doctors) {
+        const row = docMap.get(d.contact.id) ?? { id: d.contact.id, name: d.contact.fullName, count: 0 };
+        row.count += 1;
+        docMap.set(d.contact.id, row);
+      }
+    } else if (Array.isArray(i.visitItems)) {
       for (const item of i.visitItems) {
         if (item && typeof item === 'object' && 'doctor' in item && typeof (item as { doctor: unknown }).doctor === 'string') {
           const docName = (item as { doctor: string }).doctor.trim();

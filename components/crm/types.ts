@@ -200,6 +200,8 @@ export interface SearchDTO {
 
 export interface ContactListItem {
   escortCount: number;
+  doctorVisitCount?: number;
+  referredVisitCount?: number;
   lastEscortAt: string | null;
   latestReferrer: string | null;
   id: string;
@@ -264,6 +266,12 @@ export interface RelationDTO {
 
 export interface ContactDetail {
   linkedVisits?: InteractionDTO[];
+  doctorVisits?: InteractionDTO[];
+  referredVisits?: InteractionDTO[];
+  relatedVipVisits?: InteractionDTO[];
+  totalDoctorVisits?: number;
+  totalReferredVisits?: number;
+  totalRelatedVipVisits?: number;
   referrerContact?: { id: string; fullName: string } | null;
   relatedVipContact?: { id: string; fullName: string } | null;
   vipRelationship?: string | null;
