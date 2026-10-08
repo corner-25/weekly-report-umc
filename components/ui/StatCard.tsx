@@ -3,14 +3,62 @@ import { cn } from '@/lib/utils';
 import { type LucideIcon } from 'lucide-react';
 
 const colorMap = {
-  cyan: { bg: 'bg-cyan-50', text: 'text-cyan-600', icon: 'bg-cyan-100 text-cyan-600' },
-  blue: { bg: 'bg-blue-50', text: 'text-blue-600', icon: 'bg-blue-100 text-blue-600' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-600', icon: 'bg-purple-100 text-purple-600' },
-  green: { bg: 'bg-emerald-50', text: 'text-emerald-600', icon: 'bg-emerald-100 text-emerald-600' },
-  orange: { bg: 'bg-amber-50', text: 'text-amber-600', icon: 'bg-amber-100 text-amber-600' },
-  pink: { bg: 'bg-pink-50', text: 'text-pink-600', icon: 'bg-pink-100 text-pink-600' },
-  red: { bg: 'bg-red-50', text: 'text-red-600', icon: 'bg-red-100 text-red-600' },
-  gray: { bg: 'bg-slate-50', text: 'text-slate-600', icon: 'bg-slate-100 text-slate-600' },
+  cyan: {
+    border: 'border-cyan-200/80',
+    bg: 'from-cyan-50/60 via-white to-white',
+    badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50',
+    title: 'text-cyan-800',
+    unit: 'text-cyan-700',
+  },
+  blue: {
+    border: 'border-blue-200/80',
+    bg: 'from-blue-50/60 via-white to-white',
+    badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50',
+    title: 'text-blue-800',
+    unit: 'text-blue-700',
+  },
+  purple: {
+    border: 'border-purple-200/80',
+    bg: 'from-purple-50/60 via-white to-white',
+    badge: 'bg-purple-100 text-purple-700 shadow-purple-200/50',
+    title: 'text-purple-800',
+    unit: 'text-purple-700',
+  },
+  green: {
+    border: 'border-emerald-200/80',
+    bg: 'from-emerald-50/60 via-white to-white',
+    badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50',
+    title: 'text-emerald-800',
+    unit: 'text-emerald-700',
+  },
+  orange: {
+    border: 'border-amber-200/80',
+    bg: 'from-amber-50/60 via-white to-white',
+    badge: 'bg-amber-100 text-amber-700 shadow-amber-200/50',
+    title: 'text-amber-800',
+    unit: 'text-amber-700',
+  },
+  pink: {
+    border: 'border-rose-200/80',
+    bg: 'from-rose-50/60 via-white to-white',
+    badge: 'bg-rose-100 text-rose-700 shadow-rose-200/50',
+    title: 'text-rose-800',
+    unit: 'text-rose-700',
+  },
+  red: {
+    border: 'border-red-200/80',
+    bg: 'from-red-50/60 via-white to-white',
+    badge: 'bg-red-100 text-red-700 shadow-red-200/50',
+    title: 'text-red-800',
+    unit: 'text-red-700',
+  },
+  gray: {
+    border: 'border-slate-200/80',
+    bg: 'from-slate-50/60 via-white to-white',
+    badge: 'bg-slate-100 text-slate-700 shadow-slate-200/50',
+    title: 'text-slate-800',
+    unit: 'text-slate-600',
+  },
 } as const;
 
 type ColorKey = keyof typeof colorMap;
@@ -34,31 +82,43 @@ export function StatCard({
   href,
   className,
 }: StatCardProps) {
-  const colors = colorMap[color];
+  const c = colorMap[color];
 
   const content = (
     <div
       className={cn(
-        'bg-white rounded-xl border border-slate-200/80 p-4 transition-all duration-200',
-        href && 'hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5 cursor-pointer',
+        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 shadow-sm transition-all duration-200 bg-gradient-to-br',
+        c.border,
+        c.bg,
+        href ? 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer' : 'hover:shadow-md',
         className
       )}
     >
-      {Icon && (
-        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center mb-3', colors.icon)}>
-          <Icon className="w-5 h-5" />
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={cn('text-xs font-bold uppercase tracking-wider', c.title)}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+              {value}
+            </span>
+            {subValue && <span className={cn('text-xs font-bold', c.unit)}>{subValue}</span>}
+          </div>
         </div>
-      )}
-      <p className="text-2xl font-bold text-slate-900">
-        {value}
-        {subValue && <span className="text-slate-400 text-lg font-normal">{subValue}</span>}
-      </p>
-      <p className="text-sm text-slate-500 mt-0.5">{label}</p>
+        {Icon && (
+          <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform group-hover:scale-105', c.badge)}>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+        )}
+      </div>
     </div>
   );
 
   if (href) {
-    return <Link href={href}>{content}</Link>;
+    return (
+      <Link href={href} className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500">
+        {content}
+      </Link>
+    );
   }
   return content;
 }
@@ -72,12 +132,12 @@ interface CompactStatCardProps {
 }
 
 export function CompactStatCard({ label, value, color = 'gray', className }: CompactStatCardProps) {
-  const colors = colorMap[color];
+  const c = colorMap[color];
 
   return (
-    <div className={cn('rounded-xl p-3.5', colors.bg, className)}>
-      <p className={cn('text-xs font-medium opacity-70', colors.text)}>{label}</p>
-      <p className={cn('text-xl font-bold mt-0.5', colors.text)}>{value}</p>
+    <div className={cn('rounded-2xl border p-3.5 bg-gradient-to-br', c.border, c.bg, className)}>
+      <p className={cn('text-xs font-bold uppercase tracking-wider', c.title)}>{label}</p>
+      <p className="mt-1 text-xl font-extrabold tabular-nums text-slate-900">{value}</p>
     </div>
   );
 }

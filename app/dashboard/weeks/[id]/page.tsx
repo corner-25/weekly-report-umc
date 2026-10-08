@@ -4,7 +4,7 @@ import { Suspense, use, useCallback, useEffect, useMemo, useState, type ReactNod
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  AlertTriangle, ArrowLeft, BarChart3, Building2, FileDown, FileText, Filter, Layers,
+  AlertTriangle, ArrowLeft, BarChart3, Building2, Clock, FileDown, FileText, Filter, Layers,
   ListChecks, Pencil, Search, Star, Trash2,
   Sparkles,
 } from 'lucide-react';
@@ -233,15 +233,16 @@ function WeekDetailView({ params }: { params: Promise<{ id: string }> }) {
         )}
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatTile label="Đơn vị" value={deptStats.length} hint="khoa/phòng có nhiệm vụ" tone="brand" />
-        <StatTile label="Nhiệm vụ" value={flatTasks.length} hint={`${importantCount} quan trọng`} tone="emerald" />
-        <StatTile label="Số liệu" value={metricTotal} hint="nhập tay + AI trích" tone={metricTotal === 0 ? 'slate' : 'violet'} />
+      <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
+        <StatTile label="Đơn vị" value={deptStats.length} hint="khoa/phòng có nhiệm vụ" tone="brand" icon={Building2} />
+        <StatTile label="Nhiệm vụ" value={flatTasks.length} hint={`${importantCount} quan trọng`} tone="emerald" icon={ListChecks} />
+        <StatTile label="Số liệu" value={metricTotal} hint="nhập tay + AI trích" tone={metricTotal === 0 ? 'slate' : 'violet'} icon={BarChart3} />
         <StatTile
           label="Cập nhật"
           value={formatDateKey(vnTodayKey(new Date(week.updatedAt)), true)}
           hint={week.createdBy?.name ? `Tạo bởi ${week.createdBy.name}` : `Tạo ${formatDateKey(vnTodayKey(new Date(week.createdAt)), true)}`}
           tone="slate"
+          icon={Clock}
           small
         />
       </dl>
@@ -327,20 +328,54 @@ function WeekDetailView({ params }: { params: Promise<{ id: string }> }) {
 }
 
 const STAT_TONE = {
-  brand: 'border-t-brand-500',
-  emerald: 'border-t-emerald-500',
-  violet: 'border-t-violet-500',
-  slate: 'border-t-slate-300',
+  brand: {
+    border: 'border-sky-200/80',
+    bg: 'from-sky-50/60 via-white to-white',
+    badge: 'bg-sky-100 text-sky-700 shadow-sky-200/50',
+    title: 'text-sky-800',
+    divider: 'border-sky-100/80',
+  },
+  emerald: {
+    border: 'border-emerald-200/80',
+    bg: 'from-emerald-50/60 via-white to-white',
+    badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50',
+    title: 'text-emerald-800',
+    divider: 'border-emerald-100/80',
+  },
+  violet: {
+    border: 'border-violet-200/80',
+    bg: 'from-violet-50/60 via-white to-white',
+    badge: 'bg-violet-100 text-violet-700 shadow-violet-200/50',
+    title: 'text-violet-800',
+    divider: 'border-violet-100/80',
+  },
+  slate: {
+    border: 'border-slate-200/80',
+    bg: 'from-slate-50/60 via-white to-white',
+    badge: 'bg-slate-100 text-slate-700 shadow-slate-200/50',
+    title: 'text-slate-800',
+    divider: 'border-slate-100/80',
+  },
 } as const;
 
-function StatTile({ label, value, hint, tone, small }: {
-  label: string; value: ReactNode; hint?: string; tone: keyof typeof STAT_TONE; small?: boolean;
+function StatTile({ label, value, hint, tone, small, icon: Icon }: {
+  label: string; value: ReactNode; hint?: string; tone: keyof typeof STAT_TONE; small?: boolean; icon?: React.ComponentType<{ className?: string }>;
 }) {
+  const t = STAT_TONE[tone];
   return (
-    <div className={cn('min-w-0 rounded-2xl border border-t-4 border-slate-200/80 bg-white p-4 shadow-sm', STAT_TONE[tone])}>
-      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className={cn('mt-1 font-bold tabular-nums text-slate-900', small ? 'text-lg' : 'text-2xl')}>{value}</dd>
-      {hint && <dd className="mt-0.5 truncate text-xs text-slate-500">{hint}</dd>}
+    <div className={cn('relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br', t.border, t.bg)}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <dt className={cn('text-xs font-bold uppercase tracking-wider', t.title)}>{label}</dt>
+          <dd className={cn('mt-1.5 font-extrabold tabular-nums text-slate-900', small ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl')}>{value}</dd>
+        </div>
+        {Icon && (
+          <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform', t.badge)}>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+        )}
+      </div>
+      {hint && <dd className={cn('mt-3 truncate border-t pt-2.5 text-xs text-slate-500', t.divider)}>{hint}</dd>}
     </div>
   );
 }

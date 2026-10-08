@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import {
   FileUser, Plus, Search, Edit, Trash2, ArrowRight, GraduationCap, MapPin, Phone, Mail,
-  Briefcase, Award, ClipboardCheck, Calendar, X, CheckCircle2, XCircle, Star,
+  Briefcase, Award, ClipboardCheck, Calendar, X, CheckCircle2, XCircle, Star, Clock, Users,
 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ApplicationForm } from '@/components/secretaries/ApplicationForm';
 import { AdvanceModal } from '@/components/secretaries/AdvanceModal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { cn } from '@/lib/utils';
 
 interface Application {
   id: string;
@@ -188,12 +189,12 @@ export default function ApplicationsPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <StatCard label="Tổng hồ sơ" value={stats.total} accent="from-slate-500 to-slate-700" active={activeTab === 'ALL'} onClick={() => setActiveTab('ALL')} />
-        <StatCard label="Sơ tuyển" value={stats.SCREENING} accent="from-amber-500 to-orange-600" active={activeTab === 'SCREENING'} onClick={() => setActiveTab('SCREENING')} />
-        <StatCard label="Phỏng vấn" value={stats.INTERVIEW} accent="from-blue-500 to-cyan-600" active={activeTab === 'INTERVIEW'} onClick={() => setActiveTab('INTERVIEW')} />
-        <StatCard label="Nhận việc" value={stats.ACCEPTED} accent="from-emerald-500 to-teal-600" active={activeTab === 'ACCEPTED'} onClick={() => setActiveTab('ACCEPTED')} />
-        <StatCard label="Từ chối" value={stats.REJECTED} accent="from-red-500 to-rose-600" active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} />
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+        <StatCard label="Tổng hồ sơ" value={stats.total} tone="cyan" icon={Users} active={activeTab === 'ALL'} onClick={() => setActiveTab('ALL')} hint="Tất cả ứng viên" />
+        <StatCard label="Sơ tuyển" value={stats.SCREENING} tone="amber" icon={Clock} active={activeTab === 'SCREENING'} onClick={() => setActiveTab('SCREENING')} hint="Đang duyệt hồ sơ" />
+        <StatCard label="Phỏng vấn" value={stats.INTERVIEW} tone="blue" icon={Briefcase} active={activeTab === 'INTERVIEW'} onClick={() => setActiveTab('INTERVIEW')} hint="Đang xếp lịch PV" />
+        <StatCard label="Nhận việc" value={stats.ACCEPTED} tone="emerald" icon={CheckCircle2} active={activeTab === 'ACCEPTED'} onClick={() => setActiveTab('ACCEPTED')} hint="Đạt tuyển dụng" />
+        <StatCard label="Từ chối" value={stats.REJECTED} tone="rose" icon={XCircle} active={activeTab === 'REJECTED'} onClick={() => setActiveTab('REJECTED')} hint="Không phù hợp" />
       </div>
 
       {/* Search */}
@@ -272,22 +273,49 @@ export default function ApplicationsPage() {
   );
 }
 
+const APP_STAT_TONES = {
+  cyan: { border: 'border-cyan-200/80', bg: 'from-cyan-50/60 via-white to-white', badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50', title: 'text-cyan-800', divider: 'border-cyan-100/80', ring: 'ring-cyan-500' },
+  amber: { border: 'border-amber-200/80', bg: 'from-amber-50/60 via-white to-white', badge: 'bg-amber-100 text-amber-700 shadow-amber-200/50', title: 'text-amber-800', divider: 'border-amber-100/80', ring: 'ring-amber-500' },
+  blue: { border: 'border-blue-200/80', bg: 'from-blue-50/60 via-white to-white', badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50', title: 'text-blue-800', divider: 'border-blue-100/80', ring: 'ring-blue-500' },
+  emerald: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50', title: 'text-emerald-800', divider: 'border-emerald-100/80', ring: 'ring-emerald-500' },
+  rose: { border: 'border-rose-200/80', bg: 'from-rose-50/60 via-white to-white', badge: 'bg-rose-100 text-rose-700 shadow-rose-200/50', title: 'text-rose-800', divider: 'border-rose-100/80', ring: 'ring-rose-500' },
+} as const;
+
 function StatCard({
-  label, value, accent, active, onClick,
+  label, value, tone = 'cyan', icon: Icon, active, onClick, hint,
 }: {
-  label: string; value: number; accent: string; active?: boolean; onClick?: () => void;
+  label: string; value: number; tone?: keyof typeof APP_STAT_TONES; icon: React.ComponentType<{ className?: string }>; active?: boolean; onClick?: () => void; hint?: string;
 }) {
+  const t = APP_STAT_TONES[tone];
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`text-left bg-white rounded-2xl border shadow-sm p-4 transition-all ${
-        active ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200/80 hover:border-slate-300 hover:shadow-md'
-      }`}
+      className={cn(
+        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br',
+        t.border,
+        t.bg,
+        active && `ring-2 ${t.ring}`
+      )}
     >
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className={`text-2xl font-semibold leading-tight tabular-nums bg-gradient-to-br ${accent} bg-clip-text text-transparent mt-1`}>
-        {value.toLocaleString('vi-VN')}
+      <div className="flex items-start justify-between gap-2 w-full">
+        <div className="min-w-0">
+          <p className={cn('text-xs font-bold uppercase tracking-wider', t.title)}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+              {value.toLocaleString('vi-VN')}
+            </span>
+          </div>
+        </div>
+        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform group-hover:scale-105', t.badge)}>
+          <Icon className="h-4.5 w-4.5" />
+        </div>
       </div>
+      {hint && (
+        <div className={cn('mt-3 w-full border-t pt-2.5 text-xs text-slate-500', t.divider)}>
+          {hint}
+        </div>
+      )}
     </button>
   );
 }

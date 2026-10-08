@@ -2,8 +2,9 @@
 
 import { Select } from '@/components/ui/Select';
 import { useEffect, useState } from 'react';
-import { ShieldCheck, Table2, LayoutGrid, GanttChart } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, FileText, GanttChart, LayoutGrid, ShieldCheck, Table2 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { cn } from '@/lib/utils';
 import LicenseList from '@/components/licenses/LicenseList';
 import LicenseKanban from '@/components/licenses/LicenseKanban';
 import LicenseTimeline from '@/components/licenses/LicenseTimeline';
@@ -149,23 +150,106 @@ export default function LicensesPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4">
-          <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
-          <div className="text-sm text-slate-500 mt-1">Tổng giấy phép</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-green-500">
-          <div className="text-2xl font-bold text-emerald-600">{activeCount}</div>
-          <div className="text-sm text-slate-500 mt-1">Còn hiệu lực</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-orange-500">
-          <div className="text-2xl font-bold text-orange-600">{stats.expiringSoon}</div>
-          <div className="text-sm text-slate-500 mt-1">Sắp hết hạn (&lt;90 ngày)</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 border-l-4 border-red-500">
-          <div className="text-2xl font-bold text-red-600">{stats.expired}</div>
-          <div className="text-sm text-slate-500 mt-1">Đã hết hạn</div>
-        </div>
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
+        <button
+          type="button"
+          onClick={() => setFilterStatus('')}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-sky-200/80 from-sky-50/60 via-white to-white',
+            filterStatus === '' && 'ring-2 ring-sky-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-sky-800">Tổng giấy phép</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{stats.total}</span>
+                <span className="text-xs font-semibold text-sky-700">hồ sơ</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700 shadow-sm shadow-sky-200/50 transition-transform group-hover:scale-105">
+              <FileText className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-sky-100/80 pt-2.5 text-xs text-slate-500">
+            Tất cả giấy phép đang quản lý
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilterStatus(filterStatus === 'ACTIVE' ? '' : 'ACTIVE')}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-emerald-200/80 from-emerald-50/60 via-white to-white',
+            filterStatus === 'ACTIVE' && 'ring-2 ring-emerald-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Còn hiệu lực</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{activeCount}</span>
+                <span className="text-xs font-semibold text-emerald-700">hợp lệ</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shadow-sm shadow-emerald-200/50 transition-transform group-hover:scale-105">
+              <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-emerald-100/80 pt-2.5 text-xs text-slate-500">
+            Bấm để lọc giấy phép còn hạn
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilterStatus(filterStatus === 'EXPIRING_SOON' ? '' : 'EXPIRING_SOON')}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-amber-200/80 from-amber-50/60 via-white to-white',
+            filterStatus === 'EXPIRING_SOON' && 'ring-2 ring-amber-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Sắp hết hạn</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{stats.expiringSoon}</span>
+                <span className="text-xs font-semibold text-amber-700">&lt;90 ngày</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shadow-sm shadow-amber-200/50 transition-transform group-hover:scale-105">
+              <Clock className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-amber-100/80 pt-2.5 text-xs text-slate-500">
+            Cần lên kế hoạch gia hạn sớm
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilterStatus(filterStatus === 'EXPIRED' ? '' : 'EXPIRED')}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-rose-200/80 from-rose-50/60 via-white to-white',
+            filterStatus === 'EXPIRED' && 'ring-2 ring-rose-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-rose-800">Đã hết hạn</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{stats.expired}</span>
+                <span className="text-xs font-semibold text-rose-700">cần xử lý</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 shadow-sm shadow-rose-200/50 transition-transform group-hover:scale-105">
+              <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-rose-100/80 pt-2.5 text-xs text-slate-500">
+            Giấy phép quá hạn chưa gia hạn
+          </div>
+        </button>
       </div>
 
       {/* Filters */}

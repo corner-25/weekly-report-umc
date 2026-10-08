@@ -4,7 +4,7 @@ import { Pagination } from '@/components/crm/Pagination';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Building2, CalendarClock, Clock, Gift, Handshake, History, Plus, QrCode, UserRound, Users } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, Clock, Crown, Gift, Handshake, History, Plus, QrCode, UserRound, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS, GIFT_TYPE_LABELS } from '@/lib/crm/constants';
@@ -108,15 +108,16 @@ export default function CrmOverviewPage() {
 
       <ErrorBanner message={error} />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <Stat label="Cá nhân trong danh bạ" value={counts?.contacts ?? '—'} />
-        <Stat label="Tổ chức" value={counts?.organizations ?? '—'} />
-        <Stat label="Tương tác tháng này" value={counts?.interactionsThisMonth ?? '—'} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+        <Stat label="Cá nhân trong danh bạ" icon={UserRound} tone="cyan" value={counts?.contacts ?? '—'} hint="Khách VIP & đối tác" />
+        <Stat label="Tổ chức" icon={Building2} tone="blue" value={counts?.organizations ?? '—'} hint="Bệnh viện, đối tác, doanh nghiệp" />
+        <Stat label="Tương tác tháng này" icon={Handshake} tone="green" value={counts?.interactionsThisMonth ?? '—'} hint="Mọi lượt tiếp xúc đã ghi" />
         <Stat
           label="Dẫn khám VIP · dẫn đoàn"
+          icon={Crown}
+          tone="accent"
           value={counts ? `${counts.vipEscortsThisMonth} · ${counts.delegationsThisMonth}` : '—'}
           hint="trong tháng này"
-          tone="accent"
         />
       </div>
 

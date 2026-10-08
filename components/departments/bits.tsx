@@ -108,33 +108,45 @@ export function DeptIcon({ name, size = 'md' }: { name: string; size?: 'sm' | 'm
   );
 }
 
-const KPI_TONE_STYLES: Record<Tone, { border: string; bg: string; title: string; divider: string }> = {
-  active: { border: 'border-sky-200/80', bg: 'from-sky-50/60 via-white to-white', title: 'text-sky-800', divider: 'border-sky-100/80' },
-  overdue: { border: 'border-rose-200/80', bg: 'from-rose-50/60 via-white to-white', title: 'text-rose-800', divider: 'border-rose-100/80' },
-  dueSoon: { border: 'border-orange-200/80', bg: 'from-orange-50/60 via-white to-white', title: 'text-orange-800', divider: 'border-orange-100/80' },
-  stale: { border: 'border-amber-200/80', bg: 'from-amber-50/60 via-white to-white', title: 'text-amber-800', divider: 'border-amber-100/80' },
-  done: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', title: 'text-emerald-800', divider: 'border-emerald-100/80' },
-  review: { border: 'border-violet-200/80', bg: 'from-violet-50/60 via-white to-white', title: 'text-violet-800', divider: 'border-violet-100/80' },
-  neutral: { border: 'border-slate-200/80', bg: 'from-slate-50/60 via-white to-white', title: 'text-slate-800', divider: 'border-slate-100/80' },
+import type { LucideIcon } from 'lucide-react';
+
+const KPI_TONE_STYLES: Record<Tone, { border: string; bg: string; badge: string; title: string; divider: string }> = {
+  active: { border: 'border-sky-200/80', bg: 'from-sky-50/60 via-white to-white', badge: 'bg-sky-100 text-sky-700 shadow-sky-200/50', title: 'text-sky-800', divider: 'border-sky-100/80' },
+  overdue: { border: 'border-rose-200/80', bg: 'from-rose-50/60 via-white to-white', badge: 'bg-rose-100 text-rose-700 shadow-rose-200/50', title: 'text-rose-800', divider: 'border-rose-100/80' },
+  dueSoon: { border: 'border-orange-200/80', bg: 'from-orange-50/60 via-white to-white', badge: 'bg-orange-100 text-orange-700 shadow-orange-200/50', title: 'text-orange-800', divider: 'border-orange-100/80' },
+  stale: { border: 'border-amber-200/80', bg: 'from-amber-50/60 via-white to-white', badge: 'bg-amber-100 text-amber-700 shadow-amber-200/50', title: 'text-amber-800', divider: 'border-amber-100/80' },
+  done: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50', title: 'text-emerald-800', divider: 'border-emerald-100/80' },
+  review: { border: 'border-violet-200/80', bg: 'from-violet-50/60 via-white to-white', badge: 'bg-violet-100 text-violet-700 shadow-violet-200/50', title: 'text-violet-800', divider: 'border-violet-100/80' },
+  neutral: { border: 'border-slate-200/80', bg: 'from-slate-50/60 via-white to-white', badge: 'bg-slate-100 text-slate-700 shadow-slate-200/50', title: 'text-slate-800', divider: 'border-slate-100/80' },
 };
 
 /** Ô chỉ số dạng thẻ hiện đại có gradient và vạch phân tách. */
-export function KpiTile({ label, value, tone, hint, onClick, active, className }: {
+export function KpiTile({ label, value, tone, hint, icon: Icon, onClick, active, className }: {
   label: ReactNode;
   value: ReactNode;
   tone: Tone;
   hint?: ReactNode;
+  icon?: LucideIcon;
   onClick?: () => void;
   active?: boolean;
   className?: string;
 }) {
   const st = KPI_TONE_STYLES[tone];
   const body = (
-    <>
-      <span className={cn('relative z-10 flex w-fit items-center text-[11px] font-bold uppercase tracking-wider', st.title)}>{label}</span>
-      <span className="mt-1.5 block text-2xl font-extrabold leading-none tabular-nums sm:text-[28px] text-slate-900">{value}</span>
+    <div className="flex h-full flex-col justify-between">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <span className={cn('relative z-10 flex w-fit items-center text-[11px] font-bold uppercase tracking-wider', st.title)}>{label}</span>
+          <span className="mt-1.5 block text-2xl font-extrabold leading-none tabular-nums sm:text-[28px] text-slate-900">{value}</span>
+        </div>
+        {Icon && (
+          <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform', st.badge)}>
+            <Icon className="h-4.5 w-4.5" aria-hidden="true" />
+          </div>
+        )}
+      </div>
       {hint && <span className={cn('mt-2.5 block text-xs text-slate-500 border-t pt-2 leading-tight', st.divider)}>{hint}</span>}
-    </>
+    </div>
   );
   const cls = cn(
     'relative block min-w-0 rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-br',

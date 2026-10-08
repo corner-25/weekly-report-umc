@@ -276,21 +276,24 @@ export default function MasterTasksPage() {
       />
 
       {/* Summary strip */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
           label="Tổng nhiệm vụ" value={counts.all} icon={ClipboardCheck}
-          accent="from-cyan-500 to-blue-600" active={statusFilter === 'all'}
+          tone="all" active={statusFilter === 'all'}
           onClick={() => setStatusFilter('all')}
+          hint="Tất cả nhiệm vụ thường kỳ"
         />
         <StatCard
           label="Đang thực hiện" value={counts.inProgress} icon={PlayCircle}
-          accent="from-blue-500 to-indigo-600" active={statusFilter === 'inProgress'}
+          tone="inProgress" active={statusFilter === 'inProgress'}
           onClick={() => setStatusFilter(statusFilter === 'inProgress' ? 'all' : 'inProgress')}
+          hint="Bấm để lọc nhiệm vụ đang chạy"
         />
         <StatCard
           label="Đã hoàn thành" value={counts.completed} icon={CheckCircle2}
-          accent="from-emerald-500 to-teal-600" active={statusFilter === 'completed'}
+          tone="completed" active={statusFilter === 'completed'}
           onClick={() => setStatusFilter(statusFilter === 'completed' ? 'all' : 'completed')}
+          hint="Bấm để lọc nhiệm vụ đã hoàn tất"
         />
       </div>
 
@@ -616,26 +619,46 @@ export default function MasterTasksPage() {
   );
 }
 
+const TASK_STAT_TONES: Record<string, { border: string; bg: string; badge: string; title: string; divider: string }> = {
+  all: { border: 'border-cyan-200/80', bg: 'from-cyan-50/60 via-white to-white', badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50', title: 'text-cyan-800', divider: 'border-cyan-100/80' },
+  inProgress: { border: 'border-blue-200/80', bg: 'from-blue-50/60 via-white to-white', badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50', title: 'text-blue-800', divider: 'border-blue-100/80' },
+  completed: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50', title: 'text-emerald-800', divider: 'border-emerald-100/80' },
+};
+
 function StatCard({
-  label, value, icon: Icon, accent, active, onClick,
+  label, value, icon: Icon, tone = 'all', active, onClick, hint,
 }: {
   label: string; value: number; icon: React.ComponentType<{ className?: string }>;
-  accent: string; active?: boolean; onClick?: () => void;
+  tone?: 'all' | 'inProgress' | 'completed'; active?: boolean; onClick?: () => void; hint?: string;
 }) {
+  const t = TASK_STAT_TONES[tone] || TASK_STAT_TONES.all;
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`text-left bg-white rounded-2xl border shadow-sm p-4 flex items-center gap-3 transition-all ${
-        active ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200/80 hover:border-slate-300 hover:shadow-md'
+      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br ${t.border} ${t.bg} ${
+        active ? 'ring-2 ring-cyan-500' : ''
       }`}
     >
-      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${accent} text-white flex items-center justify-center shadow-sm shrink-0`}>
-        <Icon className="w-5 h-5" />
+      <div className="flex items-start justify-between gap-3 w-full">
+        <div className="min-w-0">
+          <p className={`text-xs font-bold uppercase tracking-wider ${t.title}`}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+              {value.toLocaleString('vi-VN')}
+            </span>
+            <span className="text-xs font-semibold text-slate-500">nhiệm vụ</span>
+          </div>
+        </div>
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform group-hover:scale-105 ${t.badge}`}>
+          <Icon className="h-5 w-5" />
+        </div>
       </div>
-      <div className="min-w-0">
-        <div className="text-xs text-slate-500">{label}</div>
-        <div className="text-xl font-semibold text-slate-900 leading-tight tabular-nums">{value.toLocaleString('vi-VN')}</div>
-      </div>
+      {hint && (
+        <div className={`mt-3 w-full border-t pt-2.5 text-xs text-slate-500 ${t.divider}`}>
+          {hint}
+        </div>
+      )}
     </button>
   );
 }

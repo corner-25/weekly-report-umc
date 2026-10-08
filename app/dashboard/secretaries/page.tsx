@@ -2,8 +2,9 @@
 
 import { Select } from '@/components/ui/Select';
 import { useState, useEffect } from 'react';
-import { Plus, Search, UserCheck, Users } from 'lucide-react';
+import { Plus, Search, UserCheck, UserMinus, Users, UserX } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { cn } from '@/lib/utils';
 import { SecretaryList } from '@/components/secretaries/SecretaryList';
 import { SecretaryForm } from '@/components/secretaries/SecretaryForm';
 import { SecretaryDetail } from '@/components/secretaries/SecretaryDetail';
@@ -226,29 +227,112 @@ export default function SecretariesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Kết quả</span><Users className="w-4 h-4 text-slate-400" /></div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900">{secretaries.length}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Đang hoạt động</span><UserCheck className="w-4 h-4 text-emerald-600" /></div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900">
-            {secretaries.filter(s => s.status === 'ACTIVE').length}
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+        <button
+          type="button"
+          onClick={() => setFilters({ ...filters, status: '' })}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-sky-200/80 from-sky-50/60 via-white to-white',
+            filters.status === '' && 'ring-2 ring-sky-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-sky-800">Tổng thư ký</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{secretaries.length}</span>
+                <span className="text-xs font-semibold text-sky-700">nhân sự</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700 shadow-sm shadow-sky-200/50 transition-transform group-hover:scale-105">
+              <Users className="h-5 w-5" aria-hidden="true" />
+            </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-sm text-slate-500">Đang nghỉ phép</div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900">
-            {secretaries.filter(s => s.status === 'ON_LEAVE').length}
+          <div className="mt-3 border-t border-sky-100/80 pt-2.5 text-xs text-slate-500">
+            Toàn bộ danh sách thư ký
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-sm text-slate-500">Không hoạt động</div>
-          <div className="mt-2 text-2xl font-semibold text-slate-900">
-            {secretaries.filter(s => s.status === 'INACTIVE').length}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilters({ ...filters, status: filters.status === 'ACTIVE' ? '' : 'ACTIVE' })}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-emerald-200/80 from-emerald-50/60 via-white to-white',
+            filters.status === 'ACTIVE' && 'ring-2 ring-emerald-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Đang hoạt động</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+                  {secretaries.filter(s => s.status === 'ACTIVE').length}
+                </span>
+                <span className="text-xs font-semibold text-emerald-700">đang làm</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shadow-sm shadow-emerald-200/50 transition-transform group-hover:scale-105">
+              <UserCheck className="h-5 w-5" aria-hidden="true" />
+            </div>
           </div>
-        </div>
+          <div className="mt-3 border-t border-emerald-100/80 pt-2.5 text-xs text-slate-500">
+            Đang công tác tại khoa/phòng
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilters({ ...filters, status: filters.status === 'ON_LEAVE' ? '' : 'ON_LEAVE' })}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-amber-200/80 from-amber-50/60 via-white to-white',
+            filters.status === 'ON_LEAVE' && 'ring-2 ring-amber-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Đang nghỉ phép</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+                  {secretaries.filter(s => s.status === 'ON_LEAVE').length}
+                </span>
+                <span className="text-xs font-semibold text-amber-700">tạm nghỉ</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shadow-sm shadow-amber-200/50 transition-transform group-hover:scale-105">
+              <UserMinus className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-amber-100/80 pt-2.5 text-xs text-slate-500">
+            Nghỉ thai sản / tạm hoãn
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilters({ ...filters, status: filters.status === 'INACTIVE' ? '' : 'INACTIVE' })}
+          className={cn(
+            'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br border-rose-200/80 from-rose-50/60 via-white to-white',
+            filters.status === 'INACTIVE' && 'ring-2 ring-rose-500'
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-rose-800">Không hoạt động</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">
+                  {secretaries.filter(s => s.status === 'INACTIVE').length}
+                </span>
+                <span className="text-xs font-semibold text-rose-700">nghỉ việc</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 shadow-sm shadow-rose-200/50 transition-transform group-hover:scale-105">
+              <UserX className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-rose-100/80 pt-2.5 text-xs text-slate-500">
+            Đã chuyển công tác hoặc nghỉ việc
+          </div>
+        </button>
       </div>
 
       {/* List */}

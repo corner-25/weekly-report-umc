@@ -2,6 +2,8 @@
 
 import { Select } from '@/components/ui/Select';
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Calendar, CalendarDays, Clock, Database, FileText, FolderTree } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { ProcessedRow, ReportType, TimeFilter } from '@/lib/phong-hc/types';
 import {
   parseGitHubData,
@@ -206,13 +208,13 @@ export default function PhongHcNativePage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        <StatCard label="Danh mục" value={stats.totalCategories} accent="border-l-cyan-500" />
-        <StatCard label="Nội dung" value={stats.totalContents} accent="border-l-blue-500" />
-        <StatCard label="Tuần dữ liệu" value={stats.totalWeeks} accent="border-l-violet-500" />
-        <StatCard label="Tuần mới nhất" value={`W${stats.latestWeek}`} accent="border-l-emerald-500" />
-        <StatCard label="Dòng dữ liệu" value={formatNumber(stats.dataRows)} accent="border-l-amber-500" />
-        <StatCard label="Năm" value={stats.years.join(', ')} accent="border-l-rose-500" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6 sm:gap-4">
+        <StatCard label="Danh mục" value={stats.totalCategories} tone="cyan" icon={FolderTree} />
+        <StatCard label="Nội dung" value={stats.totalContents} tone="blue" icon={FileText} />
+        <StatCard label="Tuần dữ liệu" value={stats.totalWeeks} tone="purple" icon={Calendar} />
+        <StatCard label="Tuần mới nhất" value={`W${stats.latestWeek}`} tone="emerald" icon={Clock} />
+        <StatCard label="Dòng dữ liệu" value={formatNumber(stats.dataRows)} tone="amber" icon={Database} />
+        <StatCard label="Năm" value={stats.years.join(', ')} tone="rose" icon={CalendarDays} />
       </div>
 
       {/* Toolbar */}
@@ -425,19 +427,40 @@ export default function PhongHcNativePage() {
   );
 }
 
+const HC_TONES = {
+  cyan: { border: 'border-cyan-200/80', bg: 'from-cyan-50/60 via-white to-white', badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50', title: 'text-cyan-800' },
+  blue: { border: 'border-blue-200/80', bg: 'from-blue-50/60 via-white to-white', badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50', title: 'text-blue-800' },
+  purple: { border: 'border-purple-200/80', bg: 'from-purple-50/60 via-white to-white', badge: 'bg-purple-100 text-purple-700 shadow-purple-200/50', title: 'text-purple-800' },
+  emerald: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50', title: 'text-emerald-800' },
+  amber: { border: 'border-amber-200/80', bg: 'from-amber-50/60 via-white to-white', badge: 'bg-amber-100 text-amber-700 shadow-amber-200/50', title: 'text-amber-800' },
+  rose: { border: 'border-rose-200/80', bg: 'from-rose-50/60 via-white to-white', badge: 'bg-rose-100 text-rose-700 shadow-rose-200/50', title: 'text-rose-800' },
+} as const;
+
 function StatCard({
   label,
   value,
-  accent,
+  tone = 'cyan',
+  icon: Icon,
 }: {
   label: string;
   value: string | number;
-  accent: string;
+  tone?: keyof typeof HC_TONES;
+  icon?: React.ComponentType<{ className?: string }>;
 }) {
+  const t = HC_TONES[tone];
   return (
-    <div className={`bg-white rounded-lg border border-slate-200 border-l-[3px] ${accent} px-3 py-2.5 shadow-sm`}>
-      <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{label}</p>
-      <p className="text-lg font-bold text-slate-900 mt-0.5 tabular-nums">{value}</p>
+    <div className={cn('relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br', t.border, t.bg)}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className={cn('text-[11px] font-bold uppercase tracking-wider', t.title)}>{label}</p>
+          <p className="mt-1.5 text-2xl font-extrabold text-slate-900 tabular-nums">{value}</p>
+        </div>
+        {Icon && (
+          <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm', t.badge)}>
+            <Icon className="h-4.5 w-4.5" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

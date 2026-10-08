@@ -8,6 +8,7 @@ import { Building2, CalendarDays, CalendarRange, CheckCircle2, ChevronRight, Clo
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Select } from '@/components/ui/Select';
+import { cn } from '@/lib/utils';
 
 interface HospitalEvent {
   id: string; name: string; date: string; time?: string | null; description?: string | null;
@@ -73,11 +74,11 @@ export default function HospitalEventsPage() {
       <PageHeader icon={CalendarRange} title="Sự kiện bệnh viện" description="Theo dõi lịch, đầu mối và tiến độ tổ chức tại một nơi" actions={<Link href="/dashboard/hospital-events/new" className="inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-cyan-500/20"><Plus className="h-4 w-4" /> Tạo sự kiện</Link>} />
       {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Summary icon={CalendarDays} label="Sắp diễn ra" value={upcoming.length} detail="Từ hôm nay" />
-        <Summary icon={Building2} label="Phòng chủ trì" value={upcoming.filter((event) => event.eventType === 'ORGANIZED').length} detail="Sự kiện sắp tới" />
-        <Summary icon={UsersRound} label="Phòng phối hợp" value={upcoming.filter((event) => event.eventType === 'COLLABORATED').length} detail="Sự kiện sắp tới" />
-        <Summary icon={CheckCircle2} label="Tiến độ công việc" value={totalTasks ? `${Math.round(completedTasks / totalTasks * 100)}%` : '—'} detail={`${completedTasks}/${totalTasks} việc hoàn thành`} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+        <Summary icon={CalendarDays} tone="cyan" label="Sắp diễn ra" value={upcoming.length} detail="Từ hôm nay" />
+        <Summary icon={Building2} tone="blue" label="Phòng chủ trì" value={upcoming.filter((event) => event.eventType === 'ORGANIZED').length} detail="Sự kiện sắp tới" />
+        <Summary icon={UsersRound} tone="purple" label="Phòng phối hợp" value={upcoming.filter((event) => event.eventType === 'COLLABORATED').length} detail="Sự kiện sắp tới" />
+        <Summary icon={CheckCircle2} tone="green" label="Tiến độ công việc" value={totalTasks ? `${Math.round(completedTasks / totalTasks * 100)}%` : '—'} detail={`${completedTasks}/${totalTasks} việc hoàn thành`} />
       </div>
 
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
@@ -106,6 +107,31 @@ export default function HospitalEventsPage() {
   );
 }
 
-function Summary({ icon: Icon, label, value, detail }: { icon: typeof Clock3; label: string; value: string | number; detail: string }) {
-  return <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"><div className="flex items-start justify-between"><div><p className="text-xs font-medium text-slate-500 sm:text-sm">{label}</p><p className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{value}</p><p className="mt-1 text-xs text-slate-400">{detail}</p></div><div className="rounded-xl bg-cyan-50 p-2.5 text-cyan-700"><Icon className="h-5 w-5" /></div></div></div>;
+const SUMMARY_TONES = {
+  cyan: { border: 'border-cyan-200/80', bg: 'from-cyan-50/60 via-white to-white', badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50', title: 'text-cyan-800', divider: 'border-cyan-100/80' },
+  blue: { border: 'border-blue-200/80', bg: 'from-blue-50/60 via-white to-white', badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50', title: 'text-blue-800', divider: 'border-blue-100/80' },
+  purple: { border: 'border-purple-200/80', bg: 'from-purple-50/60 via-white to-white', badge: 'bg-purple-100 text-purple-700 shadow-purple-200/50', title: 'text-purple-800', divider: 'border-purple-100/80' },
+  green: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50', title: 'text-emerald-800', divider: 'border-emerald-100/80' },
+} as const;
+
+function Summary({ icon: Icon, label, value, detail, tone = 'cyan' }: { icon: any; label: string; value: string | number; detail: string; tone?: keyof typeof SUMMARY_TONES }) {
+  const t = SUMMARY_TONES[tone];
+  return (
+    <div className={cn('relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md bg-gradient-to-br', t.border, t.bg)}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={cn('text-xs font-bold uppercase tracking-wider', t.title)}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{value}</span>
+          </div>
+        </div>
+        <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform hover:scale-105', t.badge)}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </div>
+      </div>
+      <div className={cn('mt-3 border-t pt-2.5 text-xs text-slate-500 leading-snug', t.divider)}>
+        {detail}
+      </div>
+    </div>
+  );
 }

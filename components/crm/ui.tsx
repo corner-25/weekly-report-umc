@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { AlertCircle, Check, X } from 'lucide-react';
+import { AlertCircle, Check, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Tier } from './types';
 
@@ -80,12 +80,86 @@ export function TagPill({ children }: { children: ReactNode }) {
   return <span className="inline-flex items-center rounded-full border border-slate-200 px-2 py-0.5 text-[11px] font-medium text-slate-600">{children}</span>;
 }
 
-export function Stat({ label, value, hint, tone = 'default' }: { label: string; value: ReactNode; hint?: string; tone?: 'default' | 'accent' }) {
+export function Stat({
+  label,
+  value,
+  hint,
+  icon: Icon,
+  tone = 'default',
+}: {
+  label: string;
+  value: ReactNode;
+  hint?: string;
+  icon?: LucideIcon;
+  tone?: 'default' | 'accent' | 'cyan' | 'blue' | 'purple' | 'green';
+}) {
+  const toneClasses = {
+    default: {
+      border: 'border-slate-200/80',
+      bg: 'from-slate-50/60 via-white to-white',
+      badge: 'bg-slate-100 text-slate-700 shadow-slate-200/50',
+      title: 'text-slate-800',
+      divider: 'border-slate-100/80',
+    },
+    accent: {
+      border: 'border-amber-200/80',
+      bg: 'from-amber-50/60 via-white to-white',
+      badge: 'bg-amber-100 text-amber-700 shadow-amber-200/50',
+      title: 'text-amber-800',
+      divider: 'border-amber-100/80',
+    },
+    cyan: {
+      border: 'border-cyan-200/80',
+      bg: 'from-cyan-50/60 via-white to-white',
+      badge: 'bg-cyan-100 text-cyan-700 shadow-cyan-200/50',
+      title: 'text-cyan-800',
+      divider: 'border-cyan-100/80',
+    },
+    blue: {
+      border: 'border-blue-200/80',
+      bg: 'from-blue-50/60 via-white to-white',
+      badge: 'bg-blue-100 text-blue-700 shadow-blue-200/50',
+      title: 'text-blue-800',
+      divider: 'border-blue-100/80',
+    },
+    purple: {
+      border: 'border-purple-200/80',
+      bg: 'from-purple-50/60 via-white to-white',
+      badge: 'bg-purple-100 text-purple-700 shadow-purple-200/50',
+      title: 'text-purple-800',
+      divider: 'border-purple-100/80',
+    },
+    green: {
+      border: 'border-emerald-200/80',
+      bg: 'from-emerald-50/60 via-white to-white',
+      badge: 'bg-emerald-100 text-emerald-700 shadow-emerald-200/50',
+      title: 'text-emerald-800',
+      divider: 'border-emerald-100/80',
+    },
+  }[tone];
+
   return (
-    <div className={cn(PANEL, 'p-4', tone === 'accent' && 'border-orange-200 bg-orange-50/40')}>
-      <p className="text-xs font-medium text-slate-500 sm:text-sm">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums text-slate-900 sm:text-3xl">{value}</p>
-      {hint && <p className="mt-0.5 text-xs text-slate-500">{hint}</p>}
+    <div className={cn('relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 sm:p-5 shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-br', toneClasses.border, toneClasses.bg)}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={cn('text-xs font-bold uppercase tracking-wider', toneClasses.title)}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl font-extrabold tabular-nums text-slate-900 sm:text-3xl">
+              {value}
+            </span>
+          </div>
+        </div>
+        {Icon && (
+          <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform hover:scale-105', toneClasses.badge)}>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+        )}
+      </div>
+      {hint && (
+        <div className={cn('mt-3 border-t pt-2.5 text-xs text-slate-500 leading-snug', toneClasses.divider)}>
+          {hint}
+        </div>
+      )}
     </div>
   );
 }

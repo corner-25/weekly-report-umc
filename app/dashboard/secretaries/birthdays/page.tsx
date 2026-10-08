@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Cake } from 'lucide-react';
+import { Cake, Calendar, Clock } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { cn } from '@/lib/utils';
 
 interface BirthdaySecretary {
   id: string;
@@ -101,52 +102,61 @@ export default function SecretaryBirthdaysPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-rose-50 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-2xl font-semibold text-slate-900">{secretaries.length}</div>
-              <div className="text-sm text-slate-500">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-rose-200/80 bg-gradient-to-br from-rose-50/60 via-white to-white p-4 sm:p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-rose-800">
                 {period === 'today' && 'Sinh nhật hôm nay'}
                 {period === 'week' && 'Sinh nhật tuần này'}
                 {period === 'month' && 'Sinh nhật tháng này'}
+              </p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{secretaries.length}</span>
+                <span className="text-xs font-semibold text-rose-700">người</span>
               </div>
             </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 shadow-sm shadow-rose-200/50">
+              <Cake className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-rose-100/80 pt-2.5 text-xs text-slate-500">
+            Danh sách cần chúc mừng
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-2xl font-semibold text-slate-900">
-                {secretaries.filter(s => s.isToday).length}
+        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/60 via-white to-white p-4 sm:p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Đúng ngày hôm nay</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{secretaries.filter(s => s.isToday).length}</span>
+                <span className="text-xs font-semibold text-amber-700">hôm nay</span>
               </div>
-              <div className="text-sm text-slate-500">Sinh nhật hôm nay</div>
             </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shadow-sm shadow-amber-200/50">
+              <Clock className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 border-t border-amber-100/80 pt-2.5 text-xs text-slate-500">
+            Sinh nhật đúng ngày hôm nay
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-200/80 bg-gradient-to-br from-cyan-50/60 via-white to-white p-4 sm:p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-800">Tháng hiện tại</p>
+              <div className="mt-1.5 flex items-baseline gap-1.5">
+                <span className="text-2xl sm:text-3xl font-extrabold tabular-nums text-slate-900">{monthNames[currentMonth]}</span>
+              </div>
             </div>
-            <div>
-              <div className="text-xl font-semibold text-slate-900">{monthNames[currentMonth]}</div>
-              <div className="text-sm text-slate-500">Tháng hiện tại</div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700 shadow-sm shadow-cyan-200/50">
+              <Calendar className="h-5 w-5" aria-hidden="true" />
             </div>
+          </div>
+          <div className="mt-3 border-t border-cyan-100/80 pt-2.5 text-xs text-slate-500">
+            Chu kỳ theo dõi sinh nhật
           </div>
         </div>
       </div>
