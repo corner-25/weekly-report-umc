@@ -270,9 +270,33 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
         </FormSection>
 
         <FormSection title="Người giới thiệu & quan hệ với VIP">
-          <Field label="Người giới thiệu" hint="Chọn trong danh bạ hoặc nhập tên mới."><EntityCombobox kind="contact" value={referrer} onChange={setReferrer} excludeIds={initial ? [initial.id] : []} /></Field>
-          <Field label="VIP liên quan"><EntityCombobox kind="contact" value={vip} onChange={setVip} allowNew={false} excludeIds={initial ? [initial.id] : []} /></Field>
-          <Field label="Khách là gì của VIP?"><Select value={relationship} onChange={e => setRelationship(e.target.value)}><option value="">Chọn quan hệ</option>{['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r}>{r}</option>)}</Select></Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Người giới thiệu" hint="Người giới thiệu đối tác này vào danh bạ (lãnh đạo, bác sĩ...).">
+              <EntityCombobox kind="contact" value={referrer} onChange={setReferrer} excludeIds={initial ? [initial.id] : []} />
+            </Field>
+            <Field label="VIP liên quan" hint="Nếu là người thân, trợ lý hoặc có quan hệ đặc biệt với VIP.">
+              <EntityCombobox
+                kind="contact"
+                value={vip}
+                onChange={(next) => {
+                  setVip(next);
+                  if (!next) setRelationship('');
+                }}
+                allowNew={false}
+                excludeIds={initial ? [initial.id] : []}
+              />
+            </Field>
+          </div>
+          {vip && (
+            <Field label="Mối quan hệ với VIP" hint="Ví dụ: Vợ/chồng, Con, Thư ký, Trợ lý, Bạn bè...">
+              <Select value={relationship} onChange={(e) => setRelationship(e.target.value)} className="px-3.5 py-2.5">
+                <option value="">Chọn mối quan hệ với VIP</option>
+                {['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </Select>
+            </Field>
+          )}
         </FormSection>
         <FormSection title="Sở thích & lưu ý">
           <div className="grid gap-4 sm:grid-cols-2">

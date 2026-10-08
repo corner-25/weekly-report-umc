@@ -17,9 +17,9 @@ function Flags({ v }: { v: MouView }) {
   ].filter(Boolean) as Array<{ text: string; cls: string; title?: string }>;
   if (!flags.length) return null;
   return (
-    <span className="mt-1 flex flex-wrap gap-1">
+    <span className="mt-1 flex flex-wrap gap-1.5">
       {flags.map((f) => (
-        <span key={f.text} title={f.title} className={cn('inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset', f.cls)}>
+        <span key={f.text} title={f.title} className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset shadow-2xs', f.cls)}>
           <AlertTriangle className="h-3 w-3" aria-hidden="true" />
           {f.text}
         </span>
@@ -72,7 +72,7 @@ export function MouTable({ views, onOpen }: { views: MouView[]; onOpen: (id: str
                 {v.contactPerson && <span className="block truncate text-xs text-slate-500">{v.contactPerson}</span>}
               </span>
               <span className="flex min-w-0 flex-wrap gap-1">
-                {v.fields.map((f) => <span key={f} title={f} className="truncate rounded bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600">{f}</span>)}
+                {v.fields.map((f) => <span key={f} title={f} className="truncate rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-medium text-slate-600">{f}</span>)}
               </span>
               <span className="text-xs tabular-nums text-slate-600"><span className="text-slate-400 lg:hidden">Ký </span>{fmtDate(v.signedDate)}</span>
               <span><ExpiryText days={v.daysToExpiry} iso={v.expiryDate} /></span>

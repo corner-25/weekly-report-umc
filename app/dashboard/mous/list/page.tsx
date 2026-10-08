@@ -15,6 +15,7 @@ import {
 import { usePortfolio } from '@/components/mous/portfolio/usePortfolio';
 import { MouTable } from '@/components/mous/portfolio/MouTable';
 import { MouDetailHost, type HostMode } from '@/components/mous/portfolio/MouDetailHost';
+import { Pagination } from '@/components/crm/Pagination';
 import { downloadMouCsv } from '@/components/mous/portfolio/export-csv';
 import { HintTip } from '@/components/work/dashboard/Glossary';
 import { VERDICTS, VERDICT_LABELS } from '@/lib/mou/assess';
@@ -50,8 +51,11 @@ function MouList() {
     return id ? { kind: 'view', id } : { kind: 'none' };
   });
   const { views, departments, isLoading, error, reload } = usePortfolio();
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const update = useCallback((changes: Partial<typeof state>) => {
+    setPage(1);
     setState((prev) => {
       const next = { ...prev, ...changes };
       const q = new URLSearchParams();
@@ -67,6 +71,10 @@ function MouList() {
     [views, q, phong, linhvuc, doitac, phamvi, giaidoan, danhgia],
   );
   const shown = useMemo(() => sortMous(scoped.filter((v) => matchesView(v, state.view)), state.sapxep), [scoped, state.view, state.sapxep]);
+  const paged = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return shown.slice(start, start + pageSize);
+  }, [shown, page, pageSize]);
   const fields = useMemo(() => [...new Set(views.flatMap((v) => v.fields))].sort((a, b) => a.localeCompare(b, 'vi')), [views]);
   const ownerIds = useMemo(() => new Set(views.map((v) => v.departmentId)), [views]);
   const hasFilters = Boolean(state.q || state.phong || state.linhvuc || state.doitac || state.phamvi || state.giaidoan || state.danhgia);
@@ -180,7 +188,14 @@ function MouList() {
           <EmptyState title="Không có MOU nào khớp" hint={hasFilters ? 'Thử bỏ bớt bộ lọc.' : 'Chọn góc nhìn khác.'} />
         </div>
       ) : (
-        <MouTable views={shown} onOpen={(id) => setMode({ kind: 'view', id })} />
+        <div key={page} className="space-y-3 animate-fade-in">
+          <MouTable views={paged} onOpen={(id) => setMode({ kind: 'view', id })} />
+          {shown.length > pageSize && (
+            <div className={cn(PANEL, 'overflow-hidden')}>
+              <Pagination page={page} total={shown.length} pageSize={pageSize} onChange={setPage} disabled={isLoading} />
+            </div>
+          )}
+        </div>
       )}
 
       <MouDetailHost mode={mode} onChange={setMode} departments={departments} onSaved={reload} />

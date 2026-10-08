@@ -63,11 +63,11 @@ export function categoryOf(partner: string, field: string | null | undefined): M
  * Mới → đang soạn (chưa ký xong); Hoàn thành → đã kết thúc hợp tác;
  * Đang xử lý → hiệu lực, hoặc hết hạn nếu đã qua ngày hết hạn.
  */
-export function statusOf(statusName: string | null | undefined, expiry: Date | null, now = new Date()): MOUStatus {
+export function statusOf(statusName: string | null | undefined, expiry: Date | null, now = new Date(), signedDate?: Date | null): MOUStatus {
   const s = (statusName ?? '').trim();
-  if (s === 'Mới') return 'DRAFT';
   if (s === 'Hoàn thành') return 'TERMINATED';
   if (expiry && expiry.getTime() < now.getTime() - DAY_MS) return 'EXPIRED';
+  if (s === 'Mới' && !signedDate) return 'DRAFT';
   return 'ACTIVE';
 }
 
@@ -147,7 +147,7 @@ export function toMouRecord(row: OfficeMouRow, detail: OfficeMouDetail | undefin
     partnerName,
     partnerCountry: countryOf(partnerName),
     category: categoryOf(partnerName, field),
-    status: statusOf(row.statusName, expiry, now),
+    status: statusOf(row.statusName, expiry, now, signed),
     externalStatus: row.statusName?.trim() || null,
     cooperationField: field,
     progressPercent: row.percentDone == null ? null : Math.round(row.percentDone),
