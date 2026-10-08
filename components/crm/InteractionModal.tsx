@@ -94,6 +94,8 @@ interface FormState {
   followUpDate: string;
   followUpNote: string;
   followUpPreset: string;
+  followUpType: 'INVESTIGATION' | 'RESULT' | 'FOLLOW_UP' | 'OTHER';
+  autoCreatePlannedEscort: boolean;
 }
 
 function addDaysToDateString(baseIsoOrLocal: string, days: number): string {
@@ -112,6 +114,8 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     const purpose = initial.purpose ?? '';
     const initialDate = initial.followUpDate ? initial.followUpDate.slice(0, 10) : '';
     const initialNote = initial.followUp ?? '';
+    const isMriOrCls = /mri|ct|cls|cận lâm sàng|chụp/i.test(initialNote);
+    const isResult = /kết quả|hội chẩn|đọc kq/i.test(initialNote);
     return {
       type: initial.type,
       status: initial.status,
@@ -140,6 +144,8 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
       followUpDate: initialDate,
       followUpNote: initialNote,
       followUpPreset: initialDate ? 'custom' : 'none',
+      followUpType: isMriOrCls ? 'INVESTIGATION' : isResult ? 'RESULT' : 'FOLLOW_UP',
+      autoCreatePlannedEscort: false,
     };
   }
   return {
@@ -166,6 +172,8 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     followUpDate: '',
     followUpNote: '',
     followUpPreset: 'none',
+    followUpType: 'INVESTIGATION',
+    autoCreatePlannedEscort: false,
   };
 }
 
@@ -197,6 +205,7 @@ function buildBody(form: FormState): InteractionInput {
       doctors: form.doctors.map(d => 'id' in d ? { id: d.id } : { newName: d.newName }),
       followUpDate: form.followUpDate ? new Date(`${form.followUpDate}T08:00:00+07:00`).toISOString() : null,
       followUp: form.followUpNote ? cleanText(form.followUpNote) : form.followUpDate ? `Tái khám: ${formatDate(form.followUpDate)}` : undefined,
+      autoCreatePlannedEscort: form.autoCreatePlannedEscort,
     }),
     guestCount: isDelegation ? toInt(form.guestCount) : undefined,
     purpose: isDelegation ? cleanText(form.purpose) : undefined,
@@ -423,6 +432,7 @@ function EscortFields({ form, set, errors }: SectionProps) {
       set('followUpPreset', 'none');
       set('followUpDate', '');
       set('followUpNote', '');
+      set('autoCreatePlannedEscort', false);
       return;
     }
     if (presetId === 'custom') {
@@ -434,16 +444,22 @@ function EscortFields({ form, set, errors }: SectionProps) {
     set('followUpPreset', presetId);
     set('followUpDate', dateStr);
     const label = presetId === '1' ? 'Hẹn ngày mai quay lại'
-      : presetId === '2' ? 'Hẹn 2 ngày nữa quay lại chụp MRI / Cận lâm sàng'
+      : presetId === '2' ? (form.followUpType === 'RESULT' ? 'Hẹn 2 ngày nữa quay lại đọc kết quả / CLS' : 'Hẹn 2 ngày nữa quay lại chụp MRI / Cận lâm sàng')
       : presetId === '3' ? 'Hẹn 3 ngày nữa quay lại đọc kết quả / CLS'
       : presetId === '7' ? 'Hẹn quay lại sau 1 tuần'
-      : presetId === '14' ? 'Tái khám sau 14 ngày'
+      : presetId === '14' ? 'Tái khám sau 14 ngày (2 tuần)'
       : presetId === '30' ? 'Tái khám sau 30 ngày (1 tháng)'
       : presetId === '60' ? 'Tái khám sau 60 ngày (2 tháng)'
       : presetId === '90' ? 'Tái khám sau 90 ngày (3 tháng)'
       : 'Tái khám sau 6 tháng';
     if (!form.followUpNote || form.followUpNote.startsWith('Tái khám sau') || form.followUpNote.startsWith('Hẹn')) {
       set('followUpNote', label);
+    }
+    // Các mốc hẹn ngắn ngày (dưới 7 ngày) hoặc mục đích CLS/kết quả: tự động tích đón khách
+    if (days <= 7 || form.followUpType === 'INVESTIGATION' || form.followUpType === 'RESULT') {
+      set('autoCreatePlannedEscort', true);
+    } else {
+      set('autoCreatePlannedEscort', false);
     }
   };
 
@@ -535,79 +551,180 @@ function EscortFields({ form, set, errors }: SectionProps) {
       {form.patientName && <p className="text-xs text-slate-500">Người được khám ghi trong dữ liệu cũ: {form.patientName}</p>}
       <ChipGroup legend="Dịch vụ hỗ trợ" options={ESCORT_SERVICES} value={form.services} onChange={(next) => set('services', next)} error={errors.services} />
       
-      {/* Lịch hẹn tái khám */}
+      {/* Lịch hẹn tái khám / chụp MRI / Cận lâm sàng */}
       <div className="rounded-2xl border border-teal-200/80 bg-gradient-to-br from-teal-50/60 via-white to-white p-4 sm:p-5 shadow-xs space-y-3.5">
         <div className="flex items-center justify-between">
           <label className="text-sm font-semibold text-teal-900 flex items-center gap-2">
             <Stethoscope className="h-4 w-4 text-teal-600" />
-            Lịch hẹn tái khám của khách
+            Lịch hẹn tiếp theo của khách (Tái khám / Chụp MRI / CLS)
           </label>
           {form.followUpDate && (
             <span className="inline-flex items-center gap-1 text-xs font-semibold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-200/60">
               <CalendarCheck className="h-3 w-3" />
-              Tái khám: {formatDate(form.followUpDate)}
+              Hẹn: {formatDate(form.followUpDate)}
             </span>
           )}
         </div>
         <p className="text-xs text-slate-500">
-          Chọn nhanh mốc bác sĩ hẹn (14, 30, 60 ngày...) hoặc ngày cụ thể để hệ thống tự động nhắc lịch trên Dashboard CRM.
+          Ghi nhận hẹn quay lại chụp MRI, làm cận lâm sàng, đọc kết quả hoặc tái khám sau điều trị để nhắc khách và tự động lên lịch đón.
         </p>
 
-        <div className="flex flex-wrap gap-2">
-          {[
-            { id: 'none', label: 'Không hẹn' },
-            { id: '1', label: 'Ngày mai (+1d)' },
-            { id: '2', label: '2 ngày nữa (chụp MRI / CLS)' },
-            { id: '3', label: '3 ngày nữa' },
-            { id: '7', label: '1 tuần' },
-            { id: '14', label: '14 ngày (2 tuần)' },
-            { id: '30', label: '30 ngày (1 tháng)' },
-            { id: '60', label: '60 ngày (2 tháng)' },
-            { id: '90', label: '90 ngày (3 tháng)' },
-            { id: 'custom', label: 'Chọn ngày khác' },
-          ].map((preset) => {
-            const active = form.followUpPreset === preset.id;
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => handlePresetClick(preset.id)}
-                className={cn(
-                  'rounded-full px-3 py-1 text-xs font-medium transition-all duration-150',
-                  active
-                    ? 'bg-teal-700 text-white shadow-xs ring-2 ring-teal-700/20'
-                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300'
-                )}
-              >
-                {preset.label}
-              </button>
-            );
-          })}
+        {/* Chọn loại mục đích hẹn */}
+        <div>
+          <span className="text-xs font-semibold text-slate-600 block mb-1.5">Mục đích hẹn:</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { id: 'INVESTIGATION', label: 'Chụp MRI / Cận lâm sàng', icon: '🧲' },
+              { id: 'RESULT', label: 'Đọc kết quả / Hội chẩn', icon: '📋' },
+              { id: 'FOLLOW_UP', label: 'Tái khám sau điều trị', icon: '🔄' },
+              { id: 'OTHER', label: 'Hẹn khác', icon: '📅' },
+            ].map((t) => {
+              const active = form.followUpType === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    const nextType = t.id as FormState['followUpType'];
+                    set('followUpType', nextType);
+                    if (nextType === 'INVESTIGATION') {
+                      const dateStr = addDaysToDateString(form.occurredAt, 2);
+                      set('followUpPreset', '2');
+                      set('followUpDate', dateStr);
+                      set('followUpNote', 'Hẹn 2 ngày nữa quay lại chụp MRI / Cận lâm sàng');
+                      set('autoCreatePlannedEscort', true);
+                    } else if (nextType === 'RESULT') {
+                      const dateStr = addDaysToDateString(form.occurredAt, 2);
+                      set('followUpPreset', '2');
+                      set('followUpDate', dateStr);
+                      set('followUpNote', 'Hẹn 2 ngày nữa quay lại đọc kết quả / CLS');
+                      set('autoCreatePlannedEscort', true);
+                    } else if (nextType === 'FOLLOW_UP') {
+                      const dateStr = addDaysToDateString(form.occurredAt, 14);
+                      set('followUpPreset', '14');
+                      set('followUpDate', dateStr);
+                      set('followUpNote', 'Tái khám sau 14 ngày (2 tuần)');
+                      set('autoCreatePlannedEscort', false);
+                    }
+                  }}
+                  className={cn(
+                    'flex items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition border',
+                    active
+                      ? 'bg-teal-700 text-white border-teal-700 shadow-2xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-teal-50 hover:text-teal-900'
+                  )}
+                >
+                  <span>{t.icon}</span>
+                  <span className="truncate">{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Nút chọn nhanh mốc thời gian */}
+        <div>
+          <span className="text-xs font-semibold text-slate-600 block mb-1.5">Mốc thời gian:</span>
+          <div className="flex flex-wrap gap-2">
+            {(form.followUpType === 'INVESTIGATION' || form.followUpType === 'RESULT'
+              ? [
+                  { id: 'none', label: 'Không hẹn' },
+                  { id: '1', label: 'Ngày mai (+1d)' },
+                  { id: '2', label: '2 ngày nữa (chụp MRI / CLS)' },
+                  { id: '3', label: '3 ngày nữa' },
+                  { id: '7', label: '1 tuần' },
+                  { id: 'custom', label: 'Chọn ngày khác' },
+                ]
+              : form.followUpType === 'FOLLOW_UP'
+              ? [
+                  { id: 'none', label: 'Không hẹn' },
+                  { id: '14', label: '14 ngày (2 tuần)' },
+                  { id: '30', label: '30 ngày (1 tháng)' },
+                  { id: '60', label: '60 ngày (2 tháng)' },
+                  { id: '90', label: '90 ngày (3 tháng)' },
+                  { id: 'custom', label: 'Chọn ngày khác' },
+                ]
+              : [
+                  { id: 'none', label: 'Không hẹn' },
+                  { id: '1', label: 'Ngày mai' },
+                  { id: '2', label: '2 ngày nữa' },
+                  { id: '7', label: '1 tuần' },
+                  { id: '14', label: '2 tuần' },
+                  { id: '30', label: '1 tháng' },
+                  { id: 'custom', label: 'Chọn ngày khác' },
+                ]
+            ).map((preset) => {
+              const active = form.followUpPreset === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handlePresetClick(preset.id)}
+                  className={cn(
+                    'rounded-full px-3 py-1 text-xs font-medium transition-all duration-150',
+                    active
+                      ? 'bg-teal-700 text-white shadow-xs ring-2 ring-teal-700/20'
+                      : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300'
+                  )}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {form.followUpPreset !== 'none' && (
-          <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-teal-100/80">
-            <Field label="Ngày hẹn tái khám" required>
-              <input
-                type="date"
-                value={form.followUpDate}
-                onChange={(e) => {
-                  set('followUpDate', e.target.value);
-                  set('followUpPreset', 'custom');
-                }}
-                className={inputClass('')}
-              />
-            </Field>
-            <Field label="Ghi chú dặn dò / xét nghiệm khi tái khám">
-              <input
-                type="text"
-                value={form.followUpNote}
-                onChange={(e) => set('followUpNote', e.target.value)}
-                placeholder="Ví dụ: Nhịn ăn sáng làm XN máu, mang phim MRI..."
-                className={inputClass('')}
-              />
-            </Field>
-          </div>
+          <>
+            <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-teal-100/80">
+              <Field label="Ngày hẹn" required>
+                <input
+                  type="date"
+                  value={form.followUpDate}
+                  onChange={(e) => {
+                    set('followUpDate', e.target.value);
+                    set('followUpPreset', 'custom');
+                  }}
+                  className={inputClass('')}
+                />
+              </Field>
+              <Field label="Ghi chú dặn dò / thủ thuật / phòng máy">
+                <input
+                  type="text"
+                  value={form.followUpNote}
+                  onChange={(e) => set('followUpNote', e.target.value)}
+                  placeholder={
+                    form.followUpType === 'INVESTIGATION'
+                      ? 'Ví dụ: Nhịn ăn sáng, chụp MRI sọ não lúc 08:30 phòng MRI...'
+                      : form.followUpType === 'RESULT'
+                      ? 'Ví dụ: Quay lại đọc KQ chụp MRI và lấy toa...'
+                      : 'Ví dụ: Nhịn ăn sáng làm XN máu, mang phim cũ...'
+                  }
+                  className={inputClass('')}
+                />
+              </Field>
+            </div>
+
+            {/* Checkbox tự động lên lịch đón dẫn khách vào ngày hẹn */}
+            {form.followUpDate && (
+              <label className="flex items-start gap-2.5 rounded-xl border border-teal-200/90 bg-teal-50/70 p-3 cursor-pointer hover:bg-teal-100/60 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={form.autoCreatePlannedEscort}
+                  onChange={(e) => set('autoCreatePlannedEscort', e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-teal-300 text-teal-600 focus:ring-teal-500"
+                />
+                <div className="text-xs">
+                  <span className="font-semibold text-teal-900 block">
+                    Tự động lên lịch đón dẫn khách vào ngày hẹn (tạo lịch hẹn PLANNED trên Dashboard)
+                  </span>
+                  <span className="text-teal-700 block mt-0.5">
+                    Đúng ngày hẹn, Dashboard sẽ nổi lượt tiếp đón để nhân viên chủ động đón khách tại sảnh và dẫn vào phòng chụp MRI / phòng khám.
+                  </span>
+                </div>
+              </label>
+            )}
+          </>
         )}
       </div>
 

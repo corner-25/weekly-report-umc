@@ -200,6 +200,7 @@ export const interactionInputSchema = z
     note: optionalText(4000),
     followUp: optionalText(500).optional(),
     followUpDate: z.string().nullable().optional(),
+    autoCreatePlannedEscort: z.boolean().optional(),
     ...delegationFields,
   })
   .refine((v) => v.type === 'DELEGATION' || v.staffName.length > 0, {

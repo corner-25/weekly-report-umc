@@ -10,7 +10,7 @@ import { HttpError, interactionInclude, resolveContact, resolveOrganization, toI
 
 export async function saveInteraction(data: InteractionInput, options: { id?: string; createdById?: string }) {
   const {
-    contactId, newContactName, newContactPhone, organizationId, organizationName, participantIds, occurredAt, referrerContactId, newReferrerName, relatedVipContactId, vipRelationship, doctors, ...fields
+    contactId, newContactName, newContactPhone, organizationId, organizationName, participantIds, occurredAt, referrerContactId, newReferrerName, relatedVipContactId, vipRelationship, doctors, autoCreatePlannedEscort, ...fields
   } = data;
 
   const saved = await prisma.$transaction(async (tx) => {
@@ -77,25 +77,69 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
       organizationId: orgId,
     };
 
+    let result;
     if (options.id) {
       // Lượt nạp từ sổ không có ngày: người dùng đặt ngày khác thì coi như đã có ngày thật.
       const before = await tx.crmInteraction.findUnique({ where: { id: options.id }, select: { occurredAt: true, dateUnknown: true } });
       const dateUnknown = Boolean(before?.dateUnknown && before.occurredAt.getTime() === values.occurredAt.getTime());
       await tx.crmInteractionParticipant.deleteMany({ where: { interactionId: options.id } });
-      return tx.crmInteraction.update({
+      result = await tx.crmInteraction.update({
         where: { id: options.id },
         data: { ...values, dateUnknown, participants: { create: members.map((cid) => ({ contactId: cid })) } },
         include: interactionInclude,
       });
+    } else {
+      result = await tx.crmInteraction.create({
+        data: {
+          ...values,
+          createdById: options.createdById ?? null,
+          participants: { create: members.map((cid) => ({ contactId: cid })) },
+        },
+        include: interactionInclude,
+      });
     }
-    return tx.crmInteraction.create({
-      data: {
-        ...values,
-        createdById: options.createdById ?? null,
-        participants: { create: members.map((cid) => ({ contactId: cid })) },
-      },
-      include: interactionInclude,
-    });
+
+    // Tự động lên lịch đón tiếp (PLANNED) vào ngày hẹn nếu được chọn (vd: 2 ngày nữa quay lại chụp MRI)
+    if (autoCreatePlannedEscort && values.followUpDate && mainContactId) {
+      const dayStart = new Date(values.followUpDate);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(values.followUpDate);
+      dayEnd.setHours(23, 59, 59, 999);
+      const existingPlanned = await tx.crmInteraction.findFirst({
+        where: {
+          contactId: mainContactId,
+          status: 'PLANNED',
+          occurredAt: { gte: dayStart, lte: dayEnd },
+        },
+      });
+      if (!existingPlanned) {
+        const plannedTitle = fields.followUp
+          ? `Đón tiếp: ${fields.followUp}`
+          : 'Tiếp đón & dẫn khách theo lịch hẹn';
+        await tx.crmInteraction.create({
+          data: {
+            type: 'VIP_ESCORT',
+            status: 'PLANNED',
+            occurredAt: values.followUpDate,
+            contactId: mainContactId,
+            organizationId: orgId,
+            patientName: values.patientName,
+            destination: values.destination,
+            title: plannedTitle,
+            content: `Lịch hẹn tiếp đón khách theo dặn dò của đợt khám ngày ${new Date(occurredAt).toLocaleDateString('vi-VN')}: ${fields.followUp ?? 'Tái khám / Chụp MRI'}.`,
+            referrerContactId: referralId ?? null,
+            referrer: referralId ? (await tx.crmContact.findUnique({ where: { id: referralId }, select: { fullName: true } }))?.fullName ?? null : null,
+            relatedVipContactId: vipId ?? null,
+            vipRelationship: vipId ? vipRelationship : null,
+            staffName: values.staffName,
+            createdById: options.createdById ?? null,
+            doctors: { create: doctorIds.map((cId) => ({ contactId: cId })) },
+          },
+        });
+      }
+    }
+
+    return result;
   }, CRM_TRANSACTION);
 
   return toInteractionDto(saved);
