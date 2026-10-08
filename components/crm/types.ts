@@ -194,7 +194,7 @@ export interface OverviewDTO {
 }
 
 export interface SearchDTO {
-  contacts: Array<{ id: string; fullName: string; academicTitle: string | null; subtitle: string | null }>;
+  contacts: Array<{ id: string; fullName: string; academicTitle: string | null; subtitle: string | null; department?: string | null }>;
   organizations: Array<{ id: string; name: string }>;
 }
 
@@ -214,7 +214,7 @@ export interface ContactListItem {
   phone: string | null;
   email: string | null;
   status: ContactStatus;
-  currentPosition: { title: string; isFocalPoint: boolean; organization: { id: string; name: string } | null } | null;
+  currentPosition: { title: string; department?: string | null; isFocalPoint: boolean; organization: { id: string; name: string } | null } | null;
   /** Số tổ chức người này là đầu mối liên hệ. */
   focalCount: number;
   lastInteractionAt: string | null;

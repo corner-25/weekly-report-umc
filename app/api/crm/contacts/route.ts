@@ -66,7 +66,7 @@ export const GET = handle(async (request: Request) => {
       positions: {
         where: { isCurrent: true },
         orderBy: [{ isFocalPoint: 'desc' }, { createdAt: 'desc' }],
-        select: { title: true, isFocalPoint: true, organization: { select: { id: true, name: true } } },
+        select: { title: true, department: true, isFocalPoint: true, organization: { select: { id: true, name: true } } },
       },
       interactions: { orderBy: { occurredAt: 'desc' }, take: 1, select: { occurredAt: true } },
       participations: {

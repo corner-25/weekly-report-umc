@@ -21,6 +21,9 @@ const getCachedDashboardStats = unstable_cache(
     const moUExpirySoon = new Date();
     moUExpirySoon.setDate(moUExpirySoon.getDate() + 90);
 
+    const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+
     const [
       masterTaskStatusCounts,
       totalWeeks,
@@ -33,6 +36,16 @@ const getCachedDashboardStats = unstable_cache(
       birthdaySecretaries,
       recentTransfers,
       expiringMOUs,
+      workOpen,
+      workDone,
+      workOverdue,
+      mouTotal,
+      mouActive,
+      crmVipMonth,
+      crmDelegationMonth,
+      crmTotalEscorts,
+      crmTotalContacts,
+      crmTotalOrgs,
     ] = await Promise.all([
       // Nhiệm vụ trong báo cáo tuần các phòng năm nay — theo đánh giá AI (Phòng HC sửa tay thắng).
       prisma.$queryRaw<Array<{ total: bigint; in_progress: bigint; completed: bigint }>>`
@@ -141,6 +154,26 @@ const getCachedDashboardStats = unstable_cache(
           status: true,
         },
       }),
+
+      // Quản lý công việc BGĐ chỉ đạo
+      prisma.workItem.count({ where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED'] } } }),
+      prisma.workItem.count({ where: { status: 'DONE' } }),
+      prisma.workItem.count({ where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED'] }, dueDate: { lt: startOfToday } } }),
+
+      // Bản ghi nhớ hợp tác MOU
+      prisma.mOU.count({ where: { deletedAt: null } }),
+      prisma.mOU.count({ where: { deletedAt: null, status: 'ACTIVE' } }),
+
+      // CRM Đối tác & Tiếp đón
+      prisma.crmInteraction.count({
+        where: { type: 'VIP_ESCORT', occurredAt: { gte: startOfMonth, lte: endOfMonth } },
+      }),
+      prisma.crmInteraction.count({
+        where: { type: 'DELEGATION', occurredAt: { gte: startOfMonth, lte: endOfMonth } },
+      }),
+      prisma.crmInteraction.count({ where: { type: 'VIP_ESCORT' } }),
+      prisma.crmContact.count({ where: { status: 'ACTIVE' } }),
+      prisma.crmOrganization.count(),
     ]);
 
     const totalMasterTasks = masterTaskStatusCounts.total;
@@ -207,6 +240,22 @@ const getCachedDashboardStats = unstable_cache(
       birthdayPreview: weekBirthdays.slice(0, 4),
       recentTransfers,
       expiringMOUs,
+      workStats: {
+        open: workOpen,
+        done: workDone,
+        overdue: workOverdue,
+      },
+      mouStats: {
+        total: mouTotal,
+        active: mouActive,
+      },
+      crmStats: {
+        vipEscortsThisMonth: crmVipMonth,
+        delegationsThisMonth: crmDelegationMonth,
+        totalVipEscorts: crmTotalEscorts,
+        totalContacts: crmTotalContacts,
+        totalOrgs: crmTotalOrgs,
+      },
     };
   },
   [CACHE_TAGS.dashboardStats],

@@ -8,7 +8,7 @@ import { displayName } from './format';
 import type { SearchDTO } from './types';
 
 /** Kết quả chọn: hồ sơ có sẵn (`id`) hoặc tên mới gõ tay (`newName`). */
-export type ComboValue = { id: string; label: string } | { newName: string };
+export type ComboValue = { id: string; label: string; department?: string | null } | { newName: string; department?: string | null };
 
 export function comboLabel(value: ComboValue | null): string {
   if (!value) return '';
@@ -19,6 +19,7 @@ interface Suggestion {
   id: string;
   label: string;
   subtitle: string | null;
+  department?: string | null;
   /** Các tên dùng để so trùng khi gõ (có/không học hàm). */
   names: string[];
 }
@@ -44,9 +45,15 @@ const normalize = (text: string) => text.trim().replace(/\s+/g, ' ').toLocaleLow
 
 function toSuggestions(kind: EntityComboboxProps['kind'], data: SearchDTO): Suggestion[] {
   if (kind === 'contact') {
-    return (data.contacts ?? []).map((c) => ({ id: c.id, label: displayName(c), subtitle: c.subtitle, names: [c.fullName, displayName(c)] }));
+    return (data.contacts ?? []).map((c) => ({
+      id: c.id,
+      label: displayName(c),
+      subtitle: c.subtitle,
+      department: c.department,
+      names: [c.fullName, displayName(c)],
+    }));
   }
-  return (data.organizations ?? []).map((o) => ({ id: o.id, label: o.name, subtitle: null, names: [o.name] }));
+  return (data.organizations ?? []).map((o) => ({ id: o.id, label: o.name, subtitle: null, department: null, names: [o.name] }));
 }
 
 export function EntityCombobox({
@@ -137,7 +144,7 @@ export function EntityCombobox({
     const suggestion = visible[index];
     typedRef.current = false;
     if (suggestion) {
-      onChange({ id: suggestion.id, label: suggestion.label });
+      onChange({ id: suggestion.id, label: suggestion.label, department: suggestion.department });
       setText(clearOnSelect ? '' : suggestion.label);
     } else if (canCreate) {
       const name = text.trim().replace(/\s+/g, ' ');
@@ -158,7 +165,7 @@ export function EntityCombobox({
       if (!trimmed) return onChange(null);
       const same = findSame(trimmed);
       if (same) {
-        onChange({ id: same.id, label: same.label });
+        onChange({ id: same.id, label: same.label, department: same.department });
         setText(same.label);
       } else if (allowNew) {
         onChange({ newName: trimmed.replace(/\s+/g, ' ') });

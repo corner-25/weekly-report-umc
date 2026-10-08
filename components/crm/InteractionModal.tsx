@@ -413,8 +413,26 @@ function EscortFields({ form, set, errors }: SectionProps) {
           <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
           {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
         </Field>
-        <Field label="Khoa/phòng đến" error={errors.destination}>
-          <input value={form.destination} onChange={(event) => set('destination', event.target.value)} className={inputClass(errors.destination)} placeholder="Ví dụ: Khoa Nội tim mạch" />
+        <Field
+          label="Khoa/phòng đến"
+          error={errors.destination}
+          hint={form.doctors.some((d) => 'department' in d && d.department) && !form.destination ? 'Tự động gợi ý từ bác sĩ khám' : undefined}
+        >
+          <input value={form.destination} onChange={(event) => set('destination', event.target.value)} className={inputClass(errors.destination)} placeholder="Ví dụ: Tim mạch, Thần kinh, Tiết niệu..." />
+          {form.doctors.find((d) => 'department' in d && d.department && d.department !== form.destination) && (
+            <button
+              type="button"
+              onClick={() => {
+                const docWithDept = form.doctors.find((d) => 'department' in d && d.department);
+                if (docWithDept && 'department' in docWithDept && docWithDept.department) {
+                  set('destination', docWithDept.department);
+                }
+              }}
+              className="mt-1 text-xs font-medium text-cyan-700 hover:text-cyan-900 hover:underline"
+            >
+              Gợi ý từ bác sĩ: Điền “{form.doctors.find((d) => 'department' in d && d.department)?.department}”
+            </button>
+          )}
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -428,9 +446,37 @@ function EscortFields({ form, set, errors }: SectionProps) {
           </Select>
         </Field>
       </div>
-      <Field label="Bác sĩ khám" hint="Có thể chọn nhiều bác sĩ; chưa có thì nhập tên mới.">
-        <EntityCombobox kind="contact" value={null} clearOnSelect onChange={v => { if (v) set('doctors', [...form.doctors, v]); }} excludeIds={form.doctors.flatMap(d => 'id' in d ? [d.id] : [])} />
-        <div className="mt-2 flex flex-wrap gap-2">{form.doctors.map((d, index) => <button type="button" key={index} className="rounded-full bg-cyan-50 px-3 py-1 text-sm" onClick={() => set('doctors', form.doctors.filter((_, i) => i !== index))}>{'id' in d ? d.label : d.newName} ×</button>)}</div>
+      <Field label="Bác sĩ khám" hint="Có thể chọn nhiều bác sĩ; khi chọn hệ thống sẽ tự điền khoa/phòng tương ứng.">
+        <EntityCombobox
+          kind="contact"
+          value={null}
+          clearOnSelect
+          onChange={(v) => {
+            if (v) {
+              set('doctors', [...form.doctors, v]);
+              if ('department' in v && v.department && !form.destination.trim()) {
+                set('destination', v.department);
+              }
+            }
+          }}
+          excludeIds={form.doctors.flatMap((d) => ('id' in d ? [d.id] : []))}
+        />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {form.doctors.map((d, index) => (
+            <button
+              type="button"
+              key={index}
+              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/80 bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-900 hover:bg-cyan-100 transition-colors"
+              onClick={() => set('doctors', form.doctors.filter((_, i) => i !== index))}
+            >
+              <span>{'id' in d ? d.label : d.newName}</span>
+              {'department' in d && d.department && (
+                <span className="text-xs font-normal text-cyan-700">({d.department})</span>
+              )}
+              <span className="text-cyan-400 hover:text-cyan-700">×</span>
+            </button>
+          ))}
+        </div>
       </Field>
       {form.patientName && <p className="text-xs text-slate-500">Người được khám ghi trong dữ liệu cũ: {form.patientName}</p>}
       <ChipGroup legend="Dịch vụ hỗ trợ" options={ESCORT_SERVICES} value={form.services} onChange={(next) => set('services', next)} error={errors.services} />

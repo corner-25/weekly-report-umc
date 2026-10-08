@@ -68,6 +68,22 @@ export interface DashboardStats {
   birthdayPreview: DashboardBirthday[];
   recentTransfers: DashboardTransfer[];
   expiringMOUs: DashboardMou[];
+  workStats?: {
+    open: number;
+    done: number;
+    overdue: number;
+  };
+  mouStats?: {
+    total: number;
+    active: number;
+  };
+  crmStats?: {
+    vipEscortsThisMonth: number;
+    delegationsThisMonth: number;
+    totalVipEscorts: number;
+    totalContacts: number;
+    totalOrgs: number;
+  };
 }
 
 /** Tóm tắt Quản lý công việc trên trang Tổng quan, trả về từ `/api/work/summary`. */

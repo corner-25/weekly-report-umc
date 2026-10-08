@@ -25,7 +25,7 @@ export const GET = handle(async (request: Request) => {
         id: true, fullName: true, academicTitle: true, tags: true,
         positions: {
           where: { isCurrent: true }, take: 1, orderBy: { createdAt: 'desc' },
-          select: { title: true, organization: { select: { name: true } } },
+          select: { title: true, department: true, organization: { select: { name: true } } },
         },
       },
     }),
@@ -40,8 +40,8 @@ export const GET = handle(async (request: Request) => {
   return NextResponse.json({
     contacts: contacts.map(({ positions, ...c }) => {
       const p = positions[0];
-      const subtitle = p ? [p.title, p.organization?.name].filter(Boolean).join(', ') : null;
-      return { ...c, subtitle: subtitle || c.tags.join(', ') || null };
+      const subtitle = p ? [p.title, p.department, p.organization?.name].filter(Boolean).join(', ') : null;
+      return { ...c, department: p?.department ?? null, subtitle: subtitle || c.tags.join(', ') || null };
     }),
     organizations,
   });

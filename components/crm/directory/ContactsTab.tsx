@@ -39,8 +39,13 @@ function OrgCell({ c }: { c: ContactListItem }) {
       ) : (
         <span className="block truncate text-slate-500">Chưa gắn đơn vị</span>
       )}
-      <span className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-slate-500">
+      <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
         <span className="truncate max-w-[200px]" title={p.title}>{p.title}</span>
+        {p.department && (
+          <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-800 border border-teal-200/60 shrink-0">
+            {p.department}
+          </span>
+        )}
         {c.focalCount > 0 && (
           <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 shrink-0">
             đầu mối{c.focalCount > 1 ? ` ${c.focalCount}` : ''}
