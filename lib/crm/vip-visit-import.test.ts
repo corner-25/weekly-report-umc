@@ -83,6 +83,27 @@ describe('buildVisits', () => {
     expect(patients[0].variants).toContain('N26-004583');
   });
 
+  it('dòng tiếp theo không tên lấy khách của dòng trên', () => {
+    const { patients, visits, skipped } = buildVisits([
+      row({ row: 2, fullName: 'Nguyễn Phi Hùng', recordNo: 'N25-0354923', specialty: 'Thần kinh' }),
+      row({ row: 3, stt: null, date: null, fullName: null, birthDate: null, recordNo: null, phone: null, specialty: 'Tai mũi họng' }),
+    ]);
+    expect(skipped).toEqual([]);
+    expect(patients).toHaveLength(1);
+    expect(visits[0].items.map((i) => i.specialty)).toEqual(['Thần kinh', 'Tai mũi họng']);
+  });
+
+  it('dòng chỉ ghi tên gộp vào người cùng tên duy nhất trong file', () => {
+    const { patients, visits } = buildVisits([
+      row({ row: 2, date: '2026-09-04', fullName: 'Nguyễn Thị Mai', birthDate: '1963-01-29', recordNo: 'N22-0334204' }),
+      row({ row: 3, date: '2026-10-02', fullName: 'Nguyễn Thị Mai', birthDate: null, recordNo: null, specialty: 'Tim mạch' }),
+      row({ row: 4, stt: null, date: null, fullName: 'Nguyễn Thị Mai', birthDate: null, recordNo: null, specialty: 'Nội Tiết' }),
+    ]);
+    expect(patients).toHaveLength(1);
+    expect(visits).toHaveLength(2);
+    expect(visits[1].items).toHaveLength(2);
+  });
+
   it('đánh dấu cần xem khi người giới thiệu lệch cột', () => {
     const { visits } = buildVisits([row({ referrer: '38 Hưng Thái, Phường Tân Hưng, HCM' })]);
     expect(visits[0].needsReview).toBe(true);

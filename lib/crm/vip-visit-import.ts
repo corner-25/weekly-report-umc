@@ -263,8 +263,19 @@ function pickRecord(records: string[]): string | null {
  * khám (cùng người, cùng ngày). Dòng thiếu ngày lấy ngày của dòng phía trên (file ghi
  * dòng tiếp theo của cùng buổi khám không lặp ngày).
  */
-export function buildVisits(rows: RawVisitRow[]): { patients: Patient[]; visits: Visit[]; skipped: Array<{ row: number; reason: string }> } {
+export function buildVisits(input: RawVisitRow[]): { patients: Patient[]; visits: Visit[]; skipped: Array<{ row: number; reason: string }> } {
   const skipped: Array<{ row: number; reason: string }> = [];
+  // Dòng tiếp theo của cùng buổi khám (không số thứ tự, không tên) chỉ ghi chuyên khoa → lấy thông tin khách từ dòng trên.
+  const rows = input.reduce<RawVisitRow[]>((acc, r) => {
+    const prev = acc[acc.length - 1];
+    const continuation = !clean(r.fullName) && !clean(r.stt) && prev && clean(prev.fullName);
+    acc.push(
+      continuation
+        ? { ...r, fullName: prev.fullName, birthDate: prev.birthDate, recordNo: r.recordNo ?? prev.recordNo, phone: r.phone ?? prev.phone, address: r.address ?? prev.address, referrer: r.referrer ?? prev.referrer }
+        : r,
+    );
+    return acc;
+  }, []);
   const specialties = rows.map((r) => r.specialty ?? '').filter(Boolean);
 
   // Union-find gộp dòng cùng một người.
@@ -284,6 +295,21 @@ export function buildVisits(rows: RawVisitRow[]): { patients: Patient[]; visits:
       if (byNameDob.has(nameKey)) union(i, byNameDob.get(nameKey)!);
       else byNameDob.set(nameKey, i);
     }
+  });
+
+  // Dòng chỉ ghi tên (không mã hồ sơ, không ngày sinh — vd buổi tái khám ghi vội): gộp vào người
+  // cùng tên nếu trong file chỉ có đúng một người tên đó; nhiều người trùng tên thì để riêng.
+  const rootsByName = new Map<string, Set<number>>();
+  rows.forEach((r, i) => {
+    if (clean(r.fullName) && (normalizeRecordNo(r.recordNo) || clean(r.birthDate))) {
+      const k = toSearchKey(clean(r.fullName));
+      rootsByName.set(k, (rootsByName.get(k) ?? new Set()).add(find(i)));
+    }
+  });
+  rows.forEach((r, i) => {
+    if (!clean(r.fullName) || normalizeRecordNo(r.recordNo) || clean(r.birthDate)) return;
+    const roots = rootsByName.get(toSearchKey(clean(r.fullName)));
+    if (roots && new Set([...roots].map(find)).size === 1) union(i, [...roots][0]);
   });
 
   const groups = new Map<number, number[]>();
