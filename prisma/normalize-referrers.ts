@@ -25,7 +25,7 @@ interface ReferrerConfig {
 const REFERRERS: ReferrerConfig[] = [
   {
     name: 'Nguyễn Hoàng Bắc',
-    academicTitle: 'PGS.TS.BS.',
+    academicTitle: 'GS.TS.BS.',
     tier: 'VIP',
     tags: ['Ban Giám đốc', 'Người giới thiệu'],
     title: 'Nguyên Giám đốc Bệnh viện',
