@@ -2,7 +2,8 @@
 
 import { EntityCombobox, type ComboValue } from '@/components/crm/EntityCombobox';
 import { Pagination } from '@/components/crm/Pagination';
-import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Crown, Search } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -20,11 +21,12 @@ import { ACCENT_BTN, EmptyState, ErrorBanner, PANEL, PRIMARY_BTN, SECONDARY_BTN,
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 import { DateInput } from '@/components/ui/DateInput';
 
-type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'OTHER' | 'PLANNED';
+type TypeTab = 'ALL' | 'VIP_ESCORT' | 'DELEGATION' | 'FOLLOW_UP' | 'OTHER' | 'PLANNED';
 const TABS: Array<{ value: TypeTab; label: string }> = [
   { value: 'ALL', label: 'Tất cả' },
   { value: 'VIP_ESCORT', label: 'Dẫn khám VIP' },
   { value: 'DELEGATION', label: 'Tiếp đoàn' },
+  { value: 'FOLLOW_UP', label: 'Nhắc tái khám' },
   { value: 'OTHER', label: 'Khác' },
   { value: 'PLANNED', label: 'Lịch hẹn' },
 ];
@@ -38,12 +40,25 @@ const isOtherType = (item: InteractionDTO) => item.type !== 'VIP_ESCORT' && item
 type Dialog = { mode: InteractionMode; initial?: InteractionDTO };
 
 export default function CrmInteractionsPage() {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-slate-500">Đang tải...</div>}>
+      <CrmInteractionsContent />
+    </Suspense>
+  );
+}
+
+function CrmInteractionsContent() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') as TypeTab | null;
+  const initialScope = searchParams.get('scope');
+
   const [referrerFilter, setReferrerFilter] = useState<ComboValue | null>(null);
   const [doctorFilter, setDoctorFilter] = useState<ComboValue | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [visitStats, setVisitStats] = useState<{ done: number; planned: number; patients: number; referrers: number; doctors: number; byReferrer: Array<{ id: string; name: string; count: number }>; byDoctor: Array<{ id: string; name: string; count: number }> } | null>(null);
-  const [tab, setTab] = useState<TypeTab>('ALL');
+  const [tab, setTab] = useState<TypeTab>(initialTab && TABS.some(t => t.value === initialTab) ? initialTab : 'ALL');
+  const [followUpScope, setFollowUpScope] = useState<'upcoming14' | 'upcoming30' | 'all' | 'overdue'>((initialScope as any) || 'upcoming14');
   const [staffName, setStaffName] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -70,7 +85,7 @@ export default function CrmInteractionsPage() {
     return () => window.clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => setPage(1), [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, referrerFilter, doctorFilter]);
+  useEffect(() => setPage(1), [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, referrerFilter, doctorFilter, followUpScope]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -78,6 +93,10 @@ export default function CrmInteractionsPage() {
     if (tab === 'VIP_ESCORT') {
       if (referrerFilter && 'id' in referrerFilter) params.set('referrerId', referrerFilter.id);
       if (doctorFilter && 'id' in doctorFilter) params.set('doctorId', doctorFilter.id);
+    }
+    if (tab === 'FOLLOW_UP') {
+      params.set('followUp', '1');
+      params.set('followUpScope', followUpScope);
     }
     if (tab === 'OTHER') params.set('type', 'OTHER_GROUP');
     // Tab "Khác" gồm nhiều loại — lấy hết rồi lọc ở giao diện.
@@ -107,7 +126,7 @@ export default function CrmInteractionsPage() {
         setLoading(false);
       });
     return () => controller.abort();
-  }, [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, reloadKey, page, referrerFilter, doctorFilter]);
+  }, [tab, staffName, from, to, debouncedSearch, year, purpose, topic, hostDepartmentId, needsReview, reloadKey, page, referrerFilter, doctorFilter, followUpScope]);
 
   useEffect(() => {
     const now = new Date();
@@ -118,9 +137,10 @@ export default function CrmInteractionsPage() {
   }, [reloadKey]);
 
   const delegationFilter = tab === 'DELEGATION' && Boolean(year || purpose || topic || hostDepartmentId || needsReview);
-  const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL' || delegationFilter);
+  const hasFilter = Boolean(staffName || from || to || debouncedSearch || tab !== 'ALL' || delegationFilter || followUpScope !== 'upcoming14');
   const resetFilters = () => {
     setTab('ALL');
+    setFollowUpScope('upcoming14');
     setReferrerFilter(null); setDoctorFilter(null);
     setYear('');
     setPurpose('');
@@ -241,6 +261,32 @@ export default function CrmInteractionsPage() {
           </button>
         ))}
       </div>
+
+      {tab === 'FOLLOW_UP' && (
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-teal-200/80 bg-teal-50/60 p-3 shadow-2xs">
+          <span className="text-xs font-bold uppercase tracking-wider text-teal-900 mr-1">Khoảng thời gian:</span>
+          {[
+            { id: 'upcoming14', label: '14 ngày tới (2 tuần)' },
+            { id: 'upcoming30', label: '30 ngày tới (1 tháng)' },
+            { id: 'all', label: 'Tất cả có hẹn' },
+            { id: 'overdue', label: 'Đã quá hạn' },
+          ].map((scope) => (
+            <button
+              key={scope.id}
+              type="button"
+              onClick={() => setFollowUpScope(scope.id as any)}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-xs font-semibold transition',
+                followUpScope === scope.id
+                  ? 'bg-teal-700 text-white shadow-xs'
+                  : 'bg-white text-teal-800 border border-teal-200/80 hover:bg-teal-100/50'
+              )}
+            >
+              {scope.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {tab === 'VIP_ESCORT' && (
         <VipEscortStatsCard

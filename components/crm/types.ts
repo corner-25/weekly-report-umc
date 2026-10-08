@@ -176,6 +176,8 @@ export interface OverviewDTO {
   planned: InteractionDTO[];
   /** Lịch hẹn đã qua ngày mà chưa cập nhật kết quả. */
   overduePlanned: InteractionDTO[];
+  /** Khách có lịch hẹn tái khám sắp tới. */
+  upcomingFollowUps?: InteractionDTO[];
   dormant: DormantItem[];
   /** Đối chiếu với Excel báo cáo tuần, tháng gần nhất trước. */
   reconcile: ReconcileRow[];
@@ -190,6 +192,7 @@ export interface OverviewDTO {
     interactionsThisMonth: number;
     vipEscortsThisMonth: number;
     delegationsThisMonth: number;
+    upcomingFollowUps?: number;
   };
 }
 

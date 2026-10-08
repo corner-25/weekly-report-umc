@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { AlertTriangle, ArrowRight, CalendarClock, Gift, HeartHandshake } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarClock, Gift, HeartHandshake, Stethoscope } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS, INTERACTION_TYPE_LABELS } from '@/lib/crm/constants';
 import { crmFetch } from './api';
 import { daysUntilLabel, displayName, formatDate } from './format';
@@ -17,6 +19,7 @@ const PREVIEW = 4;
  * số lượt trong tháng. Tải riêng — CRM lỗi không làm hỏng cả Dashboard.
  */
 export function DashboardCrmWidget() {
+  const [leftTab, setLeftTab] = useState<'planned' | 'followup'>('planned');
   const { data, error } = useSWR<OverviewDTO>(`/api/crm/overview?window=${WINDOW_DAYS}`, (url: string) => crmFetch<OverviewDTO>(url), {
     revalidateOnFocus: false,
   });
@@ -46,8 +49,17 @@ export function DashboardCrmWidget() {
 
       {data && (
         <div className="space-y-4 px-5 py-4">
-          {(data.overduePlanned.length > 0 || unplannedCare > 0) && (
+          {(data.overduePlanned.length > 0 || unplannedCare > 0 || ((data.upcomingFollowUps?.length ?? 0) > 0)) && (
             <div className="flex flex-wrap items-center gap-2">
+              {Boolean(data.upcomingFollowUps && data.upcomingFollowUps.length > 0) && (
+                <Link
+                  href="/dashboard/crm/interactions?tab=FOLLOW_UP&scope=upcoming14"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-teal-300/80 bg-teal-50 px-3.5 py-1 text-xs font-semibold text-teal-800 hover:bg-teal-100 transition-colors shadow-2xs"
+                >
+                  <Stethoscope className="h-3.5 w-3.5 shrink-0 text-teal-600" aria-hidden="true" />
+                  <span>{data.upcomingFollowUps?.length} khách đến lịch nhắc tái khám ({WINDOW_DAYS} ngày tới)</span>
+                </Link>
+              )}
               {data.overduePlanned.length > 0 && (
                 <Link
                   href="/dashboard/crm"
@@ -71,30 +83,78 @@ export function DashboardCrmWidget() {
 
           <div className="grid gap-5 md:grid-cols-2">
             <div>
-              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> Lịch dẫn khách & đoàn
-              </h3>
-              {data.planned.length === 0 ? (
-                <p className="text-sm text-slate-500">Không có lịch hẹn trong {WINDOW_DAYS} ngày tới.</p>
+              <div className="mb-2.5 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setLeftTab('planned')}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition',
+                    leftTab === 'planned' ? 'bg-cyan-100/80 text-cyan-900' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                  )}
+                >
+                  <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> Lịch hẹn dẫn ({data.planned.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLeftTab('followup')}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition',
+                    leftTab === 'followup' ? 'bg-teal-100/80 text-teal-900' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                  )}
+                >
+                  <Stethoscope className="h-3.5 w-3.5" aria-hidden="true" /> Nhắc tái khám ({data.upcomingFollowUps?.length ?? 0})
+                </button>
+              </div>
+
+              {leftTab === 'planned' ? (
+                data.planned.length === 0 ? (
+                  <p className="text-sm text-slate-500">Không có lịch hẹn trong {WINDOW_DAYS} ngày tới.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {data.planned.slice(0, PREVIEW).map((p) => (
+                      <li key={p.id} className="flex items-start gap-3">
+                        <div className="w-12 shrink-0 text-center">
+                          <div className="text-sm font-semibold tabular-nums text-slate-900">{formatDate(p.occurredAt, 'dd/MM')}</div>
+                          <div className="text-[11px] tabular-nums text-slate-400">{formatDate(p.occurredAt, 'HH:mm')}</div>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-900">
+                            {p.contact ? displayName(p.contact) : p.organization?.name ?? INTERACTION_TYPE_LABELS[p.type]}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">
+                            {INTERACTION_TYPE_LABELS[p.type]}{p.destination ? ` · ${p.destination}` : ''} · {p.staffName}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )
               ) : (
-                <ul className="space-y-2">
-                  {data.planned.slice(0, PREVIEW).map((p) => (
-                    <li key={p.id} className="flex items-start gap-3">
-                      <div className="w-12 shrink-0 text-center">
-                        <div className="text-sm font-semibold tabular-nums text-slate-900">{formatDate(p.occurredAt, 'dd/MM')}</div>
-                        <div className="text-[11px] tabular-nums text-slate-400">{formatDate(p.occurredAt, 'HH:mm')}</div>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-900">
-                          {p.contact ? displayName(p.contact) : p.organization?.name ?? INTERACTION_TYPE_LABELS[p.type]}
-                        </p>
-                        <p className="truncate text-xs text-slate-500">
-                          {INTERACTION_TYPE_LABELS[p.type]}{p.destination ? ` · ${p.destination}` : ''} · {p.staffName}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                (data.upcomingFollowUps ?? []).length === 0 ? (
+                  <p className="text-sm text-slate-500">Không có khách đến lịch tái khám trong {WINDOW_DAYS} ngày tới.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {(data.upcomingFollowUps ?? []).slice(0, PREVIEW).map((p) => (
+                      <li key={p.id} className="flex items-start gap-3">
+                        <div className="w-12 shrink-0 text-center">
+                          <div className="text-sm font-semibold tabular-nums text-teal-700">{formatDate(p.followUpDate, 'dd/MM')}</div>
+                          <div className="text-[11px] font-medium text-slate-400">Tái khám</div>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-900">
+                            {p.contact ? displayName(p.contact) : p.patientName || 'Khách VIP'}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">
+                            {p.destination ?? 'Chuyên khoa'}{p.doctors && p.doctors.length > 0 ? ` · BS. ${p.doctors.map(d => d.fullName).join(', ')}` : ''}
+                          </p>
+                          {p.followUp && (
+                            <p className="truncate text-[11px] font-medium text-teal-700 mt-0.5">{p.followUp}</p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )
               )}
             </div>
 

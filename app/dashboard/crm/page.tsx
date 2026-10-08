@@ -4,7 +4,7 @@ import { Pagination } from '@/components/crm/Pagination';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Building2, CalendarClock, Clock, Crown, Gift, Handshake, History, Plus, QrCode, UserRound, Users } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, Clock, Crown, Gift, Handshake, History, Plus, QrCode, Stethoscope, UserRound, Users } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { DATE_KIND_LABELS, GIFT_TYPE_LABELS } from '@/lib/crm/constants';
@@ -144,6 +144,26 @@ export default function CrmOverviewPage() {
           <InteractionTimeline items={data.planned} compact onStatusChange={changeStatus} />
         )}
       </SectionCard>
+
+      {data && (data.upcomingFollowUps?.length ?? 0) > 0 && (
+        <SectionCard
+          title={`Lịch hẹn tái khám của khách (${data.upcomingFollowUps!.length})`}
+          icon={<Stethoscope className="h-4 w-4 text-teal-600" aria-hidden="true" />}
+          action={
+            <Link
+              href="/dashboard/crm/interactions?tab=FOLLOW_UP"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 hover:underline"
+            >
+              Xem tất cả <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          }
+        >
+          <p className="mb-3 text-xs text-slate-500">
+            Khách VIP có lịch hẹn tái khám trong {windowDays} ngày tới. Liên hệ nhắc lịch để khách được phục vụ chu đáo nhất.
+          </p>
+          <InteractionTimeline items={data.upcomingFollowUps!} compact />
+        </SectionCard>
+      )}
 
       {data && (
         <CareDueSection

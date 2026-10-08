@@ -7,6 +7,7 @@ import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS, toSearchKey } from 
 import { handle, interactionInclude, requireSession, toInteractionDto, canSeeHealth } from '@/lib/crm/server';
 import { saveInteraction } from './save';
 import { compressedJson } from '@/lib/http/compressed-json';
+import { todayInVietnam } from '@/lib/crm/upcoming';
 
 const TYPES = new Set(Object.keys(INTERACTION_TYPE_LABELS));
 const STATUSES = new Set(Object.keys(INTERACTION_STATUS_LABELS));
@@ -29,6 +30,9 @@ export const GET = handle(async (request: Request) => {
   const year = params.get('year');
   const needsReview = params.get('needsReview') === '1';
 
+  const isFollowUp = params.get('followUp') === '1';
+  const followUpScope = params.get('followUpScope');
+
   // Mỗi bộ lọc là một điều kiện trong AND: nhiều bộ lọc cùng dùng OR, trải
   // chung vào một object thì cái sau ghi đè cái trước.
   const conditions: Prisma.CrmInteractionWhereInput[] = [];
@@ -36,7 +40,49 @@ export const GET = handle(async (request: Request) => {
   if (type && TYPES.has(type)) conditions.push({ type: type as CrmInteractionType });
   if (status && STATUSES.has(status)) conditions.push({ status: status as CrmInteractionStatus });
   if (staffName) conditions.push({ OR: [{ staffName }, { companions: { has: staffName } }] });
-  if (from || to) {
+  if (isFollowUp) {
+    if (from || to) {
+      conditions.push({
+        followUpDate: {
+          ...(from && { gte: new Date(`${from}T00:00:00+07:00`) }),
+          ...(to && { lte: new Date(`${to}T23:59:59.999+07:00`) }),
+        },
+      });
+    } else if (followUpScope === 'upcoming14') {
+      const today = todayInVietnam();
+      const todayStart = new Date(`${today}T00:00:00+07:00`);
+      conditions.push({
+        followUpDate: {
+          gte: todayStart,
+          lt: new Date(todayStart.getTime() + 15 * 86_400_000),
+        },
+      });
+    } else if (followUpScope === 'upcoming30') {
+      const today = todayInVietnam();
+      const todayStart = new Date(`${today}T00:00:00+07:00`);
+      conditions.push({
+        followUpDate: {
+          gte: todayStart,
+          lt: new Date(todayStart.getTime() + 31 * 86_400_000),
+        },
+      });
+    } else if (followUpScope === 'overdue') {
+      const today = todayInVietnam();
+      const todayStart = new Date(`${today}T00:00:00+07:00`);
+      conditions.push({
+        followUpDate: {
+          lt: todayStart,
+        },
+      });
+    } else {
+      conditions.push({
+        OR: [
+          { followUpDate: { not: null } },
+          { followUp: { not: null } },
+        ],
+      });
+    }
+  } else if (from || to) {
     conditions.push({
       occurredAt: {
         // Ngày lọc theo giờ Việt Nam.
@@ -90,10 +136,15 @@ export const GET = handle(async (request: Request) => {
     byReferrer: ranked(done.flatMap(i => i.referrerContact ? [i.referrerContact] : [])),
     byDoctor: ranked(done.flatMap(i => i.doctors.map(d => d.contact))), done: done.length, planned: statsRows.filter(i => i.status === 'PLANNED').length, guests: done.filter(i => i.type === 'DELEGATION').reduce((n, i) => n + (i.guestCount ?? 0), 0), patients: new Set(done.map(i => i.contactId).filter(Boolean)).size, referrers: new Set(done.map(i => i.referrerContactId).filter(Boolean)).size, doctors: new Set(done.flatMap(i => i.doctors.map(d => d.contactId))).size, escorts: done.filter(i => i.type === 'VIP_ESCORT').length, delegations: done.filter(i => i.type === 'DELEGATION').length, others: done.filter(i => !['VIP_ESCORT', 'DELEGATION'].includes(i.type)).length };
   if (params.get('stats') === '1') return NextResponse.json(stats);
+  const orderBy: Prisma.CrmInteractionOrderByWithRelationInput[] = isFollowUp
+    ? followUpScope === 'overdue'
+      ? [{ followUpDate: 'desc' }, { occurredAt: 'desc' }, { id: 'desc' }]
+      : [{ followUpDate: 'asc' }, { occurredAt: 'desc' }, { id: 'desc' }]
+    : [{ occurredAt: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }];
   const interactions = await prisma.crmInteraction.findMany({
     where,
     include: interactionInclude,
-    orderBy: [{ occurredAt: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
+    orderBy,
     take: paginated ? CRM_PAGE_SIZE : 500,
     skip: paginated ? (page - 1) * CRM_PAGE_SIZE : 0,
   });

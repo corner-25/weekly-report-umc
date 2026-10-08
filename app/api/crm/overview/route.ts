@@ -54,7 +54,7 @@ export const GET = handle(async (request: Request) => {
 
   const periods = budgetPeriods(today);
 
-  const [contacts, organizations, recent, counts, planned, overduePlanned, reconcile, careBudgetMonth, careBudgetYear, careOverdue] = await Promise.all([
+  const [contacts, organizations, recent, counts, planned, overduePlanned, upcomingFollowUps, reconcile, careBudgetMonth, careBudgetYear, careOverdue] = await Promise.all([
     prisma.crmContact.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -102,6 +102,13 @@ export const GET = handle(async (request: Request) => {
       where: { status: 'PLANNED', occurredAt: { lt: todayStart } },
       include: interactionInclude,
       orderBy: { occurredAt: 'desc' },
+      take: 50,
+    }),
+    // Lịch hẹn tái khám của khách trong cửa sổ ngày.
+    prisma.crmInteraction.findMany({
+      where: { followUpDate: { gte: todayStart, lt: windowEnd } },
+      include: interactionInclude,
+      orderBy: { followUpDate: 'asc' },
       take: 50,
     }),
     reconcileWithExcel(prisma, today, RECONCILE_MONTHS),
@@ -193,6 +200,7 @@ export const GET = handle(async (request: Request) => {
     recentInteractions: recent.map((i) => toInteractionDto(i, health)),
     planned: planned.map((i) => toInteractionDto(i, health)),
     overduePlanned: overduePlanned.map((i) => toInteractionDto(i, health)),
+    upcomingFollowUps: upcomingFollowUps.map((i) => toInteractionDto(i, health)),
     dormant,
     reconcile,
     careDue,
@@ -201,6 +209,7 @@ export const GET = handle(async (request: Request) => {
     counts: {
       contacts: contactCount, organizations: organizationCount,
       interactionsThisMonth, vipEscortsThisMonth, delegationsThisMonth,
+      upcomingFollowUps: upcomingFollowUps.length,
     },
   });
 });

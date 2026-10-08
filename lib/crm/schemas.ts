@@ -198,6 +198,8 @@ export const interactionInputSchema = z
     staffName: z.string().trim().max(200).default(''),
     companions: z.array(z.string().trim().min(1).max(200)).max(20).default([]),
     note: optionalText(4000),
+    followUp: optionalText(500).optional(),
+    followUpDate: z.string().nullable().optional(),
     ...delegationFields,
   })
   .refine((v) => v.type === 'DELEGATION' || v.staffName.length > 0, {

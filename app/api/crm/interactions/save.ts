@@ -55,6 +55,8 @@ export async function saveInteraction(data: InteractionInput, options: { id?: st
       guestCount: fields.guestCount ?? null,
       purpose: fields.purpose ?? null,
       note: fields.note ?? null,
+      followUp: fields.followUp ? fields.followUp.trim() : null,
+      followUpDate: fields.followUpDate && fields.followUpDate.trim() ? new Date(fields.followUpDate) : null,
       endAt: fields.endAt ? new Date(`${fields.endAt}T00:00:00+07:00`) : null,
       timeText: fields.timeText ?? null,
       incomingDocNo: fields.incomingDocNo ?? null,

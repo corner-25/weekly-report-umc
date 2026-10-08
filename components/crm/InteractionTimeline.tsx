@@ -180,6 +180,19 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
                 )}
               </p>
             )}
+            {(item.followUpDate || item.followUp) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full border border-teal-200/90 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-800 shadow-2xs">
+                  <Stethoscope className="h-3.5 w-3.5 text-teal-600 shrink-0" aria-hidden="true" />
+                  <span>
+                    Hẹn tái khám: {item.followUpDate ? formatDate(item.followUpDate, 'dd/MM/yyyy') : 'Có dặn dò'}
+                  </span>
+                  {item.followUp && (
+                    <span className="font-medium text-teal-700">· {item.followUp}</span>
+                  )}
+                </span>
+              </div>
+            )}
           </div>
           {(editHandler || deleteHandler || (onStatusChange && item.status === 'PLANNED')) && (
             <div className="-mr-1 flex shrink-0 items-center gap-1">

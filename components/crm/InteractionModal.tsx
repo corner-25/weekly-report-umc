@@ -1,14 +1,15 @@
 'use client';
 
 import { useMemo, useState, useRef, type FormEvent } from 'react';
-import { X } from 'lucide-react';
+import { CalendarCheck, Stethoscope, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Select } from '@/components/ui/Select';
 import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF, INTERACTION_STATUS_LABELS } from '@/lib/crm/constants';
 import type { InteractionInput } from '@/lib/crm/schemas';
 import { CrmApiError, crmFetch, crmSend, errorMessage, syncCrmPhotos } from './api';
 import { PhotoField } from './CrmPhotos';
 import { EntityCombobox, type ComboValue } from './EntityCombobox';
-import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt } from './format';
+import { cleanText, withCurrent, displayName, toDateTimeLocal, toInt, formatDate } from './format';
 import type { InteractionDTO, InteractionType, InteractionStatus, PhotoKind } from './types';
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
 import { DateInput } from '@/components/ui/DateInput';
@@ -90,11 +91,27 @@ interface FormState {
   companions: string[];
   note: string;
   details: DelegationDetails;
+  followUpDate: string;
+  followUpNote: string;
+  followUpPreset: string;
+}
+
+function addDaysToDateString(baseIsoOrLocal: string, days: number): string {
+  try {
+    const d = new Date(baseIsoOrLocal);
+    if (Number.isNaN(d.getTime())) return '';
+    d.setDate(d.getDate() + days);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  } catch {
+    return '';
+  }
 }
 
 function initialState(mode: InteractionMode, initial?: InteractionDTO | null, preset?: InteractionPreset): FormState {
   if (initial) {
     const purpose = initial.purpose ?? '';
+    const initialDate = initial.followUpDate ? initial.followUpDate.slice(0, 10) : '';
+    const initialNote = initial.followUp ?? '';
     return {
       type: initial.type,
       status: initial.status,
@@ -120,6 +137,9 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
       companions: initial.companions,
       note: initial.note ?? '',
       details: detailsFrom(initial),
+      followUpDate: initialDate,
+      followUpNote: initialNote,
+      followUpPreset: initialDate ? 'custom' : 'none',
     };
   }
   return {
@@ -143,6 +163,9 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     companions: [],
     note: '',
     details: detailsFrom(null),
+    followUpDate: '',
+    followUpNote: '',
+    followUpPreset: 'none',
   };
 }
 
@@ -172,6 +195,8 @@ function buildBody(form: FormState): InteractionInput {
       relatedVipContactId: form.vip && 'id' in form.vip ? form.vip.id : null,
       vipRelationship: cleanText(form.vipRelationship),
       doctors: form.doctors.map(d => 'id' in d ? { id: d.id } : { newName: d.newName }),
+      followUpDate: form.followUpDate ? new Date(`${form.followUpDate}T08:00:00+07:00`).toISOString() : null,
+      followUp: form.followUpNote ? cleanText(form.followUpNote) : form.followUpDate ? `Tái khám: ${formatDate(form.followUpDate)}` : undefined,
     }),
     guestCount: isDelegation ? toInt(form.guestCount) : undefined,
     purpose: isDelegation ? cleanText(form.purpose) : undefined,
@@ -393,6 +418,31 @@ function EscortFields({ form, set, errors }: SectionProps) {
     } catch { /* The user can still enter these optional fields manually. */ }
   };
   const isNewGuest = form.contact !== null && 'newName' in form.contact;
+  const handlePresetClick = (presetId: string) => {
+    if (presetId === 'none') {
+      set('followUpPreset', 'none');
+      set('followUpDate', '');
+      set('followUpNote', '');
+      return;
+    }
+    if (presetId === 'custom') {
+      set('followUpPreset', 'custom');
+      return;
+    }
+    const days = parseInt(presetId, 10);
+    const dateStr = addDaysToDateString(form.occurredAt, days);
+    set('followUpPreset', presetId);
+    set('followUpDate', dateStr);
+    const label = presetId === '14' ? 'Tái khám sau 14 ngày'
+      : presetId === '30' ? 'Tái khám sau 30 ngày (1 tháng)'
+      : presetId === '60' ? 'Tái khám sau 60 ngày (2 tháng)'
+      : presetId === '90' ? 'Tái khám sau 90 ngày (3 tháng)'
+      : 'Tái khám sau 6 tháng';
+    if (!form.followUpNote || form.followUpNote.startsWith('Tái khám sau')) {
+      set('followUpNote', label);
+    }
+  };
+
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -480,6 +530,80 @@ function EscortFields({ form, set, errors }: SectionProps) {
       </Field>
       {form.patientName && <p className="text-xs text-slate-500">Người được khám ghi trong dữ liệu cũ: {form.patientName}</p>}
       <ChipGroup legend="Dịch vụ hỗ trợ" options={ESCORT_SERVICES} value={form.services} onChange={(next) => set('services', next)} error={errors.services} />
+      
+      {/* Lịch hẹn tái khám */}
+      <div className="rounded-2xl border border-teal-200/80 bg-gradient-to-br from-teal-50/60 via-white to-white p-4 sm:p-5 shadow-xs space-y-3.5">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-semibold text-teal-900 flex items-center gap-2">
+            <Stethoscope className="h-4 w-4 text-teal-600" />
+            Lịch hẹn tái khám của khách
+          </label>
+          {form.followUpDate && (
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-200/60">
+              <CalendarCheck className="h-3 w-3" />
+              Tái khám: {formatDate(form.followUpDate)}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-slate-500">
+          Chọn nhanh mốc bác sĩ hẹn (14, 30, 60 ngày...) hoặc ngày cụ thể để hệ thống tự động nhắc lịch trên Dashboard CRM.
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: 'none', label: 'Không hẹn' },
+            { id: '14', label: '14 ngày (2 tuần)' },
+            { id: '30', label: '30 ngày (1 tháng)' },
+            { id: '60', label: '60 ngày (2 tháng)' },
+            { id: '90', label: '90 ngày (3 tháng)' },
+            { id: '180', label: '180 ngày (6 tháng)' },
+            { id: 'custom', label: 'Chọn ngày khác' },
+          ].map((preset) => {
+            const active = form.followUpPreset === preset.id;
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => handlePresetClick(preset.id)}
+                className={cn(
+                  'rounded-full px-3 py-1 text-xs font-medium transition-all duration-150',
+                  active
+                    ? 'bg-teal-700 text-white shadow-xs ring-2 ring-teal-700/20'
+                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300'
+                )}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {form.followUpPreset !== 'none' && (
+          <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-teal-100/80">
+            <Field label="Ngày hẹn tái khám" required>
+              <input
+                type="date"
+                value={form.followUpDate}
+                onChange={(e) => {
+                  set('followUpDate', e.target.value);
+                  set('followUpPreset', 'custom');
+                }}
+                className={inputClass('')}
+              />
+            </Field>
+            <Field label="Ghi chú dặn dò / xét nghiệm khi tái khám">
+              <input
+                type="text"
+                value={form.followUpNote}
+                onChange={(e) => set('followUpNote', e.target.value)}
+                placeholder="Ví dụ: Nhịn ăn sáng làm XN máu, mang phim MRI..."
+                className={inputClass('')}
+              />
+            </Field>
+          </div>
+        )}
+      </div>
+
       <Field label="Nội dung hỗ trợ" required error={errors.content}>
         <textarea rows={3} value={form.content} onChange={(event) => set('content', event.target.value)} className={inputClass(errors.content, 'resize-none')} placeholder="Ví dụ: Đón tại sảnh A, đưa đi chụp MRI, hỗ trợ lấy kết quả" />
       </Field>
