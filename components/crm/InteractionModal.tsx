@@ -433,12 +433,16 @@ function EscortFields({ form, set, errors }: SectionProps) {
     const dateStr = addDaysToDateString(form.occurredAt, days);
     set('followUpPreset', presetId);
     set('followUpDate', dateStr);
-    const label = presetId === '14' ? 'Tái khám sau 14 ngày'
+    const label = presetId === '1' ? 'Hẹn ngày mai quay lại'
+      : presetId === '2' ? 'Hẹn 2 ngày nữa quay lại chụp MRI / Cận lâm sàng'
+      : presetId === '3' ? 'Hẹn 3 ngày nữa quay lại đọc kết quả / CLS'
+      : presetId === '7' ? 'Hẹn quay lại sau 1 tuần'
+      : presetId === '14' ? 'Tái khám sau 14 ngày'
       : presetId === '30' ? 'Tái khám sau 30 ngày (1 tháng)'
       : presetId === '60' ? 'Tái khám sau 60 ngày (2 tháng)'
       : presetId === '90' ? 'Tái khám sau 90 ngày (3 tháng)'
       : 'Tái khám sau 6 tháng';
-    if (!form.followUpNote || form.followUpNote.startsWith('Tái khám sau')) {
+    if (!form.followUpNote || form.followUpNote.startsWith('Tái khám sau') || form.followUpNote.startsWith('Hẹn')) {
       set('followUpNote', label);
     }
   };
@@ -552,11 +556,14 @@ function EscortFields({ form, set, errors }: SectionProps) {
         <div className="flex flex-wrap gap-2">
           {[
             { id: 'none', label: 'Không hẹn' },
+            { id: '1', label: 'Ngày mai (+1d)' },
+            { id: '2', label: '2 ngày nữa (chụp MRI / CLS)' },
+            { id: '3', label: '3 ngày nữa' },
+            { id: '7', label: '1 tuần' },
             { id: '14', label: '14 ngày (2 tuần)' },
             { id: '30', label: '30 ngày (1 tháng)' },
             { id: '60', label: '60 ngày (2 tháng)' },
             { id: '90', label: '90 ngày (3 tháng)' },
-            { id: '180', label: '180 ngày (6 tháng)' },
             { id: 'custom', label: 'Chọn ngày khác' },
           ].map((preset) => {
             const active = form.followUpPreset === preset.id;
