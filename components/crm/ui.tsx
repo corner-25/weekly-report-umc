@@ -259,10 +259,10 @@ export function ChipGroup({ legend, options, value, onChange, single = false, er
               aria-pressed={isOn}
               onClick={() => toggle(option)}
               className={cn(
-                'inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[13px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition min-h-[38px] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500',
                 isOn
                   ? 'border-cyan-600 bg-cyan-600 text-white shadow-sm'
-                  : 'border-slate-300 bg-white text-slate-600 hover:border-cyan-400 hover:text-cyan-700',
+                  : 'border-slate-300 bg-white text-slate-700 hover:border-cyan-400 hover:text-cyan-700 hover:bg-slate-50',
               )}
             >
               {isOn && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -393,14 +393,25 @@ export function ModalShell({ title, subtitle, onClose, children, size = 'lg' }: 
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn('max-h-[94vh] w-full animate-sheet-up overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:animate-pop-in sm:rounded-3xl', size === 'lg' ? 'max-w-3xl' : 'max-w-xl')}
+        className={cn('max-h-[94dvh] sm:max-h-[90vh] w-full animate-sheet-up overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:animate-pop-in sm:rounded-3xl', size === 'lg' ? 'max-w-3xl' : 'max-w-xl')}
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-6 sm:py-5">
-          <div>
-            <h2 id={titleId} className="text-lg font-bold text-slate-900 sm:text-xl">{title}</h2>
-            {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+        <div className="sticky top-0 z-10 border-b border-slate-100 bg-white/95 px-4 py-3 sm:px-6 sm:py-5 backdrop-blur">
+          {/* Mobile drag handle */}
+          <div className="mx-auto -mt-1 mb-2.5 h-1.5 w-12 rounded-full bg-slate-300 sm:hidden" />
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 id={titleId} className="text-base font-bold text-slate-900 sm:text-xl">{title}</h2>
+              {subtitle && <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">{subtitle}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 sm:px-3 sm:py-1.5 active:bg-slate-200"
+            >
+              <span className="hidden sm:inline">Đóng</span>
+              <X className="h-5 w-5 sm:hidden" aria-hidden="true" />
+            </button>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-100">Đóng</button>
         </div>
         {children}
       </div>
@@ -410,9 +421,13 @@ export function ModalShell({ title, subtitle, onClose, children, size = 'lg' }: 
 
 export function ModalFooter({ onCancel, saving, submitLabel }: { onCancel: () => void; saving: boolean; submitLabel: string }) {
   return (
-    <div className="sticky bottom-0 -mx-5 -mb-5 flex justify-end gap-2 border-t border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:-mx-6 sm:-mb-6 sm:px-6">
-      <button type="button" onClick={onCancel} className={SECONDARY_BTN}>Huỷ</button>
-      <button type="submit" disabled={saving} className={PRIMARY_BTN}>{saving ? 'Đang lưu...' : submitLabel}</button>
+    <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-2 border-t border-slate-100 bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:-mx-6 sm:-mb-6 sm:px-6 sm:py-4 backdrop-blur">
+      <button type="button" onClick={onCancel} className={cn(SECONDARY_BTN, 'w-full sm:w-auto min-h-[44px] justify-center text-sm font-medium')}>
+        Huỷ
+      </button>
+      <button type="submit" disabled={saving} className={cn(PRIMARY_BTN, 'w-full sm:w-auto min-h-[46px] justify-center text-base sm:text-sm font-semibold')}>
+        {saving ? 'Đang lưu...' : submitLabel}
+      </button>
     </div>
   );
 }

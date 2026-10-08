@@ -246,7 +246,7 @@ export function Select({
               }
             }}
             placeholder="Tìm nhanh..."
-            className="h-9 w-full rounded-xl border-0 bg-slate-50 pl-9 pr-3 text-sm text-slate-700 outline-none ring-0 placeholder:text-slate-400 focus:bg-cyan-50/60"
+            className="h-10 w-full rounded-xl border-0 bg-slate-50 pl-9 pr-3 text-base sm:text-sm text-slate-700 outline-none ring-0 placeholder:text-slate-400 focus:bg-cyan-50/60"
           />
         </div>
       )}
@@ -266,7 +266,7 @@ export function Select({
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => choose(option)}
               className={cn(
-                'group flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors',
+                'group flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-base sm:text-sm min-h-[44px] transition-colors',
                 selected
                   ? 'bg-cyan-50 font-semibold text-cyan-800'
                   : active
@@ -323,7 +323,7 @@ export function Select({
         onClick={() => setOpen((current) => !current)}
         onKeyDown={handleKeyDown}
         className={cn(
-          'flex min-h-[42px] w-full items-center rounded-xl border border-slate-300 bg-white text-left text-sm font-medium text-slate-700 shadow-sm transition-all',
+          'flex min-h-[44px] w-full items-center rounded-xl border border-slate-300 bg-white text-left text-base sm:text-sm font-medium text-slate-700 shadow-sm transition-all',
           'hover:border-cyan-300 hover:bg-cyan-50/20 hover:shadow-md',
           'focus:outline-none focus:ring-4 focus:ring-cyan-500/15 focus:border-cyan-500',
           'disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none',

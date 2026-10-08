@@ -187,7 +187,7 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
             </Field>
             <fieldset>
               <legend className="mb-1.5 block text-sm font-semibold text-slate-700">Loại</legend>
-              <div className="inline-flex rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="Loại">
+              <div className="grid grid-cols-2 sm:inline-flex w-full sm:w-auto rounded-xl bg-slate-100 p-1 gap-1 sm:gap-0" role="radiogroup" aria-label="Loại">
                 {([['C', 'Đối tác'], ['VIP', 'VIP']] as const).map(([value, label]) => {
                   const on = value === 'VIP' ? form.tier === 'VIP' : form.tier !== 'VIP';
                   return (
@@ -197,7 +197,10 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
                       role="radio"
                       aria-checked={on}
                       onClick={() => set('tier', value)}
-                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${on ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                      className={cn(
+                        'rounded-lg px-3.5 py-2 text-sm font-medium transition min-h-[40px] flex items-center justify-center',
+                        on ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-500 hover:text-slate-800'
+                      )}
                     >
                       {label}
                     </button>

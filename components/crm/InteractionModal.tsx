@@ -356,7 +356,7 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
 
         <fieldset>
           <legend className="mb-1.5 block text-sm font-semibold text-slate-700">Trạng thái</legend>
-          <div className="inline-flex rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="Trạng thái">
+          <div className="grid grid-cols-2 sm:inline-flex rounded-xl bg-slate-100 p-1 w-full sm:w-fit gap-1 sm:gap-0" role="radiogroup" aria-label="Trạng thái">
             {(['DONE', 'PLANNED', 'POSTPONED', 'CANCELLED'] as const).map((status) => (
               <button
                 key={status}
@@ -364,7 +364,10 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
                 role="radio"
                 aria-checked={form.status === status}
                 onClick={() => set('status', status)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${form.status === status ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                className={cn(
+                  'rounded-lg px-3 py-2 text-sm font-medium transition min-h-[40px] text-center flex items-center justify-center',
+                  form.status === status ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-500 hover:text-slate-800'
+                )}
               >
                 {INTERACTION_STATUS_LABELS[status]}
               </button>
@@ -489,6 +492,23 @@ function EscortFields({ form, set, errors }: SectionProps) {
           hint={form.doctors.some((d) => 'department' in d && d.department) && !form.destination ? 'Tự động gợi ý từ bác sĩ khám' : undefined}
         >
           <input value={form.destination} onChange={(event) => set('destination', event.target.value)} className={inputClass(errors.destination)} placeholder="Ví dụ: Tim mạch, Thần kinh, Tiết niệu..." />
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {['Phòng MRI', 'Khoa CĐHA', 'Khu khám VIP', 'Nội tổng quát', 'Ngoại thần kinh'].map((dept) => (
+              <button
+                key={dept}
+                type="button"
+                onClick={() => set('destination', dept)}
+                className={cn(
+                  'rounded-lg px-2.5 py-1 text-xs font-medium transition border min-h-[30px] active:scale-95',
+                  form.destination === dept
+                    ? 'bg-cyan-700 text-white border-cyan-700 shadow-2xs'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-cyan-50 hover:text-cyan-800'
+                )}
+              >
+                {dept}
+              </button>
+            ))}
+          </div>
           {form.doctors.find((d) => 'department' in d && d.department && d.department !== form.destination) && (
             <button
               type="button"
@@ -498,7 +518,7 @@ function EscortFields({ form, set, errors }: SectionProps) {
                   set('destination', docWithDept.department);
                 }
               }}
-              className="mt-1 text-xs font-medium text-cyan-700 hover:text-cyan-900 hover:underline"
+              className="mt-1.5 inline-flex items-center gap-1 rounded-lg bg-cyan-50 px-2.5 py-1 text-xs font-semibold text-cyan-800 hover:bg-cyan-100 hover:underline border border-cyan-200/80"
             >
               Gợi ý từ bác sĩ: Điền “{form.doctors.find((d) => 'department' in d && d.department)?.department}”
             </button>
@@ -678,7 +698,7 @@ function EscortFields({ form, set, errors }: SectionProps) {
           <>
             <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-teal-100/80">
               <Field label="Ngày hẹn" required>
-                <input
+                <DateInput
                   type="date"
                   value={form.followUpDate}
                   onChange={(e) => {
@@ -729,6 +749,24 @@ function EscortFields({ form, set, errors }: SectionProps) {
       </div>
 
       <Field label="Nội dung hỗ trợ" required error={errors.content}>
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          <span className="self-center mr-1 text-[11px] font-semibold text-slate-400">Mẫu nhanh:</span>
+          {[
+            'Đón tại sảnh A, dẫn khám & làm cận lâm sàng',
+            'Chờ chụp MRI theo hẹn, hỗ trợ lấy kết quả',
+            'Đã hoàn tất khám, lấy thuốc và dặn dò',
+            'Ưu tiên khám chuyên khoa, lấy kết quả nhanh',
+          ].map((template) => (
+            <button
+              key={template}
+              type="button"
+              onClick={() => set('content', form.content ? `${form.content}; ${template}` : template)}
+              className="rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs text-slate-700 transition active:scale-95 hover:bg-cyan-50 hover:text-cyan-800 hover:border-cyan-200"
+            >
+              + {template}
+            </button>
+          ))}
+        </div>
         <textarea rows={3} value={form.content} onChange={(event) => set('content', event.target.value)} className={inputClass(errors.content, 'resize-none')} placeholder="Ví dụ: Đón tại sảnh A, đưa đi chụp MRI, hỗ trợ lấy kết quả" />
       </Field>
     </>

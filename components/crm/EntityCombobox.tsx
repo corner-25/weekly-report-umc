@@ -244,8 +244,8 @@ export function EntityCombobox({
         {isLinked && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">Có hồ sơ</span>}
         {isNew && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">Mới</span>}
         {text && (
-          <button type="button" onClick={clear} aria-label="Xoá lựa chọn" className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-            <X className="h-3.5 w-3.5" />
+          <button type="button" onClick={clear} aria-label="Xoá lựa chọn" className="rounded-md p-1.5 min-h-[32px] min-w-[32px] text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center active:bg-slate-200">
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -254,7 +254,7 @@ export function EntityCombobox({
         <ul
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 top-full z-30 mt-1.5 max-h-72 overflow-y-auto rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_18px_50px_-12px_rgba(15,23,42,0.28)] backdrop-blur-xl"
+          className="absolute left-0 right-0 top-full z-30 mt-1.5 max-h-60 sm:max-h-72 overflow-y-auto rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_18px_50px_-12px_rgba(15,23,42,0.28)] backdrop-blur-xl"
         >
           {visible.map((item, index) => (
             <li
@@ -265,7 +265,10 @@ export function EntityCombobox({
               onMouseDown={(event) => event.preventDefault()}
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => choose(index)}
-              className={cn('flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2 text-sm', index === activeIndex ? 'bg-cyan-50 text-cyan-900' : 'text-slate-700')}
+              className={cn(
+                'flex cursor-pointer items-center gap-2 rounded-xl px-3.5 py-2.5 text-base sm:text-sm min-h-[44px] transition-colors',
+                index === activeIndex ? 'bg-cyan-50 text-cyan-900' : 'text-slate-700 active:bg-cyan-50/60'
+              )}
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{item.label}</span>
