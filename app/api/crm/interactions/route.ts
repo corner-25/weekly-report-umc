@@ -3,7 +3,7 @@ import type { CrmInteractionStatus, CrmInteractionType, Prisma } from '@prisma/c
 import { prisma } from '@/lib/prisma';
 import { interactionInputSchema } from '@/lib/crm/schemas';
 import { INTERACTION_STATUS_LABELS, INTERACTION_TYPE_LABELS, toSearchKey } from '@/lib/crm/constants';
-import { handle, interactionInclude, requireSession, toInteractionDto } from '@/lib/crm/server';
+import { handle, interactionInclude, requireSession, toInteractionDto, canSeeHealth } from '@/lib/crm/server';
 import { saveInteraction } from './save';
 import { compressedJson } from '@/lib/http/compressed-json';
 
@@ -12,7 +12,7 @@ const STATUSES = new Set(Object.keys(INTERACTION_STATUS_LABELS));
 
 /** Danh sách tương tác (tiếp đón, dẫn khám, dẫn đoàn…), mới nhất trước. */
 export const GET = handle(async (request: Request) => {
-  await requireSession();
+  const health = canSeeHealth(await requireSession());
   const params = new URL(request.url).searchParams;
   const type = params.get('type');
   const staffName = params.get('staffName')?.trim();
@@ -76,7 +76,7 @@ export const GET = handle(async (request: Request) => {
     orderBy: [{ occurredAt: 'desc' }, { createdAt: 'desc' }],
     take: 500,
   });
-  return compressedJson(request, interactions.map(toInteractionDto));
+  return compressedJson(request, interactions.map((i) => toInteractionDto(i, health)));
 });
 
 export const POST = handle(async (request: Request) => {

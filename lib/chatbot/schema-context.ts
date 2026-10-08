@@ -197,6 +197,10 @@ Muốn tính tổng/so sánh/xếp hạng thì dùng v_chatbot_fleet_daily, KHÔ
 - v_chatbot_event_checklists: record_id, event_id, event_name, event_date, title, description, is_completed, completed_at, order_number
   Đã có sẵn event_name, event_date — KHÔNG join sang v_chatbot_events (view đó không có id để join).
 - v_chatbot_vip_summary: record_id, visit_date, organization_name, destination, visit_count — lượt dẫn khách VIP khám và dẫn đoàn ghi trong CRM (không có tên khách/nhân viên/liên hệ)
+- v_chatbot_vip_escorts: record_id, visit_date, visit_year, visit_month, specialties (chuyên khoa đã khám, ngăn bởi ', '), referrer (người giới thiệu khách, vd 'PGS Nguyễn Hoàng Bắc'), visit_kind ('Khám mới'|'Tái khám'), service_count, session ('Sáng'|'Chiều'|'Sáng - chiều')
+  Mỗi dòng MỘT BUỔI Phòng HC dẫn khách VIP đi khám. KHÔNG có tên khách, chẩn đoán — thông tin sức khoẻ không được tra qua chatbot.
+  Hỏi "dẫn bao nhiêu khách khám", "ai giới thiệu nhiều khách nhất", "chuyên khoa nào khách đến nhiều": dùng view này (specialties lọc bằng ILIKE).
+  Người dùng hỏi tên/bệnh của một khách cụ thể: trả lời rằng thông tin sức khoẻ cá nhân chỉ xem trong CRM, không tra qua trợ lý.
 - v_chatbot_mou_details: record_id, mou_id, mou_title, partner_name, detail_type ('CLAUSE' = khía cạnh đã ký | 'ACTIVITY' = hoạt động), title, content, status ('NOT_STARTED'|'IN_PROGRESS'|'COMPLETED'|...), progress, deadline, result, notes,
   aspect_type ('TRAINING'|'RESEARCH'|'CLINICAL'|'TECHNOLOGY_TRANSFER'|'EXPERT_EXCHANGE'|'FACILITY'|'EQUIPMENT'|'FINANCE'|'HR'|'EVENT'|'PUBLICATION'|'OTHER'), responsible_party ('UMC'|'PARTNER'|'BOTH'),
   evidence (text|null): bằng chứng triển khai kèm ngày và nguồn, gap (text|null): còn thiếu gì so với cam kết

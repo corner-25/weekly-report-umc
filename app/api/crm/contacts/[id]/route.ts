@@ -17,7 +17,7 @@ import {
   toCareTaskDto,
   toImportantDateDto,
   toInteractionDto,
-  upcomingFor,
+  upcomingFor, canSeeHealth
 } from '@/lib/crm/server';
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -33,6 +33,7 @@ const ORG_ACTIVITY_LIMIT = 8;
 /** Hồ sơ 360° một cá nhân. */
 export const GET = handle(async (_request: Request, { params }: Ctx) => {
   const session = await requireSession();
+  const health = canSeeHealth(session);
   const { id } = await params;
 
   const contact = await prisma.crmContact.findUnique({
@@ -91,9 +92,9 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       id: r.id, kind: r.kind, name: r.name, phone: r.phone, note: r.note, toContact: r.toContact,
     })),
     importantDates: contact.importantDates.map(toImportantDateDto),
-    interactions: interactions.map(toInteractionDto),
+    interactions: interactions.map((i) => toInteractionDto(i, health)),
     careTasks: careTasks.map(toCareTaskDto),
-    orgActivity: orgActivity.map(toInteractionDto),
+    orgActivity: orgActivity.map((i) => toInteractionDto(i, health)),
     upcoming: upcomingFor(sources),
   });
 });

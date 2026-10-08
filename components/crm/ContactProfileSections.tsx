@@ -30,6 +30,8 @@ export function ContactInfoCard({ contact }: { contact: ContactDetail }) {
         rows={[
           ['Điện thoại', contact.phone && <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} className="text-cyan-700 hover:underline">{contact.phone}</a>],
           ['Email', contact.email && <a href={`mailto:${contact.email}`} className="text-cyan-700 hover:underline">{contact.email}</a>],
+          ['Địa chỉ', contact.address],
+          ['Mã hồ sơ bệnh án', contact.patientCode && <span className="tabular-nums">{contact.patientCode}</span>],
           ['Nhận quà tại', contact.giftAddress],
           ['Giới tính', contact.gender],
           ['Trạng thái', CONTACT_STATUS_LABELS[contact.status]],

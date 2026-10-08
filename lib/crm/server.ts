@@ -177,7 +177,26 @@ export const interactionInclude = {
 
 type InteractionWithRelations = Prisma.CrmInteractionGetPayload<{ include: typeof interactionInclude }>;
 
-export function toInteractionDto(i: InteractionWithRelations) {
+/** Chẩn đoán trong buổi dẫn khám là thông tin sức khoẻ — chỉ quản trị viên xem được. */
+export function canSeeHealth(session: Session): boolean {
+  return session.user.role === 'ADMIN';
+}
+
+interface VisitItemRaw {
+  specialty?: string | null;
+  doctor?: string | null;
+  diagnosis?: string | null;
+  services?: string[];
+  followUp?: { date: string | null; text: string | null };
+}
+
+/**
+ * Lượt tương tác trả cho giao diện. `health` = người xem được thấy chẩn đoán;
+ * mặc định không — gọi qua `.map((i) => toInteractionDto(i, health))`, đừng truyền
+ * thẳng vào `.map` (map đưa chỉ số làm tham số thứ hai).
+ */
+export function toInteractionDto(i: InteractionWithRelations, health = false) {
+  const items = Array.isArray(i.visitItems) ? (i.visitItems as unknown as VisitItemRaw[]) : [];
   return {
     id: i.id,
     type: i.type,
@@ -189,6 +208,11 @@ export function toInteractionDto(i: InteractionWithRelations) {
     destination: i.destination,
     patientName: i.patientName,
     services: i.services,
+    referrer: i.referrer,
+    visitKind: i.visitKind,
+    followUp: i.followUp,
+    followUpDate: i.followUpDate?.toISOString() ?? null,
+    visitItems: items.map(({ diagnosis, ...rest }) => ({ ...rest, ...(health ? { diagnosis: diagnosis ?? null } : {}) })),
     guestCount: i.guestCount,
     purpose: i.purpose,
     staffName: i.staffName,

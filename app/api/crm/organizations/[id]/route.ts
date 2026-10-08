@@ -12,7 +12,7 @@ import {
   toCareTaskDto,
   toImportantDateDto,
   toInteractionDto,
-  upcomingFor,
+  upcomingFor, canSeeHealth
 } from '@/lib/crm/server';
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -21,7 +21,7 @@ const CLEARABLE = ['address', 'website', 'phone', 'email', 'ownerName', 'note', 
 
 /** Hồ sơ tổ chức: người liên hệ (theo chức vụ), ngày quan trọng, dòng thời gian. */
 export const GET = handle(async (_request: Request, { params }: Ctx) => {
-  await requireSession();
+  const health = canSeeHealth(await requireSession());
   const { id } = await params;
   const organization = await prisma.crmOrganization.findUnique({
     where: { id },
@@ -55,7 +55,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
       positionId: p.id, isFocalPoint: p.isFocalPoint, phone: p.contact.phone, email: p.contact.email, department: p.department,
     })),
     importantDates: importantDates.map(toImportantDateDto),
-    interactions: interactions.map(toInteractionDto),
+    interactions: interactions.map((i) => toInteractionDto(i, health)),
     careTasks: careTasks.map(toCareTaskDto),
     upcoming: upcomingFor(importantDates.map(importantDateSource)),
     mous: mous.map(({ clauses, assessment, department, signedDate, expiryDate, ...m }) => ({

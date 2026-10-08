@@ -80,6 +80,8 @@ export const GENERAL_CHATBOT_VIEWS = [
   'v_chatbot_task_threads',
   'v_chatbot_crm_care_tasks',
   'v_chatbot_delegations',
+  // Thống kê dẫn khách khám (không danh tính, không chẩn đoán) — migration 20261008090000.
+  'v_chatbot_vip_escorts',
 ];
 
 export const PERSONNEL_CHATBOT_VIEWS = [

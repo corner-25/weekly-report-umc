@@ -1669,6 +1669,10 @@ model CrmContact {
   birthIsLunar  Boolean          @default(false)
   phone         String?
   email         String?
+  /// Địa chỉ nơi ở (khách khám bệnh).
+  address       String?          @db.Text
+  /// Mã hồ sơ bệnh án tại Bệnh viện (MSHS) — khách VIP dẫn khám; khoá nạp lại không tạo trùng.
+  patientCode   String?
   /// Địa chỉ nhận hoa, quà.
   giftAddress   String?          @db.Text
   tier          CrmTier          @default(C)
@@ -1696,6 +1700,7 @@ model CrmContact {
   @@index([searchKey])
   @@index([tier])
   @@index([birthMonth, birthDay])
+  @@index([patientCode])
   @@map("crm_contacts")
 }
 
@@ -1789,6 +1794,16 @@ model CrmInteraction {
   patientName       String?
   /// Dịch vụ đã hỗ trợ: Khám, Xét nghiệm, Chẩn đoán hình ảnh, Nội trú…
   services          String[]             @default([])
+  /// Người giới thiệu khách (vd "PGS Nguyễn Hoàng Bắc").
+  referrer          String?
+  /// "Khám mới" | "Tái khám".
+  visitKind         String?
+  /// Hẹn tái khám tóm tắt ("Tim mạch 30/03/2026; Nội tiết: Toa không thuốc") và ngày hẹn gần nhất.
+  followUp          String?              @db.Text
+  followUpDate      DateTime?
+  /// Từng chuyên khoa trong buổi: [{specialty, doctor, services, followUp, diagnosis}]. Chẩn đoán là thông tin
+  /// sức khoẻ — API chỉ trả cho quản trị viên (lib/crm/server.ts toInteractionDto).
+  visitItems        Json?
   // ── Dẫn đoàn ──
   guestCount        Int?
   /// Mục đích đoàn: Làm việc, Tham quan, Học tập, Ký kết…
@@ -1849,6 +1864,7 @@ model CrmInteraction {
   @@index([contactId])
   @@index([organizationId])
   @@index([hostDepartmentId])
+  @@index([followUpDate])
   @@map("crm_interactions")
 }
 

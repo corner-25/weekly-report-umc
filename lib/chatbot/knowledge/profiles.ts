@@ -94,11 +94,11 @@ export async function departmentProfiles(db: PrismaClient, now = new Date()): Pr
 
 export async function organizationProfiles(db: PrismaClient, now = new Date()): Promise<KnowledgeDoc[]> {
   const orgs = await db.crmOrganization.findMany({
-    where: { OR: [{ interactions: { some: {} } }, { mous: { some: { deletedAt: null } } }, { positions: { some: {} } }] },
+    where: { OR: [{ interactions: { some: { type: { not: 'VIP_ESCORT' } } } }, { mous: { some: { deletedAt: null } } }, { positions: { some: {} } }] },
     select: {
       id: true, name: true, aliases: true, category: true, scope: true,
       positions: { where: { isCurrent: true }, select: { title: true, isFocalPoint: true, contact: { select: { fullName: true, academicTitle: true } } } },
-      interactions: { where: { status: 'DONE' }, select: { occurredAt: true, purpose: true }, orderBy: { occurredAt: 'desc' } },
+      interactions: { where: { status: 'DONE', type: { not: 'VIP_ESCORT' } }, select: { occurredAt: true, purpose: true }, orderBy: { occurredAt: 'desc' } },
       mous: {
         where: { deletedAt: null },
         select: { title: true, status: true, expiryDate: true, signedDate: true, evaluation: true, assessment: true, department: { select: { name: true } } },

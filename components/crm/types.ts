@@ -36,6 +36,13 @@ export interface InteractionDTO {
   destination: string | null;
   patientName: string | null;
   services: string[];
+  /** Dẫn khách khám: người giới thiệu, khám mới/tái khám, hẹn tái khám, từng chuyên khoa. */
+  referrer?: string | null;
+  visitKind?: string | null;
+  followUp?: string | null;
+  followUpDate?: string | null;
+  /** Chẩn đoán chỉ có khi người xem là quản trị viên. */
+  visitItems?: Array<{ specialty?: string | null; doctor?: string | null; services?: string[]; followUp?: { date: string | null; text: string | null }; diagnosis?: string | null }>;
   guestCount: number | null;
   purpose: string | null;
   staffName: string;
@@ -260,6 +267,9 @@ export interface ContactDetail {
   birthIsLunar: boolean;
   phone: string | null;
   email: string | null;
+  address?: string | null;
+  /** Mã hồ sơ bệnh án tại Bệnh viện (khách dẫn khám). */
+  patientCode?: string | null;
   giftAddress: string | null;
   tier: Tier;
   tags: string[];

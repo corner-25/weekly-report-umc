@@ -137,6 +137,8 @@ async function weeklySummaries(db: PrismaClient): Promise<KnowledgeDoc[]> {
 
 async function crm(db: PrismaClient): Promise<KnowledgeDoc[]> {
   const rows = await db.crmInteraction.findMany({
+    // Dẫn khách khám là thông tin sức khoẻ của người bệnh — chatbot chỉ thống kê qua v_chatbot_vip_escorts, không đọc từng lượt.
+    where: { type: { not: 'VIP_ESCORT' } },
     include: {
       contact: { select: { fullName: true, academicTitle: true } },
       organization: { select: { id: true, name: true, aliases: true } },

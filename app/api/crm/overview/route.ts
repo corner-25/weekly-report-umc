@@ -13,7 +13,7 @@ import {
   requireSession,
   toCareTaskDto,
   toInteractionDto,
-  type DateSource,
+  type DateSource, canSeeHealth
 } from '@/lib/crm/server';
 
 /** Không tương tác quá ngần này ngày thì đưa vào "Lâu chưa tương tác". */
@@ -45,7 +45,7 @@ async function sumCare(range: { from: Date; to: Date }) {
 }
 
 export const GET = handle(async (request: Request) => {
-  await requireSession();
+  const health = canSeeHealth(await requireSession());
   const window = Math.min(Math.max(Number(new URL(request.url).searchParams.get('window') ?? 30) || 30, 1), 366);
   const today = todayInVietnam();
   const monthStart = new Date(`${today.slice(0, 7)}-01T00:00:00+07:00`);
@@ -190,9 +190,9 @@ export const GET = handle(async (request: Request) => {
   const [contactCount, organizationCount, interactionsThisMonth, vipEscortsThisMonth, delegationsThisMonth] = counts;
   return NextResponse.json({
     upcoming,
-    recentInteractions: recent.map(toInteractionDto),
-    planned: planned.map(toInteractionDto),
-    overduePlanned: overduePlanned.map(toInteractionDto),
+    recentInteractions: recent.map((i) => toInteractionDto(i, health)),
+    planned: planned.map((i) => toInteractionDto(i, health)),
+    overduePlanned: overduePlanned.map((i) => toInteractionDto(i, health)),
     dormant,
     reconcile,
     careDue,

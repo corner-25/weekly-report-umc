@@ -211,6 +211,8 @@ function InteractionMeta({ item }: { item: InteractionDTO }) {
           </span>
         )}
         {item.hostUnit && <span>Chủ trì: <b className="font-semibold text-slate-700">{item.hostUnit}</b></span>}
+        {item.visitKind && <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">{item.visitKind}</span>}
+        {item.referrer && <span>Giới thiệu: <b className="font-semibold text-slate-700">{item.referrer}</b></span>}
         {item.incomingDocNo && <span>Văn bản đến: {item.incomingDocNo}</span>}
       </div>
       {item.topics.length > 0 && (
@@ -234,6 +236,20 @@ function InteractionMeta({ item }: { item: InteractionDTO }) {
             </p>
           )}
         </div>
+      )}
+      {item.visitItems && item.visitItems.length > 0 && (
+        <ul className="space-y-1 rounded-lg bg-cyan-50/40 px-2.5 py-1.5" aria-label="Chuyên khoa đã khám">
+          {item.visitItems.map((v, idx) => (
+            <li key={idx}>
+              <b className="font-semibold text-slate-700">{v.specialty ?? 'Khám'}</b>
+              {v.doctor && <> · BS {v.doctor}</>}
+              {v.followUp && (v.followUp.date || v.followUp.text) && (
+                <> · hẹn: {v.followUp.date ? v.followUp.date.split('-').reverse().join('/') : v.followUp.text}</>
+              )}
+              {v.diagnosis && <span className="block text-slate-600">Chẩn đoán: {v.diagnosis}</span>}
+            </li>
+          ))}
+        </ul>
       )}
       {item.services.length > 0 && (
         <ul className="flex flex-wrap gap-1" aria-label="Dịch vụ hỗ trợ">
