@@ -74,12 +74,13 @@ interface InteractionTimelineProps {
   hideOrganizationId?: string;
   onEdit?: (item: InteractionDTO) => void;
   onDelete?: (item: InteractionDTO) => void;
-  /** Chốt lịch hẹn: đã xong / huỷ. */
   onStatusChange?: (item: InteractionDTO, status: InteractionStatus) => void;
+  /** Khi hiển thị trên hồ sơ của Người giới thiệu/Bác sĩ/VIP liên quan, làm rõ vai trò để tránh hiểu nhầm. */
+  linkedRole?: { targetId: string; targetName: string };
   compact?: boolean;
 }
 
-export function InteractionTimeline({ items, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, compact = false }: InteractionTimelineProps) {
+export function InteractionTimeline({ items, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, linkedRole, compact = false }: InteractionTimelineProps) {
   return (
     <ol className="relative">
       {items.map((item, index) => (
@@ -92,6 +93,7 @@ export function InteractionTimeline({ items, hideContactId, hideOrganizationId, 
           onEdit={onEdit}
           onDelete={onDelete}
           onStatusChange={onStatusChange}
+          linkedRole={linkedRole}
           compact={compact}
         />
       ))}
@@ -104,15 +106,19 @@ interface TimelineItemProps extends Omit<InteractionTimelineProps, 'items'> {
   isLast: boolean;
 }
 
-function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, compact }: TimelineItemProps) {
+function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit, onDelete, onStatusChange, linkedRole, compact }: TimelineItemProps) {
   const Icon = INTERACTION_ICONS[item.type];
   const { data: session } = useSession();
   // Khớp quy tắc phía API: quản trị viên hoặc người đã ghi lượt này mới sửa/xoá được.
   const canModify = session?.user.role === 'ADMIN' || (item.createdById !== null && item.createdById === session?.user.id);
   const editHandler = canModify ? onEdit : undefined;
   const deleteHandler = canModify ? onDelete : undefined;
-  const showContact = item.contact && item.contact.id !== hideContactId;
+  const showContact = item.contact && (Boolean(linkedRole) || item.contact.id !== hideContactId);
   const showOrganization = item.organization && item.organization.id !== hideOrganizationId;
+
+  const isReferrerOfThis = Boolean(linkedRole && item.referrerContact?.id === linkedRole.targetId);
+  const isDoctorOfThis = Boolean(linkedRole && item.doctors?.some((d) => d.id === linkedRole.targetId));
+  const isVipOfThis = Boolean(linkedRole && item.relatedVipContact?.id === linkedRole.targetId);
 
   return (
     <li className="relative grid grid-cols-[36px_minmax(0,1fr)] gap-3 pb-5 last:pb-0">
@@ -126,7 +132,19 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
             <p className="text-xs font-medium text-slate-500">
               <time dateTime={item.occurredAt} className="font-semibold tabular-nums text-slate-700">{whenLabel(item)}</time>
               <span className="mx-1.5 text-slate-300">|</span>
-              {INTERACTION_TYPE_LABELS[item.type]}
+              {linkedRole ? (
+                isReferrerOfThis ? (
+                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 font-bold text-indigo-800">Do sếp giới thiệu</span>
+                ) : isDoctorOfThis ? (
+                  <span className="rounded-full bg-teal-100 px-2 py-0.5 font-bold text-teal-800">BS phụ trách khám</span>
+                ) : isVipOfThis ? (
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 font-bold text-amber-800">{item.vipRelationship || 'Người thân'} của VIP</span>
+                ) : (
+                  <span>Lượt khám liên quan</span>
+                )
+              ) : (
+                <span>{INTERACTION_TYPE_LABELS[item.type]}</span>
+              )}
               {item.status !== 'DONE' && (
                 <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold', STATUS_TONES[item.status])}>
                   {INTERACTION_STATUS_LABELS[item.status]}
@@ -142,9 +160,12 @@ function TimelineItem({ item, isLast, hideContactId, hideOrganizationId, onEdit,
             {(showContact || showOrganization) && (
               <p className="mt-0.5 text-sm">
                 {showContact && item.contact && (
-                  <Link href={`/dashboard/crm/contacts/${item.contact.id}`} className="font-semibold text-slate-900 hover:text-cyan-700 hover:underline">
-                    {displayName(item.contact)}
-                  </Link>
+                  <span>
+                    {linkedRole && <span className="text-xs font-medium text-slate-500">Khách được khám: </span>}
+                    <Link href={`/dashboard/crm/contacts/${item.contact.id}`} className="font-semibold text-slate-900 hover:text-cyan-700 hover:underline">
+                      {displayName(item.contact)}
+                    </Link>
+                  </span>
                 )}
                 {showContact && showOrganization && <span className="text-slate-400"> · </span>}
                 {showOrganization && item.organization && (

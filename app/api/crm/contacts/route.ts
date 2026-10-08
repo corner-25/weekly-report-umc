@@ -22,8 +22,9 @@ export const GET = handle(async (request: Request) => {
 
   const where: Prisma.CrmContactWhereInput = {
     ...(tier && { tier }),
+    ...(kind === 'leader' && { tags: { hasSome: ['Người giới thiệu', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện'] } }),
     ...(kind === 'vip' && { tier: 'VIP' as const }),
-    ...(kind === 'partner' && { tier: { not: 'VIP' as const } }),
+    ...(kind === 'partner' && { tier: { not: 'VIP' as const }, NOT: { tags: { hasSome: ['Người giới thiệu', 'Ban Giám đốc', 'Lãnh đạo Bệnh viện'] } } }),
     ...(focalOnly && { positions: { some: { isFocalPoint: true, isCurrent: true } } }),
     ...(tag && { tags: { has: tag } }),
     ...(owner && { ownerName: owner }),

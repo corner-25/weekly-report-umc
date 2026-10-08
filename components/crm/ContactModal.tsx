@@ -47,6 +47,7 @@ interface FormState {
 }
 
 function initialState(initial?: ContactDetail | null): FormState {
+  const currentPos = initial?.positions?.find((p) => p.isCurrent) ?? initial?.positions?.[0];
   return {
     fullName: initial?.fullName ?? '',
     academicTitle: initial?.academicTitle ?? '',
@@ -69,8 +70,8 @@ function initialState(initial?: ContactDetail | null): FormState {
     sensitiveNote: initial?.sensitiveNote ?? '',
     status: initial?.status ?? 'ACTIVE',
     note: initial?.note ?? '',
-    currentTitle: '',
-    currentOrganizationName: '',
+    currentTitle: currentPos?.title ?? '',
+    currentOrganizationName: currentPos?.organization?.name ?? '',
   };
 }
 
@@ -131,8 +132,8 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
       sensitiveNote: canEditSensitive ? textOrClear(form.sensitiveNote, isEdit) : undefined,
       status: form.status,
       note: textOrClear(form.note, isEdit),
-      currentTitle: isEdit ? undefined : cleanText(form.currentTitle),
-      currentOrganizationName: isEdit ? undefined : cleanText(form.currentOrganizationName),
+      currentTitle: cleanText(form.currentTitle) || (isEdit ? null : undefined),
+      currentOrganizationName: cleanText(form.currentOrganizationName) || (isEdit ? null : undefined),
     };
   };
 
@@ -205,16 +206,14 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
               <p className="mt-1 text-xs text-slate-500">Đối tác: đầu mối, người liên hệ của tổ chức. VIP: Phòng HC tự gắn.</p>
             </fieldset>
           </div>
-          {!isEdit && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Chức vụ hiện tại" error={errors.currentTitle}>
-                <input value={form.currentTitle} onChange={(e) => set('currentTitle', e.target.value)} className={inputClass(errors.currentTitle)} placeholder="Giám đốc" />
-              </Field>
-              <Field label="Tổ chức" error={errors.currentOrganizationName} hint="Chưa có trong danh bạ sẽ được tạo mới.">
-                <input value={form.currentOrganizationName} onChange={(e) => set('currentOrganizationName', e.target.value)} className={inputClass(errors.currentOrganizationName)} placeholder="Bệnh viện X" />
-              </Field>
-            </div>
-          )}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Chức vụ hiện tại" error={errors.currentTitle}>
+              <input value={form.currentTitle} onChange={(e) => set('currentTitle', e.target.value)} className={inputClass(errors.currentTitle)} placeholder="Giám đốc" />
+            </Field>
+            <Field label="Tổ chức" error={errors.currentOrganizationName} hint="Chưa có trong danh bạ sẽ được tạo mới.">
+              <input value={form.currentOrganizationName} onChange={(e) => set('currentOrganizationName', e.target.value)} className={inputClass(errors.currentOrganizationName)} placeholder="Bệnh viện Đại học Y Dược TP. Hồ Chí Minh" />
+            </Field>
+          </div>
         </FormSection>
 
         <FormSection title="Ngày sinh">

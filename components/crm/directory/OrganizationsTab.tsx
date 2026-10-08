@@ -105,7 +105,15 @@ export function OrganizationsTab({ reloadKey, onChanged }: { reloadKey: number; 
         <div className={cn(loading && 'opacity-60 transition-opacity')}>
           <p className="px-5 pt-3 text-xs text-slate-500">{items.length} tổ chức · {items.filter((o) => o.focalPoints.length > 0).length} đã có đầu mối</p>
           <div className="hidden overflow-x-auto md:block">
-            <table className="min-w-full divide-y divide-slate-100">
+            <table className="w-full table-fixed divide-y divide-slate-100">
+              <colgroup>
+                <col className="w-[34%]" />
+                <col className="w-[28%]" />
+                <col className="w-[10%]" />
+                <col className="w-[10%]" />
+                <col className="w-[12%]" />
+                <col className="w-[6%]" />
+              </colgroup>
               <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th scope="col" className="px-5 py-3">Tổ chức</th>

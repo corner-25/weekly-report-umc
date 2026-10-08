@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import useSWR from 'swr';
 import { DELEGATION_PURPOSES, DELEGATION_TOPICS, VIP_STAFF } from '@/lib/crm/constants';
 import { DelegationStatsCard } from '@/components/crm/DelegationStatsCard';
+import { VipEscortStatsCard } from '@/components/crm/VipEscortStatsCard';
 import { changeInteractionStatus, crmFetch, errorMessage } from '@/components/crm/api';
 import { InteractionModal, interactionModeOf, type InteractionMode } from '@/components/crm/InteractionModal';
 import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/InteractionTimeline';
@@ -156,43 +157,101 @@ export default function CrmInteractionsPage() {
 
       <ErrorBanner message={error} />
 
-          <div role="tablist" aria-label="Loại tương tác" className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 sm:w-fit">
-            {TABS.map((t) => (
-              <button
-                key={t.value}
-                type="button"
-                role="tab"
-                aria-selected={tab === t.value}
-                onClick={() => setTab(t.value)}
-                className={cn('whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-semibold transition', tab === t.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700')}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
+      {/* 3 KPI Cards / Charts trên đầu trang */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <Stat label="Dẫn khám VIP tháng này" value={monthStats?.escorts ?? '—'} />
-        <Stat label="Đoàn tiếp tháng này" value={monthStats?.delegations ?? '—'} hint={monthStats ? `${monthStats.guests} khách` : undefined} tone="accent" />
-        <Stat label="Tương tác khác tháng này" value={monthStats?.others ?? '—'} />
+        {/* KPI 1: Dẫn khám VIP */}
+        <div className={cn(PANEL, 'relative overflow-hidden p-4 sm:p-5 border-cyan-200/70 bg-gradient-to-br from-cyan-50/50 via-white to-white shadow-sm')}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-800">Dẫn khám VIP tháng này</p>
+              <div className="mt-1.5 flex items-baseline gap-2">
+                <span className="text-3xl font-extrabold tabular-nums text-slate-900 sm:text-4xl">
+                  {monthStats?.escorts ?? '—'}
+                </span>
+                <span className="text-xs font-semibold text-cyan-700">lượt khám</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700 shadow-sm shadow-cyan-200/50">
+              <INTERACTION_ICONS.VIP_ESCORT className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs text-slate-500 border-t border-cyan-100/70 pt-2.5">
+            <span>Khách VIP & gia đình</span>
+            <span className="font-semibold text-emerald-700">Tiếp đón chu đáo</span>
+          </div>
+        </div>
+
+        {/* KPI 2: Tiếp đoàn */}
+        <div className={cn(PANEL, 'relative overflow-hidden p-4 sm:p-5 border-amber-200/70 bg-gradient-to-br from-amber-50/50 via-white to-white shadow-sm')}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-800">Tiếp đoàn tháng này</p>
+              <div className="mt-1.5 flex items-baseline gap-2">
+                <span className="text-3xl font-extrabold tabular-nums text-slate-900 sm:text-4xl">
+                  {monthStats?.delegations ?? '—'}
+                </span>
+                <span className="text-xs font-semibold text-amber-700">đoàn khách</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shadow-sm shadow-amber-200/50">
+              <INTERACTION_ICONS.DELEGATION className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs text-slate-500 border-t border-amber-100/70 pt-2.5">
+            <span>Quy mô đại biểu</span>
+            <span className="font-semibold text-slate-900">{monthStats?.guests ?? 0} khách tham dự</span>
+          </div>
+        </div>
+
+        {/* KPI 3: Lịch hẹn & Tương tác khác */}
+        <div className={cn(PANEL, 'relative overflow-hidden p-4 sm:p-5 border-indigo-200/70 bg-gradient-to-br from-indigo-50/50 via-white to-white shadow-sm')}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-indigo-800">Lịch hẹn & Tương tác khác</p>
+              <div className="mt-1.5 flex items-baseline gap-2">
+                <span className="text-3xl font-extrabold tabular-nums text-slate-900 sm:text-4xl">
+                  {monthStats ? (monthStats.others + (visitStats?.planned ?? 0)) : '—'}
+                </span>
+                <span className="text-xs font-semibold text-indigo-700">hoạt động</span>
+              </div>
+            </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 shadow-sm shadow-indigo-200/50">
+              <INTERACTION_ICONS.MEETING className="h-5 w-5" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs text-slate-500 border-t border-indigo-100/70 pt-2.5">
+            <span>Lịch hẹn chuẩn bị: <b className="font-semibold text-amber-700">{visitStats?.planned ?? 0}</b></span>
+            <span>Gặp gỡ/MOU: <b className="font-semibold text-slate-900">{monthStats?.others ?? 0}</b></span>
+          </div>
+        </div>
       </div>
 
-      {tab === 'VIP_ESCORT' && <div className={cn(PANEL, 'p-4')}>
-        <h2 className="mb-3 font-semibold">Thống kê dẫn khám theo bộ lọc</h2>
-        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <Stat label="Lượt đã khám" value={visitStats?.done ?? '—'} />
-          <Stat label="Khách đã khám" value={visitStats?.patients ?? '—'} />
-          <Stat label="Lịch hẹn" value={visitStats?.planned ?? '—'} />
-          <Stat label="Người giới thiệu" value={visitStats?.referrers ?? '—'} />
-          <Stat label="Bác sĩ khám" value={visitStats?.doctors ?? '—'} />
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {([['Theo người giới thiệu', visitStats?.byReferrer], ['Theo bác sĩ khám', visitStats?.byDoctor]] as const).map(([title, rows]) => <div key={title}>
-            <h3 className="mb-2 text-sm font-semibold">{title} · tối đa 20 người</h3>
-            <table className="w-full text-sm"><thead><tr className="border-b text-left text-slate-500"><th className="py-2">Họ tên</th><th className="text-right">Lượt đã khám</th></tr></thead><tbody>{rows?.map(r => <tr key={r.id} className="border-b border-slate-100"><td className="py-2"><a className="text-cyan-700 hover:underline" href={`/dashboard/crm/contacts/${r.id}`}>{r.name}</a></td><td className="text-right">{r.count}</td></tr>)}</tbody></table>
-          </div>)}
-        </div>
-      </div>}
+      {/* Thanh chọn loại tương tác */}
+      <div role="tablist" aria-label="Loại tương tác" className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 sm:w-fit">
+        {TABS.map((t) => (
+          <button
+            key={t.value}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.value}
+            onClick={() => setTab(t.value)}
+            className={cn('whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-semibold transition', tab === t.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700')}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'VIP_ESCORT' && (
+        <VipEscortStatsCard
+          year={year}
+          onYear={setYear}
+          referrerFilter={referrerFilter}
+          onReferrerFilter={setReferrerFilter}
+          doctorFilter={doctorFilter}
+          onDoctorFilter={setDoctorFilter}
+        />
+      )}
       {tab === 'DELEGATION' && <DelegationStatsCard year={year} topic={topic} onYear={setYear} onTopic={setTopic} />}
 
       <div className={PANEL}>

@@ -126,12 +126,23 @@ export const PATCH = handle(async (request: Request, { params }: Ctx) => {
   }
 
   const contact = await prisma.$transaction(async (tx) => {
-    if (currentTitle || currentOrganizationName) {
-      const organizationId = await resolveOrganization(tx, { organizationName: currentOrganizationName });
-      await tx.crmPosition.updateMany({ where: { contactId: id, isCurrent: true }, data: { isCurrent: false } });
-      await tx.crmPosition.create({
-        data: { contactId: id, title: currentTitle ?? 'Liên hệ', organizationId, isCurrent: true },
-      });
+    if (currentTitle !== undefined || currentOrganizationName !== undefined) {
+      if (currentTitle || currentOrganizationName) {
+        const organizationId = await resolveOrganization(tx, { organizationName: currentOrganizationName });
+        const currentPos = await tx.crmPosition.findFirst({ where: { contactId: id, isCurrent: true } });
+        if (currentPos) {
+          await tx.crmPosition.update({
+            where: { id: currentPos.id },
+            data: { title: currentTitle ?? 'Liên hệ', organizationId },
+          });
+        } else {
+          await tx.crmPosition.create({
+            data: { contactId: id, title: currentTitle ?? 'Liên hệ', organizationId, isCurrent: true },
+          });
+        }
+      } else {
+        await tx.crmPosition.updateMany({ where: { contactId: id, isCurrent: true }, data: { isCurrent: false } });
+      }
     }
     const links = await contactLinks(tx, { newReferrerName, referrerContactId, relatedVipContactId, vipRelationship }, id);
     return tx.crmContact.update({

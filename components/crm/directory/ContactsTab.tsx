@@ -13,31 +13,44 @@ import type { ContactDetail, ContactListItem } from '../types';
 import { EmptyState, ErrorBanner, PANEL, TagPill, TierBadge } from '../ui';
 import { ContactLine, FilterSelect, RowActions, SearchBox, Segmented, useDebounced } from './shared';
 
-type Kind = '' | 'vip' | 'partner' | 'focal';
+type Kind = '' | 'leader' | 'vip' | 'partner' | 'focal';
 const KINDS: Array<{ value: Kind; label: string }> = [
   { value: '', label: 'Tất cả' },
-  { value: 'vip', label: 'VIP' },
+  { value: 'leader', label: 'Lãnh đạo / Giới thiệu' },
+  { value: 'vip', label: 'Khách VIP' },
   { value: 'partner', label: 'Đối tác' },
-  { value: 'focal', label: 'Đầu mối của đơn vị' },
+  { value: 'focal', label: 'Đầu mối đơn vị' },
 ];
 
 function OrgCell({ c }: { c: ContactListItem }) {
   const p = c.currentPosition;
   if (!p) return <span className="text-slate-400">—</span>;
   return (
-    <span className="block min-w-0">
+    <div className="min-w-0 pr-2">
       {p.organization ? (
-        <Link href={`/dashboard/crm/organizations/${p.organization.id}`} className="font-medium text-slate-700 hover:text-brand-700 hover:underline">{p.organization.name}</Link>
-      ) : <span className="text-slate-500">Chưa gắn đơn vị</span>}
-      <span className="block text-xs text-slate-500">
-        {p.title}
-        {c.focalCount > 0 && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">đầu mối{c.focalCount > 1 ? ` ${c.focalCount} đơn vị` : ''}</span>}
+        <Link
+          href={`/dashboard/crm/organizations/${p.organization.id}`}
+          className="block truncate font-medium text-slate-700 hover:text-cyan-700 hover:underline"
+          title={p.organization.name}
+        >
+          {p.organization.name}
+        </Link>
+      ) : (
+        <span className="block truncate text-slate-500">Chưa gắn đơn vị</span>
+      )}
+      <span className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-slate-500">
+        <span className="truncate max-w-[200px]" title={p.title}>{p.title}</span>
+        {c.focalCount > 0 && (
+          <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 shrink-0">
+            đầu mối{c.focalCount > 1 ? ` ${c.focalCount}` : ''}
+          </span>
+        )}
       </span>
-    </span>
+    </div>
   );
 }
 
-/** Danh bạ cá nhân: VIP và Đối tác (đầu mối, người liên hệ của tổ chức). */
+/** Danh bạ cá nhân: VIP, Lãnh đạo/Người giới thiệu, và Đối tác (đầu mối liên hệ). */
 export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onChanged: () => void }) {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -58,7 +71,7 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
     const controller = new AbortController();
     const params = new URLSearchParams({ page: String(page) });
     if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
-    if (kind === 'vip' || kind === 'partner') params.set('kind', kind);
+    if (kind === 'leader' || kind === 'vip' || kind === 'partner') params.set('kind', kind);
     if (kind === 'focal') params.set('focal', '1');
     if (tag) params.set('tag', tag);
     if (owner) params.set('owner', owner);
@@ -66,7 +79,9 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
     setError('');
     crmFetch<{ items: ContactListItem[]; total: number; page: number; tags: string[] }>(`/api/crm/contacts?${params}`, { signal: controller.signal })
       .then((data) => {
-        setItems(data.items); setTotal(data.total); setPage(data.page);
+        setItems(data.items);
+        setTotal(data.total);
+        setPage(data.page);
         setKnownTags(data.tags);
         setLoading(false);
       })
@@ -102,7 +117,10 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
       {error && <div className="p-4"><ErrorBanner message={error} /></div>}
 
       {loading && items.length === 0 ? (
-        <p className="p-12 text-center text-slate-500">Đang tải dữ liệu...</p>
+        <div className="p-16 text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-cyan-600 border-r-transparent" />
+          <p className="mt-3 text-sm text-slate-500">Đang tải dữ liệu danh bạ...</p>
+        </div>
       ) : items.length === 0 ? (
         <EmptyState
           icon={<UserRound className="h-12 w-12" />}
@@ -110,57 +128,89 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
           hint={hasFilter ? 'Bỏ bớt điều kiện để xem lại.' : 'Nhấn “Thêm cá nhân”, hoặc thêm đầu mối ngay trong hồ sơ tổ chức.'}
         />
       ) : (
-        <div className={cn(loading && 'opacity-60 transition-opacity')}>
-          <p className="px-5 pt-3 text-xs text-slate-500">{total} người · 20 người/trang</p>
-          <div className="hidden overflow-x-auto md:block">
-            <table className="min-w-full divide-y divide-slate-100">
-              <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th scope="col" className="px-5 py-3">Họ tên</th>
-                  <th scope="col" className="px-5 py-3">Đơn vị · chức vụ</th>
-                  <th scope="col" className="px-5 py-3">Liên hệ</th>
-                  <th scope="col" className="px-5 py-3">Phụ trách</th>
-                  <th scope="col" className="px-5 py-3">Dẫn khám · gần nhất</th>
-                  <th scope="col" className="px-5 py-3">Người giới thiệu gần nhất</th>
-                  <th scope="col" className="px-5 py-3 text-right"><span className="sr-only">Thao tác</span></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-sm">
-                {items.map((c) => (
-                  <tr key={c.id} className="align-top hover:bg-brand-50/30">
-                    <td className="px-5 py-3.5">
-                      <span className="flex flex-wrap items-center gap-1.5">
-                        <Link href={`/dashboard/crm/contacts/${c.id}`} className="font-semibold text-slate-900 hover:text-brand-700 hover:underline">{displayName(c)}</Link>
-                        <TierBadge tier={c.tier} partner />
-                        {c.status === 'INACTIVE' && <span className="text-xs text-slate-400">(ngừng)</span>}
-                      </span>
-                      {c.tags.length > 0 && <span className="mt-1 flex max-w-[260px] flex-wrap gap-1">{c.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}</span>}
-                    </td>
-                    <td className="max-w-[320px] px-5 py-3.5"><OrgCell c={c} /></td>
-                    <td className="px-5 py-3.5"><ContactLine phone={c.phone} email={c.email} /></td>
-                    <td className="whitespace-nowrap px-5 py-3.5 text-slate-600">{c.ownerName ?? '—'}</td>
-                    <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-slate-600"><b>{c.escortCount} lượt</b><br />{formatDate(c.lastEscortAt) || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-600">{c.latestReferrer || '—'}</td>
-                    <td className="px-5 py-3"><RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} /></td>
+        <div className="relative">
+          {loading && (
+            <div className="absolute inset-x-0 top-0 z-10 h-1 overflow-hidden bg-slate-100">
+              <div className="h-full w-full bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 animate-pulse" />
+            </div>
+          )}
+          <div className={cn('transition-opacity duration-200', loading && 'opacity-50 pointer-events-none')}>
+            <p className="px-5 pt-3 text-xs text-slate-500">{total} người · 20 người/trang</p>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full table-fixed divide-y divide-slate-100">
+                <colgroup>
+                  <col className="w-[23%]" />
+                  <col className="w-[23%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[11%]" />
+                  <col className="w-[12%]" />
+                  <col className="w-[12%]" />
+                  <col className="w-[4%]" />
+                </colgroup>
+                <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th scope="col" className="px-4 py-3">Họ tên</th>
+                    <th scope="col" className="px-4 py-3">Đơn vị · chức vụ</th>
+                    <th scope="col" className="px-4 py-3">Liên hệ</th>
+                    <th scope="col" className="px-4 py-3">Phụ trách</th>
+                    <th scope="col" className="px-4 py-3">Dẫn khám · gần nhất</th>
+                    <th scope="col" className="px-4 py-3">Người giới thiệu gần nhất</th>
+                    <th scope="col" className="px-4 py-3 text-right"><span className="sr-only">Thao tác</span></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-sm">
+                  {items.map((c) => (
+                    <tr key={c.id} className="align-top hover:bg-slate-50/70 transition-colors">
+                      <td className="px-4 py-3.5">
+                        <div className="min-w-0 pr-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <Link href={`/dashboard/crm/contacts/${c.id}`} className="font-semibold text-slate-900 hover:text-cyan-700 hover:underline">
+                              {displayName(c)}
+                            </Link>
+                            <TierBadge tier={c.tier} partner tags={c.tags} />
+                            {c.status === 'INACTIVE' && <span className="text-xs text-slate-400">(ngừng)</span>}
+                          </div>
+                          {c.tags.length > 0 && (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {c.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5"><OrgCell c={c} /></td>
+                      <td className="px-4 py-3.5"><ContactLine phone={c.phone} email={c.email} /></td>
+                      <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 truncate">{c.ownerName ?? '—'}</td>
+                      <td className="whitespace-nowrap px-4 py-3.5 tabular-nums text-slate-600">
+                        <b>{c.escortCount} lượt</b>
+                        <br />
+                        <span className="text-xs text-slate-400">{formatDate(c.lastEscortAt) || '—'}</span>
+                      </td>
+                      <td className="px-4 py-3.5 text-slate-600">
+                        <span className="block truncate" title={c.latestReferrer || undefined}>
+                          {c.latestReferrer || '—'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-right"><RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <ul className="divide-y divide-slate-100 md:hidden">
+              {items.map((c) => (
+                <li key={c.id} className="space-y-1.5 px-4 py-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <Link href={`/dashboard/crm/contacts/${c.id}`} className="font-semibold text-slate-900">{displayName(c)}</Link>
+                    <TierBadge tier={c.tier} partner tags={c.tags} />
+                  </div>
+                  <div className="text-sm"><OrgCell c={c} /></div>
+                  <ContactLine phone={c.phone} email={c.email} />
+                  <p className="text-xs text-slate-500">{c.escortCount} lượt dẫn khám · {formatDate(c.lastEscortAt) || 'Chưa có lượt khám'} · Giới thiệu: {c.latestReferrer || '—'}</p>
+                  <RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} />
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="divide-y divide-slate-100 md:hidden">
-            {items.map((c) => (
-              <li key={c.id} className="space-y-1.5 px-4 py-3.5">
-                <div className="flex items-start justify-between gap-3">
-                  <Link href={`/dashboard/crm/contacts/${c.id}`} className="font-semibold text-slate-900">{displayName(c)}</Link>
-                  <TierBadge tier={c.tier} partner />
-                </div>
-                <div className="text-sm"><OrgCell c={c} /></div>
-                <ContactLine phone={c.phone} email={c.email} />
-                <p className="text-xs text-slate-500">{c.escortCount} lượt dẫn khám · {formatDate(c.lastEscortAt) || 'Chưa có lượt khám'} · Giới thiệu: {c.latestReferrer || '—'}</p>
-                <RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} />
-              </li>
-            ))}
-          </ul>
         </div>
       )}
 

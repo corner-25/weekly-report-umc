@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import path from 'node:path';
 import { prisma } from '@/lib/prisma';
 import { NON_SECRETARY_TYPE, sameUtcDate, todayInAppTimeZone } from '@/lib/birthday';
 
@@ -23,11 +24,13 @@ export function birthdayCardHtml(fullName: string) {
   return `<!doctype html><html lang="vi"><body style="margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#172033">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:32px 12px;background:#f4f6f8"><tr><td align="center">
     <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border:1px solid #e5e9ef;border-radius:16px;overflow:hidden">
-      <tr><td style="height:8px;background:#087ea4"></td></tr>
-      <tr><td style="padding:40px 44px 12px;color:#087ea4;font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase">Bệnh viện Đại học Y Dược TP.HCM</td></tr>
-      <tr><td style="padding:8px 44px 0;font-size:30px;line-height:1.25;font-weight:700">Chúc mừng sinh nhật, ${name}</td></tr>
-      <tr><td style="padding:20px 44px 8px;font-size:16px;line-height:1.7;color:#4b5565">Kính chúc Anh/Chị một tuổi mới nhiều sức khỏe, niềm vui và thành công. Cảm ơn những đóng góp tận tâm của Anh/Chị trong công việc và với tập thể.</td></tr>
-      <tr><td style="padding:20px 44px 42px"><div style="border-top:1px solid #e5e9ef;padding-top:20px;font-size:14px;line-height:1.6;color:#697386">Trân trọng,<br><strong style="color:#172033">Phòng Hành chính</strong></div></td></tr>
+      <tr><td style="height:8px;background:#275eab"></td></tr>
+      <tr><td><img src="cid:birthday-banner" width="600" alt="Chúc mừng sinh nhật" style="display:block;width:100%;max-width:600px;height:auto;border:0"></td></tr>
+      <tr><td style="padding:40px 44px 12px;color:#275eab;font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase">Hệ thống thư ký Bệnh viện Đại học Y Dược TP. Hồ Chí Minh</td></tr>
+      <tr><td style="padding:8px 44px 0;font-size:30px;line-height:1.25;font-weight:700;color:#172033">Chúc mừng sinh nhật!</td></tr>
+      <tr><td style="padding:12px 44px 0;font-size:25px;line-height:1.35;font-weight:600;color:#275eab;overflow-wrap:anywhere">${name}</td></tr>
+      <tr><td style="padding:22px 44px 8px;font-size:16px;line-height:1.7;color:#4b5565">Nhân dịp sinh nhật, kính chúc bạn một tuổi mới nhiều sức khỏe, niềm vui và thành công. Trân trọng cảm ơn những đóng góp tận tâm của bạn trong công việc và với tập thể.</td></tr>
+      <tr><td style="padding:20px 44px 42px"><div style="border-top:1px solid #e5e9ef;padding-top:20px;font-size:14px;line-height:1.6;color:#697386">Trân trọng,<br><strong style="color:#172033">Hệ thống thư ký Bệnh viện Đại học Y Dược TP. Hồ Chí Minh</strong></div></td></tr>
     </table>
   </td></tr></table></body></html>`;
 }
@@ -68,6 +71,12 @@ export async function sendBirthdayEmails({ dryRun = false } = {}) {
         to: recipient,
         subject: `Chúc mừng sinh nhật ${person.fullName}`,
         html: birthdayCardHtml(person.fullName),
+        attachments: [{
+          filename: 'thiep-chuc-mung-sinh-nhat.jpg',
+          path: path.join(process.cwd(), 'public/images/birthday-email-banner.jpg'),
+          cid: 'birthday-banner',
+          contentDisposition: 'inline',
+        }],
       });
       await prisma.birthdayEmailLog.update({ where: { secretaryId_birthdayYear: { secretaryId: person.id, birthdayYear } }, data: { status: 'SENT', sentAt: new Date() } });
       sent += 1;

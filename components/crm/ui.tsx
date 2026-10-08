@@ -20,18 +20,58 @@ export const PANEL = 'rounded-2xl border border-slate-200/80 bg-white shadow-sm'
  * người liên hệ của các tổ chức). Hạng A/B/C cũ không còn hiện — coi như Đối tác.
  * Tổ chức không phân hạng: không truyền `partner` thì chỉ hiện khi là VIP.
  */
-export function TierBadge({ tier, partner = false, className }: { tier: Tier; partner?: boolean; className?: string }) {
-  if (tier !== 'VIP' && !partner) return null;
+export function TierBadge({ tier, partner = false, tags = [], className }: { tier: Tier; partner?: boolean; tags?: string[]; className?: string }) {
+  const isLeader = tags.includes('Ban Giám đốc') || tags.includes('Lãnh đạo Bệnh viện');
+  const isReferrer = tags.includes('Người giới thiệu');
+  const isDoctor = tags.includes('Bác sĩ');
+
+  if (isLeader) {
+    return (
+      <span
+        className={cn('inline-flex items-center rounded-full bg-purple-900 px-2 py-0.5 text-[11px] font-bold tracking-wide text-amber-300 ring-1 ring-inset ring-amber-400/30', className)}
+        title="Lãnh đạo Bệnh viện / Đại học Y Dược TP.HCM"
+      >
+        Lãnh đạo BV
+      </span>
+    );
+  }
+  if (isReferrer) {
+    return (
+      <span
+        className={cn('inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-bold tracking-wide text-indigo-700 ring-1 ring-inset ring-indigo-200', className)}
+        title="Người giới thiệu khách VIP"
+      >
+        Người giới thiệu
+      </span>
+    );
+  }
+  if (isDoctor) {
+    return (
+      <span
+        className={cn('inline-flex items-center rounded-full bg-teal-50 px-2 py-0.5 text-[11px] font-bold tracking-wide text-teal-700 ring-1 ring-inset ring-teal-200', className)}
+        title="Bác sĩ khám bệnh"
+      >
+        Bác sĩ
+      </span>
+    );
+  }
+  if (tier === 'VIP') {
+    return (
+      <span
+        className={cn('inline-flex items-center rounded-full bg-slate-900 px-2 py-0.5 text-[11px] font-bold tracking-wide text-amber-300', className)}
+        title="Khách VIP"
+      >
+        VIP
+      </span>
+    );
+  }
+  if (!partner) return null;
   return (
     <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold tracking-wide',
-        tier === 'VIP' ? 'bg-slate-900 text-amber-300' : 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200',
-        className,
-      )}
-      title={tier === 'VIP' ? 'Khách VIP — Phòng HC tự gắn' : 'Đối tác — đầu mối, người liên hệ của tổ chức'}
+      className={cn('inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold tracking-wide text-blue-700 ring-1 ring-inset ring-blue-200', className)}
+      title="Đối tác — đầu mối, người liên hệ của tổ chức"
     >
-      {tier === 'VIP' ? 'VIP' : 'Đối tác'}
+      Đối tác
     </span>
   );
 }

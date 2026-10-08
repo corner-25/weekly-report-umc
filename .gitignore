@@ -55,3 +55,9 @@ dashboards/*.log
 
 # Bản sao lưu dữ liệu trước khi sửa (chứa dữ liệu thật)
 backup/
+
+# Temp evaluation files and worktrees
+.claude/
+_probe.ts
+_run_eval.ts
+output/
