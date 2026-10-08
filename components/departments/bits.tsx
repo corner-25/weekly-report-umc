@@ -108,7 +108,17 @@ export function DeptIcon({ name, size = 'md' }: { name: string; size?: 'sm' | 'm
   );
 }
 
-/** Ô chỉ số có vạch màu bên trái; nhãn có thể kèm nút giải thích. */
+const KPI_TONE_STYLES: Record<Tone, { border: string; bg: string; title: string; divider: string }> = {
+  active: { border: 'border-sky-200/80', bg: 'from-sky-50/60 via-white to-white', title: 'text-sky-800', divider: 'border-sky-100/80' },
+  overdue: { border: 'border-rose-200/80', bg: 'from-rose-50/60 via-white to-white', title: 'text-rose-800', divider: 'border-rose-100/80' },
+  dueSoon: { border: 'border-orange-200/80', bg: 'from-orange-50/60 via-white to-white', title: 'text-orange-800', divider: 'border-orange-100/80' },
+  stale: { border: 'border-amber-200/80', bg: 'from-amber-50/60 via-white to-white', title: 'text-amber-800', divider: 'border-amber-100/80' },
+  done: { border: 'border-emerald-200/80', bg: 'from-emerald-50/60 via-white to-white', title: 'text-emerald-800', divider: 'border-emerald-100/80' },
+  review: { border: 'border-violet-200/80', bg: 'from-violet-50/60 via-white to-white', title: 'text-violet-800', divider: 'border-violet-100/80' },
+  neutral: { border: 'border-slate-200/80', bg: 'from-slate-50/60 via-white to-white', title: 'text-slate-800', divider: 'border-slate-100/80' },
+};
+
+/** Ô chỉ số dạng thẻ hiện đại có gradient và vạch phân tách. */
 export function KpiTile({ label, value, tone, hint, onClick, active, className }: {
   label: ReactNode;
   value: ReactNode;
@@ -118,24 +128,25 @@ export function KpiTile({ label, value, tone, hint, onClick, active, className }
   active?: boolean;
   className?: string;
 }) {
+  const st = KPI_TONE_STYLES[tone];
   const body = (
     <>
-      <span className="relative z-10 flex w-fit items-center text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</span>
-      <span className={cn('mt-1 block text-2xl font-bold leading-none tabular-nums sm:text-[26px]', TONE_TEXT[tone])}>{value}</span>
-      {hint && <span className="mt-1.5 block text-xs text-slate-500">{hint}</span>}
+      <span className={cn('relative z-10 flex w-fit items-center text-[11px] font-bold uppercase tracking-wider', st.title)}>{label}</span>
+      <span className="mt-1.5 block text-2xl font-extrabold leading-none tabular-nums sm:text-[28px] text-slate-900">{value}</span>
+      {hint && <span className={cn('mt-2.5 block text-xs text-slate-500 border-t pt-2 leading-tight', st.divider)}>{hint}</span>}
     </>
   );
   const cls = cn(
-    'relative block min-w-0 rounded-xl bg-white px-4 py-3 pl-5 text-left before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full',
-    TONE_RAIL[tone],
+    'relative block min-w-0 rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-br',
+    st.border,
+    st.bg,
     className,
   );
   if (!onClick) return <div className={cls}>{body}</div>;
   return (
-    <div className={cn(cls, 'transition hover:bg-slate-50', active && 'bg-slate-50 ring-2 ring-inset ring-brand-200')}>
+    <div className={cn(cls, 'hover:-translate-y-0.5 cursor-pointer', active && 'ring-2 ring-inset ring-brand-500')}>
       {body}
-      {/* Nút phủ cả ô — nhãn (có nút ⓘ) vẫn bấm được nhờ z-index. */}
-      <button type="button" onClick={onClick} aria-pressed={active} className={cn('absolute inset-0 rounded-xl', FOCUS_RING)}>
+      <button type="button" onClick={onClick} aria-pressed={active} className={cn('absolute inset-0 rounded-2xl', FOCUS_RING)}>
         <span className="sr-only">Lọc theo chỉ số này</span>
       </button>
     </div>

@@ -7,7 +7,17 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, ChevronRight, Search, Truck } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Navigation,
+  Search,
+  ShieldAlert,
+  Truck,
+  type LucideIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { PANEL } from '@/components/crm/ui';
@@ -69,12 +79,106 @@ function LifetimeCell({ v }: { v: VehicleRow }) {
   );
 }
 
-function Kpi({ label, value, tone, hint }: { label: string; value: number | string; tone: string; hint: string }) {
+type Tone = 'inUse' | 'expired' | 'soon' | 'lifetime' | 'trips';
+
+interface ToneStyle {
+  border: string;
+  bgGradient: string;
+  badgeBg: string;
+  badgeText: string;
+  badgeShadow: string;
+  titleText: string;
+  divider: string;
+}
+
+const TONE_STYLES: Record<Tone, ToneStyle> = {
+  inUse: {
+    border: 'border-sky-200/80',
+    bgGradient: 'from-sky-50/60 via-white to-white',
+    badgeBg: 'bg-sky-100',
+    badgeText: 'text-sky-700',
+    badgeShadow: 'shadow-sky-200/50',
+    titleText: 'text-sky-800',
+    divider: 'border-sky-100/80',
+  },
+  expired: {
+    border: 'border-rose-200/80',
+    bgGradient: 'from-rose-50/60 via-white to-white',
+    badgeBg: 'bg-rose-100',
+    badgeText: 'text-rose-700',
+    badgeShadow: 'shadow-rose-200/50',
+    titleText: 'text-rose-800',
+    divider: 'border-rose-100/80',
+  },
+  soon: {
+    border: 'border-orange-200/80',
+    bgGradient: 'from-orange-50/60 via-white to-white',
+    badgeBg: 'bg-orange-100',
+    badgeText: 'text-orange-700',
+    badgeShadow: 'shadow-orange-200/50',
+    titleText: 'text-orange-800',
+    divider: 'border-orange-100/80',
+  },
+  lifetime: {
+    border: 'border-amber-200/80',
+    bgGradient: 'from-amber-50/60 via-white to-white',
+    badgeBg: 'bg-amber-100',
+    badgeText: 'text-amber-700',
+    badgeShadow: 'shadow-amber-200/50',
+    titleText: 'text-amber-800',
+    divider: 'border-amber-100/80',
+  },
+  trips: {
+    border: 'border-indigo-200/80',
+    bgGradient: 'from-indigo-50/60 via-white to-white',
+    badgeBg: 'bg-indigo-100',
+    badgeText: 'text-indigo-700',
+    badgeShadow: 'shadow-indigo-200/50',
+    titleText: 'text-indigo-800',
+    divider: 'border-indigo-100/80',
+  },
+};
+
+function Kpi({
+  label,
+  value,
+  tone,
+  hint,
+  icon: Icon,
+}: {
+  label: string;
+  value: number | string;
+  tone: Tone;
+  hint: string;
+  icon: LucideIcon;
+}) {
+  const st = TONE_STYLES[tone];
   return (
-    <div className="bg-white px-4 py-3" title={hint}>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-      <p className={cn('mt-1 text-2xl font-bold tabular-nums', tone)}>{value}</p>
-      <p className="mt-0.5 text-[11px] text-slate-400">{hint}</p>
+    <div
+      title={hint}
+      className={cn(
+        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 shadow-sm transition-all duration-200 hover:shadow-md',
+        st.border,
+        'bg-gradient-to-br',
+        st.bgGradient
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={cn('text-xs font-bold uppercase tracking-wider', st.titleText)}>{label}</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-2xl font-extrabold tabular-nums text-slate-900 sm:text-3xl">
+              {value}
+            </span>
+          </div>
+        </div>
+        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform group-hover:scale-105', st.badgeBg, st.badgeText, st.badgeShadow)}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </div>
+      </div>
+      <div className={cn('mt-3 border-t pt-2 text-[11px] text-slate-500 leading-tight', st.divider)}>
+        {hint}
+      </div>
     </div>
   );
 }
@@ -118,12 +222,12 @@ export default function VehiclesPage() {
     <div className="space-y-5">
       <PageHeader icon={Truck} title="Phương tiện" description="Đoàn xe Bệnh viện: hạn giấy tờ, niên hạn, hoạt động 30 ngày qua — bấm vào xe để xem hồ sơ, bảo dưỡng, nhật ký chuyến" />
 
-      <section className={cn(PANEL, 'grid grid-cols-2 gap-px overflow-hidden bg-slate-100 sm:grid-cols-3 lg:grid-cols-5')} aria-label="Tổng quan đoàn xe">
-        <Kpi label="Đang sử dụng" value={all.filter((v) => v.status === 'IN_USE').length} tone="text-slate-900" hint={`trên ${all.length} xe`} />
-        <Kpi label="Giấy tờ quá hạn" value={expired} tone={expired ? 'text-rose-600' : 'text-slate-300'} hint="Kiểm định, bảo hiểm đã hết hạn" />
-        <Kpi label="Sắp hết hạn" value={soon} tone={soon ? 'text-amber-600' : 'text-slate-300'} hint={`Trong ${SOON_DAYS} ngày tới`} />
-        <Kpi label="Gần hết niên hạn" value={lifetimeWarn} tone={lifetimeWarn ? 'text-amber-600' : 'text-slate-300'} hint={`Còn ≤ ${LIFETIME_WARN_YEARS} năm`} />
-        <Kpi label="Chuyến 30 ngày" value={trips.toLocaleString('vi-VN')} tone="text-brand-700" hint="Theo nhật ký tài xế nhập" />
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="Tổng quan đoàn xe">
+        <Kpi label="Đang sử dụng" icon={CheckCircle2} value={all.filter((v) => v.status === 'IN_USE').length} tone="inUse" hint={`trên tổng số ${all.length} xe`} />
+        <Kpi label="Giấy tờ quá hạn" icon={AlertTriangle} value={expired} tone={expired ? 'expired' : 'inUse'} hint="Kiểm định, bảo hiểm đã hết hạn" />
+        <Kpi label="Sắp hết hạn" icon={Clock} value={soon} tone={soon ? 'soon' : 'inUse'} hint={`Trong ${SOON_DAYS} ngày tới`} />
+        <Kpi label="Gần hết niên hạn" icon={ShieldAlert} value={lifetimeWarn} tone={lifetimeWarn ? 'lifetime' : 'inUse'} hint={`Còn ≤ ${LIFETIME_WARN_YEARS} năm`} />
+        <Kpi label="Chuyến 30 ngày" icon={Navigation} value={trips.toLocaleString('vi-VN')} tone="trips" hint="Theo nhật ký tài xế nhập" />
       </section>
 
       <div className="flex flex-wrap items-center gap-2">
