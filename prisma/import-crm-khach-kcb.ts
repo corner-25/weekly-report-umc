@@ -85,6 +85,12 @@ async function main() {
   for (const p of patients) {
     const existing =
       (p.recordNo && (await prisma.crmContact.findFirst({ where: { patientCode: p.recordNo }, select: { id: true, note: true, phone: true, address: true, birthYear: true, tags: true } }))) ||
+      // Khách không có mã hồ sơ đã nạp từ chính file này ở lần trước (để chạy lại không tạo trùng).
+      (!p.recordNo &&
+        (await prisma.crmContact.findFirst({
+          where: { fullName: p.fullName, patientCode: null, source: { startsWith: 'Danh sách khách KCB' } },
+          select: { id: true, note: true, phone: true, address: true, birthYear: true, tags: true },
+        }))) ||
       // Không có mã hồ sơ: chỉ nhận người đã có khi trùng tên và đủ ngày sinh — trùng tên không đủ để là một người.
       (p.birth.day && p.birth.month && p.birth.year
         ? await prisma.crmContact.findFirst({
