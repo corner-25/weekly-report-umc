@@ -137,15 +137,15 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
           <div className={cn('transition-opacity duration-200', loading && 'opacity-50 pointer-events-none')}>
             <p className="px-5 pt-3 text-xs text-slate-500">{total} người · 20 người/trang</p>
             <div className="hidden overflow-x-auto md:block">
-              <table className="w-full table-fixed divide-y divide-slate-100">
+              <table className="w-full min-w-[1020px] table-fixed divide-y divide-slate-100">
                 <colgroup>
-                  <col className="w-[23%]" />
-                  <col className="w-[23%]" />
-                  <col className="w-[15%]" />
+                  <col className="w-[20%]" />
+                  <col className="w-[19%]" />
+                  <col className="w-[13%]" />
+                  <col className="w-[9%]" />
                   <col className="w-[11%]" />
+                  <col className="w-[16%]" />
                   <col className="w-[12%]" />
-                  <col className="w-[12%]" />
-                  <col className="w-[4%]" />
                 </colgroup>
                 <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
@@ -185,12 +185,12 @@ export function ContactsTab({ reloadKey, onChanged }: { reloadKey: number; onCha
                         <br />
                         <span className="text-xs text-slate-400">{formatDate(c.lastEscortAt) || '—'}</span>
                       </td>
-                      <td className="px-4 py-3.5 text-slate-600">
-                        <span className="block truncate" title={c.latestReferrer || undefined}>
+                      <td className="min-w-0 px-4 py-3.5 text-slate-600">
+                        <span className="block truncate font-medium text-slate-700" title={c.latestReferrer || undefined}>
                           {c.latestReferrer || '—'}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right"><RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} /></td>
+                      <td className="whitespace-nowrap px-3 py-3.5 text-right"><RowActions href={`/dashboard/crm/contacts/${c.id}`} onEdit={() => openEdit(c.id)} name={c.fullName} /></td>
                     </tr>
                   ))}
                 </tbody>

@@ -78,11 +78,11 @@ export function ContactLine({ phone, email }: { phone: string | null; email: str
 /** Nút Xem (mở hồ sơ) và Sửa (mở form sửa ngay tại danh sách). */
 export function RowActions({ href, onEdit, name }: { href: string; onEdit: () => void; name: string }) {
   return (
-    <span className="flex items-center justify-end gap-1">
-      <Link href={href} className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900" aria-label={`Xem hồ sơ ${name}`}>
+    <span className="inline-flex shrink-0 items-center justify-end gap-1">
+      <Link href={href} className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900" aria-label={`Xem hồ sơ ${name}`}>
         <Eye className="h-3.5 w-3.5" aria-hidden="true" /> Xem
       </Link>
-      <button type="button" onClick={onEdit} className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50" aria-label={`Sửa ${name}`}>
+      <button type="button" onClick={onEdit} className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50" aria-label={`Sửa ${name}`}>
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Sửa
       </button>
     </span>

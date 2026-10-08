@@ -105,14 +105,14 @@ export function OrganizationsTab({ reloadKey, onChanged }: { reloadKey: number; 
         <div className={cn(loading && 'opacity-60 transition-opacity')}>
           <p className="px-5 pt-3 text-xs text-slate-500">{items.length} tổ chức · {items.filter((o) => o.focalPoints.length > 0).length} đã có đầu mối</p>
           <div className="hidden overflow-x-auto md:block">
-            <table className="w-full table-fixed divide-y divide-slate-100">
+            <table className="w-full min-w-[960px] table-fixed divide-y divide-slate-100">
               <colgroup>
-                <col className="w-[34%]" />
-                <col className="w-[28%]" />
-                <col className="w-[10%]" />
+                <col className="w-[32%]" />
+                <col className="w-[25%]" />
+                <col className="w-[9%]" />
                 <col className="w-[10%]" />
                 <col className="w-[12%]" />
-                <col className="w-[6%]" />
+                <col className="w-[12%]" />
               </colgroup>
               <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
@@ -136,7 +136,7 @@ export function OrganizationsTab({ reloadKey, onChanged }: { reloadKey: number; 
                     <td className="px-5 py-3.5 text-right tabular-nums text-slate-700">{o.contactCount}</td>
                     <td className={cn('px-5 py-3.5 text-right tabular-nums', o.delegationCount ? 'font-semibold text-emerald-700' : 'text-slate-300')}>{o.delegationCount}</td>
                     <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-slate-600">{formatDate(o.lastInteractionAt) || '—'}</td>
-                    <td className="px-5 py-3"><RowActions href={`/dashboard/crm/organizations/${o.id}`} onEdit={() => openEdit(o.id)} name={o.name} /></td>
+                    <td className="whitespace-nowrap px-3 py-3 text-right"><RowActions href={`/dashboard/crm/organizations/${o.id}`} onEdit={() => openEdit(o.id)} name={o.name} /></td>
                   </tr>
                 ))}
               </tbody>
