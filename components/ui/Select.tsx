@@ -323,12 +323,12 @@ export function Select({
         onClick={() => setOpen((current) => !current)}
         onKeyDown={handleKeyDown}
         className={cn(
-          'flex min-h-[44px] w-full items-center rounded-xl border border-slate-300 bg-white text-left text-base sm:text-sm font-medium text-slate-700 shadow-sm transition-all',
+          'flex min-h-[44px] w-full items-center rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-left text-base sm:text-sm font-medium text-slate-700 shadow-sm transition-all',
           'hover:border-cyan-300 hover:bg-cyan-50/20 hover:shadow-md',
           'focus:outline-none focus:ring-4 focus:ring-cyan-500/15 focus:border-cyan-500',
           'disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none',
-          className,
-          'pr-11'
+          'pr-11',
+          className
         )}
       >
         <span className={cn('min-w-0 flex-1 truncate', !selectedOption && 'text-slate-400')}>

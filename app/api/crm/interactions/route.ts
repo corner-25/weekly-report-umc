@@ -48,6 +48,24 @@ export const GET = handle(async (request: Request) => {
           ...(to && { lte: new Date(`${to}T23:59:59.999+07:00`) }),
         },
       });
+    } else if (followUpScope === 'today') {
+      const today = todayInVietnam();
+      const todayStart = new Date(`${today}T00:00:00+07:00`);
+      conditions.push({
+        followUpDate: {
+          gte: todayStart,
+          lt: new Date(todayStart.getTime() + 86_400_000),
+        },
+      });
+    } else if (followUpScope === 'window7') {
+      const today = todayInVietnam();
+      const todayStart = new Date(`${today}T00:00:00+07:00`);
+      conditions.push({
+        followUpDate: {
+          gte: new Date(todayStart.getTime() - 7 * 86_400_000),
+          lt: new Date(todayStart.getTime() + 8 * 86_400_000),
+        },
+      });
     } else if (followUpScope === 'upcoming14') {
       const today = todayInVietnam();
       const todayStart = new Date(`${today}T00:00:00+07:00`);

@@ -26,6 +26,7 @@ interface Suggestion {
 
 interface EntityComboboxProps {
   kind: 'contact' | 'organization';
+  filter?: 'doctor';
   inputId?: string;
   value: ComboValue | null;
   onChange: (value: ComboValue | null) => void;
@@ -58,6 +59,7 @@ function toSuggestions(kind: EntityComboboxProps['kind'], data: SearchDTO): Sugg
 
 export function EntityCombobox({
   kind,
+  filter,
   inputId,
   value,
   onChange,
@@ -89,6 +91,22 @@ export function EntityCombobox({
     if (!typedRef.current) return;
     const query = text.trim();
     if (!query) {
+      if (filter === 'doctor') {
+        const controller = new AbortController();
+        setLoading(true);
+        crmFetch<SearchDTO>(`/api/crm/search?filter=doctor`, { signal: controller.signal })
+          .then((data) => {
+            setResults(toSuggestions(kind, data));
+            setFailed(false);
+          })
+          .catch(() => {
+            if (!controller.signal.aborted) setFailed(true);
+          })
+          .finally(() => {
+            if (!controller.signal.aborted) setLoading(false);
+          });
+        return () => controller.abort();
+      }
       setResults([]);
       setLoading(false);
       return;
@@ -97,7 +115,8 @@ export function EntityCombobox({
     setLoading(true);
     const timer = window.setTimeout(async () => {
       try {
-        const data = await crmFetch<SearchDTO>(`/api/crm/search?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+        const filterParam = filter ? `&filter=${filter}` : '';
+        const data = await crmFetch<SearchDTO>(`/api/crm/search?q=${encodeURIComponent(query)}${filterParam}`, { signal: controller.signal });
         setResults(toSuggestions(kind, data));
         setFailed(false);
       } catch {
@@ -113,16 +132,32 @@ export function EntityCombobox({
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [text, kind]);
+  }, [text, kind, filter]);
+
+  // Khi mở ô chọn bác sĩ mà chưa gõ gì: tự tải danh sách gợi ý bác sĩ
+  useEffect(() => {
+    if (!open || text.trim().length > 0 || filter !== 'doctor') return;
+    const controller = new AbortController();
+    setLoading(true);
+    crmFetch<SearchDTO>(`/api/crm/search?filter=doctor`, { signal: controller.signal })
+      .then((data) => {
+        setResults(toSuggestions(kind, data));
+        setFailed(false);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setFailed(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [open, text, filter, kind]);
 
   const visible = useMemo(() => results.filter((r) => !excludeIds.includes(r.id)), [results, excludeIds]);
   const findSame = (query: string) => visible.find((r) => r.names.some((name) => normalize(name) === normalize(query)));
-  // Chưa hiện "Thêm mới" khi đang tìm: dòng này hiện ngay còn gợi ý tới sau
-  // ~200ms debounce + thời gian gọi API, nên Enter lúc đó tạo hồ sơ trùng với
-  // hồ sơ có sẵn (đã gặp khi chạy thử: gõ "Công" ra đơn vị mới thay vì "Công ty Y").
   const canCreate = allowNew && !loading && !failed && text.trim().length > 0 && !findSame(text);
   const optionCount = visible.length + (canCreate ? 1 : 0);
-  const showList = open && text.trim().length > 0;
+  const showList = open && (text.trim().length > 0 || (filter === 'doctor' && visible.length > 0));
 
   // Chưa tô dòng nào khi danh sách mới hiện ra: tô sẵn dòng đầu thì phím ↓ đầu
   // tiên nhảy qua gợi ý xuống "Thêm mới", Enter tạo luôn tổ chức rác — đã gặp khi
@@ -234,7 +269,8 @@ export function EntityCombobox({
           // Gõ tay là bỏ liên kết hồ sơ cũ ngay (tránh lưu nhầm khi bấm Lưu trước khi rời ô).
           if (!clearOnSelect) onChange(allowNew && next.trim() ? { newName: next } : null);
         }}
-        onFocus={() => text.trim() && setOpen(true)}
+        onFocus={() => (text.trim() || filter === 'doctor') && setOpen(true)}
+        onClick={() => filter === 'doctor' && setOpen(true)}
         onBlur={handleBlur}
         onKeyDown={onKeyDown}
         className={cn('input pl-10', (isNew || isLinked) && 'pr-24', invalid && 'border-red-400 focus:border-red-500 focus:ring-red-500/10')}

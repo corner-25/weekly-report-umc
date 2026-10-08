@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useRef, type FormEvent } from 'react';
-import { CalendarCheck, Stethoscope, X } from 'lucide-react';
+import { CalendarCheck, CheckCircle2, Stethoscope, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select } from '@/components/ui/Select';
 import { DELEGATION_PURPOSES, ESCORT_SERVICES, INTERACTION_TYPE_LABELS, VIP_STAFF, INTERACTION_STATUS_LABELS } from '@/lib/crm/constants';
@@ -14,6 +14,7 @@ import type { InteractionDTO, InteractionType, InteractionStatus, PhotoKind } fr
 import { ChipGroup, ErrorBanner, Field, ModalFooter, ModalShell, inputClass } from './ui';
 import { DateInput } from '@/components/ui/DateInput';
 import { DelegationDetailsFields, detailsBody, detailsFrom, validateDetails, type DelegationDetails } from './DelegationDetailsFields';
+import { FollowUpPickerModal } from './FollowUpPickerModal';
 
 export type InteractionMode = 'VIP_ESCORT' | 'DELEGATION' | 'OTHER';
 
@@ -27,6 +28,15 @@ export interface InteractionPreset {
   /** Ảnh là quà bệnh viện nhận hay quà tặng đi, khi loại tương tác không tự nói lên. */
   photoKind?: PhotoKind;
   title?: string;
+  content?: string;
+  destination?: string;
+  referrerContactId?: string;
+  referrerName?: string;
+  relatedVipContactId?: string;
+  relatedVipName?: string;
+  vipRelationship?: string;
+  doctors?: Array<{ id?: string; newName?: string; label?: string; department?: string | null }>;
+  services?: string[];
 }
 
 interface InteractionModalProps {
@@ -157,11 +167,16 @@ function initialState(mode: InteractionMode, initial?: InteractionDTO | null, pr
     organization: preset?.organizationId ? { id: preset.organizationId, label: preset.organizationName ?? 'Đơn vị đã chọn' } : null,
     participants: [],
     title: preset?.title ?? '',
-    content: '',
-    destination: '',
+    content: preset?.content ?? '',
+    destination: preset?.destination ?? '',
     patientName: '',
-    referrer: null, referrerChanged: false, legacyReferrer: '', vip: null, vipRelationship: '', doctors: [],
-    services: [],
+    referrer: preset?.referrerContactId ? { id: preset.referrerContactId, label: preset.referrerName ?? '' } : null,
+    referrerChanged: false,
+    legacyReferrer: '',
+    vip: preset?.relatedVipContactId ? { id: preset.relatedVipContactId, label: preset.relatedVipName ?? '' } : null,
+    vipRelationship: preset?.vipRelationship ?? '',
+    doctors: preset?.doctors?.map((d) => (d.id ? { id: d.id, label: d.label ?? '', department: d.department } : { newName: d.newName ?? '' })) ?? [],
+    services: preset?.services ?? [],
     guestCount: '',
     purpose: '',
     purposeIsCustom: false,
@@ -416,6 +431,9 @@ interface SectionProps {
 
 function EscortFields({ form, set, errors }: SectionProps) {
   const selectionVersion = useRef(0);
+  const [showFollowUpPicker, setShowFollowUpPicker] = useState(false);
+  const [autoFillNotice, setAutoFillNotice] = useState('');
+
   const chooseGuest = async (value: ComboValue | null) => {
     const version = ++selectionVersion.current;
     set('contact', value);
@@ -424,9 +442,49 @@ function EscortFields({ form, set, errors }: SectionProps) {
     try {
       const c = await crmFetch<import('./types').ContactDetail>(`/api/crm/contacts/${value.id}`);
       if (selectionVersion.current !== version) return;
-      set('referrer', c.referrerContact ? { id: c.referrerContact.id, label: c.referrerContact.fullName } : null);
-      set('vip', c.relatedVipContact ? { id: c.relatedVipContact.id, label: c.relatedVipContact.fullName } : null);
-      set('vipRelationship', c.vipRelationship ?? '');
+
+      let filled = false;
+      if (c.referrerContact) {
+        set('referrer', { id: c.referrerContact.id, label: c.referrerContact.fullName });
+        filled = true;
+      }
+      if (c.relatedVipContact) {
+        set('vip', { id: c.relatedVipContact.id, label: c.relatedVipContact.fullName });
+        set('vipRelationship', c.vipRelationship ?? '');
+        filled = true;
+      }
+      if (!form.organization && c.positions?.[0]?.organization) {
+        set('organization', { id: c.positions[0].organization.id, label: c.positions[0].organization.name });
+      }
+
+      // Tự động tìm lượt khám VIP gần nhất để điền tiếp bác sĩ, khoa phòng, dịch vụ
+      const lastEscort = c.interactions?.find((ix) => ix.type === 'VIP_ESCORT');
+      if (lastEscort) {
+        if (!c.referrerContact && lastEscort.referrerContact) {
+          set('referrer', { id: lastEscort.referrerContact.id, label: lastEscort.referrerContact.fullName });
+          filled = true;
+        }
+        if (!c.relatedVipContact && lastEscort.relatedVipContact) {
+          set('vip', { id: lastEscort.relatedVipContact.id, label: lastEscort.relatedVipContact.fullName });
+          if (lastEscort.vipRelationship) set('vipRelationship', lastEscort.vipRelationship);
+          filled = true;
+        }
+        if (!form.destination.trim() && lastEscort.destination) {
+          set('destination', lastEscort.destination);
+          filled = true;
+        }
+        if (form.doctors.length === 0 && lastEscort.doctors && lastEscort.doctors.length > 0) {
+          set('doctors', lastEscort.doctors.map((d) => ({ id: d.id, label: d.fullName })));
+          filled = true;
+        }
+        if (form.services.length === 0 && lastEscort.services && lastEscort.services.length > 0) {
+          set('services', lastEscort.services);
+        }
+      }
+
+      if (filled) {
+        setAutoFillNotice('Đã tự động điền người giới thiệu & thông tin từ cơ sở dữ liệu.');
+      }
     } catch { /* The user can still enter these optional fields manually. */ }
   };
   const isNewGuest = form.contact !== null && 'newName' in form.contact;
@@ -468,6 +526,37 @@ function EscortFields({ form, set, errors }: SectionProps) {
 
   return (
     <>
+      {/* Nút mở danh sách đã hẹn tái khám / chụp MRI */}
+      <div className="flex items-center justify-between gap-2 rounded-2xl border border-teal-200/90 bg-gradient-to-r from-teal-50 via-cyan-50/50 to-white p-3.5 sm:p-4 shadow-2xs">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <CalendarCheck className="h-4 w-4 text-teal-700 shrink-0" />
+            <span className="font-bold text-slate-900 text-sm">Khách đến theo lịch hẹn?</span>
+          </div>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Chọn từ danh sách hẹn trong khoảng ±7 ngày để tự động điền toàn bộ thông tin.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowFollowUpPicker(true)}
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-teal-700 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-teal-800 transition-colors active:scale-95 min-h-[38px]"
+        >
+          <span>Danh sách hẹn</span>
+          <span className="hidden sm:inline">(±7 ngày)</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      {autoFillNotice && (
+        <div className="flex items-center justify-between rounded-xl bg-teal-50/90 border border-teal-200 px-3.5 py-2.5 text-xs text-teal-900 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-600" />
+            <span className="font-medium">{autoFillNotice}</span>
+          </div>
+          <button type="button" onClick={() => setAutoFillNotice('')} className="text-teal-600 hover:text-teal-900 font-bold ml-2 text-sm leading-none">×</button>
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Khách được dẫn khám" required htmlFor="ix-contact" error={errors.contactId} hint="Tìm trong danh bạ; chưa có thì gõ tên để tạo hồ sơ mới.">
           <EntityCombobox kind="contact" inputId="ix-contact" value={form.contact} onChange={chooseGuest} invalid={Boolean(errors.contactId)} placeholder="Họ tên khách" />
@@ -539,8 +628,10 @@ function EscortFields({ form, set, errors }: SectionProps) {
       <Field label="Bác sĩ khám" hint="Có thể chọn nhiều bác sĩ; khi chọn hệ thống sẽ tự điền khoa/phòng tương ứng.">
         <EntityCombobox
           kind="contact"
+          filter="doctor"
           value={null}
           clearOnSelect
+          placeholder="Chọn hoặc gõ tên bác sĩ..."
           onChange={(v) => {
             if (v) {
               set('doctors', [...form.doctors, v]);
@@ -594,10 +685,10 @@ function EscortFields({ form, set, errors }: SectionProps) {
           <span className="text-xs font-semibold text-slate-600 block mb-1.5">Mục đích hẹn:</span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { id: 'INVESTIGATION', label: 'Chụp MRI / Cận lâm sàng', icon: '🧲' },
-              { id: 'RESULT', label: 'Đọc kết quả / Hội chẩn', icon: '📋' },
-              { id: 'FOLLOW_UP', label: 'Tái khám sau điều trị', icon: '🔄' },
-              { id: 'OTHER', label: 'Hẹn khác', icon: '📅' },
+              { id: 'INVESTIGATION', label: 'Chụp MRI / Cận lâm sàng' },
+              { id: 'RESULT', label: 'Đọc kết quả / Hội chẩn' },
+              { id: 'FOLLOW_UP', label: 'Tái khám sau điều trị' },
+              { id: 'OTHER', label: 'Hẹn khác' },
             ].map((t) => {
               const active = form.followUpType === t.id;
               return (
@@ -628,13 +719,12 @@ function EscortFields({ form, set, errors }: SectionProps) {
                     }
                   }}
                   className={cn(
-                    'flex items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition border',
+                    'flex items-center justify-center rounded-xl px-2.5 py-2 text-xs font-semibold transition border min-h-[38px] text-center',
                     active
                       ? 'bg-teal-700 text-white border-teal-700 shadow-2xs'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-teal-50 hover:text-teal-900'
                   )}
                 >
-                  <span>{t.icon}</span>
                   <span className="truncate">{t.label}</span>
                 </button>
               );
@@ -769,6 +859,43 @@ function EscortFields({ form, set, errors }: SectionProps) {
         </div>
         <textarea rows={3} value={form.content} onChange={(event) => set('content', event.target.value)} className={inputClass(errors.content, 'resize-none')} placeholder="Ví dụ: Đón tại sảnh A, đưa đi chụp MRI, hỗ trợ lấy kết quả" />
       </Field>
+
+      {showFollowUpPicker && (
+        <FollowUpPickerModal
+          onClose={() => setShowFollowUpPicker(false)}
+          onSelect={(item) => {
+            setShowFollowUpPicker(false);
+            if (item.contact) {
+              chooseGuest({ id: item.contact.id, label: item.contact.fullName });
+            } else if (item.patientName) {
+              set('patientName', item.patientName);
+            }
+            if (item.organization) {
+              set('organization', { id: item.organization.id, label: item.organization.name });
+            }
+            if (item.destination) {
+              set('destination', item.destination);
+            }
+            if (item.doctors && item.doctors.length > 0) {
+              set('doctors', item.doctors.map((d) => ({ id: d.id, label: d.fullName })));
+            }
+            if (item.referrerContact) {
+              set('referrer', { id: item.referrerContact.id, label: item.referrerContact.fullName });
+            }
+            if (item.relatedVipContact) {
+              set('vip', { id: item.relatedVipContact.id, label: item.relatedVipContact.fullName });
+              if (item.vipRelationship) set('vipRelationship', item.vipRelationship);
+            }
+            if (item.services && item.services.length > 0) {
+              set('services', item.services);
+            }
+            const label = item.followUp ? `Đón tiếp theo hẹn: ${item.followUp}` : 'Đón tiếp và hỗ trợ theo lịch hẹn';
+            set('content', label);
+            set('status', 'DONE');
+            setAutoFillNotice(`Đã điền toàn bộ thông tin từ lịch hẹn ${item.followUpDate ? formatDate(item.followUpDate) : ''}.`);
+          }}
+        />
+      )}
     </>
   );
 }

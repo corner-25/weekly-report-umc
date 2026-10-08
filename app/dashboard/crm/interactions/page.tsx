@@ -58,7 +58,7 @@ function CrmInteractionsContent() {
   const [total, setTotal] = useState(0);
   const [visitStats, setVisitStats] = useState<{ done: number; planned: number; patients: number; referrers: number; doctors: number; byReferrer: Array<{ id: string; name: string; count: number }>; byDoctor: Array<{ id: string; name: string; count: number }> } | null>(null);
   const [tab, setTab] = useState<TypeTab>(initialTab && TABS.some(t => t.value === initialTab) ? initialTab : 'ALL');
-  const [followUpScope, setFollowUpScope] = useState<'upcoming14' | 'upcoming30' | 'all' | 'overdue'>((initialScope as any) || 'upcoming14');
+  const [followUpScope, setFollowUpScope] = useState<'window7' | 'today' | 'upcoming14' | 'upcoming30' | 'all' | 'overdue'>((initialScope as any) || 'window7');
   const [staffName, setStaffName] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -266,8 +266,10 @@ function CrmInteractionsContent() {
         <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-teal-200/80 bg-teal-50/60 p-3 shadow-2xs">
           <span className="text-xs font-bold uppercase tracking-wider text-teal-900 mr-1">Khoảng thời gian:</span>
           {[
-            { id: 'upcoming14', label: '14 ngày tới (2 tuần)' },
-            { id: 'upcoming30', label: '30 ngày tới (1 tháng)' },
+            { id: 'window7', label: '±7 ngày (Mặc định)' },
+            { id: 'today', label: 'Hôm nay' },
+            { id: 'upcoming14', label: '14 ngày tới' },
+            { id: 'upcoming30', label: '30 ngày tới' },
             { id: 'all', label: 'Tất cả có hẹn' },
             { id: 'overdue', label: 'Đã quá hạn' },
           ].map((scope) => (
@@ -326,7 +328,7 @@ function CrmInteractionsContent() {
           </div>
           {tab === 'VIP_ESCORT' && <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-1 text-sm"><span>Người giới thiệu</span><EntityCombobox kind="contact" value={referrerFilter} onChange={setReferrerFilter} allowNew={false} placeholder="Lọc người giới thiệu" /></label>
-            <label className="space-y-1 text-sm"><span>Bác sĩ khám</span><EntityCombobox kind="contact" value={doctorFilter} onChange={setDoctorFilter} allowNew={false} placeholder="Lọc bác sĩ" /></label>
+            <label className="space-y-1 text-sm"><span>Bác sĩ khám</span><EntityCombobox kind="contact" filter="doctor" value={doctorFilter} onChange={setDoctorFilter} allowNew={false} placeholder="Lọc bác sĩ" /></label>
           </div>}
           {tab === 'DELEGATION' && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
