@@ -31,11 +31,23 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] || c);
 }
 
+/** Icon SVG đồng hồ chỉ báo thời gian (Apple style - 12x12) */
+const SVG_CLOCK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -1.5px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+
+/** Icon SVG tam giác cảnh báo quá hạn (Apple style - 12x12) */
+const SVG_ALERT = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -1.5px; margin-right: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+
+/** Icon SVG lịch mốc hạn chót (Apple style - 12x12) */
+const SVG_CALENDAR = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -1.5px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+
+/** Icon SVG thông tin gợi ý (Apple style - 14x14) */
+const SVG_INFO = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+
 /**
  * Trả về chuỗi HTML của các huy hiệu thông tin trạng thái theo phong cách Apple/Modern:
  * Ưu tiên hiển thị:
- * 1. Badge số ngày chưa cập nhật: "⏱️ Đã xxx ngày chưa cập nhật"
- * 2. Badge tình trạng hạn: "⚠️ Quá hạn xxx ngày" hoặc "📅 Sắp đến hạn"
+ * 1. Badge số ngày chưa cập nhật kèm icon SVG đồng hồ
+ * 2. Badge tình trạng hạn kèm icon SVG tam giác cảnh báo / lịch
  */
 function renderItemBadges(item: WorkReminderItemData): string {
   const parts: string[] = [];
@@ -51,26 +63,26 @@ function renderItemBadges(item: WorkReminderItemData): string {
     if (staleDays >= 100) {
       parts.push(`
         <span style="display: inline-block; background-color: #fff1f2; color: #be123c; border: 1px solid #fecdd3; padding: 2.5px 9px; border-radius: 9999px; font-weight: 700; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+          ${SVG_CLOCK}Đã ${staleDays} ngày chưa cập nhật
         </span>
       `);
     } else if (staleDays >= 30) {
       parts.push(`
         <span style="display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+          ${SVG_CLOCK}Đã ${staleDays} ngày chưa cập nhật
         </span>
       `);
     } else {
       parts.push(`
         <span style="display: inline-block; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+          ${SVG_CLOCK}Đã ${staleDays} ngày chưa cập nhật
         </span>
       `);
     }
   } else if (/chưa có cập nhật/i.test(item.reasonText)) {
     parts.push(`
       <span style="display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-        ⏱️ Chưa có cập nhật nào
+        ${SVG_CLOCK}Chưa có cập nhật nào
       </span>
     `);
   }
@@ -86,13 +98,13 @@ function renderItemBadges(item: WorkReminderItemData): string {
     const label = overdueDays ? `Quá hạn ${overdueDays} ngày` : 'Quá hạn xử lý';
     parts.push(`
       <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-        ⚠️ ${label}
+        ${SVG_ALERT}${label}
       </span>
     `);
   } else if (/sắp đến hạn|còn \d+ ngày|đến hạn hôm nay/i.test(item.reasonText)) {
     parts.push(`
       <span style="display: inline-block; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
-        📅 ${escapeHtml(item.reasonText)}
+        ${SVG_CALENDAR}${escapeHtml(item.reasonText)}
       </span>
     `);
   }
@@ -248,7 +260,7 @@ export function renderModernWorkReminder({
                 <tr>
                   <td style="padding: 18px 20px;">
                     <div style="font-size: 12.5px; font-weight: 800; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
+                      ${SVG_INFO}GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
                     </div>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12.5px; color: #334155; line-height: 1.65;">
                       <tr>
@@ -442,7 +454,7 @@ export function renderMinimalWorkReminder({
               <!-- Hộp gợi ý trung dung, phong cách Apple hỗ trợ phòng ban -->
               <div style="background-color: #fafafa; border: 1px solid #f4f4f5; border-radius: 8px; padding: 18px 20px; margin-bottom: 28px;">
                 <div style="font-size: 13px; font-weight: 600; color: #18181b; margin-bottom: 8px;">
-                  💡 Gợi ý nội dung khi phản hồi tiến độ:
+                  ${SVG_INFO}Gợi ý nội dung khi phản hồi tiến độ:
                 </div>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #52525b; line-height: 1.65;">
                   <tr>
@@ -612,7 +624,7 @@ export function renderFormalWorkReminder({
 
               <!-- Gợi ý thực hiện trung dung -->
               <div style="font-family: Arial, sans-serif; font-size: 12.5px; color: #334155; line-height: 1.65; margin-bottom: 24px; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <strong style="color: #004b87;">💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:</strong><br>
+                <strong style="color: #004b87;">${SVG_INFO}GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:</strong><br>
                 &bull; <strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.<br>
                 &bull; <strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.<br>
                 &bull; <strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.
@@ -771,7 +783,7 @@ export function renderClassicWorkReminder({
                 <tr>
                   <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #004b87; padding: 18px 20px; border-radius: 4px;">
                     <div style="font-size: 13px; font-weight: 700; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
+                      ${SVG_INFO}GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
                     </div>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #1e293b; line-height: 1.65;">
                       <tr>

@@ -703,12 +703,14 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
 
                                   {/* Hiển thị số ngày chưa phản hồi nổi bật */}
                                   {i.daysWithoutActivity >= 100 ? (
-                                    <span className="inline-flex items-center gap-0.5 rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-800">
-                                      ⚠️ {i.daysWithoutActivity} ngày chưa phản hồi
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-800">
+                                      <AlertTriangle className="h-3 w-3 shrink-0" />
+                                      {i.daysWithoutActivity} ngày chưa phản hồi
                                     </span>
                                   ) : i.daysWithoutActivity >= 30 ? (
-                                    <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
-                                      ⏱️ {i.daysWithoutActivity} ngày chưa cập nhật
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                                      <Clock className="h-3 w-3 shrink-0" />
+                                      {i.daysWithoutActivity} ngày chưa cập nhật
                                     </span>
                                   ) : null}
 
@@ -741,7 +743,12 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
             {/* Chân Modal */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
               <div className="text-xs text-slate-500">
-                {!preview.canSend && <span>⚠️ Chưa cấu hình SMTP trên máy chủ (chỉ xem trước).</span>}
+                {!preview.canSend && (
+                  <span className="inline-flex items-center gap-1 text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    Chưa cấu hình SMTP trên máy chủ (chỉ xem trước).
+                  </span>
+                )}
                 {preview.canSend && !isAdmin && <span>Chỉ tài khoản quản trị viên (ADMIN) mới có quyền gửi thật.</span>}
                 {missingEmailDepts.length > 0 && selectedIds.size > 0 && (
                   <span className="text-amber-700 font-medium ml-2">

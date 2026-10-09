@@ -289,7 +289,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="rounded-lg bg-slate-50 p-2.5 text-[11px] text-slate-500 border border-slate-200/80">
-                💡 <em>Để cập nhật mật khẩu hoặc máy chủ mới trên Railway: Vào tab Variables của project và thiết lập: <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASSWORD</code>, <code>SMTP_FROM</code>.</em>
+                <em>Để cập nhật mật khẩu hoặc máy chủ mới trên Railway: Vào tab Variables của project và thiết lập: <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASSWORD</code>, <code>SMTP_FROM</code>.</em>
               </div>
             </div>
 
