@@ -14,8 +14,8 @@ export const GET = handle(async (request: Request) => {
   const smtp = getSmtpConfig();
 
   // Dữ liệu mẫu chuẩn UMC để xem trước trên Settings
-  const sampleWorkReminder = renderWorkReminderHtml({
-    recipientName: 'Thư ký Nguyễn Văn An',
+  const sampleWorkProps = {
+    recipientName: '',
     department: 'Khoa Ngoại Tiêu hoá',
     items: [
       {
@@ -34,9 +34,22 @@ export const GET = handle(async (request: Request) => {
         reasonText: 'Đã quá hạn 8 ngày',
         isOverdue: true,
       },
+      {
+        id: 'sample-3',
+        title: 'Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV',
+        status: 'Chưa thực hiện',
+        dueDate: '2026-09-20',
+        reasonText: 'Đã quá hạn 19 ngày',
+        isOverdue: true,
+      },
     ],
     appUrl: url,
-  });
+  };
+
+  const sampleWorkReminderModern = renderWorkReminderHtml(sampleWorkProps, 'modern');
+  const sampleWorkReminderMinimal = renderWorkReminderHtml(sampleWorkProps, 'minimal');
+  const sampleWorkReminderFormal = renderWorkReminderHtml(sampleWorkProps, 'formal');
+  const sampleWorkReminderClassic = renderWorkReminderHtml(sampleWorkProps, 'classic');
 
   const sampleCrmBriefing = renderCrmFollowUpBriefingHtml({
     tomorrowDateStr: '10/10/2026',
@@ -88,7 +101,11 @@ export const GET = handle(async (request: Request) => {
       phones: ['5421 (Phụ trách Quản lý Công việc)', '5324 (Thư ký Phòng)'],
     },
     previews: {
-      workReminder: sampleWorkReminder,
+      workReminder_modern: sampleWorkReminderModern,
+      workReminder_minimal: sampleWorkReminderMinimal,
+      workReminder_formal: sampleWorkReminderFormal,
+      workReminder_classic: sampleWorkReminderClassic,
+      workReminder: sampleWorkReminderModern, // alias mặc định
       crmBriefing: sampleCrmBriefing,
     },
   });
@@ -107,7 +124,7 @@ export const POST = handle(async (request: Request) => {
 
   const body = await request.json();
   const targetEmail = body.toEmail || session.user.email;
-  const templateType = body.templateType || 'workReminder';
+  const templateType = body.templateType || 'workReminder_modern';
 
   if (!targetEmail) {
     throw new HttpError(400, 'Cần chỉ định địa chỉ email nhận');
@@ -118,22 +135,41 @@ export const POST = handle(async (request: Request) => {
   let subject = '[UMC Test] Thử nghiệm gửi email hệ thống';
   let html = '<p>Thử nghiệm kết nối SMTP thành công từ máy chủ UMC.</p>';
 
-  if (templateType === 'workReminder') {
-    const rendered = renderWorkReminderHtml({
-      recipientName: session.user.name || 'Người dùng quản trị',
-      department: 'Phòng Hành chính (Thử nghiệm)',
-      items: [
-        {
-          id: 'test-1',
-          title: 'Công việc thử nghiệm mẫu thông báo đôn đốc UMC-Office',
-          status: 'Đang thực hiện',
-          dueDate: new Date().toISOString().slice(0, 10),
-          reasonText: 'Mẫu thử nghiệm',
-          isOverdue: false,
-        },
-      ],
-      appUrl: url,
-    });
+  if (templateType.startsWith('workReminder')) {
+    const style = templateType === 'workReminder_minimal'
+      ? 'minimal'
+      : templateType === 'workReminder_formal'
+      ? 'formal'
+      : templateType === 'workReminder_classic'
+      ? 'classic'
+      : 'modern';
+
+    const rendered = renderWorkReminderHtml(
+      {
+        recipientName: session.user.name || '',
+        department: 'Khoa Ngoại Tiêu hoá (Thử nghiệm)',
+        items: [
+          {
+            id: 'test-1',
+            title: 'Triển khai kỹ thuật phẫu thuật nội soi 3D ít xâm lấn và hoàn tất quy trình chuẩn',
+            status: 'Đang thực hiện',
+            dueDate: new Date(Date.now() + 6 * 86400000).toISOString().slice(0, 10),
+            reasonText: 'Sắp đến hạn (còn 6 ngày)',
+            isOverdue: false,
+          },
+          {
+            id: 'test-2',
+            title: 'Báo cáo nghiệm thu đề tài cấp cơ sở về hiệu quả hồi phục sớm sau phẫu thuật (ERAS)',
+            status: 'Đang thực hiện',
+            dueDate: new Date(Date.now() - 8 * 86400000).toISOString().slice(0, 10),
+            reasonText: 'Đã quá hạn 8 ngày',
+            isOverdue: true,
+          },
+        ],
+        appUrl: url,
+      },
+      style
+    );
     subject = `[THỬ NGHIỆM] ${rendered.subject}`;
     html = rendered.html;
   } else if (templateType === 'crmBriefing') {

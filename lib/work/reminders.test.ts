@@ -59,3 +59,4 @@ describe('renderWorkReminderHtml', () => {
     expect(res.html).toContain('Trân trọng cảm ơn sự phối hợp kịp thời của Anh/Chị và đơn vị.');
   });
 });
+

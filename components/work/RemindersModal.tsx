@@ -7,6 +7,8 @@ import {
   Building2,
   CheckSquare,
   Clock,
+  ExternalLink,
+  Eye,
   Filter,
   Info,
   Mail,
@@ -749,6 +751,16 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
               </div>
 
               <div className="flex items-center gap-2.5">
+                <a
+                  href="/api/settings/email/preview?template=modern"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 inline-flex items-center gap-1.5 transition shadow-2xs"
+                  title="Mở xem trước mẫu thư HTML trong tab mới"
+                >
+                  <Eye className="h-4 w-4 text-cyan-700" />
+                  Xem trước mẫu thư
+                </a>
                 <button
                   type="button"
                   onClick={onClose}

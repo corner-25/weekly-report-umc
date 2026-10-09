@@ -2,7 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Bell, CheckCircle2, KeyRound, Mail, RefreshCw, Send, Settings, ShieldCheck, Stethoscope, User } from 'lucide-react';
+import {
+  Bell,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  KeyRound,
+  Laptop,
+  Mail,
+  RefreshCw,
+  Send,
+  Settings,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  Stethoscope,
+  User,
+} from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { ErrorBanner, PANEL, PRIMARY_BTN } from '@/components/crm/ui';
@@ -24,10 +40,21 @@ interface EmailSettingsData {
     phones: string[];
   };
   previews: {
+    workReminder_modern: { subject: string; html: string };
+    workReminder_minimal: { subject: string; html: string };
+    workReminder_formal: { subject: string; html: string };
+    workReminder_classic: { subject: string; html: string };
     workReminder: { subject: string; html: string };
     crmBriefing: { subject: string; html: string };
   };
 }
+
+export type TemplateKey =
+  | 'workReminder_modern'
+  | 'workReminder_minimal'
+  | 'workReminder_formal'
+  | 'workReminder_classic'
+  | 'crmBriefing';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -35,7 +62,9 @@ export default function SettingsPage() {
 
   // State cho Tab Email
   const [emailData, setEmailData] = useState<EmailSettingsData | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<'workReminder' | 'crmBriefing'>('workReminder');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateKey>('workReminder_modern');
+  const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
+  const [copiedHtml, setCopiedHtml] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [testEmailTo, setTestEmailTo] = useState('');
@@ -89,7 +118,7 @@ export default function SettingsPage() {
         toEmail: testEmailTo,
         templateType: selectedTemplate,
       });
-      setTestSuccess(`Đã gửi email thử nghiệm mẫu "${selectedTemplate === 'workReminder' ? 'Đôn đốc công việc' : 'Lịch hẹn VIP ngày mai'}" đến ${testEmailTo} thành công.`);
+      setTestSuccess(`Đã gửi email thử nghiệm mẫu "${selectedTemplate.startsWith('workReminder') ? 'Đôn đốc công việc' : 'Lịch hẹn VIP ngày mai'}" đến ${testEmailTo} thành công.`);
     } catch (err) {
       setEmailError(errorMessage(err, 'Gửi email thử nghiệm thất bại. Vui lòng kiểm tra lại cấu hình SMTP.'));
     } finally {
@@ -296,87 +325,153 @@ export default function SettingsPage() {
           <div className={PANEL + ' p-5 sm:p-6 space-y-5'}>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Xem trước mẫu email chuẩn & Thử nghiệm</h3>
-                <p className="text-xs text-slate-500">Mẫu thư được sinh theo tiêu chuẩn HTML trang nhã, tương thích Outlook, Gmail, Apple Mail.</p>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-amber-500" />
+                  Xem trước &amp; Duyệt các mẫu Email (Live Preview)
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Lựa chọn phong cách thiết kế phù hợp, kiểm tra hiển thị trên máy tính/điện thoại và gửi thử nghiệm trước khi áp dụng.
+                </p>
               </div>
 
-              {/* Nút chọn mẫu */}
-              <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+              {/* Nút thao tác nhanh */}
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/api/settings/email/preview?template=${selectedTemplate.replace('workReminder_', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs"
+                  title="Mở mẫu thư trong tab mới toàn màn hình"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 text-cyan-600" />
+                  Mở tab mới
+                </a>
                 <button
                   type="button"
-                  onClick={() => setSelectedTemplate('workReminder')}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                    selectedTemplate === 'workReminder'
-                      ? 'bg-white text-cyan-800 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                  onClick={() => {
+                    const html = emailData?.previews[selectedTemplate]?.html || '';
+                    if (html) {
+                      navigator.clipboard.writeText(html);
+                      setCopiedHtml(true);
+                      setTimeout(() => setCopiedHtml(false), 2000);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs"
                 >
-                  <Mail className="h-3.5 w-3.5 text-cyan-600" />
-                  Mẫu 1: Đôn đốc công việc (UMC-Office)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTemplate('crmBriefing')}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                    selectedTemplate === 'crmBriefing'
-                      ? 'bg-white text-teal-800 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <Stethoscope className="h-3.5 w-3.5 text-teal-600" />
-                  Mẫu 2: Nội bộ tiếp đón VIP ngày mai (CRM)
+                  {copiedHtml ? (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">Đã chép HTML</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5 text-slate-500" />
+                      Sao chép HTML
+                    </>
+                  )}
                 </button>
               </div>
             </div>
 
-            {/* Chi tiết về mẫu đang chọn */}
-            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs space-y-2">
-              {selectedTemplate === 'workReminder' ? (
-                <div>
-                  <span className="font-bold text-slate-900 block mb-1">
-                    Đặc điểm Mẫu 1 (Đôn đốc tiến độ công việc trên UMC-Office):
-                  </span>
-                  <ul className="list-disc list-inside space-y-1 text-slate-700">
-                    <li>Gửi cho Thư ký / Đầu mối đơn vị chủ trì khi đến hạn hoặc chậm tiến độ.</li>
-                    <li>
-                      <strong>Quy chuẩn bắt buộc 4 tiêu chí báo cáo:</strong> Kết quả cụ thể, số liệu định lượng & minh chứng văn bản, tiến độ & khó khăn, và điều kiện chuyển trạng thái Hoàn thành.
-                    </li>
-                    <li>Thông tin liên hệ chuẩn mực: 215 Hồng Bàng, Phường Chợ Lớn, TP.HCM, email hanhchinh@umc.edu.vn, ĐT: 5421 & 5324.</li>
-                  </ul>
-                </div>
-              ) : (
-                <div>
-                  <span className="font-bold text-teal-900 block mb-1">
-                    Đặc điểm Mẫu 2 (Thông báo nội bộ đón khách tái khám / Chụp MRI / CLS ngày N+1):
-                  </span>
-                  <ul className="list-disc list-inside space-y-1 text-teal-800">
-                    <li>Gửi nội bộ cho đội ngũ nhân viên Phòng Hành chính & Tiếp đón VIP vào đầu ngày hoặc cuối buổi chiều hôm trước.</li>
-                    <li>Tổng hợp toàn bộ danh sách khách VIP có lịch hẹn ngày mai, bác sĩ khám, phòng chụp MRI, nhân viên dẫn chính & người đi cùng.</li>
-                    <li>Nhắc nhở nhân viên chủ động liên hệ trước với khách và phối hợp khoa phòng để đón tiếp chu đáo tại Sảnh A/Quầy VIP.</li>
-                  </ul>
-                </div>
-              )}
+            {/* DANH SÁCH CÁC MẪU ĐỂ DUYỆT */}
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Chọn mẫu giao diện cần duyệt:
+              </span>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                {[
+                  {
+                    key: 'workReminder_modern',
+                    label: 'Mẫu 1: Y tế Hiện đại',
+                    tag: 'Khuyên dùng',
+                    desc: 'Dải nhận diện UMC, KPI strip, thẻ card nhiệm vụ bo góc sang trọng',
+                    icon: Sparkles,
+                    color: 'text-cyan-700',
+                  },
+                  {
+                    key: 'workReminder_minimal',
+                    label: 'Mẫu 2: Tối giản Tinh tế',
+                    tag: 'Apple / Linear',
+                    desc: 'Nền trắng phẳng, typography sắc nét, thanh thoát, tối ưu di động',
+                    icon: Mail,
+                    color: 'text-slate-700',
+                  },
+                  {
+                    key: 'workReminder_formal',
+                    label: 'Mẫu 3: Hành chính Trang trọng',
+                    tag: 'Thể thức Bệnh viện',
+                    desc: 'Chuẩn thể thức công văn Bộ Y tế / UMC: Quốc hiệu, bảng kẻ chỉ, chữ ký',
+                    icon: ShieldCheck,
+                    color: 'text-blue-900',
+                  },
+                  {
+                    key: 'workReminder_classic',
+                    label: 'Mẫu 4: Bảng Cổ điển',
+                    tag: 'Mẫu cũ',
+                    desc: 'Mẫu bảng biểu ban đầu để người dùng dễ đối chiếu so sánh',
+                    icon: Mail,
+                    color: 'text-slate-500',
+                  },
+                  {
+                    key: 'crmBriefing',
+                    label: 'Mẫu 5: Nội bộ VIP (CRM)',
+                    tag: 'Bản tin N+1',
+                    desc: 'Thông báo danh sách khách VIP tái khám/chụp MRI ngày mai cho nhân viên',
+                    icon: Stethoscope,
+                    color: 'text-teal-700',
+                  },
+                ].map((item) => {
+                  const isSelected = selectedTemplate === item.key;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => setSelectedTemplate(item.key as TemplateKey)}
+                      className={`text-left rounded-xl border p-3 transition-all relative ${
+                        isSelected
+                          ? 'border-cyan-600 bg-cyan-50/60 shadow-xs ring-1 ring-cyan-500'
+                          : 'border-slate-200 bg-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1.5 py-0.5 rounded bg-slate-100">
+                          {item.tag}
+                        </span>
+                        {isSelected && <span className="h-2 w-2 rounded-full bg-cyan-600" />}
+                      </div>
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 mt-1">
+                        <Icon className={`h-3.5 w-3.5 ${item.color} shrink-0`} />
+                        <span>{item.label}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-snug">
+                        {item.desc}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Khung thao tác gửi thử & kích hoạt */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-cyan-50/60 border border-cyan-200/80">
+            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
               <form onSubmit={handleSendTestEmail} className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-cyan-950">Gửi thử mẫu này đến:</span>
+                <span className="text-xs font-semibold text-slate-800">Gửi thử nghiệm mẫu đang chọn đến:</span>
                 <input
                   type="email"
                   value={testEmailTo}
                   onChange={(e) => setTestEmailTo(e.target.value)}
                   placeholder="nhap-email@umc.edu.vn"
-                  className="px-3 py-1.5 text-xs rounded-lg border border-cyan-300 bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500 w-60"
+                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500 w-60"
                   required
                 />
                 <button
                   type="submit"
                   disabled={testSending || !emailData?.smtpConfig.isConfigured}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-700 text-white text-xs font-semibold hover:bg-cyan-800 transition shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-cyan-700 text-white text-xs font-semibold hover:bg-cyan-800 transition shadow-xs disabled:opacity-50"
                 >
                   <Send className="h-3 w-3" />
-                  {testSending ? 'Đang gửi...' : 'Gửi thử nghiệm qua SMTP'}
+                  {testSending ? 'Đang gửi...' : 'Gửi email thử nghiệm ngay'}
                 </button>
               </form>
 
@@ -388,46 +483,85 @@ export default function SettingsPage() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-700 text-white text-xs font-semibold hover:bg-teal-800 transition shadow-xs disabled:opacity-50"
                 >
                   <Bell className="h-3.5 w-3.5" />
-                  {briefingSending ? 'Đang gửi...' : 'Kích hoạt gửi thông báo VIP ngày mai ngay'}
+                  {briefingSending ? 'Đang gửi...' : 'Kích hoạt gửi thông báo VIP ngày mai'}
                 </button>
               )}
             </div>
 
-            {/* Khung Live Preview */}
-            <div className="border border-slate-300 rounded-xl overflow-hidden shadow-sm bg-slate-100 p-2 sm:p-4">
-              <div className="mb-2 flex items-center justify-between text-xs text-slate-500 px-2">
-                <span className="font-medium">
-                  Tiêu đề email:{' '}
-                  <strong className="text-slate-800">
-                    {selectedTemplate === 'workReminder'
-                      ? emailData?.previews.workReminder.subject
-                      : emailData?.previews.crmBriefing.subject}
-                  </strong>
-                </span>
-                <button
-                  type="button"
-                  onClick={loadEmailSettings}
-                  className="hover:text-cyan-700 inline-flex items-center gap-1 font-semibold"
-                >
-                  <RefreshCw className="h-3 w-3" /> Làm mới
-                </button>
+            {/* Thanh điều khiển Live Preview: Chuyển đổi Desktop / Mobile */}
+            <div className="border border-slate-300 rounded-2xl overflow-hidden shadow-sm bg-slate-100 p-2 sm:p-4">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs px-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-700">Mô phỏng hiển thị:</span>
+                  <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setDeviceView('desktop')}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+                        deviceView === 'desktop'
+                          ? 'bg-cyan-700 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Laptop className="h-3.5 w-3.5" />
+                      Máy tính (Desktop 660px)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeviceView('mobile')}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+                        deviceView === 'mobile'
+                          ? 'bg-cyan-700 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Smartphone className="h-3.5 w-3.5" />
+                      Điện thoại (Mobile 375px)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-500 max-w-md truncate">
+                    Tiêu đề:{' '}
+                    <strong className="text-slate-800">
+                      {emailData?.previews[selectedTemplate]?.subject || 'Đang tải...'}
+                    </strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={loadEmailSettings}
+                    className="hover:text-cyan-700 inline-flex items-center gap-1 font-semibold text-slate-600"
+                  >
+                    <RefreshCw className="h-3 w-3" /> Làm mới
+                  </button>
+                </div>
               </div>
 
-              {emailLoading ? (
-                <div className="h-96 flex items-center justify-center text-slate-400 text-sm">
-                  Đang tải nội dung xem trước...
+              {/* Khung iframe xem trước */}
+              <div className="flex justify-center transition-all">
+                <div
+                  className={`w-full transition-all duration-300 ${
+                    deviceView === 'mobile'
+                      ? 'max-w-[395px] rounded-3xl p-2.5 bg-slate-800 shadow-2xl border-4 border-slate-700'
+                      : 'max-w-[700px]'
+                  }`}
+                >
+                  {emailLoading ? (
+                    <div className="h-[620px] flex items-center justify-center text-slate-400 text-sm bg-white rounded-xl">
+                      Đang tải nội dung xem trước...
+                    </div>
+                  ) : (
+                    <iframe
+                      title="Xem trước mẫu email"
+                      srcDoc={emailData?.previews[selectedTemplate]?.html || '<p>Không có nội dung</p>'}
+                      className={`w-full h-[640px] bg-white border border-slate-200 shadow-inner ${
+                        deviceView === 'mobile' ? 'rounded-2xl' : 'rounded-xl'
+                      }`}
+                    />
+                  )}
                 </div>
-              ) : (
-                <iframe
-                  title="Xem trước mẫu email"
-                  srcDoc={
-                    selectedTemplate === 'workReminder'
-                      ? emailData?.previews.workReminder.html
-                      : emailData?.previews.crmBriefing.html
-                  }
-                  className="w-full h-[620px] rounded-lg bg-white border border-slate-200 shadow-inner"
-                />
-              )}
+              </div>
             </div>
           </div>
         </div>

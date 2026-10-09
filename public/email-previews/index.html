@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bộ sưu tập Mẫu Email Đôn đốc Nhiệm vụ - BV Đại học Y Dược TP.HCM</title>
+  <style>
+    :root {
+      --primary: #004b87;
+      --primary-dark: #003366;
+      --primary-light: #e0f2fe;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: var(--slate-100);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .badge-umc {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .template-selector {
+      display: flex;
+      background: #0f172a;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .btn-template {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-template:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+    }
+    .btn-template.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,75,135,0.4);
+    }
+    .tag-recommend {
+      background: #10b981;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .device-switcher {
+      display: flex;
+      background: #0f172a;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      gap: 4px;
+    }
+    .btn-device {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-device:hover { color: #fff; }
+    .btn-device.active {
+      background: #334155;
+      color: #fff;
+    }
+    .btn-action {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-action:hover {
+      background: #475569;
+      border-color: #64748b;
+    }
+    .preview-info {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: #cbd5e1;
+    }
+    .main-workspace {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+      background: #0b1120;
+      overflow-y: auto;
+    }
+    .frame-wrapper {
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+    .frame-wrapper.desktop {
+      width: 720px;
+    }
+    .frame-wrapper.mobile {
+      width: 395px;
+      border-radius: 36px;
+      border: 10px solid #1e293b;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px #475569;
+    }
+    .frame-wrapper.full {
+      width: 95%;
+      max-width: 1200px;
+    }
+    .phone-notch {
+      display: none;
+      background: #1e293b;
+      height: 24px;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+    .frame-wrapper.mobile .phone-notch {
+      display: flex;
+    }
+    .phone-notch-bar {
+      width: 100px;
+      height: 4px;
+      background: #475569;
+      border-radius: 3px;
+    }
+    iframe {
+      width: 100%;
+      height: 820px;
+      border: none;
+      background: #f1f5f9;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="badge-umc">UMC</div>
+      <div>
+        <div class="brand-title">TRUNG TÂM DUYỆT MẪU EMAIL ĐÔN ĐỐC NHIỆM VỤ</div>
+        <div class="brand-subtitle">Bệnh viện Đại học Y Dược TP. Hồ Chí Minh · Hệ thống Thông tin Báo cáo & CRM</div>
+      </div>
+    </div>
+
+    <div class="template-selector">
+      <button class="btn-template active" onclick="switchTemplate('mau-1-modern.html', this, 'Mẫu 1: Executive Medical (Y tế Hiện đại)', 'Phối màu Gradient Xanh UMC, thẻ nhiệm vụ bo tròn, dải thống kê KPI 3 số, nút CTA nổi bật. Chuẩn email doanh nghiệp/bệnh viện quốc tế.')">
+        Mẫu 1: Y tế Hiện đại <span class="tag-recommend">Khuyên dùng</span>
+      </button>
+      <button class="btn-template" onclick="switchTemplate('mau-2-minimal.html', this, 'Mẫu 2: Clean Minimalist (Phong cách Apple / Linear)', 'Thiết kế nền trắng phẳng, font chữ thanh mảnh, đường phân cách mảnh, tối ưu 100% hiển thị trên điện thoại và Gmail Mobile.')">
+        Mẫu 2: Tinh gọn (Apple style)
+      </button>
+      <button class="btn-template" onclick="switchTemplate('mau-3-formal.html', this, 'Mẫu 3: Formal Administration (Thể thức Hành chính Bệnh viện)', 'Chuẩn thể thức công văn Nghị định 30/2020: Quốc hiệu, Tên ĐHYD/BV ĐHYD, Số hiệu đôn đốc, bảng nhiệm vụ hành chính và nơi nhận.')">
+        Mẫu 3: Thể thức Bệnh viện
+      </button>
+      <button class="btn-template" onclick="switchTemplate('mau-4-classic.html', this, 'Mẫu 4: Classic Table (Bảng truyền thống)', 'Mẫu dạng bảng kẻ viền nguyên bản để đối chiếu so sánh sự khác biệt.')">
+        Mẫu 4: Mẫu cũ (Đối chiếu)
+      </button>
+    </div>
+
+    <div class="actions">
+      <div class="device-switcher">
+        <button class="btn-device active" onclick="setDevice('desktop', this)">🖥️ Desktop (660px)</button>
+        <button class="btn-device" onclick="setDevice('mobile', this)">📱 Mobile (375px)</button>
+        <button class="btn-device" onclick="setDevice('full', this)">↔️ Toàn màn hình</button>
+      </div>
+      <a id="btnOpenRaw" href="mau-1-modern.html" target="_blank" class="btn-action">
+        ↗ Mở Tab Mới
+      </a>
+    </div>
+  </header>
+
+  <div class="preview-info">
+    <div id="templateDesc">
+      <strong id="templateTitle" style="color: #38bdf8;">Mẫu 1: Executive Medical (Y tế Hiện đại)</strong> — Phối màu Gradient Xanh UMC, thẻ nhiệm vụ bo tròn, dải thống kê KPI 3 số, nút CTA nổi bật. Chuẩn email doanh nghiệp/bệnh viện quốc tế.
+    </div>
+    <div style="font-size: 11.5px; color: #94a3b8;">
+      Tương thích: Outlook 2016-365, Gmail, Apple Mail, iOS Mail, Samsung Email
+    </div>
+  </div>
+
+  <main class="main-workspace">
+    <div id="frameWrapper" class="frame-wrapper desktop">
+      <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+      <iframe id="previewFrame" src="mau-1-modern.html" title="Email Preview"></iframe>
+    </div>
+  </main>
+
+  <script>
+    let currentTemplate = 'mau-1-modern.html';
+
+    function switchTemplate(fileName, btn, title, desc) {
+      currentTemplate = fileName;
+      document.querySelectorAll('.btn-template').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('previewFrame').src = fileName;
+      document.getElementById('btnOpenRaw').href = fileName;
+      document.getElementById('templateTitle').textContent = title;
+      document.getElementById('templateDesc').innerHTML = '<strong style="color: #38bdf8;">' + title + '</strong> — ' + desc;
+    }
+
+    function setDevice(device, btn) {
+      document.querySelectorAll('.btn-device').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const wrapper = document.getElementById('frameWrapper');
+      wrapper.className = 'frame-wrapper ' + device;
+    }
+  </script>
+</body>
+</html>
