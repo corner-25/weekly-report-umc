@@ -32,6 +32,23 @@ WORK_URL = scrape.DEFAULT_URL
 MOU_URL = "https://office.umc.edu.vn/#/M02/M02PROJECT/cHJvamVjdElEPTc2"  # projectID=76
 MOU_QUERY = 10457
 EXIT_LOGIN = 3
+EXIT_BUSY = 4
+LOCK = office.HOME / "sync.lock"
+
+
+def acquire_lock() -> None:
+    """Hai lượt cùng chạy sẽ tranh nhau hồ sơ Chrome (lỗi launch_persistent_context) — chặn từ đầu."""
+    import os
+
+    if LOCK.exists():
+        try:
+            pid = int(LOCK.read_text().strip())
+            os.kill(pid, 0)
+            print(f"Đang có một lượt đồng bộ khác chạy (tiến trình {pid}) — đợi lượt đó xong rồi chạy lại.")
+            sys.exit(EXIT_BUSY)
+        except (ValueError, ProcessLookupError, PermissionError):
+            pass  # khoá cũ của lượt đã dừng
+    LOCK.write_text(str(os.getpid()))
 
 
 def log(msg: str) -> None:
@@ -147,20 +164,29 @@ def sync_mou(page, api: office.Api, out: Path, args: set) -> None:
 
 def main() -> None:
     args = set(sys.argv[1:])
+    acquire_lock()
     api = office.Api(office.load_token())
     out = scrape.OUT / f"dong-bo-{time.strftime('%Y%m%d-%H%M')}"
     out.mkdir(parents=True, exist_ok=True)
     started = time.time()
-    with sync_playwright() as p:
-        ctx = scrape.open_context(p, headless=True)
-        page = ctx.new_page()
-        try:
-            if "--chi-mou" not in args:
-                sync_work(page, api, out, args)
-            if "--chi-cong-viec" not in args:
-                sync_mou(page, api, out, args)
-        finally:
-            ctx.close()
+    try:
+        with sync_playwright() as p:
+            try:
+                ctx = scrape.open_context(p, headless=True)
+            except Exception as e:
+                print(f"Không mở được Chrome với hồ sơ đăng nhập ({str(e).splitlines()[0]}).")
+                print("Thường do một cửa sổ Chrome/lượt cào khác đang dùng hồ sơ này — đóng nó rồi chạy lại.")
+                sys.exit(EXIT_BUSY)
+            page = ctx.new_page()
+            try:
+                if "--chi-mou" not in args:
+                    sync_work(page, api, out, args)
+                if "--chi-cong-viec" not in args:
+                    sync_mou(page, api, out, args)
+            finally:
+                ctx.close()
+    finally:
+        LOCK.unlink(missing_ok=True)
     log(f"XONG sau {int(time.time() - started) // 60} phút — bản lưu: {out}")
 
 
