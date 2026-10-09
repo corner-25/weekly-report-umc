@@ -60,15 +60,17 @@ export function Segmented<T extends string>({ label, options, value, onChange }:
 export function ContactLine({ phone, email }: { phone: string | null; email: string | null }) {
   if (!phone && !email) return <span className="text-xs text-slate-400">—</span>;
   return (
-    <span className="flex flex-col gap-0.5 text-xs">
+    <span className="flex flex-col gap-0.5 text-xs min-w-0 overflow-hidden">
       {phone && (
-        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex items-center gap-1 font-medium text-brand-700 hover:underline">
-          <Phone className="h-3 w-3" aria-hidden="true" />{phone}
+        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="inline-flex max-w-full items-center gap-1 font-medium text-brand-700 hover:underline truncate" title={phone}>
+          <Phone className="h-3 w-3 shrink-0" aria-hidden="true" />
+          <span className="truncate">{phone}</span>
         </a>
       )}
       {email && (
-        <a href={`mailto:${email}`} className="inline-flex max-w-[220px] items-center gap-1 truncate text-brand-700 hover:underline">
-          <Mail className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{email}</span>
+        <a href={`mailto:${email}`} className="inline-flex max-w-full items-center gap-1 truncate text-brand-700 hover:underline" title={email}>
+          <Mail className="h-3 w-3 shrink-0" aria-hidden="true" />
+          <span className="truncate">{email}</span>
         </a>
       )}
     </span>
@@ -79,11 +81,24 @@ export function ContactLine({ phone, email }: { phone: string | null; email: str
 export function RowActions({ href, onEdit, name }: { href: string; onEdit: () => void; name: string }) {
   return (
     <span className="inline-flex shrink-0 items-center justify-end gap-1">
-      <Link href={href} className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900" aria-label={`Xem hồ sơ ${name}`}>
-        <Eye className="h-3.5 w-3.5" aria-hidden="true" /> Xem
+      <Link
+        href={href}
+        className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+        title={`Xem hồ sơ ${name}`}
+        aria-label={`Xem hồ sơ ${name}`}
+      >
+        <Eye className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
+        <span className="hidden xl:inline">Xem</span>
       </Link>
-      <button type="button" onClick={onEdit} className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50" aria-label={`Sửa ${name}`}>
-        <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Sửa
+      <button
+        type="button"
+        onClick={onEdit}
+        className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50 transition-colors cursor-pointer"
+        title={`Sửa thông tin ${name}`}
+        aria-label={`Sửa ${name}`}
+      >
+        <Pencil className="h-3.5 w-3.5 text-brand-600" aria-hidden="true" />
+        <span className="hidden xl:inline">Sửa</span>
       </button>
     </span>
   );

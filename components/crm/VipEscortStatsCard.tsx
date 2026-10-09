@@ -103,7 +103,7 @@ export function VipEscortStatsCard({
 
       {/* Bảng năm × loại hình khám giống hệt Sổ tiếp đoàn */}
       <div className="-mx-4 overflow-x-auto sm:-mx-5">
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="w-full text-sm">
           <caption className="sr-only">Số lượt dẫn khám VIP đã thực hiện theo năm và loại khám</caption>
           <thead>
             <tr className="border-y border-slate-100 bg-slate-50/70 text-xs text-slate-500">

@@ -28,13 +28,13 @@ function FocalCell({ o }: { o: OrganizationListItem }) {
     );
   }
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-1.5 min-w-0">
       {o.focalPoints.map((f) => (
-        <li key={f.id} className="text-sm">
-          <Link href={`/dashboard/crm/contacts/${f.id}`} className="inline-flex items-center gap-1 font-semibold text-slate-800 hover:text-brand-700 hover:underline">
-            <Star className="h-3 w-3 text-amber-500" aria-hidden="true" />{displayName(f)}
+        <li key={f.id} className="min-w-0 text-sm">
+          <Link href={`/dashboard/crm/contacts/${f.id}`} className="inline-flex max-w-full items-center gap-1 font-semibold text-slate-800 hover:text-brand-700 hover:underline truncate" title={displayName(f)}>
+            <Star className="h-3 w-3 shrink-0 text-amber-500" aria-hidden="true" /><span className="truncate">{displayName(f)}</span>
           </Link>
-          <span className="block text-xs text-slate-500">{f.title}</span>
+          <span className="block truncate text-xs text-slate-500" title={f.title || undefined}>{f.title}</span>
           <ContactLine phone={f.phone} email={f.email} />
         </li>
       ))}
@@ -105,38 +105,38 @@ export function OrganizationsTab({ reloadKey, onChanged }: { reloadKey: number; 
         <div className={cn(loading && 'opacity-60 transition-opacity')}>
           <p className="px-5 pt-3 text-xs text-slate-500">{items.length} tổ chức · {items.filter((o) => o.focalPoints.length > 0).length} đã có đầu mối</p>
           <div className="hidden overflow-x-auto md:block">
-            <table className="w-full min-w-[960px] table-fixed divide-y divide-slate-100">
+            <table className="w-full table-fixed divide-y divide-slate-100">
               <colgroup>
-                <col className="w-[32%]" />
-                <col className="w-[25%]" />
+                <col className="w-[30%]" />
+                <col className="w-[26%]" />
                 <col className="w-[9%]" />
                 <col className="w-[10%]" />
-                <col className="w-[12%]" />
+                <col className="w-[13%]" />
                 <col className="w-[12%]" />
               </colgroup>
               <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th scope="col" className="px-5 py-3">Tổ chức</th>
-                  <th scope="col" className="px-5 py-3">Đầu mối liên hệ</th>
-                  <th scope="col" className="px-5 py-3 text-right" title="Số người liên hệ hiện tại">Người LH</th>
-                  <th scope="col" className="px-5 py-3 text-right" title="Số lượt tiếp đoàn đã thực hiện">Lượt tiếp</th>
-                  <th scope="col" className="px-5 py-3">Gần nhất</th>
-                  <th scope="col" className="px-5 py-3 text-right"><span className="sr-only">Thao tác</span></th>
+                  <th scope="col" className="px-4 py-3">Tổ chức</th>
+                  <th scope="col" className="px-4 py-3">Đầu mối liên hệ</th>
+                  <th scope="col" className="px-3 py-3 text-right" title="Số người liên hệ hiện tại">Người LH</th>
+                  <th scope="col" className="px-3 py-3 text-right" title="Số lượt tiếp đoàn đã thực hiện">Lượt tiếp</th>
+                  <th scope="col" className="px-4 py-3">Gần nhất</th>
+                  <th scope="col" className="px-2 py-3 text-right"><span className="sr-only">Thao tác</span></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
                 {items.map((o) => (
                   <tr key={o.id} className="align-top hover:bg-brand-50/30">
-                    <td className="max-w-[340px] px-5 py-3.5">
-                      <Link href={`/dashboard/crm/organizations/${o.id}`} className="font-semibold text-slate-900 hover:text-brand-700 hover:underline">{o.name}</Link>
-                      <span className="block text-xs text-slate-500">{[o.category, o.scope && o.scope !== 'Trong nước' ? o.scope : null].filter(Boolean).join(' · ') || 'Chưa phân loại'}</span>
-                      {o.nextAnniversary && <span className="mt-0.5 block text-xs text-orange-600">{o.nextAnniversary.label}: {formatDate(o.nextAnniversary.date, 'dd/MM')}</span>}
+                    <td className="min-w-0 overflow-hidden px-4 py-3.5">
+                      <Link href={`/dashboard/crm/organizations/${o.id}`} className="block truncate font-semibold text-slate-900 hover:text-brand-700 hover:underline" title={o.name}>{o.name}</Link>
+                      <span className="block truncate text-xs text-slate-500">{[o.category, o.scope && o.scope !== 'Trong nước' ? o.scope : null].filter(Boolean).join(' · ') || 'Chưa phân loại'}</span>
+                      {o.nextAnniversary && <span className="mt-0.5 block truncate text-xs text-orange-600">{o.nextAnniversary.label}: {formatDate(o.nextAnniversary.date, 'dd/MM')}</span>}
                     </td>
-                    <td className="min-w-[220px] px-5 py-3.5"><FocalCell o={o} /></td>
-                    <td className="px-5 py-3.5 text-right tabular-nums text-slate-700">{o.contactCount}</td>
-                    <td className={cn('px-5 py-3.5 text-right tabular-nums', o.delegationCount ? 'font-semibold text-emerald-700' : 'text-slate-300')}>{o.delegationCount}</td>
-                    <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-slate-600">{formatDate(o.lastInteractionAt) || '—'}</td>
-                    <td className="whitespace-nowrap px-3 py-3 text-right"><RowActions href={`/dashboard/crm/organizations/${o.id}`} onEdit={() => openEdit(o.id)} name={o.name} /></td>
+                    <td className="min-w-0 overflow-hidden px-4 py-3.5"><FocalCell o={o} /></td>
+                    <td className="px-3 py-3.5 text-right tabular-nums text-slate-700">{o.contactCount}</td>
+                    <td className={cn('px-3 py-3.5 text-right tabular-nums', o.delegationCount ? 'font-semibold text-emerald-700' : 'text-slate-300')}>{o.delegationCount}</td>
+                    <td className="whitespace-nowrap px-4 py-3.5 tabular-nums text-slate-600">{formatDate(o.lastInteractionAt) || '—'}</td>
+                    <td className="whitespace-nowrap px-2 py-3.5 text-right"><RowActions href={`/dashboard/crm/organizations/${o.id}`} onEdit={() => openEdit(o.id)} name={o.name} /></td>
                   </tr>
                 ))}
               </tbody>
