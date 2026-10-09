@@ -181,3 +181,80 @@ class Api:
         chunks.append(file_path.read_bytes())
         chunks.append(f"\r\n--{boundary}--\r\n".encode("utf-8"))
         return self._send(path, b"".join(chunks), f"multipart/form-data; boundary={boundary}", "POST", timeout)
+
+
+# ── Tự đăng nhập office ──
+
+KEYCHAIN_SERVICE = "office.umc.edu.vn"
+USER_FILE = HOME / "username"
+SIGN_IN = "sign-in"
+
+
+def _keychain_get(user: str) -> str | None:
+    try:
+        return subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", user, "-w"],
+                              check=True, capture_output=True, text=True).stdout.strip() or None
+    except (subprocess.SubprocessError, OSError):
+        return None
+
+
+def _keychain_set(user: str, password: str) -> None:
+    subprocess.run(["security", "add-generic-password", "-U", "-s", KEYCHAIN_SERVICE, "-a", user, "-w", password],
+                   check=False, capture_output=True)
+
+
+def forget_password() -> None:
+    user = USER_FILE.read_text().strip() if USER_FILE.exists() else None
+    if user:
+        subprocess.run(["security", "delete-generic-password", "-s", KEYCHAIN_SERVICE, "-a", user], check=False, capture_output=True)
+
+
+def credentials(ask: bool) -> tuple[str, str] | None:
+    """
+    Tài khoản office: lấy từ Keychain của máy Mac nếu đã lưu, không thì hỏi ngay ở cửa sổ
+    dòng lệnh (mật khẩu gõ không hiện) và hỏi có lưu vào Keychain cho lần sau không.
+    Chạy nền không có người gõ (ask=False) mà chưa lưu thì trả None.
+    """
+    import getpass
+    import sys
+
+    user = USER_FILE.read_text().strip() if USER_FILE.exists() else None
+    password = _keychain_get(user) if user else None
+    if user and password:
+        return user, password
+    if not ask or not sys.stdin.isatty():
+        return None
+    print("\nĐăng nhập office.umc.edu.vn (chỉ cần khi phiên đăng nhập hết hạn).")
+    user = input(f"  Tài khoản{f' [{user}]' if user else ''}: ").strip() or (user or "")
+    password = getpass.getpass("  Mật khẩu (gõ không hiện): ")
+    if not user or not password:
+        return None
+    USER_FILE.write_text(user)
+    if input("  Lưu mật khẩu vào Keychain của máy để lần sau tự đăng nhập? (c/k) [c]: ").strip().lower() in ("", "c", "co", "có", "y"):
+        _keychain_set(user, password)
+    return user, password
+
+
+def auto_login(page, url: str, ask: bool = True) -> bool:
+    """Điền tài khoản vào trang đăng nhập office trong chính trình duyệt đang cào (không mở cửa sổ)."""
+    for attempt in range(2):
+        creds = credentials(ask)
+        if not creds:
+            return False
+        page.goto(url, wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        if SIGN_IN not in page.url:
+            return True
+        page.fill("input[formcontrolname='userName']", creds[0])
+        page.fill("input[formcontrolname='password']", creds[1])
+        page.get_by_role("button", name="Đăng nhập").click()
+        for _ in range(40):
+            page.wait_for_timeout(500)
+            if SIGN_IN not in page.url:
+                print("  Đã đăng nhập office.")
+                return True
+            if "không chính xác" in page.inner_text("body"):
+                break
+        print("  Đăng nhập không được — có thể sai mật khẩu.")
+        forget_password()
+    return False

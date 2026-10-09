@@ -15,7 +15,11 @@ Cào một lần cả hai dự án trên office.umc.edu.vn rồi đẩy thẳng 
 
 Cần: phiên đăng nhập office (scrape.py login-wait), mã nạp (~/.qlcv/token hoặc
 WORK_IMPORT_TOKEN), Google Chrome, Ghostscript (nén PDF), poppler + tesseract-lang (OCR).
-Phiên office hết hạn → thoát mã 3 để file bấm chạy mở cửa sổ đăng nhập.
+Phiên office hết hạn → tự đăng nhập: tài khoản lấy từ Keychain của máy Mac, chưa lưu thì
+hỏi ngay ở cửa sổ dòng lệnh (có thể lưu vào Keychain cho lần sau). Không đăng nhập được
+→ thoát mã 3 để file bấm chạy mở cửa sổ đăng nhập tay.
+
+    python3 tools/qlcv-scraper/sync_all.py --quen-mat-khau  # xoá mật khẩu đã lưu trong Keychain
 """
 import json
 import sys
@@ -112,11 +116,22 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
     return changed
 
 
+def open_project(page, url: str) -> dict:
+    """Mở trang dự án lấy mã xác thực; phiên hết hạn thì tự đăng nhập (tài khoản lưu Keychain hoặc hỏi) rồi mở lại."""
+    session = office.capture_session(page, url)
+    if session:
+        return session
+    log("  phiên office hết hạn — đăng nhập lại")
+    if office.auto_login(page, url):
+        session = office.capture_session(page, url)
+        if session:
+            return session
+    sys.exit(EXIT_LOGIN)
+
+
 def sync_work(page, api: office.Api, out: Path, args: set) -> None:
     log("CÔNG VIỆC — mở trang, lấy danh sách")
-    session = office.capture_session(page, WORK_URL)
-    if not session:
-        sys.exit(EXIT_LOGIN)
+    session = open_project(page, WORK_URL)
     rows = scrape.merge_rows(fetch_rows(page, session, scrape.CUSTOM_QUERIES))
     log(f"  {len(rows)} việc — lấy chi tiết từng việc (lịch sử tiến độ, file)…")
     details = scrape.fetch_details(page, session["headers"], [str(r.get("taskID") or r.get("sys_TaskID")) for r in rows])
@@ -133,9 +148,7 @@ def sync_work(page, api: office.Api, out: Path, args: set) -> None:
 
 def sync_mou(page, api: office.Api, out: Path, args: set) -> None:
     log("MOU — mở trang dự án, lấy danh sách")
-    session = office.capture_session(page, MOU_URL)
-    if not session:
-        sys.exit(EXIT_LOGIN)
+    session = open_project(page, MOU_URL)
     responses = fetch_rows(page, session, (MOU_QUERY,))
     if not responses:
         log("  không lấy được danh sách MOU")
@@ -164,6 +177,10 @@ def sync_mou(page, api: office.Api, out: Path, args: set) -> None:
 
 def main() -> None:
     args = set(sys.argv[1:])
+    if "--quen-mat-khau" in args:
+        office.forget_password()
+        print("Đã xoá mật khẩu office lưu trong Keychain.")
+        return
     acquire_lock()
     api = office.Api(office.load_token())
     out = scrape.OUT / f"dong-bo-{time.strftime('%Y%m%d-%H%M')}"
