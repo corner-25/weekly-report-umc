@@ -82,7 +82,7 @@ export async function upsertMouFile(
   mouId: string,
   f: OfficeFileMeta,
   bytes: Uint8Array,
-  extra: { originalSize?: number | null; ocrText?: string | null; pageCount?: number | null } = {},
+  extra: { originalSize?: number | null; ocrText?: string | null; pageCount?: number | null; attachType?: string | null } = {},
 ): Promise<{ id: string; changed: boolean }> {
   const externalCode = String(f.attchFileID);
   const hash = sha256(bytes);
@@ -91,7 +91,8 @@ export async function upsertMouFile(
   const mimeType = sniffMimeType(bytes) ?? (String(f.extension ?? '').toLowerCase() === '.xlsx' ? XLSX_MIME : f.contentType ?? 'application/octet-stream');
   const content = {
     title: f.fileName.replace(/\.[^.]+$/, ''),
-    documentType: documentTypeOf(f.fileName),
+    // File kèm dòng tiến độ / trao đổi trên office không phải biên bản ký.
+    documentType: (extra.attachType ?? '').toUpperCase() === 'NOTES' ? 'Trao đổi' : (extra.attachType ?? '').toUpperCase() === 'LOGTIME' ? 'Báo cáo tiến độ' : documentTypeOf(f.fileName),
     fileName: f.fileName,
     fileSize: bytes.length,
     originalSize: extra.originalSize ?? null,

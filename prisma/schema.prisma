@@ -2094,6 +2094,10 @@ model WorkAttachment {
   workItem     WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
   /// Mã file trên office (attchFileID) — khoá nạp lại không tạo trùng.
   externalCode String   @unique
+  /// Nơi đính kèm trên office: TASK (file của việc), LOGTIME (kèm dòng tiến độ), RESULT (kết quả công việc), NOTES (trao đổi/phản hồi).
+  kind         String   @default("TASK")
+  /// Mã dòng tiến độ/trao đổi chứa file (key02ID trên office), nếu có.
+  sourceRefId  String?
   fileName     String
   mimeType     String
   fileSize     Int

@@ -73,44 +73,73 @@ def fetch_rows(page, session: dict, query_ids) -> list:
 
 def upload_new_files(page, session: dict, api: office.Api, details: dict, *, known: dict, folder: Path, endpoint: str,
                      owner_field: str, refresh: bool, ocr: bool) -> set:
-    """Tải file chưa có trên hệ thống, nén, (đọc chữ), tải lên. Trả tập mã chủ (việc/MOU) có file mới."""
+    """
+    Rà mọi file đính kèm của từng việc — file của việc, kèm báo cáo tiến độ, kết quả công việc
+    và file trong trao đổi/phản hồi (office trả chung trong detail.files). File chưa có trên hệ
+    thống: tải về (tuần tự, nghỉ giữa các lần để khỏi bị tường lửa chặn), còn nén PDF, đọc chữ,
+    tải lên chạy song song nhiều luồng cho nhanh. Trả tập mã chủ (việc/MOU) có file mới.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
     folder.mkdir(parents=True, exist_ok=True)
-    todo = [(owner, f) for owner, d in details.items() for f in d.get("files") or [] if refresh or str(f["attchFileID"]) not in known]
+    all_files = [(owner, f) for owner, d in details.items() for f in d.get("files") or []]
+    todo = [(o, f) for o, f in all_files if refresh or str(f["attchFileID"]) not in known]
+    kinds: dict = {}
+    for _, f in all_files:
+        t = f.get("v_AttachType") or "TASK"
+        kinds[t] = kinds.get(t, 0) + 1
+    log(f"  {len(all_files)} file đính kèm ({', '.join(f'{k} {v}' for k, v in kinds.items())}) — {len(todo)} file mới cần tải")
     if not todo:
-        log("  không có file mới")
         return set()
-    changed, failed, saved_kb, original_kb = set(), [], 0, 0
-    for n, (owner, f) in enumerate(todo, 1):
-        file_id = str(f["attchFileID"])
-        target = folder / f"{file_id}{(f.get('extension') or '').lower()}"
-        if not office.download(page, session["headers"], file_id, target):
-            failed.append(f["fileName"])
-            continue
+    changed, failed = set(), []
+    totals = {"orig": 0, "final": 0, "done": 0}
+
+    def process(owner: str, f: dict, target: Path) -> tuple[str, int, int]:
         original = target.stat().st_size
         final = office.compress_pdf(target)
         text, pages = office.ocr_text(final) if ocr else (None, None)
         fields = {
-            owner_field: owner,
-            "attchFileID": file_id,
-            "fileName": f["fileName"],
-            "extension": f.get("extension"),
-            "contentType": f.get("contentType"),
-            "createdDate": f.get("createdDate"),
-            "createdBy": f.get("createdBy"),
-            "originalSize": original,
-            "ocrText": text,
-            "pageCount": pages,
+            owner_field: owner, "attchFileID": str(f["attchFileID"]), "fileName": f["fileName"],
+            "extension": f.get("extension"), "contentType": f.get("contentType"), "createdDate": f.get("createdDate"),
+            "createdBy": f.get("createdBy"), "originalSize": original, "ocrText": text, "pageCount": pages,
+            "attachType": f.get("v_AttachType"), "entryType": f.get("entryType"), "key02ID": f.get("key02ID"),
         }
-        try:
-            api.post_file(endpoint, fields, final, f["fileName"])
-            changed.add(owner)
-            saved_kb += final.stat().st_size // 1024
-            original_kb += original // 1024
-            log(f"  file {n}/{len(todo)} {f['fileName']}: {original // 1024} KB → {final.stat().st_size // 1024} KB")
-        except RuntimeError as e:
-            failed.append(f"{f['fileName']} ({e})")
-        time.sleep(office.PAUSE_S)
-    log(f"  tải lên {len(todo) - len(failed)} file: {original_kb} KB → {saved_kb} KB sau nén")
+        api.post_file(endpoint, fields, final, f["fileName"])
+        return owner, original, final.stat().st_size
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {}
+        for owner, f in todo:
+            target = folder / f"{f['attchFileID']}{(f.get('extension') or '').lower()}"
+            if office.download(page, session["headers"], str(f["attchFileID"]), target):
+                futures[pool.submit(process, owner, f, target)] = f["fileName"]
+            else:
+                failed.append(f["fileName"])
+            time.sleep(office.PAUSE_S)
+            # Báo tiến độ các file đã xong trong lúc vẫn tải tiếp.
+            for fut in [x for x in futures if x.done()]:
+                name = futures.pop(fut)
+                try:
+                    owner, o, n = fut.result()
+                    changed.add(owner)
+                    totals["orig"] += o
+                    totals["final"] += n
+                    totals["done"] += 1
+                    log(f"  {totals['done']}/{len(todo)} {name}: {o // 1024} KB → {n // 1024} KB")
+                except Exception as e:  # noqa: BLE001 — một file lỗi không dừng cả lượt
+                    failed.append(f"{name} ({e})")
+        for fut in as_completed(futures):
+            name = futures[fut]
+            try:
+                owner, o, n = fut.result()
+                changed.add(owner)
+                totals["orig"] += o
+                totals["final"] += n
+                totals["done"] += 1
+                log(f"  {totals['done']}/{len(todo)} {name}: {o // 1024} KB → {n // 1024} KB")
+            except Exception as e:  # noqa: BLE001
+                failed.append(f"{name} ({e})")
+    log(f"  tải lên {totals['done']} file: {totals['orig'] // 1024} KB → {totals['final'] // 1024} KB sau nén")
     if failed:
         log(f"  KHÔNG tải được {len(failed)} file: {'; '.join(failed[:10])}")
     return changed
@@ -139,9 +168,15 @@ def sync_work(page, api: office.Api, out: Path, args: set) -> None:
     (out / "cong-viec.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     result = api.post_json("/api/work/import", payload)
     log(f"  đã nạp: {result['itemsCreated']} việc mới, {result['itemsChanged']} việc thay đổi, {result['updatesAdded']} cập nhật mới")
+    (out / "cong-viec-chi-tiet.json").write_text(json.dumps(details, ensure_ascii=False), encoding="utf-8")
     if "--khong-file" in args:
         return
     known = api.get("/api/work/import/files")
+    # Ghi lại loại của file đã tải lên trước (file của việc / tiến độ / kết quả / trao đổi) — không gửi lại nội dung.
+    meta = [{"attchFileID": str(f["attchFileID"]), "attachType": f.get("v_AttachType"), "entryType": f.get("entryType"), "key02ID": str(f.get("key02ID") or "")}
+            for d in details.values() for f in d.get("files") or [] if str(f["attchFileID"]) in known]
+    if meta:
+        api._send("/api/work/import/files", json.dumps(meta).encode("utf-8"), "application/json", "PATCH", 300)
     upload_new_files(page, session, api, details, known=known, folder=out / "cong-viec-files", endpoint="/api/work/import/files",
                      owner_field="externalId", refresh="--tai-lai-file" in args, ocr=False)
 

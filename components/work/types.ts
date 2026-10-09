@@ -77,6 +77,8 @@ export interface WorkAttachmentDTO {
   uploadedBy: string | null;
   createdAt: string;
   url: string;
+  /** TASK | LOGTIME | RESULT | NOTES */
+  kind?: string;
 }
 
 export interface WorkItemDetail extends WorkItemDTO {

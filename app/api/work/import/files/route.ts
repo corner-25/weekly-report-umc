@@ -22,6 +22,14 @@ export const GET = handle(async (request: Request) => {
   return NextResponse.json(Object.fromEntries(rows.map((r) => [r.externalCode, r.sha256])));
 });
 
+/** Nơi file nằm trên office → loại hiển thị (file của việc / kèm tiến độ / kết quả / trao đổi). */
+function attachmentKind(attachType?: string, entryType?: string): 'TASK' | 'LOGTIME' | 'RESULT' | 'NOTES' {
+  const t = (attachType ?? '').toUpperCase();
+  if (t === 'NOTES') return 'NOTES';
+  if (t === 'LOGTIME') return (entryType ?? '').toLowerCase() === 'result' ? 'RESULT' : 'LOGTIME';
+  return 'TASK';
+}
+
 const metaSchema = z.object({
   externalId: z.string().min(1),
   attchFileID: z.string().min(1),
@@ -31,6 +39,9 @@ const metaSchema = z.object({
   createdDate: z.string().optional(),
   createdBy: z.string().optional(),
   originalSize: z.coerce.number().int().nonnegative().optional(),
+  attachType: z.string().optional(),
+  entryType: z.string().optional(),
+  key02ID: z.string().optional(),
 });
 
 /** Tải một file đính kèm của công việc (đã nén PDF ở máy cào). */
@@ -53,6 +64,8 @@ export const POST = handle(async (request: Request) => {
     sha256: sha256(bytes),
     data: Buffer.from(bytes),
     uploadedBy: meta.createdBy ?? null,
+    kind: attachmentKind(meta.attachType, meta.entryType),
+    sourceRefId: meta.key02ID && meta.key02ID !== '0' ? meta.key02ID : null,
   };
   const saved = await prisma.workAttachment.upsert({
     where: { externalCode: meta.attchFileID },
@@ -61,4 +74,21 @@ export const POST = handle(async (request: Request) => {
     select: { id: true },
   });
   return NextResponse.json({ id: saved.id, workItemId: item.id });
+});
+
+const kindsSchema = z.array(z.object({ attchFileID: z.string(), attachType: z.string().optional(), entryType: z.string().optional(), key02ID: z.string().optional() })).max(20000);
+
+/** Cập nhật loại file đã tải lên trước đây (không gửi lại nội dung). */
+export const PATCH = handle(async (request: Request) => {
+  await requireImporter(request);
+  const items = kindsSchema.parse(await request.json());
+  let updated = 0;
+  for (const it of items) {
+    const { count } = await prisma.workAttachment.updateMany({
+      where: { externalCode: it.attchFileID },
+      data: { kind: attachmentKind(it.attachType, it.entryType), sourceRefId: it.key02ID && it.key02ID !== '0' ? it.key02ID : null },
+    });
+    updated += count;
+  }
+  return NextResponse.json({ updated });
 });

@@ -27,6 +27,7 @@ const metaSchema = z.object({
   originalSize: z.coerce.number().int().nonnegative().optional(),
   ocrText: z.string().optional(),
   pageCount: z.coerce.number().int().nonnegative().optional(),
+  attachType: z.string().optional(),
 });
 
 /** Tải một file đính kèm của MOU (đã nén ở máy cào, kèm chữ OCR nếu có). */
@@ -43,6 +44,7 @@ export const POST = handle(async (request: Request) => {
     originalSize: meta.originalSize,
     ocrText: meta.ocrText,
     pageCount: meta.pageCount,
+    attachType: meta.attachType,
   });
   return NextResponse.json({ ...result, mouId: mou.id });
 });

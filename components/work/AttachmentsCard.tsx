@@ -6,6 +6,9 @@ import { SectionCard } from '@/components/crm/ui';
 import { formatDate } from '@/components/crm/format';
 import type { WorkAttachmentDTO } from './types';
 
+const KIND_LABEL: Record<string, string> = { TASK: 'File của việc', LOGTIME: 'Kèm báo cáo tiến độ', RESULT: 'Kết quả công việc', NOTES: 'Trong trao đổi' };
+const KIND_ORDER = ['TASK', 'RESULT', 'LOGTIME', 'NOTES'];
+
 const size = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`);
 
 export function AttachmentsCard({ attachments }: { attachments: WorkAttachmentDTO[] }) {
@@ -16,8 +19,11 @@ export function AttachmentsCard({ attachments }: { attachments: WorkAttachmentDT
       icon={<Paperclip className="h-4 w-4 text-cyan-600" aria-hidden="true" />}
       action={<span className="text-xs text-slate-500">{attachments.length} file</span>}
     >
+      {KIND_ORDER.filter((k) => attachments.some((a) => (a.kind ?? 'TASK') === k)).map((k) => (
+      <div key={k} className="mb-2 last:mb-0">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{KIND_LABEL[k]}</p>
       <ul className="-mx-2 divide-y divide-slate-100">
-        {attachments.map((a) => {
+        {attachments.filter((a) => (a.kind ?? 'TASK') === k).map((a) => {
           const Icon = /sheet|excel/.test(a.mimeType) ? FileSpreadsheet : FileText;
           return (
             <li key={a.id} className="flex items-center gap-3 px-2 py-2">
@@ -41,6 +47,8 @@ export function AttachmentsCard({ attachments }: { attachments: WorkAttachmentDT
           );
         })}
       </ul>
+      </div>
+      ))}
     </SectionCard>
   );
 }

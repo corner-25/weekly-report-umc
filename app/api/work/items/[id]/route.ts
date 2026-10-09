@@ -22,7 +22,7 @@ export const GET = handle(async (_request: Request, { params }: Ctx) => {
     prisma.workAttachment.findMany({
       where: { workItemId: id },
       orderBy: { createdAt: 'desc' },
-      select: { id: true, fileName: true, mimeType: true, fileSize: true, originalSize: true, uploadedBy: true, createdAt: true },
+      select: { id: true, fileName: true, mimeType: true, fileSize: true, originalSize: true, uploadedBy: true, createdAt: true, kind: true },
     }),
   ]);
   return NextResponse.json({
