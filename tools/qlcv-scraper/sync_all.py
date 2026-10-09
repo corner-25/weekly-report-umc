@@ -22,6 +22,7 @@ hỏi ngay ở cửa sổ dòng lệnh (có thể lưu vào Keychain cho lần s
     python3 tools/qlcv-scraper/sync_all.py --quen-mat-khau  # xoá mật khẩu đã lưu trong Keychain
 """
 import json
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -109,13 +110,23 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
 
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {}
+        # Cùng một file gắn vào nhiều việc (vd thông báo giao ban) — office lưu một chỗ (filePath): tải một lần.
+        fetched: dict = {}
         for owner, f in todo:
             target = folder / f"{f['attchFileID']}{(f.get('extension') or '').lower()}"
-            if office.download(page, session["headers"], str(f["attchFileID"]), target):
+            same = fetched.get(f.get("filePath"))
+            if same and same.exists():
+                shutil.copyfile(same, target)
+                ok = True
+            else:
+                ok = office.download(page, session["headers"], str(f["attchFileID"]), target)
+                if ok and f.get("filePath"):
+                    fetched[f["filePath"]] = target
+                time.sleep(office.PAUSE_S)
+            if ok:
                 futures[pool.submit(process, owner, f, target)] = f["fileName"]
             else:
                 failed.append(f["fileName"])
-            time.sleep(office.PAUSE_S)
             # Báo tiến độ các file đã xong trong lúc vẫn tải tiếp.
             for fut in [x for x in futures if x.done()]:
                 name = futures.pop(fut)
