@@ -84,7 +84,12 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
 
     folder.mkdir(parents=True, exist_ok=True)
     all_files = [(owner, f) for owner, d in details.items() for f in d.get("files") or []]
-    todo = [(o, f) for o, f in all_files if refresh or str(f["attchFileID"]) not in known]
+    # File hệ thống từ chối lần trước (quá 25 MB, vd .zip) — ghi nhớ để không tải lại mỗi lần (một file zip mất ~10 phút).
+    skip_path = office.HOME / "bo-qua-file.json"
+    skipped = json.loads(skip_path.read_text()) if skip_path.exists() else {}
+    todo = [(o, f) for o, f in all_files if (refresh or str(f["attchFileID"]) not in known) and str(f["attchFileID"]) not in skipped]
+    if any(str(f["attchFileID"]) in skipped for _, f in all_files):
+        log(f"  bỏ qua {sum(1 for _, f in all_files if str(f['attchFileID']) in skipped)} file quá lớn đã ghi nhớ ({skip_path})")
     kinds: dict = {}
     for _, f in all_files:
         t = f.get("v_AttachType") or "TASK"
@@ -94,6 +99,12 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
         return set()
     changed, failed = set(), []
     totals = {"orig": 0, "final": 0, "done": 0}
+
+    def remember_too_large(e: Exception) -> None:
+        file_id = getattr(e, "file_id", None)
+        if file_id and "HTTP 413" in str(e):
+            skipped[file_id] = time.strftime("%Y-%m-%d")
+            skip_path.write_text(json.dumps(skipped))
 
     def process(owner: str, f: dict, target: Path) -> tuple[str, int, int]:
         original = target.stat().st_size
@@ -105,7 +116,11 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
             "createdBy": f.get("createdBy"), "originalSize": original, "ocrText": text, "pageCount": pages,
             "attachType": f.get("v_AttachType"), "entryType": f.get("entryType"), "key02ID": f.get("key02ID"),
         }
-        api.post_file(endpoint, fields, final, f["fileName"])
+        try:
+            api.post_file(endpoint, fields, final, f["fileName"])
+        except RuntimeError as e:
+            e.file_id = str(f["attchFileID"])  # để ghi nhớ file bị từ chối vì quá lớn
+            raise
         return owner, original, final.stat().st_size
 
     with ThreadPoolExecutor(max_workers=4) as pool:
@@ -139,6 +154,7 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
                     log(f"  {totals['done']}/{len(todo)} {name}: {o // 1024} KB → {n // 1024} KB")
                 except Exception as e:  # noqa: BLE001 — một file lỗi không dừng cả lượt
                     failed.append(f"{name} ({e})")
+                    remember_too_large(e)
         for fut in as_completed(futures):
             name = futures[fut]
             try:
@@ -150,6 +166,7 @@ def upload_new_files(page, session: dict, api: office.Api, details: dict, *, kno
                 log(f"  {totals['done']}/{len(todo)} {name}: {o // 1024} KB → {n // 1024} KB")
             except Exception as e:  # noqa: BLE001
                 failed.append(f"{name} ({e})")
+                remember_too_large(e)
     log(f"  tải lên {totals['done']} file: {totals['orig'] // 1024} KB → {totals['final'] // 1024} KB sau nén")
     if failed:
         log(f"  KHÔNG tải được {len(failed)} file: {'; '.join(failed[:10])}")
