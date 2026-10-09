@@ -58,9 +58,9 @@ export const GET = handle(async (request: Request) => {
 
   // Mẫu đôn đốc công việc
   const validStyle: WorkReminderStyle =
-    template === 'minimal' || template === 'formal' || template === 'classic'
+    template === 'modern' || template === 'formal' || template === 'classic'
       ? template
-      : 'modern';
+      : 'minimal';
 
   const res = renderWorkReminderHtml(
     {
@@ -74,6 +74,8 @@ export const GET = handle(async (request: Request) => {
           dueDate: '2026-10-15',
           reasonText: 'Sắp đến hạn (còn 6 ngày)',
           isOverdue: false,
+          daysWithoutActivity: 45,
+          daysOverdue: 0,
         },
         {
           id: 'sample-2',
@@ -82,6 +84,8 @@ export const GET = handle(async (request: Request) => {
           dueDate: '2026-10-01',
           reasonText: 'Đã quá hạn 8 ngày',
           isOverdue: true,
+          daysWithoutActivity: 115,
+          daysOverdue: 8,
         },
         {
           id: 'sample-3',
@@ -90,6 +94,8 @@ export const GET = handle(async (request: Request) => {
           dueDate: '2026-09-20',
           reasonText: 'Đã quá hạn 19 ngày',
           isOverdue: true,
+          daysWithoutActivity: 68,
+          daysOverdue: 19,
         },
       ],
       appUrl: url,

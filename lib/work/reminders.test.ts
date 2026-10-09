@@ -35,19 +35,19 @@ describe('renderWorkReminderHtml', () => {
     isOverdue: true,
   };
 
-  it('renders salutation with department focal point when recipientName is omitted', () => {
+  it('renders salutation with department focal point in minimal style (default)', () => {
     const res = renderWorkReminderHtml({
       department: 'Phòng Kế hoạch tổng hợp',
       items: [baseItem],
       appUrl: 'https://umc.vn',
     });
 
-    expect(res.html).toContain('Kính gửi: Đầu mối phụ trách công việc &middot; Phòng Kế hoạch tổng hợp,');
-    expect(res.html).toContain('Trân trọng cảm ơn sự phối hợp kịp thời của Quý đơn vị.');
-    expect(res.subject).toBe('[UMC-Office] Đôn đốc tiến độ 1 nhiệm vụ của Phòng Kế hoạch tổng hợp cần cập nhật báo cáo');
+    expect(res.html).toContain('Kính gửi <strong>Đầu mối phụ trách đơn vị</strong>,');
+    expect(res.html).toContain('Đơn vị phụ trách: <strong style="color: #18181b;">Phòng Kế hoạch tổng hợp</strong>');
+    expect(res.subject).toBe('[Đôn đốc tiến độ] 1 nhiệm vụ của Phòng Kế hoạch tổng hợp cần cập nhật báo cáo');
   });
 
-  it('renders individual name when recipientName is explicitly provided', () => {
+  it('renders individual name when recipientName is explicitly provided in minimal style', () => {
     const res = renderWorkReminderHtml({
       recipientName: 'Nguyễn Văn A',
       department: 'Phòng Tổ chức cán bộ',
@@ -55,8 +55,24 @@ describe('renderWorkReminderHtml', () => {
       appUrl: 'https://umc.vn',
     });
 
+    expect(res.html).toContain('Kính gửi Anh/Chị <strong>Nguyễn Văn A</strong>,');
+    expect(res.html).toContain('Đơn vị phụ trách: <strong style="color: #18181b;">Phòng Tổ chức cán bộ</strong>');
+  });
+
+  it('renders executive medical modern style correctly when specified', () => {
+    const res = renderWorkReminderHtml(
+      {
+        recipientName: 'Nguyễn Văn A',
+        department: 'Phòng Tổ chức cán bộ',
+        items: [baseItem],
+        appUrl: 'https://umc.vn',
+      },
+      'modern'
+    );
+
     expect(res.html).toContain('Kính gửi: Anh/Chị Nguyễn Văn A (Đầu mối phụ trách &middot; Phòng Tổ chức cán bộ),');
     expect(res.html).toContain('Trân trọng cảm ơn sự phối hợp kịp thời của Anh/Chị và đơn vị.');
+    expect(res.subject).toBe('[UMC-Office] Đôn đốc tiến độ 1 nhiệm vụ của Phòng Tổ chức cán bộ cần cập nhật báo cáo');
   });
 });
 

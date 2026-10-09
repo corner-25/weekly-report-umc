@@ -13,6 +13,8 @@ export interface WorkReminderItemData {
   dueDate: string | null;
   reasonText: string;
   isOverdue?: boolean;
+  daysWithoutActivity?: number | null;
+  daysOverdue?: number | null;
 }
 
 export type WorkReminderStyle = 'modern' | 'minimal' | 'formal' | 'classic';
@@ -27,6 +29,75 @@ export interface WorkReminderEmailProps {
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] || c);
+}
+
+/**
+ * Trả về chuỗi HTML của các huy hiệu thông tin trạng thái theo phong cách Apple/Modern:
+ * Ưu tiên hiển thị:
+ * 1. Badge số ngày chưa cập nhật: "⏱️ Đã xxx ngày chưa cập nhật"
+ * 2. Badge tình trạng hạn: "⚠️ Quá hạn xxx ngày" hoặc "📅 Sắp đến hạn"
+ */
+function renderItemBadges(item: WorkReminderItemData): string {
+  const parts: string[] = [];
+
+  // 1. Badge số ngày chưa cập nhật
+  let staleDays = item.daysWithoutActivity;
+  if (staleDays === undefined || staleDays === null) {
+    const match = item.reasonText.match(/(\d+)\s*ngày chưa cập nhật/i);
+    if (match) staleDays = parseInt(match[1], 10);
+  }
+
+  if (staleDays !== undefined && staleDays !== null && staleDays > 0) {
+    if (staleDays >= 100) {
+      parts.push(`
+        <span style="display: inline-block; background-color: #fff1f2; color: #be123c; border: 1px solid #fecdd3; padding: 2.5px 9px; border-radius: 9999px; font-weight: 700; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+        </span>
+      `);
+    } else if (staleDays >= 30) {
+      parts.push(`
+        <span style="display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+        </span>
+      `);
+    } else {
+      parts.push(`
+        <span style="display: inline-block; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+          ⏱️ Đã ${staleDays} ngày chưa cập nhật
+        </span>
+      `);
+    }
+  } else if (/chưa có cập nhật/i.test(item.reasonText)) {
+    parts.push(`
+      <span style="display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+        ⏱️ Chưa có cập nhật nào
+      </span>
+    `);
+  }
+
+  // 2. Badge tình trạng hạn
+  let overdueDays = item.daysOverdue;
+  if ((overdueDays === undefined || overdueDays === null) && item.isOverdue) {
+    const match = item.reasonText.match(/quá hạn\s+(\d+)/i);
+    if (match) overdueDays = parseInt(match[1], 10);
+  }
+
+  if (item.isOverdue || (overdueDays !== undefined && overdueDays !== null && overdueDays > 0)) {
+    const label = overdueDays ? `Quá hạn ${overdueDays} ngày` : 'Quá hạn xử lý';
+    parts.push(`
+      <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+        ⚠️ ${label}
+      </span>
+    `);
+  } else if (/sắp đến hạn|còn \d+ ngày|đến hạn hôm nay/i.test(item.reasonText)) {
+    parts.push(`
+      <span style="display: inline-block; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;">
+        📅 ${escapeHtml(item.reasonText)}
+      </span>
+    `);
+  }
+
+  return parts.join('');
 }
 
 // ============================================================================
@@ -72,9 +143,7 @@ export function renderModernWorkReminder({
                       ${safeTitle}
                     </a>
                     <div style="margin-top: 8px;">
-                      <span style="display: inline-block; background-color: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeBorder}; padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 700;">
-                        ${escapeHtml(item.reasonText)}
-                      </span>
+                      ${renderItemBadges(item)}
                       <span style="font-size: 12px; color: #64748b; margin-left: 8px;">
                         &bull; Hạn: <strong style="color: #0f172a;">${safeDue}</strong> &bull; Trạng thái: <strong style="color: #334155;">${safeStatus}</strong>
                       </span>
@@ -174,25 +243,25 @@ export function renderModernWorkReminder({
               <!-- Danh sách Thẻ Nhiệm Vụ -->
               ${cardsHtml}
 
-              <!-- Khung 3 Tiêu chí Báo cáo Tinh gọn -->
+              <!-- Khung Gợi ý nội dung trung dung, hỗ trợ phòng ban -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 22px 0; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden;">
                 <tr>
                   <td style="padding: 18px 20px;">
                     <div style="font-size: 12.5px; font-weight: 800; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                      📌 3 TIÊU CHÍ BẮT BUỘC KHI CẬP NHẬT BÁO CÁO TIẾN ĐỘ:
+                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
                     </div>
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12.5px; color: #334155; line-height: 1.6;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12.5px; color: #334155; line-height: 1.65;">
                       <tr>
-                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">1.</td>
-                        <td style="padding: 3px 0;"><strong>Kết quả cụ thể:</strong> Nêu rõ công việc đã hoàn thành hoặc đang xử lý; không ghi chú chung chung.</td>
+                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">&bull;</td>
+                        <td style="padding: 3px 0;"><strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.</td>
                       </tr>
                       <tr>
-                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">2.</td>
-                        <td style="padding: 3px 0;"><strong>Số liệu &amp; Minh chứng:</strong> Nêu rõ tỷ lệ %, số lượng hồ sơ/văn bản kèm số ký hiệu văn bản ban hành.</td>
+                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">&bull;</td>
+                        <td style="padding: 3px 0;"><strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.</td>
                       </tr>
                       <tr>
-                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">3.</td>
-                        <td style="padding: 3px 0;"><strong>Nghiệm thu hoàn thành:</strong> Hệ thống không công nhận hoàn thành nếu không có nội dung giải trình.</td>
+                        <td width="20" valign="top" style="color: #004b87; font-weight: 700; padding: 3px 0;">&bull;</td>
+                        <td style="padding: 3px 0;"><strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.</td>
                       </tr>
                     </table>
                   </td>
@@ -256,33 +325,35 @@ export function renderMinimalWorkReminder({
   const safeName = recipientName ? escapeHtml(recipientName.trim()) : '';
   const subject = `[Đôn đốc tiến độ] ${items.length} nhiệm vụ của ${safeDept} cần cập nhật báo cáo`;
 
+  const staleCount = items.filter(
+    (i) => (i.daysWithoutActivity && i.daysWithoutActivity >= 30) || /chưa có cập nhật|\d+\s*ngày chưa cập nhật/i.test(i.reasonText)
+  ).length;
+  const overdueCount = items.filter((i) => i.isOverdue || (i.daysOverdue && i.daysOverdue > 0)).length;
+
   const itemRowsHtml = items
     .map((item, idx) => {
       const safeTitle = escapeHtml(item.title);
       const safeStatus = escapeHtml(item.status);
       const safeDue = item.dueDate ? item.dueDate.split('-').reverse().join('/') : 'Chưa xác định';
       const link = `${appUrl}/dashboard/work/items/${item.id}`;
-      const badgeBg = item.isOverdue ? '#fee2e2' : '#f1f5f9';
-      const badgeColor = item.isOverdue ? '#991b1b' : '#334155';
+      const badgesHtml = renderItemBadges(item);
 
       return `
-        <div style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+        <div style="padding: 18px 0; border-bottom: 1px solid #f4f4f5;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td valign="top" style="vertical-align: top;">
-                <div style="font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 3px;">
+                <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 4px;">
                   NHIỆM VỤ 0${idx + 1}
                 </div>
-                <a href="${link}" style="font-size: 14.5px; font-weight: 600; color: #0f172a; text-decoration: none; line-height: 1.45; display: block;">
+                <a href="${link}" style="font-size: 15px; font-weight: 600; color: #09090b; text-decoration: none; line-height: 1.45; display: block;">
                   ${safeTitle}
                 </a>
-                <div style="margin-top: 8px; font-size: 12px; color: #64748b;">
-                  <span style="display: inline-block; background-color: ${badgeBg}; color: ${badgeColor}; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px;">
-                    ${escapeHtml(item.reasonText)}
+                <div style="margin-top: 9px; line-height: 1.8;">
+                  ${badgesHtml}
+                  <span style="font-size: 12px; color: #71717a; display: inline-block; margin-left: 4px;">
+                    &bull; Hạn: <strong style="color: #18181b;">${safeDue}</strong> &bull; Trạng thái: ${safeStatus}
                   </span>
-                  <span style="margin-left: 8px;">Hạn: <strong>${safeDue}</strong></span>
-                  <span style="margin-left: 8px; color: #94a3b8;">&bull;</span>
-                  <span style="margin-left: 8px;">Trạng thái: ${safeStatus}</span>
                 </div>
               </td>
             </tr>
@@ -300,27 +371,27 @@ export function renderMinimalWorkReminder({
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(subject)}</title>
 </head>
-<body style="margin: 0; padding: 32px 10px; background-color: #fafafa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #18181b; line-height: 1.6;">
+<body style="margin: 0; padding: 32px 10px; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #18181b; line-height: 1.6;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
-        <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="max-width: 620px; width: 100%; background-color: #ffffff; border-radius: 8px; border: 1px solid #e4e4e7; padding: 36px 36px;">
+        <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="max-width: 620px; width: 100%; background-color: #ffffff; border-radius: 12px; border: 1px solid #e4e4e7; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); padding: 36px 36px;">
           
-          <!-- Header tối giản -->
+          <!-- Header tối giản kiểu Apple -->
           <tr>
-            <td style="padding-bottom: 24px; border-bottom: 1px solid #f4f4f5;">
+            <td style="padding-bottom: 22px; border-bottom: 1px solid #f4f4f5;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td>
-                    <span style="font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #0284c7;">
+                    <span style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.8px; color: #0284c7; background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 6px;">
                       UMC-OFFICE
                     </span>
-                    <span style="font-size: 12px; color: #a1a1aa; margin-left: 8px;">
+                    <span style="font-size: 12px; color: #71717a; margin-left: 8px;">
                       Bệnh viện Đại học Y Dược TP.HCM
                     </span>
                   </td>
                   <td align="right">
-                    <span style="font-size: 11px; font-weight: 600; color: #71717a; background-color: #f4f4f5; padding: 3px 8px; border-radius: 4px;">
+                    <span style="font-size: 11px; font-weight: 600; color: #71717a; background-color: #f4f4f5; padding: 3px 8px; border-radius: 6px;">
                       Đôn đốc tiến độ
                     </span>
                   </td>
@@ -338,21 +409,55 @@ export function renderMinimalWorkReminder({
           <!-- Nội dung -->
           <tr>
             <td style="padding-top: 24px;">
-              <p style="margin: 0 0 16px 0; font-size: 14px; color: #3f3f46;">
+              <p style="margin: 0 0 14px 0; font-size: 14px; color: #3f3f46;">
                 ${safeName ? `Kính gửi Anh/Chị <strong>${safeName}</strong>,` : 'Kính gửi <strong>Đầu mối phụ trách đơn vị</strong>,'}
               </p>
-              <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #71717a;">
-                Hệ thống ghi nhận đơn vị hiện có <strong>${items.length} nhiệm vụ</strong> sắp đến hạn hoặc chưa có cập nhật tiến độ định kỳ. Đề nghị đơn vị rà soát và cập nhật kết quả:
+              <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #71717a; line-height: 1.65;">
+                Hệ thống ghi nhận đơn vị hiện có <strong>${items.length} nhiệm vụ</strong> đã lâu chưa có thông tin cập nhật tiến độ hoặc sắp đến hạn xử lý. Phòng Hành chính kính đề nghị đơn vị rà soát và phản hồi kết quả thực hiện:
               </p>
 
+              <!-- KPI Strip tóm tắt chỉ số kiểu Apple -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; border-bottom: 1px solid #f4f4f5; padding-bottom: 18px;">
+                <tr>
+                  <td width="33%" style="padding: 0 10px 0 0;">
+                    <div style="font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Tổng nhiệm vụ</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #18181b; margin-top: 2px;">${items.length}</div>
+                  </td>
+                  <td width="33%" style="padding: 0 10px;">
+                    <div style="font-size: 11px; font-weight: 600; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">Lâu chưa cập nhật</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #b45309; margin-top: 2px;">${staleCount}</div>
+                  </td>
+                  <td width="34%" style="padding: 0 0 0 10px;">
+                    <div style="font-size: 11px; font-weight: 600; color: #e11d48; text-transform: uppercase; letter-spacing: 0.5px;">Quá hạn xử lý</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #e11d48; margin-top: 2px;">${overdueCount}</div>
+                  </td>
+                </tr>
+              </table>
+
               <!-- Danh sách nhiệm vụ phẳng -->
-              <div style="border-top: 1px solid #f4f4f5; margin-bottom: 24px;">
+              <div style="margin-bottom: 24px;">
                 ${itemRowsHtml}
               </div>
 
-              <!-- Hộp lưu ý tối giản -->
-              <div style="background-color: #fafafa; border: 1px solid #e4e4e7; border-left: 3px solid #0284c7; padding: 14px 16px; border-radius: 6px; font-size: 12.5px; color: #52525b; line-height: 1.6; margin-bottom: 28px;">
-                <strong>Lưu ý khi báo cáo kết quả:</strong> Nêu rõ sản phẩm đầu ra, tỷ lệ % hoàn thành và văn bản nghiệm thu đính kèm. Không bấm hoàn thành khi chưa có kết quả bàn giao.
+              <!-- Hộp gợi ý trung dung, phong cách Apple hỗ trợ phòng ban -->
+              <div style="background-color: #fafafa; border: 1px solid #f4f4f5; border-radius: 8px; padding: 18px 20px; margin-bottom: 28px;">
+                <div style="font-size: 13px; font-weight: 600; color: #18181b; margin-bottom: 8px;">
+                  💡 Gợi ý nội dung khi phản hồi tiến độ:
+                </div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #52525b; line-height: 1.65;">
+                  <tr>
+                    <td width="16" valign="top" style="color: #a1a1aa; padding: 3px 0;">&bull;</td>
+                    <td style="padding: 3px 0;"><strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.</td>
+                  </tr>
+                  <tr>
+                    <td width="16" valign="top" style="color: #a1a1aa; padding: 3px 0;">&bull;</td>
+                    <td style="padding: 3px 0;"><strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.</td>
+                  </tr>
+                  <tr>
+                    <td width="16" valign="top" style="color: #a1a1aa; padding: 3px 0;">&bull;</td>
+                    <td style="padding: 3px 0;"><strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.</td>
+                  </tr>
+                </table>
               </div>
 
               <!-- Nút CTA đen tuyền tối giản -->
@@ -430,7 +535,7 @@ export function renderFormalWorkReminder({
             ${safeStatus}
           </td>
           <td align="center" style="padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; background-color: ${statusBg}; color: ${statusColor}; font-weight: 700;">
-            ${escapeHtml(item.reasonText)}
+            ${item.daysWithoutActivity && item.daysWithoutActivity > 0 ? `Đã ${item.daysWithoutActivity} ngày chưa cập nhật${item.isOverdue ? ' &bull; Quá hạn' : ''}` : escapeHtml(item.reasonText)}
           </td>
         </tr>
       `;
@@ -505,11 +610,12 @@ export function renderFormalWorkReminder({
                 </tbody>
               </table>
 
-              <!-- Quy chế thực hiện -->
-              <div style="font-family: Arial, sans-serif; font-size: 12.5px; color: #334155; line-height: 1.6; margin-bottom: 24px; padding: 12px 16px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                <strong>YÊU CẦU ĐỐI VỚI ĐƠN VỊ:</strong><br>
-                1. Đăng nhập hệ thống UMC-Office và cập nhật báo cáo kết quả cụ thể kèm văn bản nghiệm thu trước 17h00 ngày hôm nay.<br>
-                2. Trường hợp vướng mắc tiến độ, phải nêu rõ nguyên nhân và đơn vị phối hợp để Phòng Hành chính tổng hợp báo cáo Ban Giám đốc.
+              <!-- Gợi ý thực hiện trung dung -->
+              <div style="font-family: Arial, sans-serif; font-size: 12.5px; color: #334155; line-height: 1.65; margin-bottom: 24px; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
+                <strong style="color: #004b87;">💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:</strong><br>
+                &bull; <strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.<br>
+                &bull; <strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.<br>
+                &bull; <strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.
               </div>
 
               <!-- Nút liên kết -->
@@ -665,25 +771,25 @@ export function renderClassicWorkReminder({
                 <tr>
                   <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #004b87; padding: 18px 20px; border-radius: 4px;">
                     <div style="font-size: 13px; font-weight: 700; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                      TIÊU CHÍ BẮT BUỘC KHI CẬP NHẬT BÁO CÁO TRÊN UMC-OFFICE:
+                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:
                     </div>
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #1e293b; line-height: 1.6;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #1e293b; line-height: 1.65;">
                       <tr>
-                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">1.</td>
+                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">&bull;</td>
                         <td style="padding: 4px 0; vertical-align: top;">
-                          <strong>Nội dung kết quả cụ thể:</strong> Trình bày chi tiết các phần việc đã hoàn thành hoặc đang xử lý.
+                          <strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">2.</td>
+                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">&bull;</td>
                         <td style="padding: 4px 0; vertical-align: top;">
-                          <strong>Số liệu định lượng &amp; Minh chứng:</strong> Nêu rõ tỷ lệ %, số lượng hồ sơ/văn bản.
+                          <strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">3.</td>
+                        <td style="padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;">&bull;</td>
                         <td style="padding: 4px 0; vertical-align: top;">
-                          <strong>Quy định hoàn thành:</strong> Không công nhận hoàn thành đối với nhiệm vụ không có báo cáo giải trình.
+                          <strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.
                         </td>
                       </tr>
                     </table>
@@ -733,20 +839,20 @@ export function renderClassicWorkReminder({
   return { subject, html };
 }
 
-// Hàm chính điều phối mẫu theo tuỳ chọn (Mặc định: 'modern')
+// Hàm chính điều phối mẫu theo tuỳ chọn (Mặc định: 'minimal' - Phong cách Apple Tinh gọn)
 export function renderWorkReminderHtml(
   props: WorkReminderEmailProps,
-  style: WorkReminderStyle = props.style || 'modern'
+  style: WorkReminderStyle = props.style || 'minimal'
 ): { subject: string; html: string } {
   switch (style) {
-    case 'minimal':
-      return renderMinimalWorkReminder(props);
+    case 'modern':
+      return renderModernWorkReminder(props);
     case 'formal':
       return renderFormalWorkReminder(props);
     case 'classic':
       return renderClassicWorkReminder(props);
-    case 'modern':
+    case 'minimal':
     default:
-      return renderModernWorkReminder(props);
+      return renderMinimalWorkReminder(props);
   }
 }

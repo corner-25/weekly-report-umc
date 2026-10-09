@@ -3,77 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bộ sưu tập Mẫu Email Đôn đốc Nhiệm vụ - BV Đại học Y Dược TP.HCM</title>
+  <title>Bảng Xem Nhanh &amp; Duyệt Mẫu Email Đôn Đốc (Phong cách Apple) - UMC-Office</title>
   <style>
     :root {
       --primary: #004b87;
-      --primary-dark: #003366;
-      --primary-light: #e0f2fe;
-      --slate-50: #f8fafc;
-      --slate-100: #f1f5f9;
-      --slate-200: #e2e8f0;
-      --slate-300: #cbd5e1;
-      --slate-600: #475569;
-      --slate-700: #334155;
-      --slate-800: #1e293b;
-      --slate-900: #0f172a;
+      --primary-hover: #003366;
+      --accent: #0284c7;
+      --success: #10b981;
+      --danger: #e11d48;
+      --bg-dark: #0f172a;
+      --panel-dark: #1e293b;
+      --border-dark: #334155;
+      --text-muted: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0f172a;
-      color: var(--slate-100);
+      background: var(--bg-dark);
+      color: #f8fafc;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    header {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 16px 24px;
+    
+    /* Top Bar */
+    .top-header {
+      background: var(--panel-dark);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .header-content {
+      max-width: 1600px;
+      margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
-    .brand {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 14px;
     }
-    .badge-umc {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 800;
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      letter-spacing: 1px;
+    .umc-badge {
+      background: #0284c7;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 2px 8px rgba(2,132,199,0.4);
     }
     .brand-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
-      color: #fff;
-    }
-    .brand-subtitle {
-      font-size: 12px;
-      color: #94a3b8;
-    }
-    .template-selector {
+      color: #ffffff;
       display: flex;
-      background: #0f172a;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Template Nav */
+    .tabs-nav {
+      display: flex;
+      background: #090d16;
       padding: 4px;
       border-radius: 10px;
-      border: 1px solid #334155;
+      border: 1px solid var(--border-dark);
       gap: 4px;
       flex-wrap: wrap;
     }
-    .btn-template {
+    .tab-btn {
       background: transparent;
       border: none;
-      color: #94a3b8;
+      color: var(--text-muted);
       padding: 8px 16px;
       font-size: 13px;
       font-weight: 600;
@@ -81,118 +95,132 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      gap: 6px;
+      transition: all 0.15s ease-in-out;
     }
-    .btn-template:hover {
-      color: #fff;
+    .tab-btn:hover {
+      color: #ffffff;
       background: rgba(255,255,255,0.06);
     }
-    .btn-template.active {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(0,75,135,0.4);
+    .tab-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(2,132,199,0.5);
     }
-    .tag-recommend {
-      background: #10b981;
-      color: #fff;
+    .pill-badge {
       font-size: 10px;
+      font-weight: 700;
       padding: 2px 6px;
       border-radius: 4px;
-      font-weight: 700;
       text-transform: uppercase;
     }
-    .actions {
+    .pill-rec {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .pill-compare {
+      background: #f59e0b;
+      color: #000;
+    }
+
+    /* Viewport Controls */
+    .controls-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .device-switcher {
+    .viewport-switch {
       display: flex;
-      background: #0f172a;
+      background: #090d16;
       padding: 4px;
       border-radius: 8px;
-      border: 1px solid #334155;
-      gap: 4px;
+      border: 1px solid var(--border-dark);
+      gap: 3px;
     }
-    .btn-device {
+    .btn-vp {
       background: transparent;
       border: none;
-      color: #94a3b8;
+      color: var(--text-muted);
       padding: 6px 12px;
       font-size: 12px;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
-    .btn-device:hover { color: #fff; }
-    .btn-device.active {
+    .btn-vp:hover { color: #ffffff; }
+    .btn-vp.active {
       background: #334155;
-      color: #fff;
+      color: #ffffff;
     }
-    .btn-action {
+    .btn-copy {
       background: #334155;
-      color: #fff;
+      color: #ffffff;
       border: 1px solid #475569;
       padding: 7px 14px;
       font-size: 12px;
       font-weight: 600;
       border-radius: 8px;
       cursor: pointer;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
-    .btn-action:hover {
+    .btn-copy:hover {
       background: #475569;
-      border-color: #64748b;
     }
-    .preview-info {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
+
+    /* Info Bar */
+    .info-bar {
+      background: #172133;
+      border-bottom: 1px solid var(--border-dark);
       padding: 10px 24px;
+      font-size: 12.5px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12.5px;
+      gap: 16px;
+    }
+    .template-desc {
       color: #cbd5e1;
     }
-    .main-workspace {
+    .template-desc strong {
+      color: #38bdf8;
+    }
+
+    /* Main Area */
+    .workspace {
       flex: 1;
       display: flex;
-      align-items: flex-start;
       justify-content: center;
-      padding: 32px 16px;
-      background: #0b1120;
+      align-items: flex-start;
+      padding: 30px 16px;
+      background: #080d1a;
       overflow-y: auto;
     }
-    .frame-wrapper {
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid #334155;
+    
+    /* Single Viewer Frame */
+    .viewer-frame {
+      transition: all 0.25s ease-in-out;
+      border-radius: 12px;
+      border: 1px solid var(--border-dark);
       background: #ffffff;
-      display: flex;
-      flex-direction: column;
-    }
-    .frame-wrapper.desktop {
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
       width: 720px;
     }
-    .frame-wrapper.mobile {
+    .viewer-frame.mobile {
       width: 395px;
       border-radius: 36px;
       border: 10px solid #1e293b;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px #475569;
+      box-shadow: 0 25px 60px -10px rgba(0,0,0,0.9), 0 0 0 1px #475569;
     }
-    .frame-wrapper.full {
-      width: 95%;
-      max-width: 1200px;
+    .viewer-frame.full {
+      width: 96%;
+      max-width: 1300px;
     }
-    .phone-notch {
+    .phone-bar {
       display: none;
       background: #1e293b;
       height: 24px;
@@ -200,96 +228,258 @@
       align-items: center;
       justify-content: center;
     }
-    .frame-wrapper.mobile .phone-notch {
+    .viewer-frame.mobile .phone-bar {
       display: flex;
     }
-    .phone-notch-bar {
-      width: 100px;
+    .phone-bar-pill {
+      width: 90px;
       height: 4px;
       background: #475569;
       border-radius: 3px;
     }
-    iframe {
+    iframe.email-doc {
+      width: 100%;
+      height: 850px;
+      border: none;
+      display: block;
+      background: #ffffff;
+    }
+
+    /* Side by side comparison view */
+    .compare-container {
+      display: none;
+      width: 100%;
+      max-width: 1500px;
+      gap: 24px;
+    }
+    .compare-container.active {
+      display: flex;
+    }
+    .compare-col {
+      flex: 1;
+      background: #1e293b;
+      border-radius: 12px;
+      border: 1px solid var(--border-dark);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .compare-col-header {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .compare-col iframe {
       width: 100%;
       height: 820px;
       border: none;
-      background: #f1f5f9;
-      display: block;
+      background: #ffffff;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="badge-umc">UMC</div>
-      <div>
-        <div class="brand-title">TRUNG TÂM DUYỆT MẪU EMAIL ĐÔN ĐỐC NHIỆM VỤ</div>
-        <div class="brand-subtitle">Bệnh viện Đại học Y Dược TP. Hồ Chí Minh · Hệ thống Thông tin Báo cáo & CRM</div>
-      </div>
-    </div>
 
-    <div class="template-selector">
-      <button class="btn-template active" onclick="switchTemplate('mau-1-modern.html', this, 'Mẫu 1: Executive Medical (Y tế Hiện đại)', 'Phối màu Gradient Xanh UMC, thẻ nhiệm vụ bo tròn, dải thống kê KPI 3 số, nút CTA nổi bật. Chuẩn email doanh nghiệp/bệnh viện quốc tế.')">
-        Mẫu 1: Y tế Hiện đại <span class="tag-recommend">Khuyên dùng</span>
-      </button>
-      <button class="btn-template" onclick="switchTemplate('mau-2-minimal.html', this, 'Mẫu 2: Clean Minimalist (Phong cách Apple / Linear)', 'Thiết kế nền trắng phẳng, font chữ thanh mảnh, đường phân cách mảnh, tối ưu 100% hiển thị trên điện thoại và Gmail Mobile.')">
-        Mẫu 2: Tinh gọn (Apple style)
-      </button>
-      <button class="btn-template" onclick="switchTemplate('mau-3-formal.html', this, 'Mẫu 3: Formal Administration (Thể thức Hành chính Bệnh viện)', 'Chuẩn thể thức công văn Nghị định 30/2020: Quốc hiệu, Tên ĐHYD/BV ĐHYD, Số hiệu đôn đốc, bảng nhiệm vụ hành chính và nơi nhận.')">
-        Mẫu 3: Thể thức Bệnh viện
-      </button>
-      <button class="btn-template" onclick="switchTemplate('mau-4-classic.html', this, 'Mẫu 4: Classic Table (Bảng truyền thống)', 'Mẫu dạng bảng kẻ viền nguyên bản để đối chiếu so sánh sự khác biệt.')">
-        Mẫu 4: Mẫu cũ (Đối chiếu)
-      </button>
-    </div>
-
-    <div class="actions">
-      <div class="device-switcher">
-        <button class="btn-device active" onclick="setDevice('desktop', this)">🖥️ Desktop (660px)</button>
-        <button class="btn-device" onclick="setDevice('mobile', this)">📱 Mobile (375px)</button>
-        <button class="btn-device" onclick="setDevice('full', this)">↔️ Toàn màn hình</button>
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <div class="brand-group">
+        <div class="umc-badge">UMC</div>
+        <div>
+          <div class="brand-title">XEM NHANH &amp; DUYỆT MẪU EMAIL ĐÔN ĐỐC (APPLE STYLE)</div>
+          <div class="brand-sub">Bệnh viện Đại học Y Dược TP.HCM · Đã bổ sung badge "Đã xxx ngày chưa cập nhật" &amp; Tiêu chí gợi ý trung dung</div>
+        </div>
       </div>
-      <a id="btnOpenRaw" href="mau-1-modern.html" target="_blank" class="btn-action">
-        ↗ Mở Tab Mới
-      </a>
+
+      <!-- Template Tabs -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="selectTemplate('minimal', this)">
+          Mẫu 2: Tinh gọn (Apple Style) <span class="pill-badge pill-rec">Đang chọn</span>
+        </button>
+        <button class="tab-btn" onclick="selectTemplate('modern', this)">
+          Mẫu 1: Y tế Hiện đại
+        </button>
+        <button class="tab-btn" onclick="selectTemplate('formal', this)">
+          Mẫu 3: Thể thức Bệnh viện
+        </button>
+        <button class="tab-btn" onclick="selectTemplate('classic', this)">
+          Mẫu 4: Mẫu cũ (Bảng)
+        </button>
+        <button class="tab-btn" onclick="selectCompare(this)">
+          ⚖️ So sánh Apple vs Mẫu Cũ <span class="pill-badge pill-compare">Đối chiếu</span>
+        </button>
+      </nav>
+
+      <!-- Viewport Controls -->
+      <div class="controls-group">
+        <div class="viewport-switch">
+          <button class="btn-vp active" id="btnVpDesk" onclick="setViewport('desktop', this)">🖥️ Desktop (660px)</button>
+          <button class="btn-vp" id="btnVpMob" onclick="setViewport('mobile', this)">📱 Di động (375px)</button>
+          <button class="btn-vp" id="btnVpFull" onclick="setViewport('full', this)">↔️ Toàn cảnh</button>
+        </div>
+        <button class="btn-copy" onclick="copyCurrentHtml()">
+          📋 Sao chép HTML
+        </button>
+      </div>
     </div>
   </header>
 
-  <div class="preview-info">
-    <div id="templateDesc">
-      <strong id="templateTitle" style="color: #38bdf8;">Mẫu 1: Executive Medical (Y tế Hiện đại)</strong> — Phối màu Gradient Xanh UMC, thẻ nhiệm vụ bo tròn, dải thống kê KPI 3 số, nút CTA nổi bật. Chuẩn email doanh nghiệp/bệnh viện quốc tế.
+  <!-- Info Strip -->
+  <div class="info-bar">
+    <div id="infoText" class="template-desc">
+      <strong>Mẫu 2: Clean Minimalist (Phong cách Apple - Đang chọn)</strong> — Thiết kế phẳng thanh lịch, huy hiệu "⏱️ Đã xxx ngày chưa cập nhật" nổi bật cùng cảnh báo quá hạn, các mục gợi ý trung dung hỗ trợ khoa phòng (không áp đặt, không khẳng định sai thực tế quy định bệnh viện), tối ưu 100% hiển thị trên điện thoại.
     </div>
-    <div style="font-size: 11.5px; color: #94a3b8;">
-      Tương thích: Outlook 2016-365, Gmail, Apple Mail, iOS Mail, Samsung Email
+    <div style="font-size: 11.5px; color: #94a3b8; white-space: nowrap;">
+      ✓ Outlook 2016-365 &bull; Gmail Web/App &bull; Apple Mail
     </div>
   </div>
 
-  <main class="main-workspace">
-    <div id="frameWrapper" class="frame-wrapper desktop">
-      <div class="phone-notch"><div class="phone-notch-bar"></div></div>
-      <iframe id="previewFrame" src="mau-1-modern.html" title="Email Preview"></iframe>
+  <!-- Workspace -->
+  <main class="workspace">
+    <!-- Single Viewer Container -->
+    <div id="singleViewer" class="viewer-frame">
+      <div class="phone-bar"><div class="phone-bar-pill"></div></div>
+      <iframe id="mainIframe" class="email-doc" title="Preview Email"></iframe>
+    </div>
+
+    <!-- Side-by-Side Comparison Container -->
+    <div id="compareViewer" class="compare-container">
+      <div class="compare-col">
+        <div class="compare-col-header" style="background: #0284c7; color: #ffffff;">
+          <span>🌟 MẪU APPLE MỚI (CLEAN MINIMALIST)</span>
+          <span style="font-size: 11px; font-weight: normal; opacity: 0.9;">Đã chọn sử dụng</span>
+        </div>
+        <iframe id="compareIframeNew" class="email-doc" title="Mẫu mới"></iframe>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header" style="background: #334155; color: #cbd5e1;">
+          <span>⚠️ MẪU 4 CŨ: BẢNG TRUYỀN THỐNG (ĐỐI CHIẾU)</span>
+          <span style="font-size: 11px; font-weight: normal; opacity: 0.8;">Mẫu bảng nguyên bản</span>
+        </div>
+        <iframe id="compareIframeOld" class="email-doc" title="Mẫu cũ"></iframe>
+      </div>
     </div>
   </main>
 
+  <div id="toast" class="toast">Đã sao chép toàn bộ mã nguồn HTML vào clipboard!</div>
+
   <script>
-    let currentTemplate = 'mau-1-modern.html';
+    // Templates data
+    const templates = {
+      minimal: {
+        title: "Mẫu 2: Clean Minimalist (Phong cách Apple / Linear - Đang chọn)",
+        desc: "Thiết kế phẳng thanh lịch, huy hiệu '⏱️ Đã xxx ngày chưa cập nhật' nổi bật cùng cảnh báo quá hạn, các mục gợi ý trung dung hỗ trợ khoa phòng (không áp đặt, không khẳng định sai thực tế quy định bệnh viện), tối ưu 100% hiển thị trên điện thoại.",
+        html: "<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>[Đôn đốc tiến độ] 3 nhiệm vụ của Khoa Ngoại Tiêu hoá cần cập nhật báo cáo</title>\n</head>\n<body style=\"margin: 0; padding: 32px 10px; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #18181b; line-height: 1.6;\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"620\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 620px; width: 100%; background-color: #ffffff; border-radius: 12px; border: 1px solid #e4e4e7; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); padding: 36px 36px;\">\n          \n          <!-- Header tối giản kiểu Apple -->\n          <tr>\n            <td style=\"padding-bottom: 22px; border-bottom: 1px solid #f4f4f5;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td>\n                    <span style=\"font-size: 11.5px; font-weight: 800; letter-spacing: 0.8px; color: #0284c7; background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 6px;\">\n                      UMC-OFFICE\n                    </span>\n                    <span style=\"font-size: 12px; color: #71717a; margin-left: 8px;\">\n                      Bệnh viện Đại học Y Dược TP.HCM\n                    </span>\n                  </td>\n                  <td align=\"right\">\n                    <span style=\"font-size: 11px; font-weight: 600; color: #71717a; background-color: #f4f4f5; padding: 3px 8px; border-radius: 6px;\">\n                      Đôn đốc tiến độ\n                    </span>\n                  </td>\n                </tr>\n              </table>\n              <div style=\"font-size: 22px; font-weight: 700; color: #09090b; margin-top: 18px; letter-spacing: -0.3px;\">\n                Cập nhật tiến độ nhiệm vụ được giao\n              </div>\n              <div style=\"font-size: 13.5px; color: #71717a; margin-top: 4px;\">\n                Đơn vị phụ trách: <strong style=\"color: #18181b;\">Khoa Ngoại Tiêu hoá</strong>\n              </div>\n            </td>\n          </tr>\n\n          <!-- Nội dung -->\n          <tr>\n            <td style=\"padding-top: 24px;\">\n              <p style=\"margin: 0 0 14px 0; font-size: 14px; color: #3f3f46;\">\n                Kính gửi <strong>Đầu mối phụ trách đơn vị</strong>,\n              </p>\n              <p style=\"margin: 0 0 20px 0; font-size: 13.5px; color: #71717a; line-height: 1.65;\">\n                Hệ thống ghi nhận đơn vị hiện có <strong>3 nhiệm vụ</strong> đã lâu chưa có thông tin cập nhật tiến độ hoặc sắp đến hạn xử lý. Phòng Hành chính kính đề nghị đơn vị rà soát và phản hồi kết quả thực hiện:\n              </p>\n\n              <!-- KPI Strip tóm tắt chỉ số kiểu Apple -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 20px; border-bottom: 1px solid #f4f4f5; padding-bottom: 18px;\">\n                <tr>\n                  <td width=\"33%\" style=\"padding: 0 10px 0 0;\">\n                    <div style=\"font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;\">Tổng nhiệm vụ</div>\n                    <div style=\"font-size: 24px; font-weight: 700; color: #18181b; margin-top: 2px;\">3</div>\n                  </td>\n                  <td width=\"33%\" style=\"padding: 0 10px;\">\n                    <div style=\"font-size: 11px; font-weight: 600; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;\">Lâu chưa cập nhật</div>\n                    <div style=\"font-size: 24px; font-weight: 700; color: #b45309; margin-top: 2px;\">3</div>\n                  </td>\n                  <td width=\"34%\" style=\"padding: 0 0 0 10px;\">\n                    <div style=\"font-size: 11px; font-weight: 600; color: #e11d48; text-transform: uppercase; letter-spacing: 0.5px;\">Quá hạn xử lý</div>\n                    <div style=\"font-size: 24px; font-weight: 700; color: #e11d48; margin-top: 2px;\">2</div>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Danh sách nhiệm vụ phẳng -->\n              <div style=\"margin-bottom: 24px;\">\n                \n        <div style=\"padding: 18px 0; border-bottom: 1px solid #f4f4f5;\">\n          <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n            <tr>\n              <td valign=\"top\" style=\"vertical-align: top;\">\n                <div style=\"font-size: 11px; font-weight: 700; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 4px;\">\n                  NHIỆM VỤ 01\n                </div>\n                <a href=\"http://localhost:3000/dashboard/work/items/sample-1\" style=\"font-size: 15px; font-weight: 600; color: #09090b; text-decoration: none; line-height: 1.45; display: block;\">\n                  Triển khai kỹ thuật phẫu thuật nội soi 3D ít xâm lấn và hoàn tất quy trình chuẩn\n                </a>\n                <div style=\"margin-top: 9px; line-height: 1.8;\">\n                  \n        <span style=\"display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 45 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        📅 Sắp đến hạn (còn 6 ngày)\n      </span>\n    \n                  <span style=\"font-size: 12px; color: #71717a; display: inline-block; margin-left: 4px;\">\n                    &bull; Hạn: <strong style=\"color: #18181b;\">15/10/2026</strong> &bull; Trạng thái: Đang thực hiện\n                  </span>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n      \n        <div style=\"padding: 18px 0; border-bottom: 1px solid #f4f4f5;\">\n          <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n            <tr>\n              <td valign=\"top\" style=\"vertical-align: top;\">\n                <div style=\"font-size: 11px; font-weight: 700; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 4px;\">\n                  NHIỆM VỤ 02\n                </div>\n                <a href=\"http://localhost:3000/dashboard/work/items/sample-2\" style=\"font-size: 15px; font-weight: 600; color: #09090b; text-decoration: none; line-height: 1.45; display: block;\">\n                  Báo cáo nghiệm thu đề tài cấp cơ sở về hiệu quả hồi phục sớm sau phẫu thuật (ERAS)\n                </a>\n                <div style=\"margin-top: 9px; line-height: 1.8;\">\n                  \n        <span style=\"display: inline-block; background-color: #fff1f2; color: #be123c; border: 1px solid #fecdd3; padding: 2.5px 9px; border-radius: 9999px; font-weight: 700; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 115 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        ⚠️ Quá hạn 8 ngày\n      </span>\n    \n                  <span style=\"font-size: 12px; color: #71717a; display: inline-block; margin-left: 4px;\">\n                    &bull; Hạn: <strong style=\"color: #18181b;\">01/10/2026</strong> &bull; Trạng thái: Đang thực hiện\n                  </span>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n      \n        <div style=\"padding: 18px 0; border-bottom: 1px solid #f4f4f5;\">\n          <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n            <tr>\n              <td valign=\"top\" style=\"vertical-align: top;\">\n                <div style=\"font-size: 11px; font-weight: 700; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 4px;\">\n                  NHIỆM VỤ 03\n                </div>\n                <a href=\"http://localhost:3000/dashboard/work/items/sample-3\" style=\"font-size: 15px; font-weight: 600; color: #09090b; text-decoration: none; line-height: 1.45; display: block;\">\n                  Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV\n                </a>\n                <div style=\"margin-top: 9px; line-height: 1.8;\">\n                  \n        <span style=\"display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 68 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        ⚠️ Quá hạn 19 ngày\n      </span>\n    \n                  <span style=\"font-size: 12px; color: #71717a; display: inline-block; margin-left: 4px;\">\n                    &bull; Hạn: <strong style=\"color: #18181b;\">20/09/2026</strong> &bull; Trạng thái: Chưa thực hiện\n                  </span>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n      \n              </div>\n\n              <!-- Hộp gợi ý trung dung, phong cách Apple hỗ trợ phòng ban -->\n              <div style=\"background-color: #fafafa; border: 1px solid #f4f4f5; border-radius: 8px; padding: 18px 20px; margin-bottom: 28px;\">\n                <div style=\"font-size: 13px; font-weight: 600; color: #18181b; margin-bottom: 8px;\">\n                  💡 Gợi ý nội dung khi phản hồi tiến độ:\n                </div>\n                <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size: 13px; color: #52525b; line-height: 1.65;\">\n                  <tr>\n                    <td width=\"16\" valign=\"top\" style=\"color: #a1a1aa; padding: 3px 0;\">&bull;</td>\n                    <td style=\"padding: 3px 0;\"><strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.</td>\n                  </tr>\n                  <tr>\n                    <td width=\"16\" valign=\"top\" style=\"color: #a1a1aa; padding: 3px 0;\">&bull;</td>\n                    <td style=\"padding: 3px 0;\"><strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.</td>\n                  </tr>\n                  <tr>\n                    <td width=\"16\" valign=\"top\" style=\"color: #a1a1aa; padding: 3px 0;\">&bull;</td>\n                    <td style=\"padding: 3px 0;\"><strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.</td>\n                  </tr>\n                </table>\n              </div>\n\n              <!-- Nút CTA đen tuyền tối giản -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 28px;\">\n                <tr>\n                  <td>\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                      <tr>\n                        <td bgcolor=\"#09090b\" style=\"background-color: #09090b; border-radius: 6px; padding: 11px 24px;\">\n                          <a href=\"http://localhost:3000/dashboard/work/items\" style=\"color: #fafafa !important; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-block;\">\n                            Mở UMC-Office cập nhật báo cáo &rarr;\n                          </a>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Chân trang tối giản -->\n              <div style=\"padding-top: 20px; border-top: 1px solid #f4f4f5; font-size: 11.5px; color: #a1a1aa; line-height: 1.6;\">\n                Phòng Hành chính &middot; Bệnh viện Đại học Y Dược TP.HCM &middot; 215 Hồng Bàng, Phường Chợ Lớn, TP.HCM<br>\n                Hỗ trợ kỹ thuật &amp; quản lý công việc: ĐT nội bộ 5421 &middot; hanhchinh@umc.edu.vn\n              </div>\n            </td>\n          </tr>\n\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>"
+      },
+      modern: {
+        title: "Mẫu 1: Executive Medical (Y tế Hiện đại UMC)",
+        desc: "Dải màu Gradient Xanh UMC, 3 thẻ KPI tóm tắt, danh sách thẻ nhiệm vụ bo tròn có đường viền chỉ báo (đỏ: quá hạn, xanh: sắp tới hạn), gợi ý phản hồi trung dung, nút CTA nổi bật.",
+        html: "<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>[UMC-Office] Đôn đốc tiến độ 3 nhiệm vụ của Khoa Ngoại Tiêu hoá cần cập nhật báo cáo</title>\n</head>\n<body style=\"margin: 0; padding: 24px 10px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.6;\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width: 100%; border-collapse: collapse;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Khung chứa email chuẩn 660px -->\n        <table role=\"presentation\" width=\"660\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 660px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);\">\n          \n          <!-- Header chuẩn nhận diện UMC Hiện đại -->\n          <tr>\n            <td bgcolor=\"#004b87\" style=\"background-color: #004b87; padding: 26px 30px; color: #ffffff;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td>\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                      <tr>\n                        <td bgcolor=\"#ffffff\" style=\"background-color: #ffffff; padding: 5px 12px; border-radius: 6px; font-weight: 900; font-size: 13px; color: #004b87; letter-spacing: 1px;\">\n                          UMC\n                        </td>\n                        <td style=\"padding-left: 12px;\">\n                          <div style=\"font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #bae6fd; text-transform: uppercase;\">\n                            BỆNH VIỆN ĐẠI HỌC Y DƯỢC TP. HỒ CHÍ MINH\n                          </div>\n                          <div style=\"font-size: 12px; color: #e0f2fe; margin-top: 2px;\">\n                            PHÒNG HÀNH CHÍNH &middot; HỆ THỐNG ĐIỀU HÀNH UMC-OFFICE\n                          </div>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <div style=\"margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15);\">\n                <span style=\"display: inline-block; background-color: rgba(255,255,255,0.18); color: #ffffff; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;\">\n                  VĂN BẢN ĐÔN ĐỐC TIẾN ĐỘ\n                </span>\n                <div style=\"font-size: 20px; font-weight: 800; color: #ffffff; line-height: 1.3; letter-spacing: -0.2px;\">\n                  Thông Báo Đôn Đốc Thực Hiện Nhiệm Vụ\n                </div>\n              </div>\n            </td>\n          </tr>\n\n          <!-- Thân email -->\n          <tr>\n            <td style=\"padding: 28px 30px;\">\n              <div style=\"font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px;\">\n                Kính gửi: Đầu mối phụ trách công việc &middot; Khoa Ngoại Tiêu hoá,\n              </div>\n\n              <p style=\"margin: 0 0 20px 0; font-size: 13.5px; color: #475569; line-height: 1.6;\">\n                Phòng Hành chính trân trọng gửi thông báo danh sách <strong>3 nhiệm vụ</strong> được giao của đơn vị hiện đang cần cập nhật tiến độ hoặc sắp đến hạn xử lý theo chỉ đạo của Ban Giám đốc Bệnh viện:\n              </p>\n\n              <!-- KPI Strip tóm tắt chỉ số -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 22px;\">\n                <tr>\n                  <td width=\"32%\" bgcolor=\"#f8fafc\" style=\"background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; text-align: center;\">\n                    <div style=\"font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;\">Tổng nhiệm vụ</div>\n                    <div style=\"font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 2px;\">3</div>\n                  </td>\n                  <td width=\"2%\">&nbsp;</td>\n                  <td width=\"32%\" bgcolor=\"#fff1f2\" style=\"background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 12px 14px; text-align: center;\">\n                    <div style=\"font-size: 11px; font-weight: 700; color: #9f1239; text-transform: uppercase; letter-spacing: 0.5px;\">Quá hạn xử lý</div>\n                    <div style=\"font-size: 22px; font-weight: 800; color: #be123c; margin-top: 2px;\">2</div>\n                  </td>\n                  <td width=\"2%\">&nbsp;</td>\n                  <td width=\"32%\" bgcolor=\"#f0f9ff\" style=\"background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 12px 14px; text-align: center;\">\n                    <div style=\"font-size: 11px; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;\">Chờ cập nhật / Hạn tới</div>\n                    <div style=\"font-size: 22px; font-weight: 800; color: #0284c7; margin-top: 2px;\">1</div>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Danh sách Thẻ Nhiệm Vụ -->\n              \n        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 12px; background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #0284c7; border-radius: 8px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);\">\n          <tr>\n            <td style=\"padding: 16px 18px;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td width=\"26\" valign=\"top\" style=\"vertical-align: top; padding-right: 10px;\">\n                    <div style=\"background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 700; width: 26px; height: 26px; line-height: 26px; border-radius: 50%; text-align: center;\">\n                      1\n                    </div>\n                  </td>\n                  <td valign=\"top\" style=\"vertical-align: top;\">\n                    <a href=\"http://localhost:3000/dashboard/work/items/sample-1\" style=\"font-size: 14.5px; font-weight: 700; color: #0369a1; text-decoration: none; line-height: 1.45; display: block;\">\n                      Triển khai kỹ thuật phẫu thuật nội soi 3D ít xâm lấn và hoàn tất quy trình chuẩn\n                    </a>\n                    <div style=\"margin-top: 8px;\">\n                      \n        <span style=\"display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 45 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        📅 Sắp đến hạn (còn 6 ngày)\n      </span>\n    \n                      <span style=\"font-size: 12px; color: #64748b; margin-left: 8px;\">\n                        &bull; Hạn: <strong style=\"color: #0f172a;\">15/10/2026</strong> &bull; Trạng thái: <strong style=\"color: #334155;\">Đang thực hiện</strong>\n                      </span>\n                    </div>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n        </table>\n      \n        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 12px; background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #e11d48; border-radius: 8px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);\">\n          <tr>\n            <td style=\"padding: 16px 18px;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td width=\"26\" valign=\"top\" style=\"vertical-align: top; padding-right: 10px;\">\n                    <div style=\"background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 700; width: 26px; height: 26px; line-height: 26px; border-radius: 50%; text-align: center;\">\n                      2\n                    </div>\n                  </td>\n                  <td valign=\"top\" style=\"vertical-align: top;\">\n                    <a href=\"http://localhost:3000/dashboard/work/items/sample-2\" style=\"font-size: 14.5px; font-weight: 700; color: #0369a1; text-decoration: none; line-height: 1.45; display: block;\">\n                      Báo cáo nghiệm thu đề tài cấp cơ sở về hiệu quả hồi phục sớm sau phẫu thuật (ERAS)\n                    </a>\n                    <div style=\"margin-top: 8px;\">\n                      \n        <span style=\"display: inline-block; background-color: #fff1f2; color: #be123c; border: 1px solid #fecdd3; padding: 2.5px 9px; border-radius: 9999px; font-weight: 700; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 115 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        ⚠️ Quá hạn 8 ngày\n      </span>\n    \n                      <span style=\"font-size: 12px; color: #64748b; margin-left: 8px;\">\n                        &bull; Hạn: <strong style=\"color: #0f172a;\">01/10/2026</strong> &bull; Trạng thái: <strong style=\"color: #334155;\">Đang thực hiện</strong>\n                      </span>\n                    </div>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n        </table>\n      \n        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 12px; background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #e11d48; border-radius: 8px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);\">\n          <tr>\n            <td style=\"padding: 16px 18px;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td width=\"26\" valign=\"top\" style=\"vertical-align: top; padding-right: 10px;\">\n                    <div style=\"background-color: #f1f5f9; color: #475569; font-size: 11px; font-weight: 700; width: 26px; height: 26px; line-height: 26px; border-radius: 50%; text-align: center;\">\n                      3\n                    </div>\n                  </td>\n                  <td valign=\"top\" style=\"vertical-align: top;\">\n                    <a href=\"http://localhost:3000/dashboard/work/items/sample-3\" style=\"font-size: 14.5px; font-weight: 700; color: #0369a1; text-decoration: none; line-height: 1.45; display: block;\">\n                      Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV\n                    </a>\n                    <div style=\"margin-top: 8px;\">\n                      \n        <span style=\"display: inline-block; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n          ⏱️ Đã 68 ngày chưa cập nhật\n        </span>\n      \n      <span style=\"display: inline-block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2.5px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px; white-space: nowrap; margin-right: 6px; margin-bottom: 4px;\">\n        ⚠️ Quá hạn 19 ngày\n      </span>\n    \n                      <span style=\"font-size: 12px; color: #64748b; margin-left: 8px;\">\n                        &bull; Hạn: <strong style=\"color: #0f172a;\">20/09/2026</strong> &bull; Trạng thái: <strong style=\"color: #334155;\">Chưa thực hiện</strong>\n                      </span>\n                    </div>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n        </table>\n      \n\n              <!-- Khung Gợi ý nội dung trung dung, hỗ trợ phòng ban -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 22px 0; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden;\">\n                <tr>\n                  <td style=\"padding: 18px 20px;\">\n                    <div style=\"font-size: 12.5px; font-weight: 800; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;\">\n                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:\n                    </div>\n                    <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size: 12.5px; color: #334155; line-height: 1.65;\">\n                      <tr>\n                        <td width=\"20\" valign=\"top\" style=\"color: #004b87; font-weight: 700; padding: 3px 0;\">&bull;</td>\n                        <td style=\"padding: 3px 0;\"><strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.</td>\n                      </tr>\n                      <tr>\n                        <td width=\"20\" valign=\"top\" style=\"color: #004b87; font-weight: 700; padding: 3px 0;\">&bull;</td>\n                        <td style=\"padding: 3px 0;\"><strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.</td>\n                      </tr>\n                      <tr>\n                        <td width=\"20\" valign=\"top\" style=\"color: #004b87; font-weight: 700; padding: 3px 0;\">&bull;</td>\n                        <td style=\"padding: 3px 0;\"><strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Nút CTA -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 24px 0 12px 0;\">\n                <tr>\n                  <td align=\"center\">\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                      <tr>\n                        <td bgcolor=\"#004b87\" style=\"background-color: #004b87; border-radius: 8px; padding: 13px 32px; box-shadow: 0 4px 6px -1px rgba(0, 75, 135, 0.3);\">\n                          <a href=\"http://localhost:3000/dashboard/work/items\" style=\"color: #ffffff !important; text-decoration: none; font-size: 14px; font-weight: 700; display: inline-block; letter-spacing: 0.3px;\">\n                            Truy cập UMC-Office để cập nhật tiến độ &rarr;\n                          </a>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <p style=\"font-size: 12.5px; color: #64748b; margin-top: 20px; font-style: italic; text-align: center;\">\n                Trân trọng cảm ơn sự phối hợp kịp thời của Quý đơn vị.\n              </p>\n            </td>\n          </tr>\n\n          <!-- Chân trang -->\n          <tr>\n            <td bgcolor=\"#f8fafc\" style=\"background-color: #f8fafc; padding: 20px 30px; font-size: 12px; color: #475569; border-top: 1px solid #e2e8f0; line-height: 1.65;\">\n              <strong style=\"color: #0f172a; text-transform: uppercase;\">Phòng Hành chính &middot; Bệnh viện Đại học Y Dược TP. Hồ Chí Minh</strong><br>\n              &bull; Trụ sở: <strong>215 Hồng Bàng, Phường Chợ Lớn, TP. Hồ Chí Minh</strong><br>\n              &bull; Email tiếp nhận: <a href=\"mailto:hanhchinh@umc.edu.vn\" style=\"color: #004b87; text-decoration: none; font-weight: 600;\">hanhchinh@umc.edu.vn</a><br>\n              &bull; Điện thoại nội bộ: <strong>5421</strong> (Phụ trách Quản lý Công việc) hoặc <strong>5324</strong> (Thư ký Phòng)\n            </td>\n          </tr>\n\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>"
+      },
+      formal: {
+        title: "Mẫu 3: Formal Administration (Thể thức Hành chính Bệnh viện)",
+        desc: "Chuẩn thể thức văn bản hành chính theo quy chuẩn: Quốc hiệu Tiêu ngữ, Tên ĐHYD TP.HCM / BV ĐHYD, Số hiệu đôn đốc, bảng nhiệm vụ kẻ viền quy củ và nơi nhận.",
+        html: "<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>[THÔNG BÁO ĐÔN ĐỐC] Tiến độ thực hiện nhiệm vụ được giao đối với Khoa Ngoại Tiêu hoá</title>\n</head>\n<body style=\"margin: 0; padding: 24px 10px; background-color: #e2e8f0; font-family: 'Times New Roman', Times, serif, -apple-system; color: #0f172a; line-height: 1.6;\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"670\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 670px; width: 100%; background-color: #ffffff; border: 1px solid #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 36px 36px;\">\n          \n          <!-- Thể thức cơ quan ban hành -->\n          <tr>\n            <td>\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td width=\"55%\" align=\"center\" valign=\"top\" style=\"vertical-align: top; font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.35;\">\n                    <div>ĐẠI HỌC Y DƯỢC TP. HỒ CHÍ MINH</div>\n                    <div style=\"font-weight: 700; color: #004b87;\">BỆNH VIỆN ĐẠI HỌC Y DƯỢC</div>\n                    <div style=\"font-weight: 700; margin-top: 1px;\">PHÒNG HÀNH CHÍNH</div>\n                    <div style=\"width: 100px; height: 1px; background-color: #004b87; margin: 4px auto 0 auto;\"></div>\n                  </td>\n                  <td width=\"45%\" align=\"center\" valign=\"top\" style=\"vertical-align: top; font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.35;\">\n                    <div style=\"font-weight: 700;\">CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>\n                    <div style=\"font-weight: 700; font-size: 11.5px;\">Độc lập - Tự do - Hạnh phúc</div>\n                    <div style=\"width: 120px; height: 1px; background-color: #334155; margin: 4px auto 0 auto;\"></div>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Tiêu đề văn bản -->\n              <div style=\"text-align: center; margin: 26px 0 16px 0; font-family: Arial, sans-serif;\">\n                <div style=\"font-size: 16px; font-weight: 800; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px;\">\n                  THÔNG BÁO ĐÔN ĐỐC TIẾN ĐỘ THỰC HIỆN NHIỆM VỤ\n                </div>\n                <div style=\"font-size: 12.5px; font-style: italic; color: #64748b; margin-top: 3px;\">\n                  (Trích xuất từ Hệ thống Quản lý công việc UMC-Office)\n                </div>\n              </div>\n\n              <!-- Kính gửi -->\n              <div style=\"font-family: Arial, sans-serif; font-size: 13.5px; margin-bottom: 16px; line-height: 1.6;\">\n                <strong>Kính gửi:</strong> Đầu mối phụ trách công việc &middot; Khoa Ngoại Tiêu hoá,\n              </div>\n\n              <p style=\"font-family: Arial, sans-serif; font-size: 13px; color: #334155; margin: 0 0 16px 0; line-height: 1.6; text-align: justify;\">\n                Căn cứ chỉ đạo của Ban Giám đốc Bệnh viện về việc theo dõi và đôn đốc tiến độ thực hiện các nhiệm vụ được phân công; Phòng Hành chính thông báo danh mục <strong>3 nhiệm vụ</strong> của đơn vị hiện đang đến hạn hoặc quá hạn cần cập nhật báo cáo:\n              </p>\n\n              <!-- Bảng danh mục công việc -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-family: Arial, sans-serif;\">\n                <thead>\n                  <tr bgcolor=\"#f1f5f9\" style=\"background-color: #f1f5f9; font-size: 11.5px; font-weight: 700; color: #1e293b; text-transform: uppercase;\">\n                    <th style=\"padding: 9px 8px; border: 1px solid #cbd5e1; width: 34px;\">STT</th>\n                    <th style=\"padding: 9px 12px; border: 1px solid #cbd5e1; text-align: left;\">Nội dung nhiệm vụ</th>\n                    <th style=\"padding: 9px 8px; border: 1px solid #cbd5e1; width: 85px;\">Hạn hoàn thành</th>\n                    <th style=\"padding: 9px 8px; border: 1px solid #cbd5e1; width: 95px;\">Tiến độ</th>\n                    <th style=\"padding: 9px 8px; border: 1px solid #cbd5e1; width: 110px;\">Tình trạng đôn đốc</th>\n                  </tr>\n                </thead>\n                <tbody>\n                  \n        <tr>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; color: #475569; font-weight: 600;\">\n            1\n          </td>\n          <td style=\"padding: 10px 12px; border: 1px solid #cbd5e1; font-size: 13px;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-1\" style=\"color: #004b87; font-weight: 700; text-decoration: none;\">\n              Triển khai kỹ thuật phẫu thuật nội soi 3D ít xâm lấn và hoàn tất quy trình chuẩn\n            </a>\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; white-space: nowrap; color: #0f172a; font-weight: 600;\">\n            15/10/2026\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; color: #334155;\">\n            Đang thực hiện\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; background-color: #f0fdf4; color: #0369a1; font-weight: 700;\">\n            Đã 45 ngày chưa cập nhật\n          </td>\n        </tr>\n      \n        <tr>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; color: #475569; font-weight: 600;\">\n            2\n          </td>\n          <td style=\"padding: 10px 12px; border: 1px solid #cbd5e1; font-size: 13px;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-2\" style=\"color: #004b87; font-weight: 700; text-decoration: none;\">\n              Báo cáo nghiệm thu đề tài cấp cơ sở về hiệu quả hồi phục sớm sau phẫu thuật (ERAS)\n            </a>\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; white-space: nowrap; color: #0f172a; font-weight: 600;\">\n            01/10/2026\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; color: #334155;\">\n            Đang thực hiện\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; background-color: #fef2f2; color: #991b1b; font-weight: 700;\">\n            Đã 115 ngày chưa cập nhật &bull; Quá hạn\n          </td>\n        </tr>\n      \n        <tr>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; color: #475569; font-weight: 600;\">\n            3\n          </td>\n          <td style=\"padding: 10px 12px; border: 1px solid #cbd5e1; font-size: 13px;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-3\" style=\"color: #004b87; font-weight: 700; text-decoration: none;\">\n              Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV\n            </a>\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12.5px; white-space: nowrap; color: #0f172a; font-weight: 600;\">\n            20/09/2026\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; color: #334155;\">\n            Chưa thực hiện\n          </td>\n          <td align=\"center\" style=\"padding: 10px 8px; border: 1px solid #cbd5e1; font-size: 12px; white-space: nowrap; background-color: #fef2f2; color: #991b1b; font-weight: 700;\">\n            Đã 68 ngày chưa cập nhật &bull; Quá hạn\n          </td>\n        </tr>\n      \n                </tbody>\n              </table>\n\n              <!-- Gợi ý thực hiện trung dung -->\n              <div style=\"font-family: Arial, sans-serif; font-size: 12.5px; color: #334155; line-height: 1.65; margin-bottom: 24px; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;\">\n                <strong style=\"color: #004b87;\">💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:</strong><br>\n                &bull; <strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.<br>\n                &bull; <strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.<br>\n                &bull; <strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.\n              </div>\n\n              <!-- Nút liên kết -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 28px;\">\n                <tr>\n                  <td align=\"center\">\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                      <tr>\n                        <td bgcolor=\"#004b87\" style=\"background-color: #004b87; border-radius: 4px; padding: 11px 26px;\">\n                          <a href=\"http://localhost:3000/dashboard/work/items\" style=\"color: #ffffff !important; text-decoration: none; font-size: 13px; font-weight: 700; font-family: Arial, sans-serif;\">\n                            TRUY CẬP HỆ THỐNG UMC-OFFICE &rarr;\n                          </a>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Ký tên ban hành -->\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-family: Arial, sans-serif; margin-top: 20px;\">\n                <tr>\n                  <td width=\"50%\">&nbsp;</td>\n                  <td width=\"50%\" align=\"center\">\n                    <div style=\"font-size: 12.5px; font-weight: 700; color: #004b87; text-transform: uppercase;\">\n                      PHÒNG HÀNH CHÍNH\n                    </div>\n                    <div style=\"font-size: 11.5px; font-style: italic; color: #64748b; margin-top: 3px;\">\n                      (Ký số &amp; Ban hành qua UMC-Office)\n                    </div>\n                  </td>\n                </tr>\n              </table>\n\n            </td>\n          </tr>\n\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>"
+      },
+      classic: {
+        title: "Mẫu 4: Classic Table (Dạng bảng cũ)",
+        desc: "Mẫu email nguyên bản dạng bảng kẻ viền truyền thống để đối chiếu so sánh trực tiếp trước và sau khi thiết kế lại.",
+        html: "<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>[UMC-Office] Đôn đốc tiến độ 3 nhiệm vụ của Khoa Ngoại Tiêu hoá cần cập nhật báo cáo</title>\n</head>\n<body style=\"margin: 0; padding: 24px 10px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.6;\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width: 100%; border-collapse: collapse;\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"660\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 660px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);\">\n          \n          <tr>\n            <td bgcolor=\"#004b87\" style=\"background-color: #004b87; padding: 24px 28px; color: #ffffff;\">\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"left\">\n                    <div style=\"font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #bae6fd; text-transform: uppercase;\">\n                      BỆNH VIỆN ĐẠI HỌC Y DƯỢC TP. HỒ CHÍ MINH\n                    </div>\n                    <div style=\"font-size: 17px; font-weight: 700; color: #ffffff; margin-top: 4px; letter-spacing: 0.3px; line-height: 1.35;\">\n                      PHÒNG HÀNH CHÍNH &middot; HỆ THỐNG QUẢN LÝ CÔNG VIỆC UMC-OFFICE\n                    </div>\n                    <div style=\"font-size: 12.5px; color: #e0f2fe; margin-top: 4px;\">\n                      Thông báo đôn đốc tiến độ thực hiện nhiệm vụ được giao\n                    </div>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"padding: 26px 28px;\">\n              <div style=\"font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 12px;\">\n                Kính gửi: Đầu mối phụ trách công việc &middot; Khoa Ngoại Tiêu hoá,\n              </div>\n\n              <p style=\"margin: 0 0 16px 0; font-size: 13.5px; color: #334155; line-height: 1.6;\">\n                Phòng Hành chính xin thông báo danh sách <strong>3 nhiệm vụ</strong> của đơn vị hiện đang sắp đến hạn hoặc cần cập nhật tiến độ định kỳ theo chỉ đạo của Lãnh đạo Bệnh viện:\n              </p>\n\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width: 100%; border-collapse: collapse; margin: 18px 0; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;\">\n                <thead>\n                  <tr bgcolor=\"#e2e8f0\" style=\"background-color: #e2e8f0; color: #475569; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;\">\n                    <th style=\"padding: 10px 14px; text-align: center; width: 36px; font-weight: 700;\">STT</th>\n                    <th style=\"padding: 10px 14px; text-align: left; font-weight: 700;\">Nội dung nhiệm vụ</th>\n                    <th style=\"padding: 10px 14px; text-align: right; font-weight: 700;\">Tình trạng hạn</th>\n                  </tr>\n                </thead>\n                <tbody>\n                  \n        <tr>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top; width: 36px; text-align: center; color: #64748b; font-weight: 600;\">\n            1\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-1\" style=\"color: #0369a1; text-decoration: none; font-weight: 700; font-size: 14px; line-height: 1.45; display: block;\">\n              Triển khai kỹ thuật phẫu thuật nội soi 3D ít xâm lấn và hoàn tất quy trình chuẩn\n            </a>\n            <div style=\"font-size: 12px; color: #64748b; margin-top: 5px;\">\n              Trạng thái: <span style=\"color: #334155; font-weight: 600;\">Đang thực hiện</span> &middot; Hạn xử lý: <span style=\"color: #0f172a; font-weight: 600;\">15/10/2026</span>\n            </div>\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 12px; vertical-align: top; text-align: right; white-space: nowrap;\">\n            <span style=\"display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 600; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a;\">\n              Sắp đến hạn (còn 6 ngày)\n            </span>\n          </td>\n        </tr>\n      \n        <tr>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top; width: 36px; text-align: center; color: #64748b; font-weight: 600;\">\n            2\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-2\" style=\"color: #0369a1; text-decoration: none; font-weight: 700; font-size: 14px; line-height: 1.45; display: block;\">\n              Báo cáo nghiệm thu đề tài cấp cơ sở về hiệu quả hồi phục sớm sau phẫu thuật (ERAS)\n            </a>\n            <div style=\"font-size: 12px; color: #64748b; margin-top: 5px;\">\n              Trạng thái: <span style=\"color: #334155; font-weight: 600;\">Đang thực hiện</span> &middot; Hạn xử lý: <span style=\"color: #0f172a; font-weight: 600;\">01/10/2026</span>\n            </div>\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 12px; vertical-align: top; text-align: right; white-space: nowrap;\">\n            <span style=\"display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 600; background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;\">\n              Đã quá hạn 8 ngày\n            </span>\n          </td>\n        </tr>\n      \n        <tr>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top; width: 36px; text-align: center; color: #64748b; font-weight: 600;\">\n            3\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top;\">\n            <a href=\"http://localhost:3000/dashboard/work/items/sample-3\" style=\"color: #0369a1; text-decoration: none; font-weight: 700; font-size: 14px; line-height: 1.45; display: block;\">\n              Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV\n            </a>\n            <div style=\"font-size: 12px; color: #64748b; margin-top: 5px;\">\n              Trạng thái: <span style=\"color: #334155; font-weight: 600;\">Chưa thực hiện</span> &middot; Hạn xử lý: <span style=\"color: #0f172a; font-weight: 600;\">20/09/2026</span>\n            </div>\n          </td>\n          <td style=\"padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 12px; vertical-align: top; text-align: right; white-space: nowrap;\">\n            <span style=\"display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 600; background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;\">\n              Đã quá hạn 19 ngày\n            </span>\n          </td>\n        </tr>\n      \n                </tbody>\n              </table>\n\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 24px 0;\">\n                <tr>\n                  <td bgcolor=\"#f8fafc\" style=\"background-color: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #004b87; padding: 18px 20px; border-radius: 4px;\">\n                    <div style=\"font-size: 13px; font-weight: 700; color: #004b87; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;\">\n                      💡 GỢI Ý NỘI DUNG KHI PHẢN HỒI TIẾN ĐỘ:\n                    </div>\n                    <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size: 13px; color: #1e293b; line-height: 1.65;\">\n                      <tr>\n                        <td style=\"padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;\">&bull;</td>\n                        <td style=\"padding: 4px 0; vertical-align: top;\">\n                          <strong>Tóm tắt kết quả:</strong> Nêu ngắn gọn nội dung công việc hoặc sản phẩm đơn vị đã triển khai trong kỳ.\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;\">&bull;</td>\n                        <td style=\"padding: 4px 0; vertical-align: top;\">\n                          <strong>Mốc thời gian &amp; văn bản (nếu có):</strong> Đơn vị có thể ghi chú mốc dự kiến hoàn thành hoặc số hiệu văn bản liên quan để thuận tiện theo dõi.\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding: 4px 0; vertical-align: top; width: 22px; font-weight: 700; color: #004b87;\">&bull;</td>\n                        <td style=\"padding: 4px 0; vertical-align: top;\">\n                          <strong>Hỗ trợ &amp; phối hợp:</strong> Trường hợp có khó khăn hoặc cần các khoa/phòng liên quan cùng phối hợp giải quyết, đơn vị có thể nêu rõ để Ban Giám đốc và các phòng chức năng kịp thời hỗ trợ.\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 24px 0 16px 0;\">\n                <tr>\n                  <td align=\"center\">\n                    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                      <tr>\n                        <td bgcolor=\"#004b87\" style=\"background-color: #004b87; border-radius: 6px; padding: 12px 28px;\">\n                          <a href=\"http://localhost:3000/dashboard/work/items\" style=\"color: #ffffff !important; text-decoration: none; font-size: 13.5px; font-weight: 700; display: inline-block;\">\n                            Truy cập phân hệ Quản lý công việc (UMC-Office)\n                          </a>\n                        </td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <p style=\"font-size: 12.5px; color: #64748b; margin-top: 20px; font-style: italic; text-align: center;\">\n                Trân trọng cảm ơn sự phối hợp kịp thời của Quý đơn vị.\n              </p>\n            </td>\n          </tr>\n\n          <tr>\n            <td bgcolor=\"#f8fafc\" style=\"background-color: #f8fafc; padding: 20px 28px; font-size: 12px; color: #475569; border-top: 1px solid #e2e8f0; line-height: 1.65;\">\n              <strong style=\"color: #0f172a; text-transform: uppercase;\">Phòng Hành chính &middot; Bệnh viện Đại học Y Dược TP. Hồ Chí Minh</strong><br>\n              &bull; Địa chỉ: <strong>215 Hồng Bàng, Phường Chợ Lớn, TP. Hồ Chí Minh</strong><br>\n              &bull; Email tiếp nhận: <a href=\"mailto:hanhchinh@umc.edu.vn\" style=\"color: #004b87; text-decoration: none; font-weight: 600;\">hanhchinh@umc.edu.vn</a><br>\n              &bull; Điện thoại nội bộ: <strong>5421</strong> (Phụ trách Quản lý Công việc) hoặc <strong>5324</strong> (Thư ký Phòng)\n            </td>\n          </tr>\n\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>"
+      }
+    };
 
-    function switchTemplate(fileName, btn, title, desc) {
-      currentTemplate = fileName;
-      document.querySelectorAll('.btn-template').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('previewFrame').src = fileName;
-      document.getElementById('btnOpenRaw').href = fileName;
-      document.getElementById('templateTitle').textContent = title;
-      document.getElementById('templateDesc').innerHTML = '<strong style="color: #38bdf8;">' + title + '</strong> — ' + desc;
+    let activeKey = 'minimal';
+    let isCompareMode = false;
+
+    function renderToIframe(iframeId, htmlContent) {
+      const doc = document.getElementById(iframeId);
+      if (!doc) return;
+      const iframeDoc = doc.contentWindow || doc.contentDocument.document || doc.contentDocument;
+      iframeDoc.document.open();
+      iframeDoc.document.write(htmlContent);
+      iframeDoc.document.close();
     }
 
-    function setDevice(device, btn) {
-      document.querySelectorAll('.btn-device').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const wrapper = document.getElementById('frameWrapper');
-      wrapper.className = 'frame-wrapper ' + device;
+    function selectTemplate(key, btn) {
+      isCompareMode = false;
+      activeKey = key;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('singleViewer').style.display = 'block';
+      document.getElementById('compareViewer').classList.remove('active');
+      document.querySelector('.viewport-switch').style.display = 'flex';
+
+      const t = templates[key];
+      document.getElementById('infoText').innerHTML = '<strong>' + t.title + '</strong> — ' + t.desc;
+      renderToIframe('mainIframe', t.html);
     }
+
+    function selectCompare(btn) {
+      isCompareMode = true;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('singleViewer').style.display = 'none';
+      document.getElementById('compareViewer').classList.add('active');
+      document.querySelector('.viewport-switch').style.display = 'none';
+
+      document.getElementById('infoText').innerHTML = '<strong>Chế độ So sánh Trực diện:</strong> Bên trái là Mẫu Apple Minimalist mới — Bên phải là Mẫu cũ nguyên bản trước khi cải tiến.';
+      
+      renderToIframe('compareIframeNew', templates.minimal.html);
+      renderToIframe('compareIframeOld', templates.classic.html);
+    }
+
+    function setViewport(mode, btn) {
+      if (isCompareMode) return;
+      document.querySelectorAll('.btn-vp').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const frame = document.getElementById('singleViewer');
+      frame.className = 'viewer-frame';
+      if (mode === 'mobile') frame.classList.add('mobile');
+      else if (mode === 'full') frame.classList.add('full');
+    }
+
+    function copyCurrentHtml() {
+      const content = templates[activeKey] ? templates[activeKey].html : templates.minimal.html;
+      navigator.clipboard.writeText(content).then(() => {
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2500);
+      }).catch(err => {
+        alert('Không thể sao chép tự động: ' + err);
+      });
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      selectTemplate('minimal', document.querySelector('.tab-btn.active'));
+    });
   </script>
 </body>
 </html>

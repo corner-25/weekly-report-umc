@@ -202,8 +202,11 @@ export function reminderEmail(recipient: ReminderRecipient, appUrl: string): { s
       dueDate: i.dueDate,
       reasonText: REASON_TEXT[i.reason](i.health),
       isOverdue: i.health.isOverdue,
+      daysWithoutActivity: i.daysWithoutActivity,
+      daysOverdue: i.daysOverdue,
     })),
     appUrl,
+    style: 'minimal',
   });
 }
 
@@ -263,8 +266,11 @@ export async function sendWorkReminders(
         dueDate: i.dueDate,
         reasonText: REASON_TEXT[i.reason](i.health),
         isOverdue: i.health.isOverdue,
+        daysWithoutActivity: i.daysWithoutActivity,
+        daysOverdue: i.daysOverdue,
       })),
       appUrl,
+      style: 'minimal',
     });
 
     try {
