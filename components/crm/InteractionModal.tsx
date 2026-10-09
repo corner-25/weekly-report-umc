@@ -271,8 +271,6 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const companionOptions = useMemo(() => VIP_STAFF.filter((name) => name !== form.staffName), [form.staffName]);
-
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const clientErrors = validate(form);
@@ -307,30 +305,35 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
     }
   };
 
-  const staffAndCompanions = (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <Field
-        label={mode === 'OTHER' ? 'Nhân viên phụ trách' : mode === 'DELEGATION' ? 'Nhân viên Phòng HC dẫn' : 'Nhân viên dẫn'}
+  const staffOptions = useMemo(() => withCurrent(VIP_STAFF, form.staffName), [form.staffName]);
+  const selectedStaff = useMemo(() => {
+    return Array.from(new Set([form.staffName, ...form.companions].filter(Boolean)));
+  }, [form.staffName, form.companions]);
+
+  const staffSection = (
+    <div>
+      <ChipGroup
+        legend={mode === 'OTHER' ? 'Nhân viên phụ trách' : mode === 'DELEGATION' ? 'Nhân viên Phòng HC dẫn' : 'Nhân viên dẫn'}
         required={mode !== 'DELEGATION'}
-        hint={mode === 'DELEGATION' ? 'Để trống nếu khoa/phòng khác tự tiếp đoàn.' : undefined}
-        htmlFor="ix-staff"
+        options={staffOptions}
+        value={selectedStaff}
+        onChange={(next) => {
+          setForm((prev) => ({
+            ...prev,
+            staffName: next[0] ?? '',
+            companions: next.slice(1),
+          }));
+        }}
         error={errors.staffName}
-      >
-        <Select
-          id="ix-staff"
-          value={form.staffName}
-          onChange={(event) => {
-            const staffName = event.target.value;
-            setForm((prev) => ({ ...prev, staffName, companions: prev.companions.filter((n) => n !== staffName) }));
-          }}
-          className="px-3.5 py-2.5"
-        >
-          <option value="">Chọn nhân viên</option>
-          {withCurrent(VIP_STAFF, form.staffName).map((name) => <option key={name} value={name}>{name}</option>)}
-        </Select>
-      </Field>
-      {mode !== 'OTHER' && (
-        <ChipGroup legend="Người đi cùng" options={companionOptions} value={form.companions} onChange={(next) => set('companions', next)} error={errors.companions} />
+      />
+      {mode === 'DELEGATION' && !selectedStaff.length && (
+        <p className="mt-1 text-xs text-slate-500">Để trống nếu khoa/phòng khác tự tiếp đoàn.</p>
+      )}
+      {selectedStaff.length > 1 && (
+        <p className="mt-1.5 text-xs text-teal-800 font-medium">
+          Chính: <span className="font-semibold text-teal-900">{selectedStaff[0]}</span> · Đi cùng:{' '}
+          <span className="text-slate-600">{selectedStaff.slice(1).join(', ')}</span>
+        </p>
       )}
     </div>
   );
@@ -400,7 +403,7 @@ export function InteractionModal({ mode, initial, preset, onClose, onSaved }: In
         )}
         {mode === 'OTHER' && <OtherFields form={form} set={set} errors={errors} />}
 
-        {staffAndCompanions}
+        {staffSection}
 
         <Field label="Ghi chú" error={errors.note}>
           <textarea rows={2} value={form.note} onChange={(event) => set('note', event.target.value)} className={inputClass(errors.note, 'resize-none')} placeholder="Không bắt buộc" />
@@ -650,18 +653,22 @@ function EscortFields({ form, set, errors }: SectionProps) {
         </Field>
       </div>
 
-      {/* Người giới thiệu & Mối quan hệ VIP */}
-      <div className="grid gap-4 sm:grid-cols-2 items-start">
-        <Field label="Người giới thiệu" hint="Chọn người trong danh bạ hoặc nhập tên mới.">
-          <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
-          {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
-        </Field>
-        <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
+      {/* Người giới thiệu: 1 row riêng biệt để không bị tràn chữ */}
+      <Field label="Người giới thiệu" hint="Chọn người trong danh bạ hoặc nhập tên mới.">
+        <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
+        {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
+      </Field>
+
+      {/* Mối quan hệ VIP: tỷ lệ 7/3 */}
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-10 items-start">
+        <div className="sm:col-span-7">
           <Field label="Khách có quan hệ với VIP nào?" hint="Nếu đi khám theo diện người thân VIP">
             <EntityCombobox kind="contact" value={form.vip} onChange={v => set('vip', v)} allowNew={false} excludeIds={form.contact && 'id' in form.contact ? [form.contact.id] : []} placeholder="Chọn VIP..." />
           </Field>
+        </div>
+        <div className="sm:col-span-3">
           <Field label="Quan hệ">
-            <Select value={form.vipRelationship} onChange={e => set('vipRelationship', e.target.value)}>
+            <Select value={form.vipRelationship} onChange={e => set('vipRelationship', e.target.value)} className="px-3.5 py-2.5">
               <option value="">Chọn</option>
               {['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r} value={r}>{r}</option>)}
             </Select>

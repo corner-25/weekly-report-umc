@@ -25,5 +25,16 @@ export const POST = handle(async (request: Request) => {
   const session = await requireSession();
   if (session.user.role !== 'ADMIN') throw new HttpError(403, 'Chỉ quản trị viên được gửi email nhắc việc');
   if (!canSendReminders()) throw new HttpError(400, 'Chưa cấu hình SMTP nên chưa gửi được email');
-  return NextResponse.json(await sendWorkReminders(prisma, appUrl(request)));
+  
+  let selectedItemIds: string[] | undefined;
+  try {
+    const body = await request.json();
+    if (body && Array.isArray(body.selectedItemIds)) {
+      selectedItemIds = body.selectedItemIds;
+    }
+  } catch {
+    // Không có body thì gửi toàn bộ việc đến hạn
+  }
+
+  return NextResponse.json(await sendWorkReminders(prisma, appUrl(request), { selectedItemIds }));
 });

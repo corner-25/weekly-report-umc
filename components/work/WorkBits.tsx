@@ -49,6 +49,7 @@ export interface BadgeSource {
   dueDate: string | null;
   lateDays: number | null;
   priority: WorkItemDTO['priority'];
+  lastRemindedAt?: string | null;
 }
 
 /** Đủ badge cho một dòng danh sách: hạn, im lặng, chưa có hạn, xong đúng/trễ hạn, ưu tiên. */
@@ -68,6 +69,11 @@ export function WorkBadges({ item }: { item: BadgeSource }) {
         </span>
       )}
       {item.isOpen && !item.dueDate && <span className={cn(CHIP, 'bg-white text-slate-500 ring-slate-200')}>Chưa có hạn</span>}
+      {item.lastRemindedAt && (
+        <span className={cn(CHIP, 'bg-cyan-50 text-cyan-800 ring-cyan-200')}>
+          Đã nhắc {formatDate(item.lastRemindedAt)}
+        </span>
+      )}
       {item.status === 'DONE' && item.lateDays !== null && (
         item.lateDays === 0 ? (
           <span className={cn(CHIP, 'bg-emerald-50 text-emerald-700 ring-emerald-200')}>Xong đúng hạn</span>

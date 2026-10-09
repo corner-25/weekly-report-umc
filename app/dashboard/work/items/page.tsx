@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, ListChecks, Plus } from 'lucide-react';
+import { ArrowLeft, ListChecks, Mail, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { crmFetch, errorMessage } from '@/components/crm/api';
 import { ErrorBanner, ICON_BTN, PANEL, PRIMARY_BTN } from '@/components/crm/ui';
+import { RemindersModal } from '@/components/work/RemindersModal';
 import { WorkItemModal } from '@/components/work/WorkItemModal';
 import { WorkListRow } from '@/components/work/list/WorkListRow';
 import { WorkListToolbar } from '@/components/work/list/WorkListToolbar';
@@ -50,6 +51,7 @@ function WorkItemsList() {
   const [all, setAll] = useState<WorkListItem[] | null>(cachedItems);
   const [error, setError] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [showReminders, setShowReminders] = useState(false);
   const [shown, setShown] = useState(() => Number(readSession(`${SHOWN_KEY}:${memoryKey}`)) || PAGE_SIZE);
   const restored = useRef(false);
   // Đọc trước khi trình nghe cuộn kịp ghi đè (Next cuộn về 0 lúc gắn trang).
@@ -149,9 +151,18 @@ function WorkItemsList() {
         description={all ? `${sorted.length} việc khớp bộ lọc · bấm một việc để xem nhanh, ↑/↓ chuyển việc` : 'Đang tải...'}
         className="flex-wrap gap-4"
         actions={
-          <button type="button" onClick={() => setShowCreate(true)} className={PRIMARY_BTN}>
-            <Plus className="h-4 w-4" aria-hidden="true" /> Mở việc theo kế hoạch
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowReminders(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300 bg-cyan-50 px-3.5 py-2 text-sm font-semibold text-cyan-800 shadow-2xs hover:bg-cyan-100 transition-colors"
+            >
+              <Mail className="h-4 w-4 text-cyan-700" aria-hidden="true" /> Đôn đốc qua Email
+            </button>
+            <button type="button" onClick={() => setShowCreate(true)} className={PRIMARY_BTN}>
+              <Plus className="h-4 w-4" aria-hidden="true" /> Mở việc theo kế hoạch
+            </button>
+          </div>
         }
       />
       <ErrorBanner message={error} />
@@ -205,6 +216,12 @@ function WorkItemsList() {
         <WorkItemModal
           onClose={() => setShowCreate(false)}
           onSaved={(saved) => router.push(`/dashboard/work/items/${saved.id}`)}
+        />
+      )}
+      {showReminders && (
+        <RemindersModal
+          onClose={() => setShowReminders(false)}
+          onReminded={load}
         />
       )}
     </div>

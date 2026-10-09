@@ -40,6 +40,8 @@ export interface WorkListItem {
   isStale: boolean;
   /** Việc đã xong có hạn: số ngày trễ (0 = đúng hạn); null nếu không xét được. */
   lateDays: number | null;
+  /** Lần gần nhất đã gửi email đôn đốc cho thư ký/đầu mối. */
+  lastRemindedAt?: string | null;
 }
 
 export const LIST_VIEWS = [

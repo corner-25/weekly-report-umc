@@ -113,53 +113,56 @@ const REASON_TEXT: Record<ReminderReason, (h: WorkHealth) => string> = {
   stale: (h) => (h.daysSinceActivity === null ? 'Chưa có cập nhật nào' : `${h.daysSinceActivity} ngày chưa cập nhật`),
 };
 
-const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+import { renderWorkReminderHtml } from '@/lib/email/templates/work-reminder';
+import { getSmtpConfig, createSmtpTransporter } from '@/lib/email/smtp';
 
 export function reminderEmail(recipient: ReminderRecipient, appUrl: string): { subject: string; html: string } {
-  const rows = recipient.items
-    .map((i) => {
-      const reason = REASON_TEXT[i.reason](i.health);
-      const color = i.reason === 'overdue' ? '#dc2626' : i.reason === 'due_soon' ? '#b45309' : '#475569';
-      return (
-        `<tr><td style="padding:8px;border-bottom:1px solid #e2e8f0"><a href="${appUrl}/dashboard/work/items/${i.id}" style="color:#0e7490;text-decoration:none;font-weight:600">${escapeHtml(i.title)}</a>` +
-        `<div style="font-size:12px;color:#64748b">${escapeHtml(i.status)}${i.dueDate ? ` · hạn ${i.dueDate.split('-').reverse().join('/')}` : ''}</div></td>` +
-        `<td style="padding:8px;border-bottom:1px solid #e2e8f0;color:${color};font-weight:600;white-space:nowrap">${reason}</td></tr>`
-      );
-    })
-    .join('');
-  return {
-    subject: `[Phòng Hành chính] ${recipient.items.length} công việc của ${recipient.department} cần cập nhật`,
-    html:
-      `<div style="font-family:Arial,sans-serif;font-size:14px;color:#0f172a;max-width:640px">` +
-      `<p>Kính gửi ${escapeHtml(recipient.name)},</p>` +
-      `<p>Phòng Hành chính nhắc các công việc chỉ đạo của ${escapeHtml(recipient.department)} đang cần cập nhật tiến độ trên phân hệ Quản lý công việc:</p>` +
-      `<table style="border-collapse:collapse;width:100%">${rows}</table>` +
-      `<p style="margin-top:16px">Anh/chị vui lòng cập nhật tiến độ trên ứng dụng nội bộ. Trân trọng cảm ơn.</p>` +
-      `<p style="color:#64748b;font-size:12px">Email tự động từ hệ thống báo cáo Phòng Hành chính — Bệnh viện Đại học Y Dược TP.HCM.</p></div>`,
-  };
-}
-
-function smtpConfig() {
-  const { SMTP_HOST: host, SMTP_USER: user, SMTP_PASSWORD: pass, SMTP_FROM: from } = process.env;
-  if (!host || !user || !pass || !from) return null;
-  const port = Number(process.env.SMTP_PORT || 587);
-  return { host, port, secure: process.env.SMTP_SECURE === 'true' || port === 465, auth: { user, pass }, from };
+  return renderWorkReminderHtml({
+    recipientName: recipient.name,
+    department: recipient.department,
+    items: recipient.items.map((i) => ({
+      id: i.id,
+      title: i.title,
+      status: i.status,
+      dueDate: i.dueDate,
+      reasonText: REASON_TEXT[i.reason](i.health),
+      isOverdue: i.health.isOverdue,
+    })),
+    appUrl,
+  });
 }
 
 export function canSendReminders(): boolean {
-  return smtpConfig() !== null;
+  return getSmtpConfig() !== null;
 }
 
 /** Gửi email nhắc; ghi lastRemindedAt cho việc đã nhắc được ít nhất một người. */
-export async function sendWorkReminders(db: PrismaClient, appUrl: string, now: Date = new Date()) {
-  const smtp = smtpConfig();
+export async function sendWorkReminders(
+  db: PrismaClient,
+  appUrl: string,
+  options: { now?: Date; selectedItemIds?: string[] } = {}
+) {
+  const smtp = getSmtpConfig();
   if (!smtp) throw new Error('Chưa cấu hình SMTP (SMTP_HOST, SMTP_USER, SMTP_PASSWORD, SMTP_FROM) nên chưa gửi được email');
+  
+  const now = options.now ?? new Date();
   const plan = await buildWorkReminders(db, now);
-  const transporter = nodemailer.createTransport({ host: smtp.host, port: smtp.port, secure: smtp.secure, auth: smtp.auth });
+  const transporter = createSmtpTransporter();
+
+  const targetIdSet = options.selectedItemIds && options.selectedItemIds.length > 0 ? new Set(options.selectedItemIds) : null;
+  const targetRecipients = targetIdSet
+    ? plan.recipients
+        .map((r) => ({
+          ...r,
+          items: r.items.filter((i) => targetIdSet.has(i.id)),
+        }))
+        .filter((r) => r.items.length > 0)
+    : plan.recipients;
 
   const sentItemIds = new Set<string>();
   const failures: Array<{ email: string; error: string }> = [];
-  for (const recipient of plan.recipients) {
+
+  for (const recipient of targetRecipients) {
     const { subject, html } = reminderEmail(recipient, appUrl);
     try {
       await transporter.sendMail({ from: smtp.from, to: recipient.email, subject, html });
@@ -168,8 +171,11 @@ export async function sendWorkReminders(db: PrismaClient, appUrl: string, now: D
       failures.push({ email: recipient.email, error: error instanceof Error ? error.message : String(error) });
     }
   }
+
   if (sentItemIds.size > 0) {
     await db.workItem.updateMany({ where: { id: { in: [...sentItemIds] } }, data: { lastRemindedAt: now } });
   }
-  return { sent: plan.recipients.length - failures.length, failures, itemsReminded: sentItemIds.size };
+
+  return { sent: targetRecipients.length - failures.length, failures, itemsReminded: sentItemIds.size };
 }
+

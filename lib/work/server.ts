@@ -109,5 +109,6 @@ export function toWorkListItem(item: WorkItemWithRelations, latest: LatestUpdate
     isStale: health.isStale,
     lateDays:
       item.status === 'DONE' && item.completedAt && item.dueDate ? Math.max(0, vnDayNumber(item.completedAt) - dateDayNumber(item.dueDate)) : null,
+    lastRemindedAt: item.lastRemindedAt?.toISOString() ?? null,
   };
 }
