@@ -570,10 +570,45 @@ function EscortFields({ form, set, errors }: SectionProps) {
           <input type="tel" value={form.newContactPhone} onChange={(event) => set('newContactPhone', event.target.value)} className={inputClass(errors.newContactPhone)} placeholder="Ví dụ: 0901 234 567" />
         </Field>
       )}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Người giới thiệu" hint="Chọn người trong danh bạ hoặc nhập tên mới.">
-          <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
-          {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
+
+      {/* Chuyên môn & Nơi khám: Bác sĩ chọn trước tự động đổ Khoa/phòng đến */}
+      <div className="grid gap-4 sm:grid-cols-2 items-start">
+        <Field label="Bác sĩ khám" hint="Chọn bác sĩ sẽ tự động điền khoa/phòng tương ứng.">
+          <EntityCombobox
+            kind="contact"
+            filter="doctor"
+            value={null}
+            clearOnSelect
+            placeholder="Chọn hoặc gõ tên bác sĩ..."
+            onChange={(v) => {
+              if (v) {
+                set('doctors', [...form.doctors, v]);
+                if ('department' in v && v.department && !form.destination.trim()) {
+                  set('destination', v.department);
+                }
+              }
+            }}
+            excludeIds={form.doctors.flatMap((d) => ('id' in d ? [d.id] : []))}
+          />
+          {form.doctors.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {form.doctors.map((d, index) => (
+                <button
+                  type="button"
+                  key={index}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-teal-200/80 bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-900 hover:bg-teal-100 transition-colors cursor-pointer"
+                  onClick={() => set('doctors', form.doctors.filter((_, i) => i !== index))}
+                  title="Bấm để bỏ bác sĩ"
+                >
+                  <span>{'id' in d ? d.label : d.newName}</span>
+                  {'department' in d && d.department && (
+                    <span className="text-[11px] font-normal text-teal-700">({d.department})</span>
+                  )}
+                  <span className="text-teal-400 hover:text-teal-700 font-bold">×</span>
+                </button>
+              ))}
+            </div>
+          )}
         </Field>
         <Field
           label="Khoa/phòng đến"
@@ -590,7 +625,7 @@ function EscortFields({ form, set, errors }: SectionProps) {
                 className={cn(
                   'rounded-lg px-2.5 py-1 text-xs font-medium transition border min-h-[30px] active:scale-95',
                   form.destination === dept
-                    ? 'bg-cyan-700 text-white border-cyan-700 shadow-2xs'
+                    ? 'bg-cyan-700 text-white border-cyan-700 shadow-2xs font-semibold'
                     : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-cyan-50 hover:text-cyan-800'
                 )}
               >
@@ -614,51 +649,25 @@ function EscortFields({ form, set, errors }: SectionProps) {
           )}
         </Field>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Khách có quan hệ với VIP nào?" hint="Khách ở trên là người được khám. Chọn VIP liên quan nếu có.">
-          <EntityCombobox kind="contact" value={form.vip} onChange={v => set('vip', v)} allowNew={false} excludeIds={form.contact && 'id' in form.contact ? [form.contact.id] : []} />
+
+      {/* Người giới thiệu & Mối quan hệ VIP */}
+      <div className="grid gap-4 sm:grid-cols-2 items-start">
+        <Field label="Người giới thiệu" hint="Chọn người trong danh bạ hoặc nhập tên mới.">
+          <EntityCombobox kind="contact" value={form.referrer} onChange={v => { set('referrer', v); set('referrerChanged', true); }} />
+          {form.legacyReferrer && !form.referrerChanged && <p className="mt-1 text-xs text-slate-500">Thông tin gốc: {form.legacyReferrer}</p>}
         </Field>
-        <Field label="Khách là gì của VIP?">
-          <Select value={form.vipRelationship} onChange={e => set('vipRelationship', e.target.value)}>
-            <option value="">Chọn quan hệ</option>
-            {['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r}>{r}</option>)}
-          </Select>
-        </Field>
-      </div>
-      <Field label="Bác sĩ khám" hint="Có thể chọn nhiều bác sĩ; khi chọn hệ thống sẽ tự điền khoa/phòng tương ứng.">
-        <EntityCombobox
-          kind="contact"
-          filter="doctor"
-          value={null}
-          clearOnSelect
-          placeholder="Chọn hoặc gõ tên bác sĩ..."
-          onChange={(v) => {
-            if (v) {
-              set('doctors', [...form.doctors, v]);
-              if ('department' in v && v.department && !form.destination.trim()) {
-                set('destination', v.department);
-              }
-            }
-          }}
-          excludeIds={form.doctors.flatMap((d) => ('id' in d ? [d.id] : []))}
-        />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {form.doctors.map((d, index) => (
-            <button
-              type="button"
-              key={index}
-              className="inline-flex items-center gap-1.5 rounded-full border border-cyan-200/80 bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-900 hover:bg-cyan-100 transition-colors"
-              onClick={() => set('doctors', form.doctors.filter((_, i) => i !== index))}
-            >
-              <span>{'id' in d ? d.label : d.newName}</span>
-              {'department' in d && d.department && (
-                <span className="text-xs font-normal text-cyan-700">({d.department})</span>
-              )}
-              <span className="text-cyan-400 hover:text-cyan-700">×</span>
-            </button>
-          ))}
+        <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
+          <Field label="Khách có quan hệ với VIP nào?" hint="Nếu đi khám theo diện người thân VIP">
+            <EntityCombobox kind="contact" value={form.vip} onChange={v => set('vip', v)} allowNew={false} excludeIds={form.contact && 'id' in form.contact ? [form.contact.id] : []} placeholder="Chọn VIP..." />
+          </Field>
+          <Field label="Quan hệ">
+            <Select value={form.vipRelationship} onChange={e => set('vipRelationship', e.target.value)}>
+              <option value="">Chọn</option>
+              {['Vợ/chồng', 'Con', 'Cha/mẹ', 'Anh/chị/em', 'Người thân', 'Trợ lý', 'Thư ký', 'Bạn bè', 'Đồng nghiệp', 'Khác'].map(r => <option key={r} value={r}>{r}</option>)}
+            </Select>
+          </Field>
         </div>
-      </Field>
+      </div>
       {form.patientName && <p className="text-xs text-slate-500">Người được khám ghi trong dữ liệu cũ: {form.patientName}</p>}
       <ChipGroup legend="Dịch vụ hỗ trợ" options={ESCORT_SERVICES} value={form.services} onChange={(next) => set('services', next)} error={errors.services} />
       

@@ -90,6 +90,17 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
   const [referrer, setReferrer] = useState<ComboValue | null>(initial?.referrerContact ? { id: initial.referrerContact.id, label: initial.referrerContact.fullName } : null);
   const [vip, setVip] = useState<ComboValue | null>(initial?.relatedVipContact ? { id: initial.relatedVipContact.id, label: initial.relatedVipContact.fullName } : null);
   const [relationship, setRelationship] = useState(initial?.vipRelationship ?? '');
+  const [organization, setOrganization] = useState<ComboValue | null>(() => {
+    const currentPos = initial?.positions?.find((p) => p.isCurrent) ?? initial?.positions?.[0];
+    if (currentPos?.organization) {
+      return { id: currentPos.organization.id, label: currentPos.organization.name };
+    }
+    const name = currentPos?.organization?.name ?? (initial as any)?.currentOrganizationName;
+    if (name) {
+      return { newName: name };
+    }
+    return null;
+  });
   const isEdit = Boolean(initial);
   // Khi thêm mới, người tạo luôn được nhập lưu ý nhạy cảm; khi sửa thì theo quyền API trả về.
   const canEditSensitive = !initial || initial.canSeeSensitive;
@@ -214,8 +225,17 @@ export function ContactModal({ initial, onClose, onSaved }: ContactModalProps) {
             <Field label="Chức vụ hiện tại" error={errors.currentTitle}>
               <input value={form.currentTitle} onChange={(e) => set('currentTitle', e.target.value)} className={inputClass(errors.currentTitle)} placeholder="Giám đốc" />
             </Field>
-            <Field label="Tổ chức" error={errors.currentOrganizationName} hint="Chưa có trong danh bạ sẽ được tạo mới.">
-              <input value={form.currentOrganizationName} onChange={(e) => set('currentOrganizationName', e.target.value)} className={inputClass(errors.currentOrganizationName)} placeholder="Bệnh viện Đại học Y Dược TP. Hồ Chí Minh" />
+            <Field label="Tổ chức" error={errors.currentOrganizationName} hint="Gõ để tìm tổ chức có sẵn hoặc tạo mới nếu chưa có.">
+              <EntityCombobox
+                kind="organization"
+                value={organization}
+                onChange={(val) => {
+                  setOrganization(val);
+                  set('currentOrganizationName', val ? ('id' in val ? val.label : val.newName) : '');
+                }}
+                placeholder="Tìm hoặc nhập tên tổ chức..."
+                invalid={Boolean(errors.currentOrganizationName)}
+              />
             </Field>
           </div>
         </FormSection>

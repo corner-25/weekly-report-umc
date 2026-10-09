@@ -5,12 +5,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { VIP_STAFF } from '@/lib/crm/constants';
 import { crmFetch, errorMessage } from '../api';
 import { ContactModal } from '../ContactModal';
 import { displayName, formatDate } from '../format';
 import type { ContactDetail, ContactListItem } from '../types';
-import { EmptyState, ErrorBanner, PANEL, TagPill, TierBadge } from '../ui';
+import { EmptyState, ErrorBanner, PANEL, TierBadge } from '../ui';
 import { ContactLine, FilterSelect, RowActions, SearchBox, Segmented, useDebounced } from './shared';
 
 type Kind = '' | 'doctor' | 'leader' | 'vip' | 'partner' | 'focal';
@@ -63,7 +62,6 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<Kind>(initialKind);
   const [tag, setTag] = useState('');
-  const [owner, setOwner] = useState('');
   const [items, setItems] = useState<ContactListItem[]>([]);
   const [knownTags, setKnownTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +69,7 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
   const [editing, setEditing] = useState<ContactDetail | null>(null);
   const debouncedSearch = useDebounced(search);
 
-  useEffect(() => setPage(1), [debouncedSearch, kind, tag, owner]);
+  useEffect(() => setPage(1), [debouncedSearch, kind, tag]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -80,7 +78,6 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
     if (kind === 'doctor' || kind === 'leader' || kind === 'vip' || kind === 'partner') params.set('kind', kind);
     if (kind === 'focal') params.set('focal', '1');
     if (tag) params.set('tag', tag);
-    if (owner) params.set('owner', owner);
     setLoading(true);
     setError('');
     crmFetch<{ items: ContactListItem[]; total: number; page: number; tags: string[] }>(`/api/crm/contacts?${params}`, { signal: controller.signal })
@@ -97,12 +94,12 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
         setLoading(false);
       });
     return () => controller.abort();
-  }, [debouncedSearch, kind, tag, owner, reloadKey, page]);
+  }, [debouncedSearch, kind, tag, reloadKey, page]);
 
   const openEdit = (id: string) => {
     crmFetch<ContactDetail>(`/api/crm/contacts/${id}`).then(setEditing).catch((e) => setError(errorMessage(e, 'Không mở được hồ sơ để sửa.')));
   };
-  const hasFilter = Boolean(search || kind || tag || owner);
+  const hasFilter = Boolean(search || kind || tag);
 
   return (
     <div className={PANEL}>
@@ -113,10 +110,6 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
           <FilterSelect label="Lọc nhãn" value={tag} onChange={setTag}>
             <option value="">Mọi nhãn</option>
             {knownTags.map((t) => <option key={t} value={t}>{t}</option>)}
-          </FilterSelect>
-          <FilterSelect label="Lọc người phụ trách" value={owner} onChange={setOwner}>
-            <option value="">Mọi người phụ trách</option>
-            {VIP_STAFF.map((name) => <option key={name} value={name}>{name}</option>)}
           </FilterSelect>
         </div>
       </div>
@@ -145,20 +138,18 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[1020px] table-fixed divide-y divide-slate-100">
                 <colgroup>
-                  <col className="w-[20%]" />
-                  <col className="w-[19%]" />
-                  <col className="w-[13%]" />
-                  <col className="w-[9%]" />
-                  <col className="w-[11%]" />
-                  <col className="w-[16%]" />
-                  <col className="w-[12%]" />
+                  <col className="w-[24%]" />
+                  <col className="w-[22%]" />
+                  <col className="w-[14%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[14%]" />
+                  <col className="w-[8%]" />
                 </colgroup>
                 <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr>
                     <th scope="col" className="px-4 py-3">Họ tên</th>
                     <th scope="col" className="px-4 py-3">Đơn vị · chức vụ</th>
                     <th scope="col" className="px-4 py-3">Liên hệ</th>
-                    <th scope="col" className="px-4 py-3">Phụ trách</th>
                     <th scope="col" className="px-4 py-3">Hoạt động & Khám bệnh</th>
                     <th scope="col" className="px-4 py-3">Lưu ý / Giới thiệu</th>
                     <th scope="col" className="px-4 py-3 text-right"><span className="sr-only">Thao tác</span></th>
@@ -176,16 +167,10 @@ export function ContactsTab({ initialKind = '', reloadKey, onChanged }: { initia
                             <TierBadge tier={c.tier} partner tags={c.tags} />
                             {c.status === 'INACTIVE' && <span className="text-xs text-slate-400">(ngừng)</span>}
                           </div>
-                          {c.tags.length > 0 && (
-                            <div className="mt-1 flex flex-wrap gap-1">
-                              {c.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}
-                            </div>
-                          )}
                         </div>
                       </td>
                       <td className="px-4 py-3.5"><OrgCell c={c} /></td>
                       <td className="px-4 py-3.5"><ContactLine phone={c.phone} email={c.email} /></td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 truncate">{c.ownerName ?? '—'}</td>
                       <td className="px-4 py-3.5 text-slate-700">
                         <div className="flex flex-col gap-1 text-xs">
                           {Boolean(c.doctorVisitCount) && (

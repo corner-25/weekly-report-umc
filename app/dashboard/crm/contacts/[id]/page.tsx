@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Building2, Merge, MessagesSquare, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Building2, Crown, Merge, MessagesSquare, Pencil, Stethoscope, Trash2, UserCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RELATION_KIND_LABELS } from '@/lib/crm/constants';
 import { changeCareTaskStatus, changeInteractionStatus, crmFetch, crmSend, errorMessage } from '@/components/crm/api';
@@ -21,7 +21,7 @@ import { RelationModal } from '@/components/crm/RelationModal';
 import { MergeContactModal } from '@/components/crm/MergeContactModal';
 import { displayName, initials } from '@/components/crm/format';
 import type { CareTaskDTO, ContactDetail, ImportantDateDTO, InteractionDTO } from '@/components/crm/types';
-import { EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill, TierBadge } from '@/components/crm/ui';
+import { EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TierBadge } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
 type Dialog =
@@ -138,29 +138,29 @@ export default function ContactProfilePage() {
             {/* Vai trò tập trung: Lãnh đạo, Bác sĩ, Người giới thiệu, Khách VIP */}
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               {contact.tags.some((t) => ['Ban Giám đốc', 'Lãnh đạo Bệnh viện'].includes(t)) && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-bold text-purple-800 ring-1 ring-inset ring-purple-600/20">
-                  🏛️ Lãnh đạo Bệnh viện
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-bold text-purple-800 ring-1 ring-inset ring-purple-600/20">
+                  <Building2 className="h-3.5 w-3.5 text-purple-700" aria-hidden="true" />
+                  Lãnh đạo Bệnh viện
                 </span>
               )}
               {Boolean(contact.totalDoctorVisits || contact.tags.includes('Bác sĩ')) && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-bold text-teal-800 ring-1 ring-inset ring-teal-600/20">
-                  🩺 Bác sĩ khám bệnh {Boolean(contact.totalDoctorVisits) && `(${contact.totalDoctorVisits} ca)`}
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-bold text-teal-800 ring-1 ring-inset ring-teal-600/20">
+                  <Stethoscope className="h-3.5 w-3.5 text-teal-700" aria-hidden="true" />
+                  Bác sĩ khám bệnh {Boolean(contact.totalDoctorVisits) && `(${contact.totalDoctorVisits} ca)`}
                 </span>
               )}
               {Boolean(contact.totalReferredVisits || contact.tags.includes('Người giới thiệu')) && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-800 ring-1 ring-inset ring-indigo-600/20">
-                  🤝 Người giới thiệu {Boolean(contact.totalReferredVisits) && `(${contact.totalReferredVisits} ca khách)`}
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-800 ring-1 ring-inset ring-indigo-600/20">
+                  <UserCheck className="h-3.5 w-3.5 text-indigo-700" aria-hidden="true" />
+                  Người giới thiệu {Boolean(contact.totalReferredVisits) && `(${contact.totalReferredVisits} ca khách)`}
                 </span>
               )}
               {contact.tier === 'VIP' && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800 ring-1 ring-inset ring-amber-600/20">
-                  ⭐ Khách VIP
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                  <Crown className="h-3.5 w-3.5 text-amber-700" aria-hidden="true" />
+                  Khách VIP
                 </span>
               )}
-            </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-              {contact.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}
-              <span>Phụ trách: <b className="font-semibold text-slate-700">{contact.ownerName ?? 'chưa giao'}</b></span>
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@ import { INTERACTION_ICONS, InteractionTimeline } from '@/components/crm/Interac
 import { OrganizationModal } from '@/components/crm/OrganizationModal';
 import { daysUntilLabel, displayName, formatDate, initials } from '@/components/crm/format';
 import type { CareTaskDTO, ImportantDateDTO, InteractionDTO, OrganizationDetail } from '@/components/crm/types';
-import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard, TagPill } from '@/components/crm/ui';
+import { ACCENT_BTN, EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard } from '@/components/crm/ui';
 import { useConfirmDelete } from '@/components/crm/useConfirmDelete';
 
 type Dialog =
@@ -105,15 +105,13 @@ export default function OrganizationProfilePage() {
               {org.scope && ` · ${org.scope}`}
               {website && <> · <a href={website} target="_blank" rel="noopener noreferrer" className="text-cyan-700 hover:underline">{org.website}</a></>}
             </p>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-              {org.tags.map((t) => <TagPill key={t}>{t}</TagPill>)}
-              <span>Phụ trách: <b className="font-semibold text-slate-700">{org.ownerName ?? 'chưa giao'}</b></span>
-              {nextOccasion && nextOccasion.daysUntil <= SOON_DAYS && (
+            {nextOccasion && nextOccasion.daysUntil <= SOON_DAYS && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                 <span className="rounded-full bg-orange-50 px-2 py-0.5 font-semibold text-orange-700">
                   {nextOccasion.label} · {daysUntilLabel(nextOccasion.daysUntil)}
                 </span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap gap-2 sm:justify-end">

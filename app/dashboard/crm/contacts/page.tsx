@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { Building2, Contact, Plus, Stethoscope, UserRound } from 'lucide-react';
+import { Building2, Contact, Plus, UserRound } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import { ContactModal } from '@/components/crm/ContactModal';
@@ -11,7 +11,7 @@ import { ContactsTab } from '@/components/crm/directory/ContactsTab';
 import { OrganizationsTab } from '@/components/crm/directory/OrganizationsTab';
 import { PRIMARY_BTN } from '@/components/crm/ui';
 
-type Tab = 'contacts' | 'doctors' | 'organizations';
+type Tab = 'contacts' | 'organizations';
 export default function CrmContactsPage() {
   return (
     <Suspense fallback={<div className="p-12 text-center text-slate-500">Đang tải...</div>}>
@@ -25,7 +25,7 @@ function ContactsDirectory() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const tab: Tab = tabParam === 'organizations' ? 'organizations' : tabParam === 'doctors' ? 'doctors' : 'contacts';
+  const tab: Tab = tabParam === 'organizations' ? 'organizations' : 'contacts';
   const [showModal, setShowModal] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -42,11 +42,11 @@ function ContactsDirectory() {
       <PageHeader
         icon={Contact}
         title="Danh bạ đối tác"
-        description="Cá nhân (VIP, đối tác), danh mục bác sĩ và tổ chức — mỗi tổ chức có đầu mối liên hệ"
+        description="Cá nhân (VIP, đối tác, bác sĩ) và tổ chức — mỗi tổ chức có đầu mối liên hệ"
         className="flex-wrap gap-4"
         actions={
           <button type="button" onClick={() => setShowModal(true)} className={PRIMARY_BTN}>
-            <Plus className="h-4 w-4" aria-hidden="true" /> {tab === 'organizations' ? 'Thêm tổ chức' : tab === 'doctors' ? 'Thêm bác sĩ' : 'Thêm cá nhân'}
+            <Plus className="h-4 w-4" aria-hidden="true" /> {tab === 'organizations' ? 'Thêm tổ chức' : 'Thêm cá nhân'}
           </button>
         }
       />
@@ -54,7 +54,6 @@ function ContactsDirectory() {
       <div role="tablist" aria-label="Loại đối tác" className="flex gap-6 border-b border-slate-200">
         {([
           ['contacts', 'Cá nhân', UserRound],
-          ['doctors', 'Bác sĩ', Stethoscope],
           ['organizations', 'Tổ chức', Building2],
         ] as const).map(([value, label, Icon]) => (
           <button
@@ -81,7 +80,6 @@ function ContactsDirectory() {
         ) : (
           <ContactsTab
             key={tab}
-            initialKind={tab === 'doctors' ? 'doctor' : ''}
             reloadKey={reloadKey}
             onChanged={() => setReloadKey((k) => k + 1)}
           />
@@ -90,7 +88,6 @@ function ContactsDirectory() {
 
       {showModal && tab !== 'organizations' && (
         <ContactModal
-          initial={tab === 'doctors' ? ({ tags: ['Bác sĩ'] } as any) : undefined}
           onClose={() => setShowModal(false)}
           onSaved={() => {
             setShowModal(false);
