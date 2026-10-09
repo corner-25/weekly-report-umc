@@ -16,11 +16,20 @@ async function findItem(id: string) {
 export const GET = handle(async (_request: Request, { params }: Ctx) => {
   await requireSession();
   const { id } = await params;
-  const [item, updates] = await Promise.all([
+  const [item, updates, attachments] = await Promise.all([
     findItem(id),
     prisma.workUpdate.findMany({ where: { workItemId: id }, orderBy: { occurredAt: 'desc' } }),
+    prisma.workAttachment.findMany({
+      where: { workItemId: id },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, fileName: true, mimeType: true, fileSize: true, originalSize: true, uploadedBy: true, createdAt: true },
+    }),
   ]);
-  return NextResponse.json({ ...toWorkItemDto(item), updates: updates.map(toWorkUpdateDto) });
+  return NextResponse.json({
+    ...toWorkItemDto(item),
+    updates: updates.map(toWorkUpdateDto),
+    attachments: attachments.map((a) => ({ ...a, createdAt: a.createdAt.toISOString(), url: `/api/work/items/${id}/attachments/${a.id}` })),
+  });
 });
 
 /**

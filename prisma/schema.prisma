@@ -2077,6 +2077,7 @@ model WorkItem {
 
   department Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
   updates    WorkUpdate[]
+  attachments WorkAttachment[]
 
   @@unique([source, externalId])
   @@index([status, lastActivityAt])
@@ -2084,6 +2085,28 @@ model WorkItem {
   @@index([dueDate])
   @@index([completedAt])
   @@map("work_items")
+}
+
+/// File đính kèm của công việc trên office (tờ trình, công văn, kết quả…) — cào về, nén PDF rồi lưu.
+model WorkAttachment {
+  id           String   @id @default(cuid())
+  workItemId   String
+  workItem     WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  /// Mã file trên office (attchFileID) — khoá nạp lại không tạo trùng.
+  externalCode String   @unique
+  fileName     String
+  mimeType     String
+  fileSize     Int
+  /// Kích thước trước khi nén PDF.
+  originalSize Int?
+  sha256       String
+  data         Bytes
+  uploadedBy   String? // Người tải lên office
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([workItemId])
+  @@map("work_attachments")
 }
 
 /// Một lần cập nhật tiến độ: cào từ nguồn hoặc ghi tay.

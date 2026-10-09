@@ -68,8 +68,21 @@ export interface WorkUpdateDTO {
   progressPercent: number | null;
 }
 
+export interface WorkAttachmentDTO {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  originalSize: number | null;
+  uploadedBy: string | null;
+  createdAt: string;
+  url: string;
+}
+
 export interface WorkItemDetail extends WorkItemDTO {
   updates: WorkUpdateDTO[];
+  /** File đính kèm cào từ office (chỉ có ở trang chi tiết). */
+  attachments?: WorkAttachmentDTO[];
 }
 
 export interface WorkOverviewDTO {

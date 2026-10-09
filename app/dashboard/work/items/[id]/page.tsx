@@ -10,6 +10,7 @@ import { crmFetch, crmSend, errorMessage } from '@/components/crm/api';
 import { formatDate, formatDateTime } from '@/components/crm/format';
 import { EmptyState, ErrorBanner, ICON_BTN, PANEL, SECONDARY_BTN, SectionCard } from '@/components/crm/ui';
 import { AiPlanCard } from '@/components/work/AiPlanCard';
+import { AttachmentsCard } from '@/components/work/AttachmentsCard';
 import { CharacteristicsCard } from '@/components/work/CharacteristicsCard';
 import { UpdatesPanel } from '@/components/work/UpdatesPanel';
 import { WorkItemModal } from '@/components/work/WorkItemModal';
@@ -117,6 +118,7 @@ export default function WorkItemPage() {
             </dl>
             {item.description && <p className="mt-3 whitespace-pre-line border-t border-slate-100 pt-3 text-sm text-slate-700">{item.description}</p>}
           </SectionCard>
+          <AttachmentsCard attachments={item.attachments ?? []} />
           <CharacteristicsCard key={item.id} item={item} onSaved={merge} />
         </div>
         <div className="space-y-4">

@@ -1,23 +1,15 @@
 import { NextResponse } from 'next/server';
-import { timingSafeEqual } from 'crypto';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { importWorkPayload } from '@/lib/work/import';
 import { handle, HttpError } from '@/lib/crm/server';
+import { importTokenMatches } from '@/lib/import-token';
 
 export const maxDuration = 300;
 
 /** File cào vài nghìn việc kèm lịch sử cập nhật vẫn dưới mức này. */
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
-
-function tokenMatches(provided: string): boolean {
-  const expected = process.env.WORK_IMPORT_TOKEN;
-  if (!expected) return false;
-  const a = Buffer.from(provided);
-  const b = Buffer.from(expected);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 
 /**
  * Nạp file cào từ phân hệ Quản lý công việc.
@@ -30,7 +22,7 @@ export const POST = handle(async (request: Request) => {
   const token = request.headers.get('x-import-token');
   let triggeredBy: string;
   if (token !== null) {
-    if (!tokenMatches(token)) throw new HttpError(401, 'Mã nạp dữ liệu không đúng');
+    if (!importTokenMatches(token)) throw new HttpError(401, 'Mã nạp dữ liệu không đúng');
     triggeredBy = 'script';
   } else {
     const session = await getServerSession(authOptions);

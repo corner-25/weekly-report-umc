@@ -2,6 +2,9 @@
 Cào dự án "Theo dõi ký kết hợp tác toàn viện" (MOU) trên office.umc.edu.vn —
 cùng cơ chế với scrape.py (phiên đăng nhập lưu ở ~/.qlcv/chrome-profile).
 
+    Đường thường dùng: tools/qlcv-scraper/sync_all.py (cào cả công việc và MOU, đẩy thẳng lên production).
+    Script này chỉ cào MOU ra thư mục để nạp tay.
+
     python3 tools/qlcv-scraper/mou.py            # cào + tải file đính kèm + nén PDF
     python3 tools/qlcv-scraper/mou.py --no-files # chỉ cào thông tin
     python3 tools/qlcv-scraper/mou.py --recompress ~/.qlcv/out/mou-<thời điểm>
@@ -12,8 +15,6 @@ tên theo mã file của office). Nạp vào hệ thống:
     npx tsx prisma/import-mou-office.ts ~/.qlcv/out/mou-<thời điểm>
 """
 import json
-import shutil
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -27,36 +28,7 @@ PROJECT_URL = "https://office.umc.edu.vn/#/M02/M02PROJECT/cHJvamVjdElEPTc2"  # p
 # Mẫu truy vấn "BV_Dự án theo dõi MOU toàn viện": đủ lĩnh vực (FN264), đơn vị đầu mối, người theo dõi.
 MOU_QUERY = 10457
 FILE_URL = "https://officeapi.umc.edu.vn/v1/tasks/viewFileTask?id={}"
-# PDF nén bằng Ghostscript chỉ giữ khi nhỏ hơn bản gốc ít nhất ngần này.
-MIN_SAVING = 0.1
-# Bản scan văn bản: ảnh màu/xám 120 dpi, JPEG chất lượng 70 vẫn đọc rõ chữ, nhẹ
-# hơn bản gốc 200–300 dpi 2–3 lần. Ảnh đen trắng giữ 300 dpi cho nét chữ ký.
-SCAN_DPI = 120
-GS_IMAGE_FLAGS = (
-    "-dDownsampleColorImages=true", "-dDownsampleGrayImages=true", "-dDownsampleMonoImages=true",
-    f"-dColorImageResolution={SCAN_DPI}", f"-dGrayImageResolution={SCAN_DPI}", "-dMonoImageResolution=300",
-    "-dColorImageDownsampleThreshold=1.0", "-dGrayImageDownsampleThreshold=1.0",
-    "-dPassThroughJPEGImages=false", "-dJPEGQ=70",
-)
-
-
-def compress_pdf(src: Path) -> Path:
-    """Nén PDF (ảnh scan về SCAN_DPI) — giữ bản gốc nếu không nhỏ hơn đáng kể hoặc nén lỗi."""
-    gs = shutil.which("gs")
-    if not gs:
-        return src
-    out = src.with_suffix(".min.pdf")
-    cmd = [gs, "-sDEVICE=pdfwrite", "-dCompatibilityLevel=1.5", "-dNOPAUSE", "-dQUIET", "-dBATCH",
-           *GS_IMAGE_FLAGS, f"-sOutputFile={out}", str(src)]
-    try:
-        subprocess.run(cmd, check=True, timeout=180, capture_output=True)
-    except (subprocess.SubprocessError, OSError):
-        out.unlink(missing_ok=True)
-        return src
-    if out.stat().st_size < src.stat().st_size * (1 - MIN_SAVING):
-        return out
-    out.unlink()
-    return src
+from office import compress_pdf  # noqa: E402  (nén PDF dùng chung với sync_all.py)
 
 
 def download_files(page, headers: dict, details: dict, folder: Path) -> dict:
