@@ -276,7 +276,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <span className="text-slate-400 block">Địa chỉ trụ sở:</span>
-                  <span className="font-semibold text-slate-800">Phường Chợ Lớn, TP. Hồ Chí Minh</span>
+                  <span className="font-semibold text-slate-800">215 Hồng Bàng, Phường Chợ Lớn, TP. Hồ Chí Minh</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">Hộp thư điện tử chính thức:</span>
@@ -334,20 +334,20 @@ export default function SettingsPage() {
               {selectedTemplate === 'workReminder' ? (
                 <div>
                   <span className="font-bold text-slate-900 block mb-1">
-                    📌 Đặc điểm Mẫu 1 (Đôn đốc tiến độ công việc trên UMC-Office):
+                    Đặc điểm Mẫu 1 (Đôn đốc tiến độ công việc trên UMC-Office):
                   </span>
                   <ul className="list-disc list-inside space-y-1 text-slate-700">
                     <li>Gửi cho Thư ký / Đầu mối đơn vị chủ trì khi đến hạn hoặc chậm tiến độ.</li>
                     <li>
-                      <strong>Hướng dẫn bắt buộc cách nhập báo cáo kết quả:</strong> Nêu rõ kết quả/sản phẩm cụ thể, số liệu định lượng, văn bản minh chứng; tuyệt đối không bấm chuyển Hoàn thành khi chưa có nội dung báo cáo.
+                      <strong>Quy chuẩn bắt buộc 4 tiêu chí báo cáo:</strong> Kết quả cụ thể, số liệu định lượng & minh chứng văn bản, tiến độ & khó khăn, và điều kiện chuyển trạng thái Hoàn thành.
                     </li>
-                    <li>Đầy đủ thông tin Phường Chợ Lớn, TP.HCM, email hanhchinh@umc.edu.vn, ĐT: 5421 & 5324.</li>
+                    <li>Thông tin liên hệ chuẩn mực: 215 Hồng Bàng, Phường Chợ Lớn, TP.HCM, email hanhchinh@umc.edu.vn, ĐT: 5421 & 5324.</li>
                   </ul>
                 </div>
               ) : (
                 <div>
                   <span className="font-bold text-teal-900 block mb-1">
-                    📌 Đặc điểm Mẫu 2 (Thông báo nội bộ đón khách tái khám / Chụp MRI / CLS ngày N+1):
+                    Đặc điểm Mẫu 2 (Thông báo nội bộ đón khách tái khám / Chụp MRI / CLS ngày N+1):
                   </span>
                   <ul className="list-disc list-inside space-y-1 text-teal-800">
                     <li>Gửi nội bộ cho đội ngũ nhân viên Phòng Hành chính & Tiếp đón VIP vào đầu ngày hoặc cuối buổi chiều hôm trước.</li>

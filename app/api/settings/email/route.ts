@@ -83,7 +83,7 @@ export const GET = handle(async (request: Request) => {
       secure: smtp?.secure || false,
     },
     contactInfo: {
-      address: 'Phường Chợ Lớn, TP. Hồ Chí Minh',
+      address: '215 Hồng Bàng, Phường Chợ Lớn, TP. Hồ Chí Minh',
       email: 'hanhchinh@umc.edu.vn',
       phones: ['5421 (Phụ trách Quản lý Công việc)', '5324 (Thư ký Phòng)'],
     },
