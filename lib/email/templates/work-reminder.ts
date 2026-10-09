@@ -17,7 +17,7 @@ export interface WorkReminderItemData {
 }
 
 export interface WorkReminderEmailProps {
-  recipientName: string;
+  recipientName?: string | null;
   department: string;
   items: WorkReminderItemData[];
   appUrl: string;
@@ -34,7 +34,7 @@ export function renderWorkReminderHtml({
   appUrl,
 }: WorkReminderEmailProps): { subject: string; html: string } {
   const safeDept = escapeHtml(department);
-  const safeName = escapeHtml(recipientName);
+  const safeName = recipientName ? escapeHtml(recipientName.trim()) : '';
 
   const subject = `[UMC-Office] Đôn đốc tiến độ ${items.length} nhiệm vụ của ${safeDept} cần cập nhật báo cáo`;
 
@@ -112,7 +112,7 @@ export function renderWorkReminderHtml({
             <td style="padding: 26px 28px;">
               
               <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">
-                Kính gửi: Anh/Chị ${safeName} (Đầu mối phụ trách &middot; ${safeDept}),
+                ${safeName ? `Kính gửi: Anh/Chị ${safeName} (Đầu mối phụ trách &middot; ${safeDept}),` : `Kính gửi: Đầu mối phụ trách công việc &middot; ${safeDept},`}
               </div>
 
               <p style="margin: 0 0 16px 0; font-size: 13.5px; color: #334155; line-height: 1.6;">
@@ -192,7 +192,7 @@ export function renderWorkReminderHtml({
               </table>
 
               <p style="font-size: 12.5px; color: #64748b; margin-top: 20px; font-style: italic; text-align: center;">
-                Trân trọng cảm ơn sự phối hợp kịp thời của Anh/Chị và đơn vị.
+                ${safeName ? 'Trân trọng cảm ơn sự phối hợp kịp thời của Anh/Chị và đơn vị.' : 'Trân trọng cảm ơn sự phối hợp kịp thời của Quý đơn vị.'}
               </p>
             </td>
           </tr>

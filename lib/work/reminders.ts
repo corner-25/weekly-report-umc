@@ -16,6 +16,17 @@ const MS_PER_DAY = 86_400_000;
 
 export type ReminderReason = 'overdue' | 'due_soon' | 'stale';
 
+export function parseEmailList(raw: string): string[] {
+  return Array.from(
+    new Set(
+      raw
+        .split(/[,;\s]+/)
+        .map((e) => e.trim().toLowerCase())
+        .filter((e) => e.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
+    )
+  );
+}
+
 export interface ReminderItem {
   id: string;
   title: string;
@@ -23,6 +34,10 @@ export interface ReminderItem {
   dueDate: string | null;
   reason: ReminderReason;
   health: WorkHealth;
+  departmentId: string | null;
+  department: string;
+  daysWithoutActivity: number;
+  daysOverdue: number;
 }
 
 export interface ReminderRecipient {
@@ -33,7 +48,16 @@ export interface ReminderRecipient {
   items: ReminderItem[];
 }
 
+export interface ReminderDepartmentGroup {
+  departmentId: string | null;
+  department: string;
+  defaultEmail: string;
+  emails: string[];
+  items: ReminderItem[];
+}
+
 export interface ReminderPlan {
+  departments: ReminderDepartmentGroup[];
   recipients: ReminderRecipient[];
   /** Đơn vị có việc cần nhắc nhưng chưa có thư ký nào có email. */
   departmentsWithoutEmail: Array<{ department: string; itemCount: number }>;
@@ -81,30 +105,81 @@ export async function buildWorkReminders(db: PrismaClient, now: Date = new Date(
     select: { id: true, fullName: true, email: true, currentDepartmentId: true },
   });
 
+  const departments: ReminderDepartmentGroup[] = [];
   const recipients: ReminderRecipient[] = [];
   const departmentsWithoutEmail: ReminderPlan['departmentsWithoutEmail'] = [];
+
   for (const departmentId of departmentIds) {
     const forDept = due.filter((d) => d.item.departmentId === departmentId);
     const department = forDept[0].item.department?.name ?? '';
-    const reminderItems = forDept.map(({ item, health, reason }) => ({
-      id: item.id,
-      title: item.title,
-      status: WORK_STATUS_LABELS[item.status],
-      dueDate: item.dueDate?.toISOString().slice(0, 10) ?? null,
-      reason,
-      health,
-    }));
+    const reminderItems: ReminderItem[] = forDept.map(({ item, health, reason }) => {
+      const activity = item.lastActivityAt ?? item.directedAt ?? item.createdAt;
+      const daysWithoutActivity = Math.max(0, Math.floor((now.getTime() - activity.getTime()) / MS_PER_DAY));
+      const daysOverdue = health.daysToDue !== null && health.daysToDue < 0 ? -health.daysToDue : 0;
+      return {
+        id: item.id,
+        title: item.title,
+        status: WORK_STATUS_LABELS[item.status],
+        dueDate: item.dueDate?.toISOString().slice(0, 10) ?? null,
+        reason,
+        health,
+        departmentId,
+        department,
+        daysWithoutActivity,
+        daysOverdue,
+      };
+    });
+
     const people = secretaries.filter((s) => s.currentDepartmentId === departmentId && s.email);
+    const emails = people.map((s) => s.email as string).filter(Boolean);
+    const defaultEmail = emails.join(', ');
+
+    departments.push({
+      departmentId,
+      department,
+      defaultEmail,
+      emails,
+      items: reminderItems,
+    });
+
     if (people.length === 0) {
       departmentsWithoutEmail.push({ department, itemCount: forDept.length });
-      continue;
-    }
-    for (const s of people) {
-      recipients.push({ secretaryId: s.id, name: s.fullName, email: s.email as string, department, items: reminderItems });
+    } else {
+      for (const s of people) {
+        recipients.push({ secretaryId: s.id, name: s.fullName, email: s.email as string, department, items: reminderItems });
+      }
     }
   }
 
-  return { recipients, departmentsWithoutEmail, unassignedCount: due.filter((d) => !d.item.departmentId).length };
+  const unassigned = due.filter((d) => !d.item.departmentId);
+  if (unassigned.length > 0) {
+    const unassignedItems: ReminderItem[] = unassigned.map(({ item, health, reason }) => {
+      const activity = item.lastActivityAt ?? item.directedAt ?? item.createdAt;
+      const daysWithoutActivity = Math.max(0, Math.floor((now.getTime() - activity.getTime()) / MS_PER_DAY));
+      const daysOverdue = health.daysToDue !== null && health.daysToDue < 0 ? -health.daysToDue : 0;
+      return {
+        id: item.id,
+        title: item.title,
+        status: WORK_STATUS_LABELS[item.status],
+        dueDate: item.dueDate?.toISOString().slice(0, 10) ?? null,
+        reason,
+        health,
+        departmentId: null,
+        department: 'Chưa phân đơn vị',
+        daysWithoutActivity,
+        daysOverdue,
+      };
+    });
+    departments.push({
+      departmentId: null,
+      department: 'Chưa phân đơn vị',
+      defaultEmail: '',
+      emails: [],
+      items: unassignedItems,
+    });
+  }
+
+  return { departments, recipients, departmentsWithoutEmail, unassignedCount: unassigned.length };
 }
 
 const REASON_TEXT: Record<ReminderReason, (h: WorkHealth) => string> = {
@@ -136,11 +211,15 @@ export function canSendReminders(): boolean {
   return getSmtpConfig() !== null;
 }
 
-/** Gửi email nhắc; ghi lastRemindedAt cho việc đã nhắc được ít nhất một người. */
+/** Gửi email nhắc; ghi lastRemindedAt cho việc đã nhắc được ít nhất một đơn vị. */
 export async function sendWorkReminders(
   db: PrismaClient,
   appUrl: string,
-  options: { now?: Date; selectedItemIds?: string[] } = {}
+  options: {
+    now?: Date;
+    selectedItemIds?: string[];
+    departmentEmails?: Record<string, string>;
+  } = {}
 ) {
   const smtp = getSmtpConfig();
   if (!smtp) throw new Error('Chưa cấu hình SMTP (SMTP_HOST, SMTP_USER, SMTP_PASSWORD, SMTP_FROM) nên chưa gửi được email');
@@ -150,25 +229,59 @@ export async function sendWorkReminders(
   const transporter = createSmtpTransporter();
 
   const targetIdSet = options.selectedItemIds && options.selectedItemIds.length > 0 ? new Set(options.selectedItemIds) : null;
-  const targetRecipients = targetIdSet
-    ? plan.recipients
-        .map((r) => ({
-          ...r,
-          items: r.items.filter((i) => targetIdSet.has(i.id)),
-        }))
-        .filter((r) => r.items.length > 0)
-    : plan.recipients;
-
   const sentItemIds = new Set<string>();
-  const failures: Array<{ email: string; error: string }> = [];
+  const failures: Array<{ email?: string; department?: string; error: string }> = [];
 
-  for (const recipient of targetRecipients) {
-    const { subject, html } = reminderEmail(recipient, appUrl);
+  let sentCount = 0;
+
+  for (const dept of plan.departments) {
+    const deptItems = targetIdSet
+      ? dept.items.filter((i) => targetIdSet.has(i.id))
+      : dept.items;
+
+    if (deptItems.length === 0) continue;
+
+    const key = dept.departmentId ?? dept.department;
+    const rawEmails = options.departmentEmails?.[key] ?? options.departmentEmails?.[dept.department];
+    const emailList = rawEmails !== undefined ? parseEmailList(rawEmails) : dept.emails;
+
+    if (emailList.length === 0) {
+      failures.push({
+        department: dept.department,
+        error: `Đơn vị "${dept.department}" chưa có email đầu mối hợp lệ để gửi đôn đốc.`,
+      });
+      continue;
+    }
+
+    const { subject, html } = renderWorkReminderHtml({
+      recipientName: '', // Để trống để gọi đúng tên phòng: "Kính gửi: Đầu mối phụ trách công việc · [Tên phòng]"
+      department: dept.department,
+      items: deptItems.map((i) => ({
+        id: i.id,
+        title: i.title,
+        status: i.status,
+        dueDate: i.dueDate,
+        reasonText: REASON_TEXT[i.reason](i.health),
+        isOverdue: i.health.isOverdue,
+      })),
+      appUrl,
+    });
+
     try {
-      await transporter.sendMail({ from: smtp.from, to: recipient.email, subject, html });
-      recipient.items.forEach((i) => sentItemIds.add(i.id));
+      await transporter.sendMail({
+        from: smtp.from,
+        to: emailList,
+        subject,
+        html,
+      });
+      deptItems.forEach((i) => sentItemIds.add(i.id));
+      sentCount++;
     } catch (error) {
-      failures.push({ email: recipient.email, error: error instanceof Error ? error.message : String(error) });
+      failures.push({
+        department: dept.department,
+        email: emailList.join(', '),
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -176,6 +289,6 @@ export async function sendWorkReminders(
     await db.workItem.updateMany({ where: { id: { in: [...sentItemIds] } }, data: { lastRemindedAt: now } });
   }
 
-  return { sent: targetRecipients.length - failures.length, failures, itemsReminded: sentItemIds.size };
+  return { sent: sentCount, failures, itemsReminded: sentItemIds.size };
 }
 

@@ -14,6 +14,7 @@ export const GET = handle(async (request: Request) => {
   const url = appUrl(request);
   return NextResponse.json({
     canSend: canSendReminders(),
+    departments: plan.departments,
     recipients: plan.recipients.map((r) => ({ ...r, subject: reminderEmail(r, url).subject })),
     departmentsWithoutEmail: plan.departmentsWithoutEmail,
     unassignedCount: plan.unassignedCount,
@@ -27,14 +28,20 @@ export const POST = handle(async (request: Request) => {
   if (!canSendReminders()) throw new HttpError(400, 'Chưa cấu hình SMTP nên chưa gửi được email');
   
   let selectedItemIds: string[] | undefined;
+  let departmentEmails: Record<string, string> | undefined;
   try {
     const body = await request.json();
-    if (body && Array.isArray(body.selectedItemIds)) {
-      selectedItemIds = body.selectedItemIds;
+    if (body) {
+      if (Array.isArray(body.selectedItemIds)) {
+        selectedItemIds = body.selectedItemIds;
+      }
+      if (body.departmentEmails && typeof body.departmentEmails === 'object') {
+        departmentEmails = body.departmentEmails;
+      }
     }
   } catch {
     // Không có body thì gửi toàn bộ việc đến hạn
   }
 
-  return NextResponse.json(await sendWorkReminders(prisma, appUrl(request), { selectedItemIds }));
+  return NextResponse.json(await sendWorkReminders(prisma, appUrl(request), { selectedItemIds, departmentEmails }));
 });

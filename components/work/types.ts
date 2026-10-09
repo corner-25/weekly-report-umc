@@ -120,15 +120,46 @@ export interface WorkImportResult {
   problems: Array<{ index: number; externalId?: string; message: string }>;
 }
 
+export interface ReminderItemDTO {
+  id: string;
+  title: string;
+  status: string;
+  dueDate: string | null;
+  reason: 'overdue' | 'due_soon' | 'stale';
+  health: WorkHealthDTO;
+  departmentId: string | null;
+  department: string;
+  daysWithoutActivity: number;
+  daysOverdue: number;
+}
+
+export interface ReminderDepartmentGroupDTO {
+  departmentId: string | null;
+  department: string;
+  defaultEmail: string;
+  emails: string[];
+  items: ReminderItemDTO[];
+}
+
 export interface ReminderPreviewDTO {
   canSend: boolean;
+  departments?: ReminderDepartmentGroupDTO[];
   recipients: Array<{
     secretaryId: string;
     name: string;
     email: string;
     department: string;
     subject: string;
-    items: Array<{ id: string; title: string; status: string; dueDate: string | null; reason: 'overdue' | 'due_soon' | 'stale'; health: WorkHealthDTO }>;
+    items: Array<{
+      id: string;
+      title: string;
+      status: string;
+      dueDate: string | null;
+      reason: 'overdue' | 'due_soon' | 'stale';
+      health: WorkHealthDTO;
+      daysWithoutActivity?: number;
+      daysOverdue?: number;
+    }>;
   }>;
   departmentsWithoutEmail: Array<{ department: string; itemCount: number }>;
   unassignedCount: number;
