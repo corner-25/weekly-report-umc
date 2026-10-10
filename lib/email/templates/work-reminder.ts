@@ -347,7 +347,7 @@ export function renderMinimalWorkReminder({
       const safeTitle = escapeHtml(item.title);
       const safeStatus = escapeHtml(item.status);
       const safeDue = item.dueDate ? item.dueDate.split('-').reverse().join('/') : 'Chưa xác định';
-      const link = `${appUrl}/dashboard/work/items/${item.id}`;
+      const link = 'https://office.umc.edu.vn/';
       const badgesHtml = renderItemBadges(item);
 
       return `
@@ -389,27 +389,27 @@ export function renderMinimalWorkReminder({
       <td align="center">
         <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="max-width: 620px; width: 100%; background-color: #ffffff; border-radius: 12px; border: 1px solid #e4e4e7; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); padding: 36px 36px;">
           
-          <!-- Header tối giản kiểu Apple -->
+          <!-- Header tối giản kiểu Apple: Hàng 1 UMC Office, Hàng 2 Bệnh viện Đại học Y Dược TP. Hồ Chí Minh -->
           <tr>
             <td style="padding-bottom: 22px; border-bottom: 1px solid #f4f4f5;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td>
-                    <span style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.8px; color: #0284c7; background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 6px;">
-                      UMC-OFFICE
-                    </span>
-                    <span style="font-size: 12px; color: #71717a; margin-left: 8px;">
-                      Bệnh viện Đại học Y Dược TP.HCM
+                  <td align="left">
+                    <span style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.8px; color: #0284c7; background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 3.5px 9px; border-radius: 6px; display: inline-block;">
+                      UMC Office
                     </span>
                   </td>
                   <td align="right">
-                    <span style="font-size: 11px; font-weight: 600; color: #71717a; background-color: #f4f4f5; padding: 3px 8px; border-radius: 6px;">
+                    <span style="font-size: 11px; font-weight: 600; color: #71717a; background-color: #f4f4f5; padding: 3.5px 9px; border-radius: 6px; white-space: nowrap; display: inline-block;">
                       Đôn đốc tiến độ
                     </span>
                   </td>
                 </tr>
               </table>
-              <div style="font-size: 22px; font-weight: 700; color: #09090b; margin-top: 18px; letter-spacing: -0.3px;">
+              <div style="font-size: 12.5px; font-weight: 500; color: #71717a; margin-top: 8px; letter-spacing: 0.1px;">
+                Bệnh viện Đại học Y Dược TP. Hồ Chí Minh
+              </div>
+              <div style="font-size: 22px; font-weight: 700; color: #09090b; margin-top: 16px; letter-spacing: -0.3px;">
                 Cập nhật tiến độ nhiệm vụ được giao
               </div>
               <div style="font-size: 13.5px; color: #71717a; margin-top: 4px;">
@@ -479,7 +479,7 @@ export function renderMinimalWorkReminder({
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td bgcolor="#09090b" style="background-color: #09090b; border-radius: 6px; padding: 11px 24px;">
-                          <a href="${appUrl}/dashboard/work/items" style="color: #fafafa !important; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-block;">
+                          <a href="https://office.umc.edu.vn/" style="color: #fafafa !important; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-block;">
                             Mở UMC-Office cập nhật báo cáo &rarr;
                           </a>
                         </td>

@@ -40,21 +40,13 @@ interface EmailSettingsData {
     phones: string[];
   };
   previews: {
-    workReminder_modern: { subject: string; html: string };
     workReminder_minimal: { subject: string; html: string };
-    workReminder_formal: { subject: string; html: string };
-    workReminder_classic: { subject: string; html: string };
-    workReminder: { subject: string; html: string };
+    workReminder?: { subject: string; html: string };
     crmBriefing: { subject: string; html: string };
   };
 }
 
-export type TemplateKey =
-  | 'workReminder_modern'
-  | 'workReminder_minimal'
-  | 'workReminder_formal'
-  | 'workReminder_classic'
-  | 'crmBriefing';
+export type TemplateKey = 'workReminder_minimal' | 'crmBriefing';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -337,7 +329,7 @@ export default function SettingsPage() {
               {/* Nút thao tác nhanh */}
               <div className="flex items-center gap-2">
                 <a
-                  href={`/api/settings/email/preview?template=${selectedTemplate.replace('workReminder_', '')}`}
+                  href={`/api/settings/email/preview?template=${selectedTemplate === 'crmBriefing' ? 'crmBriefing' : 'minimal'}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs"
@@ -376,47 +368,23 @@ export default function SettingsPage() {
             {/* DANH SÁCH CÁC MẪU ĐỂ DUYỆT */}
             <div>
               <span className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                Chọn mẫu giao diện cần duyệt:
+                Mẫu thông báo chuẩn hệ thống (Phong cách Apple Minimalist):
               </span>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {[
                   {
                     key: 'workReminder_minimal',
-                    label: 'Mẫu 2: Apple Minimalist',
-                    tag: 'Mặc định · Khuyên dùng',
-                    desc: 'Phong cách Apple tối giản, typography sắc nét, huy hiệu SVG trực quan, chuẩn di động',
+                    label: 'Đôn đốc công việc (UMC-Office)',
+                    tag: 'Apple Minimalist · Mặc định',
+                    desc: 'Mẫu email gửi đến đầu mối khoa/phòng đôn đốc nhiệm vụ quá hạn hoặc lâu chưa cập nhật.',
                     icon: Mail,
                     color: 'text-slate-900',
                   },
                   {
-                    key: 'workReminder_modern',
-                    label: 'Mẫu 1: Y tế Hiện đại',
-                    tag: 'Hiện đại',
-                    desc: 'Dải nhận diện UMC, KPI strip, thẻ card nhiệm vụ bo góc sang trọng',
-                    icon: Sparkles,
-                    color: 'text-cyan-700',
-                  },
-                  {
-                    key: 'workReminder_formal',
-                    label: 'Mẫu 3: Hành chính Trang trọng',
-                    tag: 'Thể thức Bệnh viện',
-                    desc: 'Chuẩn thể thức công văn Bộ Y tế / UMC: Quốc hiệu, bảng kẻ chỉ, chữ ký',
-                    icon: ShieldCheck,
-                    color: 'text-blue-900',
-                  },
-                  {
-                    key: 'workReminder_classic',
-                    label: 'Mẫu 4: Bảng Cổ điển',
-                    tag: 'Mẫu cũ',
-                    desc: 'Mẫu bảng biểu ban đầu để người dùng dễ đối chiếu so sánh',
-                    icon: Mail,
-                    color: 'text-slate-500',
-                  },
-                  {
                     key: 'crmBriefing',
-                    label: 'Mẫu 5: Nội bộ VIP (CRM)',
-                    tag: 'Bản tin N+1',
-                    desc: 'Thông báo danh sách khách VIP tái khám/chụp MRI ngày mai cho nhân viên',
+                    label: 'Tiếp đón khách VIP (CRM)',
+                    tag: 'Apple Minimalist · Nội bộ',
+                    desc: 'Bản tin nội bộ tổng hợp khách VIP có lịch hẹn tái khám / chụp MRI ngày mai cho nhân viên đón tiếp.',
                     icon: Stethoscope,
                     color: 'text-teal-700',
                   },
@@ -428,23 +396,23 @@ export default function SettingsPage() {
                       key={item.key}
                       type="button"
                       onClick={() => setSelectedTemplate(item.key as TemplateKey)}
-                      className={`text-left rounded-xl border p-3 transition-all relative ${
+                      className={`text-left rounded-xl border p-3.5 transition-all relative ${
                         isSelected
                           ? 'border-cyan-600 bg-cyan-50/60 shadow-xs ring-1 ring-cyan-500'
                           : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1.5 py-0.5 rounded bg-slate-100">
+                      <div className="flex items-center justify-between gap-1 mb-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 py-0.5 rounded bg-slate-100">
                           {item.tag}
                         </span>
                         {isSelected && <span className="h-2 w-2 rounded-full bg-cyan-600" />}
                       </div>
-                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 mt-1">
-                        <Icon className={`h-3.5 w-3.5 ${item.color} shrink-0`} />
+                      <div className="flex items-center gap-2 font-bold text-sm text-slate-900 mt-1">
+                        <Icon className={`h-4 w-4 ${item.color} shrink-0`} />
                         <span>{item.label}</span>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-snug">
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                         {item.desc}
                       </p>
                     </button>
