@@ -47,6 +47,11 @@ describe('workHealth', () => {
     const h = workHealth({ ...base, status: 'DONE', dueDate: new Date('2026-09-01T00:00:00Z') }, now);
     expect(h).toMatchObject({ isClosed: true, isOverdue: false, isStale: false });
   });
+
+  it('việc tạm dừng (PAUSED) thì không tính quá hạn, không tính lâu chưa cập nhật, không tính sắp đến hạn', () => {
+    const h = workHealth({ ...base, status: 'PAUSED', dueDate: new Date('2026-09-01T00:00:00Z'), lastActivityAt: new Date('2026-08-01T00:00:00Z') }, now);
+    expect(h).toMatchObject({ isClosed: false, isOverdue: false, isStale: false, isDueSoon: false });
+  });
 });
 
 describe('updateHash', () => {

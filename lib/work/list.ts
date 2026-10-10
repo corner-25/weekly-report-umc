@@ -83,7 +83,7 @@ const matchesView = (i: WorkListItem, view: ListView): boolean => {
     case 'overdue': return i.isOverdue;
     case 'dueSoon': return i.isDueSoon;
     case 'stale': return i.isStale;
-    case 'noUpdate': return i.isOpen && i.updateCount === 0;
+    case 'noUpdate': return i.isOpen && i.status !== 'PAUSED' && i.updateCount === 0;
     case 'done': return i.status === 'DONE';
     case 'all': return true;
   }
@@ -109,7 +109,7 @@ export function filterItems(items: WorkListItem[], f: ListFilters) {
 
 /** Điểm "cần chú ý": quá hạn lâu nhất lên đầu, rồi sắp đến hạn, rồi im lặng lâu. */
 function attention(i: WorkListItem): number {
-  if (!i.isOpen) return -1;
+  if (!i.isOpen || i.status === 'PAUSED') return -1;
   if (i.isOverdue) return 3_000_000 + -(i.daysToDue ?? 0) * 1000 + i.silentDays;
   if (i.isDueSoon) return 2_000_000 - (i.daysToDue ?? 0) * 1000 + i.silentDays;
   if (i.isStale) return 1_000_000 + i.silentDays;

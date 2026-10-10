@@ -47,6 +47,7 @@ export function workHealth(
   now: Date = new Date(),
 ): WorkHealth {
   const isClosed = CLOSED_STATUSES.includes(item.status);
+  const isPaused = item.status === 'PAUSED';
   // dueDate là cột DATE (nửa đêm UTC): lấy thẳng số ngày UTC.
   const daysToDue = item.dueDate ? Math.floor(item.dueDate.getTime() / MS_PER_DAY) - vnDay(now) : null;
   // Việc cào về chưa có cập nhật nào: tính từ ngày chỉ đạo, không phải ngày nạp vào hệ thống.
@@ -54,11 +55,11 @@ export function workHealth(
   const daysSinceActivity = Math.floor((now.getTime() - activity.getTime()) / MS_PER_DAY);
   return {
     isClosed,
-    isOverdue: !isClosed && daysToDue !== null && daysToDue < 0,
+    isOverdue: !isClosed && !isPaused && daysToDue !== null && daysToDue < 0,
     daysToDue,
-    isDueSoon: !isClosed && daysToDue !== null && daysToDue >= 0 && daysToDue <= DUE_SOON_DAYS,
+    isDueSoon: !isClosed && !isPaused && daysToDue !== null && daysToDue >= 0 && daysToDue <= DUE_SOON_DAYS,
     daysSinceActivity: item.lastActivityAt ? daysSinceActivity : null,
-    isStale: !isClosed && daysSinceActivity > STALE_DAYS,
+    isStale: !isClosed && !isPaused && daysSinceActivity > STALE_DAYS,
   };
 }
 

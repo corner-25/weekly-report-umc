@@ -76,7 +76,7 @@ export async function buildWorkReminders(db: PrismaClient, now: Date = new Date(
   const cooldown = new Date(now.getTime() - REMIND_COOLDOWN_DAYS * MS_PER_DAY);
   const items = await db.workItem.findMany({
     where: {
-      status: { notIn: [...CLOSED_STATUSES] },
+      status: { notIn: [...CLOSED_STATUSES, 'PAUSED'] },
       OR: [{ lastRemindedAt: null }, { lastRemindedAt: { lt: cooldown } }],
     },
     select: {

@@ -158,7 +158,7 @@ const getCachedDashboardStats = unstable_cache(
       // Quản lý công việc BGĐ chỉ đạo
       prisma.workItem.count({ where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED'] } } }),
       prisma.workItem.count({ where: { status: 'DONE' } }),
-      prisma.workItem.count({ where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED'] }, dueDate: { lt: startOfToday } } }),
+      prisma.workItem.count({ where: { status: { in: ['NOT_STARTED', 'IN_PROGRESS'] }, dueDate: { lt: startOfToday } } }),
 
       // Bản ghi nhớ hợp tác MOU
       prisma.mOU.count({ where: { deletedAt: null } }),

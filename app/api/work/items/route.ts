@@ -37,10 +37,11 @@ export const GET = handle(async (request: Request) => {
   }
 
   const open: Prisma.WorkItemWhereInput = { status: { notIn: [...CLOSED_STATUSES] } };
+  const activeOnly: Prisma.WorkItemWhereInput = { status: { in: ['NOT_STARTED', 'IN_PROGRESS'] } };
   switch (params.get('view')) {
     case 'open': and.push(open); break;
-    case 'overdue': and.push(open, { dueDate: { lt: today } }); break;
-    case 'stale': and.push(open); break; // lọc tiếp theo workHealth bên dưới
+    case 'overdue': and.push(activeOnly, { dueDate: { lt: today } }); break;
+    case 'stale': and.push(activeOnly); break; // lọc tiếp theo workHealth bên dưới
     case 'done': and.push({ status: 'DONE' }); break;
   }
 

@@ -148,14 +148,48 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
     };
   }, [departments, departmentEmails]);
 
-  // Thống kê đếm cho các nút lọc tình trạng
+  // Đối tượng đơn vị đang chọn (nếu có chọn 1 đơn vị cụ thể)
+  const currentSelectedDept = useMemo(() => {
+    if (!selectedDeptKey) return null;
+    return departments.find((d) => (d.departmentId || d.department) === selectedDeptKey) || null;
+  }, [selectedDeptKey, departments]);
+
+  // Danh sách công việc thuộc phạm vi khoa/phòng đang chọn (hoặc toàn viện theo tab email)
+  const scopedItems = useMemo(() => {
+    if (currentSelectedDept) {
+      return currentSelectedDept.items;
+    }
+    if (deptTab === 'has_email') {
+      return departments
+        .filter((d) => parseEmailList(departmentEmails[d.departmentId || d.department] ?? '').length > 0)
+        .flatMap((d) => d.items);
+    }
+    if (deptTab === 'no_email') {
+      return departments
+        .filter((d) => parseEmailList(departmentEmails[d.departmentId || d.department] ?? '').length === 0)
+        .flatMap((d) => d.items);
+    }
+    return allItems;
+  }, [currentSelectedDept, deptTab, departments, departmentEmails, allItems]);
+
+  // Thống kê đếm cho các nút lọc tình trạng theo đúng phạm vi đang chọn và từ khoá tìm kiếm
   const filterCounts = useMemo(() => {
     let stale30 = 0;
     let stale100 = 0;
     let overdue = 0;
     let dueSoon = 0;
 
-    for (const item of allItems) {
+    const q = searchQuery.trim().toLowerCase();
+    const candidateItems = q
+      ? scopedItems.filter((item) => {
+          const matchTitle = item.title.toLowerCase().includes(q);
+          const matchStatus = item.status.toLowerCase().includes(q);
+          const matchDept = item.department.toLowerCase().includes(q);
+          return matchTitle || matchStatus || matchDept;
+        })
+      : scopedItems;
+
+    for (const item of candidateItems) {
       if (item.daysWithoutActivity >= 30) stale30++;
       if (item.daysWithoutActivity >= 100) stale100++;
       if (item.reason === 'overdue' || item.daysOverdue > 0) overdue++;
@@ -163,13 +197,13 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
     }
 
     return {
-      all: allItems.length,
+      all: candidateItems.length,
       stale30,
       stale100,
       overdue,
       dueSoon,
     };
-  }, [allItems]);
+  }, [scopedItems, searchQuery]);
 
   // Kiểm tra item có khớp bộ lọc tình trạng & từ khoá tìm kiếm không
   const matchItemFilter = (item: ReminderItemDTO): boolean => {
@@ -231,12 +265,6 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
   const visibleItems = useMemo(() => {
     return filteredDepartments.flatMap((d) => d.items);
   }, [filteredDepartments]);
-
-  // Đối tượng đơn vị đang chọn (nếu có chọn 1 đơn vị cụ thể)
-  const currentSelectedDept = useMemo(() => {
-    if (!selectedDeptKey) return null;
-    return departments.find((d) => (d.departmentId || d.department) === selectedDeptKey) || null;
-  }, [selectedDeptKey, departments]);
 
   // Thay đổi đơn vị: Tự động cô lập lựa chọn cho riêng đơn vị đó
   const handleSelectDept = (deptKey: string) => {
@@ -471,28 +499,54 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                     Nhiệm vụ cần đôn đốc
                   </span>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-slate-900">{allItems.length}</span>
-                    <span className="text-xs text-slate-500 font-medium">({departments.length} đơn vị)</span>
+                    <span className="text-2xl font-bold text-slate-900">
+                      {currentSelectedDept ? currentSelectedDept.items.length : allItems.length}
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium truncate">
+                      {currentSelectedDept ? `(${currentSelectedDept.department})` : `(${departments.length} đơn vị)`}
+                    </span>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/40 p-3.5 sm:p-4">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 block">
-                    Đơn vị sẵn sàng gửi
+                    {currentSelectedDept ? 'Đang chọn gửi' : 'Đơn vị sẵn sàng gửi'}
                   </span>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-emerald-800">{deptStats.readyCount}</span>
-                    <span className="text-xs text-emerald-600 font-medium">khoa/phòng</span>
+                    <span className="text-2xl font-bold text-emerald-800">
+                      {currentSelectedDept ? selectedCountInDept : deptStats.readyCount}
+                    </span>
+                    <span className="text-xs text-emerald-600 font-medium">
+                      {currentSelectedDept ? `/${currentSelectedDept.items.length} việc` : 'khoa/phòng'}
+                    </span>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-amber-200/80 bg-amber-50/40 p-3.5 sm:p-4">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 block">
-                    Chưa có email đầu mối
+                    {currentSelectedDept ? 'Đầu mối nhận thư' : 'Chưa có email đầu mối'}
                   </span>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-amber-900">{deptStats.missingCount}</span>
-                    <span className="text-xs text-amber-700 font-medium">cần bổ sung</span>
+                    {currentSelectedDept ? (
+                      parseEmailList(departmentEmails[currentSelectedDept.departmentId || currentSelectedDept.department] ?? '').length > 0 ? (
+                        <>
+                          <span className="text-2xl font-bold text-emerald-700">Sẵn sàng</span>
+                          <span className="text-xs text-emerald-600 font-medium">
+                            ({parseEmailList(departmentEmails[currentSelectedDept.departmentId || currentSelectedDept.department] ?? '').length} email)
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-2xl font-bold text-amber-900">Chưa có</span>
+                          <span className="text-xs text-amber-700 font-medium">cần nhập email</span>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <span className="text-2xl font-bold text-amber-900">{deptStats.missingCount}</span>
+                        <span className="text-xs text-amber-700 font-medium">cần bổ sung</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -505,27 +559,36 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                   <div className="inline-flex rounded-xl bg-slate-200/70 p-1 text-xs font-semibold">
                     <button
                       type="button"
-                      onClick={() => setDeptTab('all')}
+                      onClick={() => {
+                        setDeptTab('all');
+                        if (selectedDeptKey) handleSelectDept('');
+                      }}
                       className={`px-3 py-1.5 rounded-lg transition ${
-                        deptTab === 'all' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        deptTab === 'all' && !selectedDeptKey ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       Tất cả ({departments.length})
                     </button>
                     <button
                       type="button"
-                      onClick={() => setDeptTab('has_email')}
+                      onClick={() => {
+                        setDeptTab('has_email');
+                        if (selectedDeptKey) handleSelectDept('');
+                      }}
                       className={`px-3 py-1.5 rounded-lg transition ${
-                        deptTab === 'has_email' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        deptTab === 'has_email' && !selectedDeptKey ? 'bg-white text-emerald-800 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       Có email ({deptStats.readyCount})
                     </button>
                     <button
                       type="button"
-                      onClick={() => setDeptTab('no_email')}
+                      onClick={() => {
+                        setDeptTab('no_email');
+                        if (selectedDeptKey) handleSelectDept('');
+                      }}
                       className={`px-3 py-1.5 rounded-lg transition ${
-                        deptTab === 'no_email' ? 'bg-white text-amber-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        deptTab === 'no_email' && !selectedDeptKey ? 'bg-white text-amber-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       Chưa có email ({deptStats.missingCount})

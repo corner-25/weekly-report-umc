@@ -15,7 +15,7 @@ const countBadges = unstable_cache(
     const today = new Date(`${now.toISOString().slice(0, 10)}T00:00:00Z`);
     const renewBy = new Date(today.getTime() + EXPIRING_DAYS * 86_400_000);
     const [work, crm, vehicles, mou] = await Promise.all([
-      prisma.workItem.count({ where: { status: { notIn: [...CLOSED_STATUSES] }, dueDate: { lt: today } } }),
+      prisma.workItem.count({ where: { status: { notIn: [...CLOSED_STATUSES, 'PAUSED'] }, dueDate: { lt: today } } }),
       prisma.crmInteraction.count({ where: { status: 'PLANNED', occurredAt: { lt: today } } }),
       prisma.vehicle.count({ where: { deletedAt: null, inspectionExpiry: { lt: now } } }),
       prisma.mOU.count({ where: { deletedAt: null, status: { in: ['ACTIVE', 'EXPIRING'] }, expiryDate: { lte: renewBy } } }),
