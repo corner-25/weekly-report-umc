@@ -232,6 +232,35 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
     return filteredDepartments.flatMap((d) => d.items);
   }, [filteredDepartments]);
 
+  // Đối tượng đơn vị đang chọn (nếu có chọn 1 đơn vị cụ thể)
+  const currentSelectedDept = useMemo(() => {
+    if (!selectedDeptKey) return null;
+    return departments.find((d) => (d.departmentId || d.department) === selectedDeptKey) || null;
+  }, [selectedDeptKey, departments]);
+
+  // Thay đổi đơn vị: Tự động cô lập lựa chọn cho riêng đơn vị đó
+  const handleSelectDept = (deptKey: string) => {
+    setSelectedDeptKey(deptKey);
+    if (deptKey) {
+      // Khi chọn 1 khoa/phòng cụ thể: chỉ chọn các việc của khoa/phòng đó!
+      const targetDept = departments.find((d) => (d.departmentId || d.department) === deptKey);
+      if (targetDept) {
+        setSelectedIds(new Set(targetDept.items.map((i) => i.id)));
+      }
+    } else {
+      // Khi chọn "Toàn bệnh viện": chọn tất cả các việc của các đơn vị đã có email
+      const readyIds = new Set<string>();
+      departments.forEach((d) => {
+        const key = d.departmentId || d.department;
+        const raw = departmentEmails[key] ?? '';
+        if (parseEmailList(raw).length > 0) {
+          d.items.forEach((i) => readyIds.add(i.id));
+        }
+      });
+      setSelectedIds(readyIds);
+    }
+  };
+
   // Toggle 1 nhiệm vụ
   const toggleItem = (id: string) => {
     setSelectedIds((prev) => {
@@ -242,14 +271,16 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
     });
   };
 
-  // Toggle tất cả việc đang hiển thị
-  const toggleAllVisible = (select: boolean) => {
+  // Chỉ chọn các việc đang hiển thị theo bộ lọc
+  const selectOnlyVisible = () => {
+    setSelectedIds(new Set(visibleItems.map((i) => i.id)));
+  };
+
+  // Bỏ chọn tất cả các việc đang hiển thị theo bộ lọc
+  const deselectVisible = () => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      visibleItems.forEach((item) => {
-        if (select) next.add(item.id);
-        else next.delete(item.id);
-      });
+      visibleItems.forEach((i) => next.delete(i.id));
       return next;
     });
   };
@@ -322,9 +353,27 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
     };
   }, [departments, selectedIds, departmentEmails]);
 
+  const selectedCountInDept = currentSelectedDept
+    ? currentSelectedDept.items.filter((i) => selectedIds.has(i.id)).length
+    : selectedIds.size;
+
   const send = async () => {
-    if (selectedIds.size === 0) return;
-    if (activeSelectedSummary.missingDepts.length > 0) {
+    // Nếu đang chọn 1 khoa/phòng cụ thể, chỉ gửi các việc thuộc riêng khoa/phòng đó!
+    const targetItemIds = currentSelectedDept
+      ? currentSelectedDept.items.filter((i) => selectedIds.has(i.id)).map((i) => i.id)
+      : Array.from(selectedIds);
+
+    if (targetItemIds.length === 0) return;
+
+    if (currentSelectedDept) {
+      const key = currentSelectedDept.departmentId || currentSelectedDept.department;
+      const raw = departmentEmails[key] ?? '';
+      const parsed = parseEmailList(raw);
+      if (parsed.length === 0) {
+        setError(`Vui lòng nhập email đầu mối cho "${currentSelectedDept.department}" trước khi gửi.`);
+        return;
+      }
+    } else if (activeSelectedSummary.missingDepts.length > 0) {
       setError(
         `Vui lòng nhập email đầu mối cho các đơn vị sau hoặc bấm "Bỏ chọn đơn vị thiếu email": ${activeSelectedSummary.missingDepts.join(
           ', '
@@ -341,7 +390,7 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
         failures: Array<{ department?: string; error: string }>;
         itemsReminded: number;
       }>('/api/work/reminders', 'POST', {
-        selectedItemIds: Array.from(selectedIds),
+        selectedItemIds: targetItemIds,
         departmentEmails,
       });
 
@@ -568,14 +617,14 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                   </div>
 
                   {/* Dropdown chọn khoa/phòng */}
-                  <div className="flex items-center gap-1.5 min-w-[200px]">
+                  <div className="flex items-center gap-1.5 min-w-[220px]">
                     <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                     <select
                       value={selectedDeptKey}
-                      onChange={(e) => setSelectedDeptKey(e.target.value)}
-                      className="w-full rounded-xl border border-slate-300 bg-white py-1 px-2.5 text-xs font-medium text-slate-800 shadow-2xs focus:border-cyan-500 focus:outline-none"
+                      onChange={(e) => handleSelectDept(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 bg-white py-1 px-2.5 text-xs font-semibold text-slate-800 shadow-2xs focus:border-cyan-500 focus:outline-none"
                     >
-                      <option value="">Xem tất cả khoa/phòng</option>
+                      <option value="">Toàn bệnh viện ({departments.length} đơn vị · {allItems.length} việc)</option>
                       {departments.map((d) => {
                         const key = d.departmentId || d.department;
                         return (
@@ -593,22 +642,40 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => toggleAllVisible(true)}
+                      onClick={selectOnlyVisible}
                       className="inline-flex items-center gap-1 font-semibold text-cyan-800 hover:text-cyan-950"
+                      title="Chỉ chọn những việc đang hiển thị theo bộ lọc hiện tại"
                     >
-                      <CheckSquare className="h-3.5 w-3.5 text-cyan-600" /> Chọn hết đang hiện ({visibleItems.length})
+                      <CheckSquare className="h-3.5 w-3.5 text-cyan-600" /> Chỉ chọn đang hiện ({visibleItems.length})
                     </button>
                     <span className="text-slate-300">|</span>
                     <button
                       type="button"
-                      onClick={() => toggleAllVisible(false)}
+                      onClick={deselectVisible}
                       className="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-slate-800"
                     >
                       <Square className="h-3.5 w-3.5" /> Bỏ chọn đang hiện
                     </button>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedIds(new Set())}
+                      className="font-medium text-slate-500 hover:text-rose-700"
+                    >
+                      Bỏ chọn tất cả
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {currentSelectedDept && (
+                      <button
+                        type="button"
+                        onClick={() => handleSelectDept('')}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-800 bg-cyan-50 hover:bg-cyan-100 px-2.5 py-1 rounded-lg border border-cyan-200 transition"
+                      >
+                        ← Về toàn bệnh viện
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={selectOnlyReadyDepts}
@@ -630,6 +697,26 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                   </div>
                 </div>
               </div>
+
+              {/* BANNER THÔNG BÁO KHI ĐANG LỌC RIÊNG 1 ĐƠN VỊ */}
+              {currentSelectedDept && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-cyan-50/90 border border-cyan-200 px-4 py-2.5 text-xs text-cyan-950 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-cyan-700 shrink-0" />
+                    <span>
+                      Chế độ gửi riêng cho: <strong className="font-bold text-slate-900">{currentSelectedDept.department}</strong>{' '}
+                      (đang chọn <strong className="text-cyan-800 font-bold">{selectedCountInDept}</strong>/{currentSelectedDept.items.length} việc).
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDept('')}
+                    className="font-semibold text-cyan-700 hover:text-cyan-900 underline"
+                  >
+                    ← Quay lại toàn bệnh viện
+                  </button>
+                </div>
+              )}
 
               {/* DANH SÁCH CÁC KHOA / PHÒNG VÀ NHIỆM VỤ */}
               {filteredDepartments.length === 0 ? (
@@ -694,6 +781,19 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                             >
                               Bỏ chọn
                             </button>
+                            {!selectedDeptKey && (
+                              <>
+                                <span className="text-slate-300">|</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleSelectDept(key)}
+                                  className="font-semibold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 px-2 py-0.5 rounded-md transition"
+                                  title="Chỉ tập trung gửi đôn đốc cho riêng đơn vị này"
+                                >
+                                  Chỉ chọn khoa này
+                                </button>
+                              </>
+                            )}
                             <span className="text-slate-300">|</span>
                             <button
                               type="button"
@@ -812,8 +912,21 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
             {preview && (
               <div className="space-y-0.5">
                 <div>
-                  Đã chọn: <strong className="text-cyan-800 font-bold">{selectedIds.size}</strong> nhiệm vụ cho{' '}
-                  <strong className="text-cyan-800 font-bold">{activeSelectedSummary.readyDeptsCount}</strong> đơn vị sẵn sàng.
+                  {currentSelectedDept ? (
+                    <span>
+                      Đang chọn:{' '}
+                      <strong className="text-cyan-800 font-bold">
+                        {currentSelectedDept.items.filter((i) => selectedIds.has(i.id)).length}
+                      </strong>
+                      /{currentSelectedDept.items.length} nhiệm vụ của{' '}
+                      <strong className="text-slate-900 font-bold">{currentSelectedDept.department}</strong>.
+                    </span>
+                  ) : (
+                    <span>
+                      Đã chọn: <strong className="text-cyan-800 font-bold">{selectedIds.size}</strong> nhiệm vụ cho{' '}
+                      <strong className="text-cyan-800 font-bold">{activeSelectedSummary.readyDeptsCount}</strong> đơn vị sẵn sàng.
+                    </span>
+                  )}
                 </div>
                 {activeSelectedSummary.missingDepts.length > 0 && (
                   <div className="text-amber-700 font-semibold flex items-center gap-1.5">
@@ -838,6 +951,16 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
           </div>
 
           <div className="flex items-center gap-2">
+            {currentSelectedDept && (
+              <button
+                type="button"
+                onClick={() => handleSelectDept('')}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
+              >
+                ← Về toàn bệnh viện
+              </button>
+            )}
+
             <a
               href="/api/settings/email/preview?template=minimal"
               target="_blank"
@@ -864,15 +987,19 @@ export function RemindersModal({ onClose, onReminded }: { onClose: () => void; o
                 !preview?.canSend ||
                 !isAdmin ||
                 sending ||
-                selectedIds.size === 0 ||
-                activeSelectedSummary.missingDepts.length > 0
+                (currentSelectedDept ? selectedCountInDept === 0 : selectedIds.size === 0) ||
+                (currentSelectedDept
+                  ? parseEmailList(departmentEmails[currentSelectedDept.departmentId || currentSelectedDept.department] ?? '').length === 0
+                  : activeSelectedSummary.missingDepts.length > 0)
               }
               className="inline-flex items-center gap-1.5 rounded-xl bg-cyan-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-cyan-800 disabled:opacity-50 transition"
             >
               <Send className="h-3.5 w-3.5" />
               {sending
                 ? 'Đang gửi email...'
-                : `Gửi đôn đốc (${selectedIds.size} việc)`}
+                : currentSelectedDept
+                ? `Gửi đôn đốc (${selectedCountInDept} việc) cho ${currentSelectedDept.department}`
+                : `Gửi đôn đốc (${selectedIds.size} việc cho ${activeSelectedSummary.readyDeptsCount} đơn vị)`}
             </button>
           </div>
         </div>
