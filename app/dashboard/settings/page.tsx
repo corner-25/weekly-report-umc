@@ -62,7 +62,7 @@ export default function SettingsPage() {
 
   // State cho Tab Email
   const [emailData, setEmailData] = useState<EmailSettingsData | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateKey>('workReminder_modern');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateKey>('workReminder_minimal');
   const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
   const [copiedHtml, setCopiedHtml] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
@@ -381,20 +381,20 @@ export default function SettingsPage() {
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
                 {[
                   {
+                    key: 'workReminder_minimal',
+                    label: 'Mẫu 2: Apple Minimalist',
+                    tag: 'Mặc định · Khuyên dùng',
+                    desc: 'Phong cách Apple tối giản, typography sắc nét, huy hiệu SVG trực quan, chuẩn di động',
+                    icon: Mail,
+                    color: 'text-slate-900',
+                  },
+                  {
                     key: 'workReminder_modern',
                     label: 'Mẫu 1: Y tế Hiện đại',
-                    tag: 'Khuyên dùng',
+                    tag: 'Hiện đại',
                     desc: 'Dải nhận diện UMC, KPI strip, thẻ card nhiệm vụ bo góc sang trọng',
                     icon: Sparkles,
                     color: 'text-cyan-700',
-                  },
-                  {
-                    key: 'workReminder_minimal',
-                    label: 'Mẫu 2: Tối giản Tinh tế',
-                    tag: 'Apple / Linear',
-                    desc: 'Nền trắng phẳng, typography sắc nét, thanh thoát, tối ưu di động',
-                    icon: Mail,
-                    color: 'text-slate-700',
                   },
                   {
                     key: 'workReminder_formal',

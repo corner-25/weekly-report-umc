@@ -25,6 +25,8 @@ export const GET = handle(async (request: Request) => {
         dueDate: '2026-10-15',
         reasonText: 'Sắp đến hạn (còn 6 ngày)',
         isOverdue: false,
+        daysWithoutActivity: 45,
+        daysOverdue: 0,
       },
       {
         id: 'sample-2',
@@ -33,6 +35,8 @@ export const GET = handle(async (request: Request) => {
         dueDate: '2026-10-01',
         reasonText: 'Đã quá hạn 8 ngày',
         isOverdue: true,
+        daysWithoutActivity: 115,
+        daysOverdue: 8,
       },
       {
         id: 'sample-3',
@@ -41,6 +45,8 @@ export const GET = handle(async (request: Request) => {
         dueDate: '2026-09-20',
         reasonText: 'Đã quá hạn 19 ngày',
         isOverdue: true,
+        daysWithoutActivity: 68,
+        daysOverdue: 19,
       },
     ],
     appUrl: url,
@@ -105,7 +111,7 @@ export const GET = handle(async (request: Request) => {
       workReminder_minimal: sampleWorkReminderMinimal,
       workReminder_formal: sampleWorkReminderFormal,
       workReminder_classic: sampleWorkReminderClassic,
-      workReminder: sampleWorkReminderModern, // alias mặc định
+      workReminder: sampleWorkReminderMinimal, // alias mặc định Mẫu 2 Apple Minimalist
       crmBriefing: sampleCrmBriefing,
     },
   });
@@ -124,7 +130,7 @@ export const POST = handle(async (request: Request) => {
 
   const body = await request.json();
   const targetEmail = body.toEmail || session.user.email;
-  const templateType = body.templateType || 'workReminder_modern';
+  const templateType = body.templateType || 'workReminder_minimal';
 
   if (!targetEmail) {
     throw new HttpError(400, 'Cần chỉ định địa chỉ email nhận');
@@ -136,13 +142,13 @@ export const POST = handle(async (request: Request) => {
   let html = '<p>Thử nghiệm kết nối SMTP thành công từ máy chủ UMC.</p>';
 
   if (templateType.startsWith('workReminder')) {
-    const style = templateType === 'workReminder_minimal'
-      ? 'minimal'
+    const style = templateType === 'workReminder_modern'
+      ? 'modern'
       : templateType === 'workReminder_formal'
       ? 'formal'
       : templateType === 'workReminder_classic'
       ? 'classic'
-      : 'modern';
+      : 'minimal';
 
     const rendered = renderWorkReminderHtml(
       {
@@ -156,6 +162,8 @@ export const POST = handle(async (request: Request) => {
             dueDate: new Date(Date.now() + 6 * 86400000).toISOString().slice(0, 10),
             reasonText: 'Sắp đến hạn (còn 6 ngày)',
             isOverdue: false,
+            daysWithoutActivity: 45,
+            daysOverdue: 0,
           },
           {
             id: 'test-2',
@@ -164,6 +172,18 @@ export const POST = handle(async (request: Request) => {
             dueDate: new Date(Date.now() - 8 * 86400000).toISOString().slice(0, 10),
             reasonText: 'Đã quá hạn 8 ngày',
             isOverdue: true,
+            daysWithoutActivity: 115,
+            daysOverdue: 8,
+          },
+          {
+            id: 'test-3',
+            title: 'Rà soát danh mục vật tư tiêu hao chuyên khoa và đề xuất kế hoạch đấu thầu Quý IV',
+            status: 'Chưa thực hiện',
+            dueDate: new Date(Date.now() - 19 * 86400000).toISOString().slice(0, 10),
+            reasonText: 'Đã quá hạn 19 ngày',
+            isOverdue: true,
+            daysWithoutActivity: 68,
+            daysOverdue: 19,
           },
         ],
         appUrl: url,

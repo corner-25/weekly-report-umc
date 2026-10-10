@@ -14,7 +14,7 @@ function appUrl(request: Request): string {
 export const GET = handle(async (request: Request) => {
   const url = appUrl(request);
   const searchParams = new URL(request.url).searchParams;
-  const template = searchParams.get('template') || 'modern';
+  const template = searchParams.get('template') || 'minimal';
 
   if (template === 'crmBriefing') {
     const res = renderCrmFollowUpBriefingHtml({
