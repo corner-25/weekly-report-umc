@@ -9,7 +9,7 @@ import nodemailer from 'nodemailer';
 import type { PrismaClient } from '@prisma/client';
 import { NON_SECRETARY_TYPE } from '@/lib/birthday';
 import { CLOSED_STATUSES, WORK_STATUS_LABELS } from './constants';
-import { workHealth, type WorkHealth } from './status';
+import { workHealth, updateHash, type WorkHealth } from './status';
 
 const REMIND_COOLDOWN_DAYS = 7;
 const MS_PER_DAY = 86_400_000;
@@ -282,6 +282,35 @@ export async function sendWorkReminders(
       });
       deptItems.forEach((i) => sentItemIds.add(i.id));
       sentCount++;
+
+      // Ghi nhận nhật ký đôn đốc vào Lịch sử cập nhật (WorkUpdate) cho từng công việc
+      const author = 'Hệ thống đôn đốc UMC-Office';
+      const emailsStr = emailList.join(', ');
+      for (const item of deptItems) {
+        const content = `Đã gửi email đôn đốc tiến độ công việc đến đơn vị ${dept.department} (${emailsStr}).`;
+        const contentHash = updateHash({ occurredAt: now, author, content });
+        try {
+          await db.workUpdate.upsert({
+            where: {
+              workItemId_contentHash: {
+                workItemId: item.id,
+                contentHash,
+              },
+            },
+            create: {
+              workItemId: item.id,
+              source: 'MANUAL',
+              occurredAt: now,
+              author,
+              content,
+              contentHash,
+            },
+            update: {},
+          });
+        } catch {
+          // Bỏ qua nếu đã ghi nhận tránh gián đoạn gửi các đơn vị khác
+        }
+      }
     } catch (error) {
       failures.push({
         department: dept.department,

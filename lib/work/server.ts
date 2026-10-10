@@ -42,6 +42,7 @@ export function toWorkItemDto(item: WorkItemWithRelations, now: Date = new Date(
     aiPlan: item.aiPlan,
     aiAssessment: item.aiAssessment,
     aiUpdatedAt: item.aiUpdatedAt?.toISOString() ?? null,
+    lastRemindedAt: item.lastRemindedAt?.toISOString() ?? null,
     updateCount: item._count.updates,
     createdAt: item.createdAt.toISOString(),
     health: workHealth(item, now),

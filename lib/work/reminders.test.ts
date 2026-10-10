@@ -42,7 +42,7 @@ describe('renderWorkReminderHtml', () => {
       appUrl: 'https://umc.vn',
     });
 
-    expect(res.html).toContain('Kính gửi <strong>Đầu mối phụ trách đơn vị</strong>,');
+    expect(res.html).toContain('Kính gửi: <strong>Phòng Kế hoạch tổng hợp</strong>,');
     expect(res.html).toContain('Đơn vị phụ trách: <strong style="color: #18181b;">Phòng Kế hoạch tổng hợp</strong>');
     expect(res.subject).toBe('[Đôn đốc tiến độ] 1 nhiệm vụ của Phòng Kế hoạch tổng hợp cần cập nhật báo cáo');
   });
@@ -55,7 +55,7 @@ describe('renderWorkReminderHtml', () => {
       appUrl: 'https://umc.vn',
     });
 
-    expect(res.html).toContain('Kính gửi Anh/Chị <strong>Nguyễn Văn A</strong>,');
+    expect(res.html).toContain('Kính gửi: Anh/Chị <strong>Nguyễn Văn A</strong> &middot; <strong>Phòng Tổ chức cán bộ</strong>,');
     expect(res.html).toContain('Đơn vị phụ trách: <strong style="color: #18181b;">Phòng Tổ chức cán bộ</strong>');
   });
 
@@ -70,7 +70,7 @@ describe('renderWorkReminderHtml', () => {
       'modern'
     );
 
-    expect(res.html).toContain('Kính gửi: Anh/Chị Nguyễn Văn A (Đầu mối phụ trách &middot; Phòng Tổ chức cán bộ),');
+    expect(res.html).toContain('Kính gửi: Anh/Chị Nguyễn Văn A &middot; Phòng Tổ chức cán bộ,');
     expect(res.html).toContain('Trân trọng cảm ơn sự phối hợp kịp thời của Anh/Chị và đơn vị.');
     expect(res.subject).toBe('[UMC-Office] Đôn đốc tiến độ 1 nhiệm vụ của Phòng Tổ chức cán bộ cần cập nhật báo cáo');
   });

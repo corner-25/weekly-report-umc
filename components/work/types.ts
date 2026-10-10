@@ -54,6 +54,7 @@ export interface WorkItemDTO {
   aiPlan: AiStep[] | null;
   aiAssessment: AiAssessment | null;
   aiUpdatedAt: string | null;
+  lastRemindedAt?: string | null;
   updateCount: number;
   createdAt: string;
   health: WorkHealthDTO;

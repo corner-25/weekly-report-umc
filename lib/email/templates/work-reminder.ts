@@ -223,9 +223,9 @@ export function renderModernWorkReminder({
 
           <!-- Thân email -->
           <tr>
-            <td style="padding: 28px 30px;">
+            <td style="padding-top: 28px; padding-bottom: 28px; padding-left: 30px; padding-right: 30px;">
               <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
-                ${safeName ? `Kính gửi: Anh/Chị ${safeName} (Đầu mối phụ trách &middot; ${safeDept}),` : `Kính gửi: Đầu mối phụ trách công việc &middot; ${safeDept},`}
+                ${safeName ? `Kính gửi: Anh/Chị ${safeName} &middot; ${safeDept},` : `Kính gửi: ${safeDept},`}
               </div>
 
               <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #475569; line-height: 1.6;">
@@ -421,8 +421,8 @@ export function renderMinimalWorkReminder({
           <!-- Nội dung -->
           <tr>
             <td style="padding-top: 24px;">
-              <p style="margin: 0 0 14px 0; font-size: 14px; color: #3f3f46;">
-                ${safeName ? `Kính gửi Anh/Chị <strong>${safeName}</strong>,` : 'Kính gửi <strong>Đầu mối phụ trách đơn vị</strong>,'}
+              <p style="margin: 0 0 14px 0; font-size: 14.5px; color: #18181b;">
+                ${safeName ? `Kính gửi: Anh/Chị <strong>${safeName}</strong> &middot; <strong>${safeDept}</strong>,` : `Kính gửi: <strong>${safeDept}</strong>,`}
               </p>
               <p style="margin: 0 0 20px 0; font-size: 13.5px; color: #71717a; line-height: 1.65;">
                 Hệ thống ghi nhận đơn vị hiện có <strong>${items.length} nhiệm vụ</strong> đã lâu chưa có thông tin cập nhật tiến độ hoặc sắp đến hạn xử lý. Phòng Hành chính kính đề nghị đơn vị rà soát và phản hồi kết quả thực hiện:
@@ -599,7 +599,7 @@ export function renderFormalWorkReminder({
 
               <!-- Kính gửi -->
               <div style="font-family: Arial, sans-serif; font-size: 13.5px; margin-bottom: 16px; line-height: 1.6;">
-                <strong>Kính gửi:</strong> ${safeName ? `Anh/Chị ${safeName} &middot; Đầu mối phụ trách ${safeDept}` : `Đầu mối phụ trách công việc &middot; ${safeDept}`},
+                <strong>Kính gửi:</strong> ${safeName ? `Anh/Chị ${safeName} &middot; ${safeDept}` : safeDept},
               </div>
 
               <p style="font-family: Arial, sans-serif; font-size: 13px; color: #334155; margin: 0 0 16px 0; line-height: 1.6; text-align: justify;">
@@ -759,7 +759,7 @@ export function renderClassicWorkReminder({
           <tr>
             <td style="padding: 26px 28px;">
               <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">
-                ${safeName ? `Kính gửi: Anh/Chị ${safeName} (Đầu mối phụ trách &middot; ${safeDept}),` : `Kính gửi: Đầu mối phụ trách công việc &middot; ${safeDept},`}
+                ${safeName ? `Kính gửi: Anh/Chị ${safeName} &middot; ${safeDept},` : `Kính gửi: ${safeDept},`}
               </div>
 
               <p style="margin: 0 0 16px 0; font-size: 13.5px; color: #334155; line-height: 1.6;">

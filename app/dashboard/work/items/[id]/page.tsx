@@ -114,6 +114,13 @@ export default function WorkItemPage() {
               <Info label="Hạn chót">{item.dueDate ? formatDate(item.dueDate) : <span className="text-slate-400">Chưa có</span>}</Info>
               {item.externalStatus && <Info label="Trạng thái ở nguồn">{item.externalStatus}</Info>}
               <Info label="Cập nhật gần nhất">{item.lastActivityAt ? formatDateTime(item.lastActivityAt) : <span className="text-slate-400">Chưa có</span>}</Info>
+              {item.lastRemindedAt && (
+                <Info label="Đôn đốc gần nhất">
+                  <span className="font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded-md inline-block">
+                    {formatDateTime(item.lastRemindedAt)}
+                  </span>
+                </Info>
+              )}
               <Info label="Nguồn">{WORK_SOURCE_LABELS[item.source]}{item.externalId && ` · mã ${item.externalId}`}{item.lastSeenAt && ` · cào ${formatDateTime(item.lastSeenAt)}`}</Info>
             </dl>
             {item.description && <p className="mt-3 whitespace-pre-line border-t border-slate-100 pt-3 text-sm text-slate-700">{item.description}</p>}
